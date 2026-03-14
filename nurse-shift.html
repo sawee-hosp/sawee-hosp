@@ -48,6 +48,23 @@
 
         .dragging-row { opacity: 0.5; background-color: #e0e7ff !important; }
         .drop-target-row { border-top: 2px solid #4f46e5; }
+
+        /* การตั้งค่าสำหรับการพิมพ์ (Print PDF A4) */
+        @media print {
+            @page { size: A4 landscape; margin: 10mm; }
+            body { background-color: white !important; overflow: auto !important; }
+            header, .no-print { display: none !important; }
+            main { padding: 0 !important; display: block !important; height: auto !important; overflow: visible !important; }
+            .print-area { display: block !important; height: auto !important; overflow: visible !important; border: none !important; box-shadow: none !important; }
+            .print-area table { width: 100% !important; border-collapse: collapse !important; page-break-inside: auto; }
+            .print-area tr { page-break-inside: avoid; page-break-after: auto; }
+            .print-area th, .print-area td { border: 1px solid #94a3b8 !important; padding: 2px !important; font-size: 9pt !important; height: auto !important; }
+            .calendar-grid { gap: 0 !important; border: 1px solid #94a3b8 !important; }
+            .calendar-cell { border: 1px solid #94a3b8 !important; break-inside: avoid; min-height: 80px; }
+            .custom-scrollbar { overflow: visible !important; max-height: none !important; }
+            /* แปลงปุ่มเวรให้กลายเป็นเหมือนข้อความธรรมดาตอนพิมพ์ */
+            .calendar-cell button, td button { border: 1px solid #cbd5e1 !important; background: transparent !important; box-shadow: none !important; scale: 1 !important; }
+        }
     </style>
 </head>
 <body>
@@ -127,7 +144,8 @@
             Save: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>,
             Sparkles: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>,
             Eraser: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>,
-            ClipboardList: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+            ClipboardList: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>,
+            Printer: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
         };
 
         const getBaseShift = (s) => s.startsWith('อื่นๆ') ? 'อื่นๆ' : s;
@@ -177,6 +195,7 @@
             
             const [activeTab, setActiveTab] = useState('schedule'); 
             const [viewMode, setViewMode] = useState('table'); 
+            const [showMyShiftsOnly, setShowMyShiftsOnly] = useState(false); // State สำหรับเปิด/ปิด เวรของฉัน
             
             const [currentYear, setCurrentYear] = useState(new Date().getFullYear().toString());
             const [currentMonth, setCurrentMonth] = useState((new Date().getMonth() + 1).toString().padStart(2, '0'));
@@ -274,13 +293,19 @@
 
             const filteredNurses = useMemo(() => {
                 let filtered = nurses.filter(n => n.ward.includes(selectedWard) && n.status !== 'Deleted');
+                
+                // กรองเฉพาะเวรของฉัน ถ้าเปิดใช้งาน
+                if (showMyShiftsOnly && currentUser) {
+                    filtered = filtered.filter(n => n.id === currentUser.id);
+                }
+
                 filtered.sort((a, b) => {
                     if (a.role === 'Headward' && b.role !== 'Headward') return -1;
                     if (a.role !== 'Headward' && b.role === 'Headward') return 1;
                     return (a.orderIndex || 0) - (b.orderIndex || 0);
                 });
                 return filtered;
-            }, [nurses, selectedWard]);
+            }, [nurses, selectedWard, showMyShiftsOnly, currentUser]);
 
             const pendingRequestsCount = swapRequests.filter(r => r.status === 'Pending').length;
 
@@ -294,6 +319,8 @@
                     setCurrentUser(user);
                     const firstWard = user.ward.split(',')[0].trim();
                     setSelectedWard(firstWard);
+                    // เปิดหน้าปฏิทินเป็นค่าเริ่มต้นเมื่อล็อกอินตามคำขอ
+                    setViewMode('calendar'); 
                     if (!user.email) setShowEmailWarning(true);
                 } else {
                     setLoginError('ไม่พบรหัสพยาบาลนี้ในระบบ');
@@ -306,6 +333,7 @@
                 setActiveTab('schedule');
                 setShowEmailWarning(false);
                 setIsProfileDropdownOpen(false);
+                setShowMyShiftsOnly(false);
             };
 
             // Drag & Drop
@@ -367,7 +395,10 @@
             const ruleViolations = useMemo(() => {
                 const viols = {}; 
                 const firstDayOfWeekOffset = getDayOfWeek(1); 
-                filteredNurses.forEach(nurse => {
+                // ใช้ nurses ทั้งหมด (ใน selectedWard) มาเช็ค ไม่ใช่แค่ filtered เผื่อโหมด "เฉพาะฉัน" จะได้เช็คถูก
+                const checkNurses = nurses.filter(n => n.ward.includes(selectedWard) && n.status !== 'Deleted');
+                
+                checkNurses.forEach(nurse => {
                     const nId = nurse.id;
                     const intervals = [];
                     for(let d=1; d<=daysInMonth; d++) {
@@ -423,7 +454,7 @@
                     });
                 });
                 return viols;
-            }, [schedules, filteredNurses, daysInMonth, currentYear, currentMonth, shiftOptions]);
+            }, [schedules, nurses, selectedWard, daysInMonth, currentYear, currentMonth, shiftOptions]);
 
             const handleCellClick = (nurse, day) => {
                 if (currentUser.role === 'Headward') setSelectedCell({ nurse, day });
@@ -477,26 +508,34 @@
                 } finally { setIsSaving(false); }
             };
 
-            // Smart Filler Algorithm
+            // Smart Filler Algorithm (New Robust Logic)
             const runSmartFiller = async () => {
                 setIsSaving(true);
                 let newSchedules = { ...schedules };
                 
                 const targets = { '8-20': fillTargets.d12, '20-8': fillTargets.n12, 'ช': fillTargets.m, 'บ': fillTargets.a, 'ด': fillTargets.n };
-                const coreShifts = ['8-20', '20-8', 'ด', 'ช', 'บ']; // จัดเวรยาวก่อน
+                const coreShifts = ['8-20', '20-8', 'ด', 'ช', 'บ']; 
 
-                let nurseShiftCounts = {};
-                filteredNurses.forEach(n => nurseShiftCounts[n.id] = 0);
+                // ใช้ filteredNurses (รายชื่อที่แสดงบนจอ) เพื่อให้ AI จัดเวรเฉพาะวอร์ดนี้และคนที่ไม่ถูกกรองออก
+                let nurseHours = {};
+                filteredNurses.forEach(n => nurseHours[n.id] = 0);
                 
                 for (let d = 1; d <= daysInMonth; d++) {
                     filteredNurses.forEach(n => {
                         const key = `${n.id}-${d}`;
-                        if (newSchedules[key] && newSchedules[key].length > 0) nurseShiftCounts[n.id]++;
+                        const shifts = newSchedules[key] || [];
+                        shifts.forEach(s => {
+                            const b = getBaseShift(s);
+                            const opt = shiftOptions.find(o => o.id === b);
+                            let dur = 8;
+                            if(b === '8-20' || b === '20-8') dur = 12;
+                            if(opt && opt.type === 'Leave') dur = 0;
+                            nurseHours[n.id] += dur;
+                        });
                     });
                 }
 
                 for (let d = 1; d <= daysInMonth; d++) {
-                    // นับเวรที่มีอยู่แล้วในวันนั้น (นับแบบ 12 ชม. กินโควต้า 2 ช่อง)
                     let currentCounts = { 'ช': 0, 'บ': 0, 'ด': 0, '8-20': 0, '20-8': 0 };
                     filteredNurses.forEach(n => {
                         const key = `${n.id}-${d}`;
@@ -508,7 +547,6 @@
                     });
 
                     for (let shiftType of coreShifts) {
-                        // ปรับลดยอดที่ต้องการ หากมีการจัดเวร 12 ชม. ไปแล้ว
                         let exactNeeded = targets[shiftType] - currentCounts[shiftType];
                         
                         if (shiftType === 'ช') exactNeeded = targets['ช'] - currentCounts['ช'] - currentCounts['8-20'];
@@ -519,31 +557,99 @@
 
                         let availableNurses = filteredNurses.filter(n => {
                             const key = `${n.id}-${d}`;
-                            if (newSchedules[key] && newSchedules[key].length > 0) return false;
+                            const currShifts = newSchedules[key] || [];
+                            if (currShifts.length > 0) return false; // Already has shift today
 
-                            const prevKey = `${n.id}-${d-1}`;
-                            const yestShifts = d > 1 ? (newSchedules[prevKey] || []) : [];
-                            const yestBaseShifts = yestShifts.map(s => getBaseShift(s));
+                            // Robust 11h Rest Check
+                            const getShiftTimes = (dayOffset, shiftsArray) => {
+                                let times = [];
+                                shiftsArray.forEach(s => {
+                                    const baseS = getBaseShift(s);
+                                    let start = 8; let duration = 8;
+                                    if(baseS === 'บ' || baseS === '*บ' || baseS === 'Rบ') start = 16;
+                                    if(baseS === 'ด' || baseS === '*ด' || baseS === 'Rด') start = 0;
+                                    if(baseS === '8-20') { start = 8; duration = 12; }
+                                    if(baseS === '20-8') { start = 20; duration = 12; }
+                                    const opt = shiftOptions.find(o => o.id === baseS);
+                                    
+                                    if (opt && opt.type === 'Leave' || baseS === 'O' || baseS === 'VAC') {
+                                        times.push({ isLeave: true });
+                                    } else if (duration > 0) {
+                                        const startAbs = (dayOffset - 1) * 24 + start;
+                                        times.push({ start: startAbs, end: startAbs + duration });
+                                    }
+                                });
+                                return times;
+                            };
 
-                            // ป้องกันการจัดเวรที่ได้พักไม่ถึง 11 ชม.
-                            if ((shiftType === 'ช' || shiftType === 'ด' || shiftType === '8-20') && (yestBaseShifts.includes('บ') || yestBaseShifts.includes('*บ') || yestBaseShifts.includes('20-8'))) return false;
+                            const prevShifts = d > 1 ? (newSchedules[`${n.id}-${d-1}`] || []) : [];
+                            const nextShifts = d < daysInMonth ? (newSchedules[`${n.id}-${d+1}`] || []) : [];
+
+                            let tStart = 8; let tDur = 8;
+                            if(shiftType === 'บ') tStart = 16;
+                            if(shiftType === 'ด') tStart = 0;
+                            if(shiftType === '8-20') { tStart = 8; tDur = 12; }
+                            if(shiftType === '20-8') { tStart = 20; tDur = 12; }
+
+                            const targetStart = (d - 1) * 24 + tStart;
+                            const targetEnd = targetStart + tDur;
+
+                            let allIntervals = [
+                                ...getShiftTimes(d-1, prevShifts),
+                                ...getShiftTimes(d+1, nextShifts)
+                            ];
+
+                            for (let inv of allIntervals) {
+                                if(inv.isLeave) continue;
+                                let gap;
+                                if (targetStart >= inv.end) gap = targetStart - inv.end;
+                                else if (inv.start >= targetEnd) gap = inv.start - targetEnd;
+                                else return false; // Overlap
+                                if (gap < 11) return false;
+                            }
+
+                            // Robust Weekly 60h & 12h limit check
+                            const firstDayOfWeekOffset = getDayOfWeek(1); 
+                            const targetWeekIndex = Math.floor((d - 1 + firstDayOfWeekOffset) / 7);
+                            let weeklyHours = 0;
+                            let weekly12hCount = 0;
+
+                            for (let wd = 1; wd <= daysInMonth; wd++) {
+                                if (Math.floor((wd - 1 + firstDayOfWeekOffset) / 7) === targetWeekIndex) {
+                                    const wShifts = newSchedules[`${n.id}-${wd}`] || [];
+                                    wShifts.forEach(ws => {
+                                        const wBase = getBaseShift(ws);
+                                        let dur = 8;
+                                        if(wBase === '8-20' || wBase === '20-8') dur = 12;
+                                        const opt = shiftOptions.find(o => o.id === wBase);
+                                        if (opt && opt.type === 'Leave') dur = 0;
+                                        weeklyHours += dur;
+                                        if (dur === 12) weekly12hCount++;
+                                    });
+                                }
+                            }
+
+                            if (weeklyHours + tDur > 60) return false;
+                            if (tDur === 12 && weekly12hCount >= 3) return false;
 
                             return true;
                         });
 
-                        // Shuffle & Sort by shift count to ensure fairness
                         for (let i = availableNurses.length - 1; i > 0; i--) {
                             const j = Math.floor(Math.random() * (i + 1));
                             [availableNurses[i], availableNurses[j]] = [availableNurses[j], availableNurses[i]];
                         }
-                        availableNurses.sort((a, b) => nurseShiftCounts[a.id] - nurseShiftCounts[b.id]);
+                        availableNurses.sort((a, b) => nurseHours[a.id] - nurseHours[b.id]);
 
                         for (let i = 0; i < exactNeeded && i < availableNurses.length; i++) {
                             const targetNurse = availableNurses[i];
                             const key = `${targetNurse.id}-${d}`;
                             newSchedules[key] = [shiftType];
-                            nurseShiftCounts[targetNurse.id]++;
-                            currentCounts[shiftType]++; // Update live counter
+                            
+                            let dur = 8;
+                            if(shiftType === '8-20' || shiftType === '20-8') dur = 12;
+                            nurseHours[targetNurse.id] += dur;
+                            currentCounts[shiftType]++; 
                         }
                     }
                 }
@@ -595,7 +701,6 @@
                         const key = `${nurse.id}-${d}`;
                         const currentShifts = newSchedules[key] || [];
 
-                        // เก็บเฉพาะเวรที่ไม่ได้อยู่ในกลุ่ม shiftsToClear
                         const keptShifts = currentShifts.filter(s => !shiftsToClear.includes(getBaseShift(s)));
                         newSchedules[key] = keptShifts;
 
@@ -628,13 +733,11 @@
                 }
             };
 
-            // ระบบจ่ายเวรพิเศษข้ามวอร์ด
             const handleAssignSpecialShift = async (newNurseId, shiftType, day) => {
                 setIsSaving(true);
                 let newSchedules = { ...schedules };
                 let recordsToSave = [];
 
-                // 1. ดึงเวรนี้ออกจากพยาบาลทุกคนก่อน (ในวันเดียวกัน)
                 nurses.forEach(n => {
                     const cellKey = `${n.id}-${day}`;
                     const shifts = newSchedules[cellKey] || [];
@@ -652,7 +755,6 @@
                     }
                 });
 
-                // 2. ใส่เวรให้คนใหม่
                 if (newNurseId) {
                     const cellKey = `${newNurseId}-${day}`;
                     const currentShifts = newSchedules[cellKey] || [];
@@ -881,7 +983,7 @@
                 <div className="h-screen flex flex-col text-slate-900 bg-slate-50">
                     {/* Warning Email */}
                     {showEmailWarning && (
-                        <div className="bg-amber-100 text-amber-800 px-4 py-2 text-sm flex justify-between items-center shadow-sm z-50 shrink-0">
+                        <div className="bg-amber-100 text-amber-800 px-4 py-2 text-sm flex justify-between items-center shadow-sm z-50 shrink-0 no-print">
                             <span className="flex items-center gap-2"><Icons.AlertTriangle /> คุณยังไม่ได้ระบุข้อมูล Email กรุณาเข้าไปที่ "ข้อมูลส่วนตัว" เพื่ออัปเดตข้อมูล</span>
                             <div className="flex gap-2">
                                 <button onClick={() => { setActiveTab('profile'); setShowEmailWarning(false); }} className="bg-amber-600 text-white px-3 py-1 rounded text-xs font-semibold hover:bg-amber-700">อัปเดตเดี๋ยวนี้</button>
@@ -891,7 +993,7 @@
                     )}
 
                     {/* Navbar */}
-                    <header className="bg-indigo-700 text-white shadow-md relative z-40 shrink-0">
+                    <header className="bg-indigo-700 text-white shadow-md relative z-40 shrink-0 no-print">
                         <div className="max-w-full mx-auto px-4 h-16 flex flex-wrap items-center justify-between gap-2">
                             <div className="flex items-center gap-4">
                                 <div className="flex items-center gap-2">
@@ -915,6 +1017,11 @@
                             </div>
                             
                             <div className="flex items-center gap-2 relative">
+                                {activeTab === 'schedule' && (
+                                    <button onClick={() => window.print()} className="flex items-center gap-1.5 bg-slate-600 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium shadow-sm transition-colors mr-2" title="พิมพ์ตารางเวร (PDF)">
+                                        <Icons.Printer /> พิมพ์
+                                    </button>
+                                )}
                                 {currentUser.role === 'Headward' && (
                                     <button onClick={() => setSpecialShiftModal({ isOpen: true, day: 1 })} className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium shadow-sm transition-colors mr-2">
                                         <Icons.ClipboardList /> จัดเวรพิเศษ (ส่วนกลาง)
@@ -926,7 +1033,6 @@
                                 <div className="flex items-center gap-2 bg-indigo-800/50 px-3 py-1.5 rounded-lg border border-indigo-500">
                                     <Icons.Building />
                                     <select value={selectedWard} onChange={(e) => setSelectedWard(e.target.value)} className="bg-transparent text-white font-medium focus:outline-none cursor-pointer text-sm">
-                                        {/* รองรับหลาย ward แยกด้วย comma ใน DB ให้มาสร้าง option ให้เลือก */}
                                         {wards.map(w => <option key={w} value={w} className="text-slate-900">{w}</option>)}
                                     </select>
                                 </div>
@@ -964,12 +1070,12 @@
                     </header>
 
                     {/* Content Area */}
-                    <main className="w-full p-4 flex-1 flex flex-col min-h-0 relative">
+                    <main className="w-full p-4 flex-1 flex flex-col min-h-0 relative print-area">
                         
                         {/* TAB 1: ตารางเวร */}
                         {activeTab === 'schedule' && (
                             <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full overflow-hidden">
-                                <div className="p-3 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0">
+                                <div className="p-3 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0 no-print">
                                     <div className="flex items-center gap-2">
                                         <h2 className="text-lg font-semibold flex items-center gap-2 text-indigo-900">
                                             <Icons.Users /> ตารางเวร : {selectedWard} 
@@ -993,11 +1099,29 @@
                                     </div>
                                     <div className="flex items-center gap-4">
                                         {isLoading && <span className="text-sm text-indigo-500 flex items-center"><Icons.Spinner /> ดึงข้อมูล...</span>}
-                                        <div className="flex bg-slate-200 p-1 rounded-lg">
+                                        <div className="flex items-center gap-2 bg-slate-200 p-1 rounded-lg">
+                                            {/* Toggle เฉพาะเวรของฉัน */}
+                                            <label className="flex items-center gap-1 cursor-pointer mr-2 ml-2 text-xs font-medium text-slate-700 hover:text-indigo-700">
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={showMyShiftsOnly} 
+                                                    onChange={e => setShowMyShiftsOnly(e.target.checked)}
+                                                    className="w-3.5 h-3.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600 cursor-pointer"
+                                                />
+                                                เฉพาะเวรของฉัน
+                                            </label>
+                                            <div className="w-px h-4 bg-slate-300 mx-1"></div>
                                             <button onClick={() => setViewMode('table')} className={`px-3 py-1 rounded text-xs font-medium flex items-center gap-1 transition-all ${viewMode === 'table' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:bg-slate-300'}`}><Icons.Table /> ตารางเต็มเดือน</button>
                                             <button onClick={() => setViewMode('calendar')} className={`px-3 py-1 rounded text-xs font-medium flex items-center gap-1 transition-all ${viewMode === 'calendar' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:bg-slate-300'}`}><Icons.LayoutGrid /> ปฏิทิน 7 วัน</button>
                                         </div>
                                     </div>
+                                </div>
+
+                                {/* หัวกระดาษสำหรับตอนพิมพ์ (จะแสดงแค่ตอนกด Print) */}
+                                <div className="hidden print:block text-center py-4">
+                                    <h1 className="text-xl font-bold">ตารางการปฏิบัติงานพยาบาล {selectedWard}</h1>
+                                    <h2 className="text-lg">ประจำเดือน {displayMonthName} {displayYearThai}</h2>
+                                    {showMyShiftsOnly && <h3 className="text-md mt-1 text-slate-600">(เฉพาะเวรของ {currentUser.name})</h3>}
                                 </div>
 
                                 {/* โหมด 1: ตารางเต็มเดือน */}
@@ -1006,14 +1130,14 @@
                                         <table className="w-full border-collapse text-sm bg-white">
                                             <thead className="sticky top-0 z-20 bg-slate-100 shadow-sm">
                                                 <tr>
-                                                    <th className="sticky left-0 z-30 bg-slate-100 border-b border-r border-slate-300 p-2 min-w-[150px] text-left text-slate-700 font-semibold shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
-                                                        รายชื่อพยาบาล ({filteredNurses.length})
+                                                    <th className="sticky left-0 z-30 bg-slate-100 border-b border-r border-slate-300 p-2 min-w-[150px] text-left text-slate-700 font-semibold shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] print:shadow-none">
+                                                        รายชื่อพยาบาล {(!showMyShiftsOnly) && `(${filteredNurses.length})`}
                                                     </th>
                                                     {daysArray.map(day => {
                                                         const isWknd = isWeekend(day);
                                                         const isCustom = customHolidays.includes(day);
                                                         return (
-                                                            <th key={day} onClick={() => currentUser.role === 'Headward' && setDayManagerModal({ isOpen: true, day })} title={currentUser.role === 'Headward' ? "คลิกจัดการวันหยุด/สรุปเวร" : ""} className={`border-b border-r border-slate-200 p-2 min-w-[45px] text-center font-medium ${currentUser.role === 'Headward' ? 'cursor-pointer hover:bg-slate-300' : ''} ${isWknd || isCustom ? 'bg-slate-200 text-slate-700' : 'text-slate-600'} ${isCustom ? 'text-red-600 font-bold bg-red-50' : ''}`}>
+                                                            <th key={day} onClick={() => currentUser.role === 'Headward' && setDayManagerModal({ isOpen: true, day })} title={currentUser.role === 'Headward' ? "คลิกจัดการวันหยุด/สรุปเวร" : ""} className={`border-b border-r border-slate-200 p-2 min-w-[45px] text-center font-medium ${currentUser.role === 'Headward' ? 'cursor-pointer hover:bg-slate-300' : ''} ${isWknd || isCustom ? 'bg-slate-200 text-slate-700 print:bg-slate-100' : 'text-slate-600'} ${isCustom ? 'text-red-600 font-bold bg-red-50 print:bg-red-50' : ''}`}>
                                                                 {day}
                                                             </th>
                                                         )
@@ -1024,16 +1148,16 @@
                                                 {filteredNurses.map((nurse, index) => {
                                                     const isMe = nurse.id === currentUser.id;
                                                     return (
-                                                        <tr key={nurse.id} draggable={currentUser.role === 'Headward'} onDragStart={(e) => handleDragStart(e, index)} onDragOver={(e) => handleDragOver(e, index)} onDragLeave={handleDragLeave} onDrop={(e) => handleDrop(e, index)} onDragEnd={handleDragEnd} className={`transition-colors group ${isMe ? 'bg-indigo-50/30' : 'hover:bg-slate-50'}`}>
-                                                            <td className={`sticky left-0 z-10 border-b border-r border-slate-200 p-2 font-medium shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] ${isMe ? 'bg-indigo-50 text-indigo-700' : 'bg-white text-slate-700'}`}>
+                                                        <tr key={nurse.id} draggable={currentUser.role === 'Headward'} onDragStart={(e) => handleDragStart(e, index)} onDragOver={(e) => handleDragOver(e, index)} onDragLeave={handleDragLeave} onDrop={(e) => handleDrop(e, index)} onDragEnd={handleDragEnd} className={`transition-colors group ${isMe && !showMyShiftsOnly ? 'bg-indigo-50/30 print:bg-white' : 'hover:bg-slate-50 print:hover:bg-white'}`}>
+                                                            <td className={`sticky left-0 z-10 border-b border-r border-slate-200 p-2 font-medium shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] print:shadow-none ${isMe && !showMyShiftsOnly ? 'bg-indigo-50 text-indigo-700 print:bg-white print:text-black' : 'bg-white text-slate-700 print:text-black'}`}>
                                                                 <div className="flex items-center gap-2">
                                                                     {currentUser.role === 'Headward' && (
-                                                                        <div className="cursor-grab active:cursor-grabbing text-slate-300 hover:text-slate-500" title="ลากเพื่อเรียงลำดับ"><Icons.GripVertical /></div>
+                                                                        <div className="cursor-grab active:cursor-grabbing text-slate-300 hover:text-slate-500 no-print" title="ลากเพื่อเรียงลำดับ"><Icons.GripVertical /></div>
                                                                     )}
                                                                     <div className="flex items-center gap-1 cursor-pointer hover:text-indigo-600 transition-colors flex-1" onClick={() => handleNameClick(nurse)} title="คลิกเพื่อดู/แก้ไขข้อมูลส่วนตัว">
-                                                                        <span className="truncate">{index + 1}. {nurse.name}</span>
-                                                                        {nurse.role === 'Headward' && <span className="text-[9px] bg-amber-100 text-amber-800 px-1 rounded border border-amber-200 shrink-0">HW</span>}
-                                                                        {isMe && <span className="text-[9px] bg-indigo-600 text-white px-1 rounded ml-auto shrink-0">ฉัน</span>}
+                                                                        <span className="truncate">{!showMyShiftsOnly ? `${index + 1}. ` : ''}{nurse.name}</span>
+                                                                        {nurse.role === 'Headward' && <span className="text-[9px] bg-amber-100 text-amber-800 px-1 rounded border border-amber-200 shrink-0 print:border-none print:bg-transparent">HW</span>}
+                                                                        {isMe && !showMyShiftsOnly && <span className="text-[9px] bg-indigo-600 text-white px-1 rounded ml-auto shrink-0 no-print">ฉัน</span>}
                                                                     </div>
                                                                 </div>
                                                             </td>
@@ -1043,15 +1167,15 @@
                                                                 const isWknd = isWeekend(day);
                                                                 const isClickable = currentUser.role === 'Headward' || isMe;
                                                                 const violationError = ruleViolations[cellKey];
-                                                                let bgClass = isWknd ? 'bg-slate-50' : 'bg-white';
-                                                                if (violationError) bgClass = 'bg-pink-100 border-pink-300';
-                                                                if (selectedCell?.nurse.id === nurse.id && selectedCell?.day === day) bgClass = 'bg-indigo-100 ring-2 ring-inset ring-indigo-500';
+                                                                let bgClass = isWknd ? 'bg-slate-50 print:bg-slate-50' : 'bg-white';
+                                                                if (violationError) bgClass = 'bg-pink-100 border-pink-300 print:bg-white print:border-slate-200';
+                                                                if (selectedCell?.nurse.id === nurse.id && selectedCell?.day === day) bgClass = 'bg-indigo-100 ring-2 ring-inset ring-indigo-500 print:ring-0';
 
                                                                 return (
-                                                                    <td key={day} title={violationError || ''} onClick={() => isClickable && handleCellClick(nurse, day)} className={`border-b border-r border-slate-200 p-1 h-12 transition-all ${bgClass} ${isClickable ? 'cursor-pointer hover:bg-indigo-50' : 'cursor-default'}`}>
+                                                                    <td key={day} title={violationError || ''} onClick={() => isClickable && handleCellClick(nurse, day)} className={`border-b border-r border-slate-200 p-1 h-12 transition-all ${bgClass} ${isClickable ? 'cursor-pointer hover:bg-indigo-50 print:hover:bg-white' : 'cursor-default'}`}>
                                                                         <div className="flex flex-col gap-0.5 items-center justify-center h-full relative">
-                                                                            {violationError && <div className="absolute top-0 right-0 text-pink-600"><Icons.AlertTriangle /></div>}
-                                                                            {shifts.length === 0 ? <span className="text-slate-300 text-xs">-</span> : shifts.map((shiftId, idx) => (
+                                                                            {violationError && <div className="absolute top-0 right-0 text-pink-600 no-print"><Icons.AlertTriangle /></div>}
+                                                                            {shifts.length === 0 ? <span className="text-slate-300 text-xs print:text-transparent">-</span> : shifts.map((shiftId, idx) => (
                                                                                 <span key={idx} className={`text-[10px] px-1 py-0.5 rounded border leading-none font-medium w-full text-center truncate ${getShiftColor(shiftId)}`}>{getShiftDisplay(shiftId)}</span>
                                                                             ))}
                                                                         </div>
@@ -1068,13 +1192,13 @@
 
                                 {/* โหมด 2: ปฏิทิน 7 วัน */}
                                 {viewMode === 'calendar' && (
-                                    <div className="overflow-auto flex-1 p-4 bg-slate-100">
-                                        <div className="grid grid-cols-7 gap-1 mb-1">
+                                    <div className="overflow-auto flex-1 p-4 bg-slate-100 print:p-0 print:bg-white print:overflow-visible">
+                                        <div className="grid grid-cols-7 gap-1 mb-1 print:gap-0">
                                             {['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์'].map((d, i) => (
-                                                <div key={d} className={`text-center font-bold py-2 rounded-t-lg text-sm ${i >= 5 ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-200 text-slate-700'}`}>{d}</div>
+                                                <div key={d} className={`text-center font-bold py-2 rounded-t-lg text-sm print:border print:border-slate-300 print:rounded-none ${i >= 5 ? 'bg-indigo-100 text-indigo-800 print:bg-slate-100' : 'bg-slate-200 text-slate-700 print:bg-slate-50'}`}>{d}</div>
                                             ))}
                                         </div>
-                                        <div className="calendar-grid rounded-b-lg overflow-hidden">
+                                        <div className="calendar-grid rounded-b-lg overflow-hidden print:border-slate-300 print:rounded-none">
                                             {calendarDays.map((day, idx) => {
                                                 const isWknd = (idx % 7) === 5 || (idx % 7) === 6;
                                                 const isCustom = day ? customHolidays.includes(day) : false;
@@ -1091,10 +1215,10 @@
                                                 }
 
                                                 return (
-                                                    <div key={idx} className={`calendar-cell p-1 flex flex-col ${!day ? 'other-month' : ''} ${isWknd ? 'weekend' : ''} ${isCustom ? 'bg-red-50/50' : ''}`}>
-                                                        {day && <div className={`text-right text-xs font-bold p-1 mb-1 rounded cursor-pointer hover:bg-slate-200 transition-colors ${isCustom ? 'text-red-600 bg-red-100' : 'text-slate-500'}`} onClick={() => currentUser.role === 'Headward' && setDayManagerModal({ isOpen: true, day })} title={currentUser.role === 'Headward' ? "จัดการวันหยุด/ดูสรุปเวร" : ""}>{day}</div>}
+                                                    <div key={idx} className={`calendar-cell p-1 flex flex-col ${!day ? 'other-month print:bg-slate-50' : ''} ${isWknd ? 'weekend print:bg-slate-50' : ''} ${isCustom ? 'bg-red-50/50 print:bg-white' : ''}`}>
+                                                        {day && <div className={`text-right text-xs font-bold p-1 mb-1 rounded cursor-pointer hover:bg-slate-200 transition-colors ${isCustom ? 'text-red-600 bg-red-100 print:bg-transparent print:text-black' : 'text-slate-500 print:text-black'}`} onClick={() => currentUser.role === 'Headward' && setDayManagerModal({ isOpen: true, day })} title={currentUser.role === 'Headward' ? "จัดการวันหยุด/ดูสรุปเวร" : ""}>{day}</div>}
                                                         {day && (
-                                                            <div className="flex-1 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
+                                                            <div className="flex-1 overflow-y-auto space-y-1 pr-1 custom-scrollbar print:overflow-visible">
                                                                 {shiftOptions.map(shiftDef => {
                                                                     const nursesInThisShift = dayShifts[shiftDef.id];
                                                                     if (!nursesInThisShift) return null;
@@ -1112,7 +1236,7 @@
                                                                                         <button key={nIdx} onClick={() => isClickable && handleCellClick(nurse, day)} title={viol || (isClickable ? 'คลิกเพื่อแก้ไขเวร' : '')} className={`px-1.5 py-0.5 rounded shadow-sm border truncate max-w-full text-left transition-transform hover:scale-105 ${getShiftColor(exactShift)} ${viol ? 'ring-1 ring-red-500 border-red-500' : ''} ${!isClickable ? 'cursor-default opacity-80' : 'cursor-pointer'}`}>
                                                                                             <span className={isMe ? 'font-bold underline' : ''}>{nurse.name}</span>
                                                                                             {displayShift !== shiftDef.id && <span className="ml-1 opacity-75">({displayShift})</span>}
-                                                                                            {viol && <Icons.AlertTriangle className="inline w-2 h-2 ml-1 text-red-600" />}
+                                                                                            {viol && <Icons.AlertTriangle className="inline w-2 h-2 ml-1 text-red-600 no-print" />}
                                                                                         </button>
                                                                                     );
                                                                                 })}
@@ -1133,7 +1257,7 @@
 
                         {/* TAB 2: คำขออนุมัติ (ทั้งหมด ไม่แยกวอร์ด) */}
                         {activeTab === 'approvals' && currentUser.role === 'Headward' && (
-                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full overflow-hidden">
+                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full overflow-hidden no-print">
                                 <div className="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
                                     <h2 className="text-lg font-semibold text-indigo-900 flex items-center gap-2">
                                         <Icons.RefreshCcw /> รายการขอเปลี่ยนเวรทั้งหมด (ระบบส่วนกลาง)
@@ -1202,7 +1326,7 @@
 
                         {/* TAB 3: จัดการเจ้าหน้าที่ */}
                         {activeTab === 'nurses' && currentUser.role === 'Headward' && (
-                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full overflow-hidden">
+                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full overflow-hidden no-print">
                                 <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0">
                                     <h2 className="text-lg font-semibold text-indigo-900">ฐานข้อมูลบุคลากร ({selectedWard})</h2>
                                     <button onClick={() => setNurseModal({ isOpen: true, data: { id: 'NEW', name: '', fullName: '', email: '', ward: selectedWard, position: 'RN', status: 'Active', role: '', calendarId: '' } })} className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
@@ -1253,7 +1377,7 @@
 
                         {/* TAB 4: ตั้งค่าเวร (Settings - Headward เท่านั้น) */}
                         {activeTab === 'settings' && currentUser.role === 'Headward' && (
-                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full overflow-hidden">
+                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full overflow-hidden no-print">
                                 <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0">
                                     <h2 className="text-lg font-semibold text-indigo-900">ตั้งค่าประเภทเวร (Settings)</h2>
                                     <div className="flex gap-2">
@@ -1315,7 +1439,7 @@
 
                         {/* TAB 5: ข้อมูลส่วนตัว */}
                         {activeTab === 'profile' && (
-                            <div className="flex justify-center py-8 overflow-auto">
+                            <div className="flex justify-center py-8 overflow-auto no-print">
                                 <div className="bg-white rounded-2xl shadow-lg border border-slate-200 w-full max-w-2xl overflow-hidden h-max">
                                     <div className="bg-indigo-600 p-6 text-white text-center relative">
                                         <div className="w-20 h-20 bg-white text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-md border-4 border-indigo-200">
@@ -1380,7 +1504,7 @@
 
                     {/* Auto Fill Modal */}
                     {autoFillModal && currentUser.role === 'Headward' && (
-                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[70] backdrop-blur-sm p-4">
+                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[70] backdrop-blur-sm p-4 no-print">
                             <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
                                 <div className="p-4 border-b bg-slate-50 flex justify-between">
                                     <h3 className="font-bold text-slate-800 flex items-center gap-2 text-indigo-700"><Icons.Sparkles /> ผู้ช่วยจัดเวรอัตโนมัติ (Smart Filler)</h3>
@@ -1443,7 +1567,7 @@
 
                     {/* Modal จัดการเวรพิเศษส่วนกลาง */}
                     {specialShiftModal.isOpen && currentUser.role === 'Headward' && (
-                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[70] backdrop-blur-sm p-4">
+                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[70] backdrop-blur-sm p-4 no-print">
                             <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
                                 <div className="p-4 border-b bg-amber-50 flex justify-between items-center">
                                     <h3 className="font-bold text-amber-800 flex items-center gap-2"><Icons.ClipboardList /> จัดการเวรพิเศษ (ส่วนกลางทุกวอร์ด)</h3>
@@ -1611,7 +1735,7 @@
 
                     {/* Modal แจ้งเตือน */}
                     {alertMsg && (
-                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[80] backdrop-blur-sm p-4">
+                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[80] backdrop-blur-sm p-4 no-print">
                             <div className="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden">
                                 <div className="p-6 text-center">
                                     <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4"><Icons.AlertCircle /></div>
@@ -1627,7 +1751,7 @@
 
                     {/* Modal กรอกข้อมูลเวร "อื่นๆ" */}
                     {otherPrompt.isOpen && (
-                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[70] backdrop-blur-sm p-4">
+                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[70] backdrop-blur-sm p-4 no-print">
                             <div className="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden">
                                 <div className="p-5">
                                     <h3 className="font-semibold text-slate-800 mb-1">ระบุรายละเอียดเวร "อื่นๆ"</h3>
@@ -1646,7 +1770,7 @@
 
                     {/* Modal จัดการวันหยุด (คลิกจาก Header วันที่) */}
                     {dayManagerModal.isOpen && currentUser.role === 'Headward' && (
-                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[60] backdrop-blur-sm p-4">
+                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[60] backdrop-blur-sm p-4 no-print">
                             <div className="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden">
                                 <div className="flex justify-between items-center p-4 border-b bg-slate-50">
                                     <h3 className="font-semibold text-slate-800">จัดการข้อมูลวันที่ {dayManagerModal.day}</h3>
@@ -1688,7 +1812,7 @@
 
                     {/* Modal จัดเวร/ขอเปลี่ยนเวร (คลิกจาก Cell) */}
                     {selectedCell && !otherPrompt.isOpen && !dayManagerModal.isOpen && (
-                        <div className="fixed inset-0 bg-slate-900/40 flex items-center justify-center z-[60] backdrop-blur-sm p-4">
+                        <div className="fixed inset-0 bg-slate-900/40 flex items-center justify-center z-[60] backdrop-blur-sm p-4 no-print">
                             <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
                                 <div className="flex justify-between items-center p-4 border-b bg-slate-50">
                                     <h3 className="font-semibold text-slate-800">จัดเวร {selectedCell.day} {displayMonthName}</h3>
@@ -1732,7 +1856,7 @@
 
                     {/* Modal ขอเปลี่ยนเวร (พยาบาลทั่วไป) */}
                     {requestSwapModal.isOpen && (
-                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[60] backdrop-blur-sm p-4">
+                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[60] backdrop-blur-sm p-4 no-print">
                             <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
                                 <div className="p-4 border-b bg-indigo-50 text-indigo-900 font-semibold flex justify-between items-center">
                                     <span>สร้างคำขอเปลี่ยนเวร</span>
@@ -1769,7 +1893,7 @@
 
                     {/* Modal แจ้งข้อความ Line (เมื่ออนุมัติ) */}
                     {notifyModal.isOpen && (
-                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[80] p-4">
+                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[80] p-4 no-print">
                             <div className="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden">
                                 <div className="p-5">
                                     <h3 className="font-semibold text-emerald-600 mb-2 flex items-center gap-2"><Icons.Check /> สลับตารางเวรสำเร็จ</h3>
@@ -1796,7 +1920,7 @@
 
                     {/* Modal แก้ไขพยาบาล */}
                     {nurseModal.isOpen && nurseModal.data && (
-                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[70] backdrop-blur-sm p-4">
+                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[70] backdrop-blur-sm p-4 no-print">
                             <form onSubmit={handleSaveNurse} className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
                                 <div className="p-4 border-b bg-slate-50 flex justify-between">
                                     <h3 className="font-bold text-slate-800">
@@ -1804,7 +1928,7 @@
                                     </h3>
                                     <button type="button" onClick={() => setNurseModal({isOpen:false, data:null})}><Icons.Close /></button>
                                 </div>
-                                <div className="p-5 space-y-4">
+                                <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="col-span-2 sm:col-span-1">
                                             <label className="block text-xs font-medium text-slate-600 mb-1">ชื่อ-สกุลจริง <span className="text-red-500">*</span></label>
@@ -1823,9 +1947,30 @@
                                             <input type="text" value={nurseModal.data.calendarId || ''} onChange={e => setNurseModal({...nurseModal, data: {...nurseModal.data, calendarId: e.target.value}})} className="w-full border rounded px-3 py-1.5 text-sm" />
                                         </div>
                                         
-                                        <div className="col-span-2 sm:col-span-1">
-                                            <label className="block text-xs font-medium text-slate-600 mb-1">วอร์ด (ใส่หลายวอร์ดคั่นด้วย ,)</label>
-                                            <input type="text" value={nurseModal.data.ward} onChange={e => setNurseModal({...nurseModal, data: {...nurseModal.data, ward: e.target.value}})} disabled={currentUser.role !== 'Headward'} className={`w-full border rounded px-3 py-1.5 text-sm ${currentUser.role !== 'Headward' ? 'bg-slate-100 text-slate-500' : ''}`} placeholder="เช่น วอร์ดชาย, วอร์ดหญิง" />
+                                        <div className="col-span-2">
+                                            <label className="block text-xs font-medium text-slate-600 mb-1">วอร์ดประจำ (เลือกได้หลายวอร์ด)</label>
+                                            <div className={`flex flex-wrap gap-2 p-2 border rounded-lg ${currentUser.role !== 'Headward' ? 'bg-slate-100 pointer-events-none opacity-70' : 'bg-white'}`}>
+                                                {wards.map(w => {
+                                                    const isChecked = (nurseModal.data.ward || '').split(',').map(s=>s.trim()).includes(w);
+                                                    return (
+                                                        <label key={w} className="flex items-center gap-1 text-sm cursor-pointer select-none">
+                                                            <input 
+                                                                type="checkbox" 
+                                                                checked={isChecked}
+                                                                onChange={(e) => {
+                                                                    if (currentUser.role !== 'Headward') return;
+                                                                    let currentList = (nurseModal.data.ward || '').split(',').map(s=>s.trim()).filter(Boolean);
+                                                                    if(e.target.checked) currentList.push(w);
+                                                                    else currentList = currentList.filter(item => item !== w);
+                                                                    setNurseModal({...nurseModal, data: {...nurseModal.data, ward: currentList.join(', ')}});
+                                                                }}
+                                                                className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                                                            />
+                                                            {w}
+                                                        </label>
+                                                    );
+                                                })}
+                                            </div>
                                         </div>
                                         <div className="col-span-2 sm:col-span-1">
                                             <label className="block text-xs font-medium text-slate-600 mb-1">ตำแหน่ง</label>
