@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดเวรพยาบาล (เชื่อมต่อ Google Sheets)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-lucide@latest/umd/lucide.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Sarabun', sans-serif; background-color: #f8fafc; overflow: hidden; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .draggable-modal {
+            position: absolute;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            resize: both;
+            overflow: auto;
+            min-width: 400px;
+            min-height: 300px;
+            max-width: 95vw;
+            max-height: 95vh;
+        }
+        .draggable-modal::-webkit-resizer {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2394a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15l-6 6"/><path d="M21 8l-13 13"/><path d="M21 1l-20 20"/></svg>');
+            background-repeat: no-repeat;
+            background-position: bottom right;
+        }
+        .drag-handle { cursor: grab; }
+        .drag-handle:active { cursor: grabbing; }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 1px;
+            background-color: #e2e8f0;
+            border: 1px solid #e2e8f0;
+        }
+        .calendar-cell { background-color: white; min-height: 120px; }
+        .calendar-cell.weekend { background-color: #f8fafc; }
+        .calendar-cell.other-month { background-color: #f1f5f9; color: #94a3b8; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
+
+        .dragging-row { opacity: 0.5; background-color: #e0e7ff !important; }
+        .drop-target-row { border-top: 2px solid #4f46e5; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        // ** ใส่ URL ใหม่หลังจาก Deploy ล่าสุด **
+        const API_URL = "https://script.google.com/macros/s/AKfycbxJOpl-8rSf-Le2WS9L46RuiChabTtvJnX2UwzRWyskqz5_-PWRSwcHqklkRdmIqwG8/exec";
+        
+        const SHIFT_RULES = {
+            'ช': { start: 8, duration: 8, isLeave: false }, 'บ': { start: 16, duration: 8, isLeave: false }, 'ด': { start: 0, duration: 8, isLeave: false },
+            '8-20': { start: 8, duration: 12, isLeave: false }, '20-8': { start: 20, duration: 12, isLeave: false }, 
+            '*ช': { start: 8, duration: 8, isLeave: false }, '*บ': { start: 16, duration: 8, isLeave: false }, '*ด': { start: 0, duration: 8, isLeave: false },
+            '*8-20': { start: 8, duration: 12, isLeave: false }, '*20-8': { start: 20, duration: 12, isLeave: false },
+            'OPD': { start: 8, duration: 8, isLeave: false }, 'Rช': { start: 8, duration: 8, isLeave: false }, 'Rบ': { start: 16, duration: 8, isLeave: false }, 'Rด': { start: 0, duration: 8, isLeave: false },
+            'O': { duration: 0, isLeave: true }, 'VAC': { duration: 0, isLeave: true }, 'อื่นๆ': { start: 8, duration: 8, isLeave: false } 
+        };
+
+        const COLOR_THEMES = [
+            { id: 'green', cls: 'bg-green-100 text-green-800 border-green-200', name: 'เขียว' },
+            { id: 'orange', cls: 'bg-orange-100 text-orange-800 border-orange-200', name: 'ส้ม' },
+            { id: 'purple', cls: 'bg-purple-100 text-purple-800 border-purple-200', name: 'ม่วง' },
+            { id: 'teal', cls: 'bg-teal-100 text-teal-800 border-teal-200', name: 'น้ำเงินอมเขียว' },
+            { id: 'indigo', cls: 'bg-indigo-100 text-indigo-800 border-indigo-200', name: 'คราม' },
+            { id: 'emerald', cls: 'bg-emerald-100 text-emerald-800 border-emerald-200', name: 'มรกต' },
+            { id: 'amber', cls: 'bg-amber-100 text-amber-800 border-amber-200', name: 'เหลือง' },
+            { id: 'fuchsia', cls: 'bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200', name: 'ชมพูเข้ม' },
+            { id: 'rose', cls: 'bg-rose-100 text-rose-800 border-rose-200', name: 'กุหลาบ' },
+            { id: 'sky', cls: 'bg-sky-100 text-sky-800 border-sky-200', name: 'ฟ้า' },
+            { id: 'slate', cls: 'bg-slate-100 text-slate-800 border-slate-200', name: 'เทา' },
+            { id: 'lime', cls: 'bg-lime-100 text-lime-800 border-lime-200', name: 'มะนาว' }
+        ];
+
+        const DEFAULT_SHIFTS = [
+            { id: 'ช', label: 'เช้า (8.00-16.00)', color: 'bg-green-100 text-green-800 border-green-200' },
+            { id: 'บ', label: 'บ่าย (16.00-24.00)', color: 'bg-orange-100 text-orange-800 border-orange-200' },
+            { id: 'ด', label: 'ดึก (00.00-8.00)', color: 'bg-purple-100 text-purple-800 border-purple-200' },
+            { id: '8-20', label: 'เช้าควบบ่าย 12ชม.', color: 'bg-teal-100 text-teal-800 border-teal-200' },
+            { id: '20-8', label: 'ดึกควบเช้า 12ชม.', color: 'bg-indigo-100 text-indigo-800 border-indigo-200' },
+            { id: '*ช', label: 'เสริมเช้า', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+            { id: '*บ', label: 'เสริมบ่าย', color: 'bg-amber-100 text-amber-800 border-amber-200' },
+            { id: '*ด', label: 'เสริมดึก', color: 'bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200' },
+            { id: '*8-20', label: 'เสริม 12ชม.(เช้า)', color: 'bg-cyan-100 text-cyan-800 border-cyan-200' },
+            { id: '*20-8', label: 'เสริม 12ชม.(ดึก)', color: 'bg-blue-100 text-blue-800 border-blue-200' },
+            { id: 'OPD', label: 'เวร OPD (ในเวลา)', color: 'bg-lime-100 text-lime-800 border-lime-200' },
+            { id: 'Rช', label: 'Refer เช้า', color: 'bg-rose-100 text-rose-800 border-rose-200' },
+            { id: 'Rบ', label: 'Refer บ่าย', color: 'bg-rose-100 text-rose-800 border-rose-200' },
+            { id: 'Rด', label: 'Refer ดึก', color: 'bg-rose-100 text-rose-800 border-rose-200' },
+            { id: 'O', label: 'OFF', color: 'bg-gray-100 text-gray-800 border-gray-200' },
+            { id: 'VAC', label: 'ลาพักผ่อน', color: 'bg-sky-100 text-sky-800 border-sky-200' },
+            { id: 'อื่นๆ', label: 'อื่นๆ (8 ชม.)', color: 'bg-slate-100 text-slate-800 border-slate-200' }
+        ];
+
+        const Icons = {
+            Calendar: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>,
+            Building: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>,
+            Users: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+            Close: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>,
+            Check: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
+            Spinner: () => <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>,
+            UserCircle: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>,
+            LogOut: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
+            AlertCircle: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
+            RefreshCcw: () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21v-5h5"/></svg>,
+            BarChart: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>,
+            GripHorizontal: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="9" r="1"/><circle cx="19" cy="9" r="1"/><circle cx="5" cy="9" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="19" cy="15" r="1"/><circle cx="5" cy="15" r="1"/></svg>,
+            Settings: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>,
+            AlertTriangle: () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
+            Plus: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>,
+            Edit: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
+            Trash2: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>,
+            LayoutGrid: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>,
+            Table: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>,
+            GripVertical: () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/></svg>,
+            Save: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        };
+
+        const getBaseShift = (s) => s.startsWith('อื่นๆ') ? 'อื่นๆ' : s;
+        const getShiftDisplay = (s) => s.startsWith('อื่นๆ(') ? s.substring(5, s.length - 1) : s;
+
+        // --- คอมโพเนนต์ที่ช่วยให้ลาก Modal ได้ ---
+        const DraggableModal = ({ isOpen, onClose, title, children, defaultPosition = { x: 50, y: 50 } }) => {
+            const [position, setPosition] = useState(defaultPosition);
+            const [isDragging, setIsDragging] = useState(false);
+            const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+            
+            if (!isOpen) return null;
+
+            const handleMouseDown = (e) => {
+                setIsDragging(true);
+                setDragOffset({ x: e.clientX - position.x, y: e.clientY - position.y });
+            };
+            const handleMouseMove = (e) => {
+                if (isDragging) setPosition({ x: e.clientX - dragOffset.x, y: e.clientY - dragOffset.y });
+            };
+            const handleMouseUp = () => setIsDragging(false);
+
+            return (
+                <div className="fixed inset-0 pointer-events-none z-[55]" onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+                    <div className="draggable-modal bg-white rounded-xl flex flex-col pointer-events-auto border border-slate-300" style={{ left: `${position.x}px`, top: `${position.y}px` }}>
+                        <div className="flex justify-between items-center p-3 border-b border-slate-200 bg-slate-100 drag-handle rounded-t-xl" onMouseDown={handleMouseDown}>
+                            <div className="flex items-center gap-2 text-slate-700">
+                                <Icons.GripHorizontal /><h3 className="font-bold text-sm">{title}</h3>
+                            </div>
+                            <button onMouseDown={(e)=>e.stopPropagation()} onClick={onClose} className="p-1 hover:bg-slate-300 rounded-full text-slate-500"><Icons.Close /></button>
+                        </div>
+                        <div className="flex-1 overflow-auto bg-white p-4 flex flex-col min-h-0 custom-scrollbar">{children}</div>
+                    </div>
+                </div>
+            );
+        };
+
+        function App() {
+            const [currentUser, setCurrentUser] = useState(null);
+            const [loginId, setLoginId] = useState('');
+            const [loginError, setLoginError] = useState('');
+            const [showEmailWarning, setShowEmailWarning] = useState(false);
+            
+            const [isInitialLoading, setIsInitialLoading] = useState(true);
+            const [isLoading, setIsLoading] = useState(false);
+            const [isSaving, setIsSaving] = useState(false);
+            
+            const [activeTab, setActiveTab] = useState('schedule'); 
+            const [viewMode, setViewMode] = useState('table'); 
+            
+            const [currentYear, setCurrentYear] = useState(new Date().getFullYear().toString());
+            const [currentMonth, setCurrentMonth] = useState((new Date().getMonth() + 1).toString().padStart(2, '0'));
+            
+            const [wards, setWards] = useState([]);
+            const [nurses, setNurses] = useState([]);
+            const [shiftOptions, setShiftOptions] = useState([]);
+            
+            const [selectedWard, setSelectedWard] = useState('');
+            const [schedules, setSchedules] = useState({});
+            const [swapRequests, setSwapRequests] = useState([]);
+            const [customHolidays, setCustomHolidays] = useState([]);
+
+            const [selectedCell, setSelectedCell] = useState(null); 
+            const [dayManagerModal, setDayManagerModal] = useState({ isOpen: false, day: null }); 
+            const [alertMsg, setAlertMsg] = useState(''); 
+            const [otherPrompt, setOtherPrompt] = useState({ isOpen: false, text: '' });
+            const [requestSwapModal, setRequestSwapModal] = useState({ isOpen: false, cell: null, shiftToSwap: null });
+            const [swapTargetNurse, setSwapTargetNurse] = useState('');
+            const [notifyModal, setNotifyModal] = useState({ isOpen: false, message: '', emailSent: '' });
+            const [nurseModal, setNurseModal] = useState({ isOpen: false, data: null });
+            const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+            const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+
+            const [draggedNurseIdx, setDraggedNurseIdx] = useState(null);
+            const [isOrderChanged, setIsOrderChanged] = useState(false);
+
+            const daysInMonth = useMemo(() => new Date(parseInt(currentYear), parseInt(currentMonth), 0).getDate(), [currentYear, currentMonth]);
+            const daysArray = useMemo(() => Array.from({ length: daysInMonth }, (_, i) => i + 1), [daysInMonth]);
+
+            const getDayOfWeek = (day) => {
+                let dow = new Date(parseInt(currentYear), parseInt(currentMonth) - 1, day).getDay();
+                return dow === 0 ? 6 : dow - 1; 
+            };
+            const isWeekend = (day) => { const dow = getDayOfWeek(day); return dow === 5 || dow === 6; };
+            const isNonWorkingDay = (day) => isWeekend(day) || customHolidays.includes(day);
+
+            const toggleHoliday = async (day) => {
+                const isNowHoliday = !customHolidays.includes(day);
+                const newHols = isNowHoliday ? [...customHolidays, day] : customHolidays.filter(d => d !== day);
+                setCustomHolidays(newHols);
+                try {
+                    await fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'saveHolidays', data: { monthYear: `${currentYear}-${currentMonth}`, days: newHols } })
+                    });
+                } catch (e) { console.error("Failed to save holiday"); }
+            };
+
+            const monthNamesThai = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+            const displayMonthName = monthNamesThai[parseInt(currentMonth) - 1];
+            const displayYearThai = parseInt(currentYear) + 543;
+
+            useEffect(() => {
+                fetch(`${API_URL}?action=getInitialData`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            setWards(data.wards);
+                            let loadedNurses = data.nurses;
+                            loadedNurses.sort((a, b) => {
+                                if (a.role === 'Headward' && b.role !== 'Headward') return -1;
+                                if (a.role !== 'Headward' && b.role === 'Headward') return 1;
+                                return (a.orderIndex || 0) - (b.orderIndex || 0);
+                            });
+                            setNurses(loadedNurses);
+                            if(data.shifts && data.shifts.length > 0) setShiftOptions(data.shifts);
+                            else setShiftOptions(DEFAULT_SHIFTS);
+                        }
+                        setIsInitialLoading(false);
+                    })
+                    .catch(err => { console.error(err); setLoginError('เชื่อมต่อฐานข้อมูลล้มเหลว'); setIsInitialLoading(false); });
+            }, []);
+
+            useEffect(() => {
+                if (!currentUser || !selectedWard) return;
+                setIsLoading(true);
+                fetch(`${API_URL}?action=getShifts&ward=${encodeURIComponent(selectedWard)}&monthYear=${currentYear}-${currentMonth}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            setSchedules(data.schedules || {});
+                            setSwapRequests(data.swapRequests || []);
+                            setCustomHolidays(data.holidays || []);
+                        }
+                        setIsLoading(false);
+                    })
+                    .catch(err => { console.error(err); setIsLoading(false); });
+            }, [currentUser, selectedWard, currentYear, currentMonth]);
+
+            const filteredNurses = useMemo(() => {
+                let filtered = nurses.filter(n => n.ward.includes(selectedWard) && n.status !== 'Deleted');
+                filtered.sort((a, b) => {
+                    if (a.role === 'Headward' && b.role !== 'Headward') return -1;
+                    if (a.role !== 'Headward' && b.role === 'Headward') return 1;
+                    return (a.orderIndex || 0) - (b.orderIndex || 0);
+                });
+                return filtered;
+            }, [nurses, selectedWard]);
+
+            const pendingRequestsCount = swapRequests.filter(r => r.status === 'Pending').length;
+
+            const handleLogin = (e) => {
+                e.preventDefault();
+                setLoginError('');
+                const id = loginId.trim().toUpperCase();
+                if (!id) return;
+                const user = nurses.find(n => n.id.toUpperCase() === id);
+                if (user) {
+                    setCurrentUser(user);
+                    const firstWard = user.ward.split(',')[0].trim();
+                    setSelectedWard(firstWard);
+                    if (!user.email) setShowEmailWarning(true);
+                } else {
+                    setLoginError('ไม่พบรหัสพยาบาลนี้ในระบบ');
+                }
+            };
+
+            const handleLogout = () => {
+                setCurrentUser(null);
+                setLoginId('');
+                setActiveTab('schedule');
+                setShowEmailWarning(false);
+                setIsProfileDropdownOpen(false);
+            };
+
+            // Drag & Drop
+            const handleDragStart = (e, index) => {
+                if(currentUser.role !== 'Headward') return;
+                setDraggedNurseIdx(index);
+                e.dataTransfer.effectAllowed = "move";
+                setTimeout(() => e.target.classList.add('dragging-row'), 0);
+            };
+            const handleDragOver = (e, index) => {
+                e.preventDefault();
+                if (draggedNurseIdx === null || draggedNurseIdx === index || currentUser.role !== 'Headward') return;
+                const targetNurse = filteredNurses[index];
+                const draggedNurse = filteredNurses[draggedNurseIdx];
+                if (!targetNurse || !draggedNurse) return;
+                if(targetNurse.role === 'Headward' && draggedNurse.role !== 'Headward') return;
+                e.currentTarget.classList.add('drop-target-row');
+            };
+            const handleDragLeave = (e) => e.currentTarget.classList.remove('drop-target-row');
+            const handleDrop = (e, index) => {
+                e.preventDefault();
+                e.currentTarget.classList.remove('drop-target-row');
+                if (draggedNurseIdx === null || draggedNurseIdx === index || currentUser.role !== 'Headward') return;
+                const targetNurse = filteredNurses[index];
+                const draggedNurse = filteredNurses[draggedNurseIdx];
+                if (!targetNurse || !draggedNurse) return;
+                if(targetNurse.role === 'Headward' && draggedNurse.role !== 'Headward') return;
+
+                const newFilteredList = [...filteredNurses];
+                const [removed] = newFilteredList.splice(draggedNurseIdx, 1);
+                newFilteredList.splice(index, 0, removed);
+                newFilteredList.forEach((n, i) => n.orderIndex = i);
+
+                const updatedNurses = nurses.map(n => {
+                    const found = newFilteredList.find(fn => fn.id === n.id);
+                    return found ? { ...n, orderIndex: found.orderIndex } : n;
+                });
+                setNurses(updatedNurses);
+                setIsOrderChanged(true);
+                setDraggedNurseIdx(null);
+            };
+            const handleDragEnd = (e) => { e.target.classList.remove('dragging-row'); setDraggedNurseIdx(null); };
+
+            const saveNurseOrderToDB = async () => {
+                if (isSaving || !isOrderChanged) return;
+                setIsSaving(true);
+                const nurseOrders = filteredNurses.map(n => ({ id: n.id, orderIndex: n.orderIndex }));
+                try {
+                    const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'saveNurseOrder', data: { nurseOrders } }) });
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        setAlertMsg("บันทึกลำดับพยาบาลเรียบร้อยแล้ว");
+                        setIsOrderChanged(false);
+                    } else throw new Error(result.message);
+                } catch (error) { setAlertMsg("บันทึกลำดับไม่สำเร็จ: " + error.message); } 
+                finally { setIsSaving(false); }
+            };
+
+            const ruleViolations = useMemo(() => {
+                const viols = {}; 
+                const firstDayOfWeekOffset = getDayOfWeek(1); 
+                filteredNurses.forEach(nurse => {
+                    const nId = nurse.id;
+                    const intervals = [];
+                    for(let d=1; d<=daysInMonth; d++) {
+                        const shifts = schedules[`${nId}-${d}`] || [];
+                        shifts.forEach(s => {
+                            const baseS = getBaseShift(s);
+                            const def = shiftOptions.find(o => o.id === baseS) ? { start: 8, duration: parseFloat(shiftOptions.find(o=>o.id===baseS).countValue)*8 || 8 } : { start: 8, duration: 8 };
+                            if (baseS === '8-20') { def.start=8; def.duration=12; }
+                            if (baseS === '20-8') { def.start=20; def.duration=12; }
+                            if (baseS === 'ด' || baseS === '*ด' || baseS === 'Rด') { def.start=0; def.duration=8; }
+                            if (baseS === 'บ' || baseS === '*บ' || baseS === 'Rบ') { def.start=16; def.duration=8; }
+                            if (baseS === 'O' || baseS === 'VAC') def.duration = 0;
+
+                            if (def.duration > 0) {
+                                const startAbs = (d - 1) * 24 + def.start;
+                                const endAbs = startAbs + def.duration;
+                                intervals.push({ day: d, shift: s, start: startAbs, end: endAbs, duration: def.duration });
+                            }
+                        });
+                    }
+                    intervals.sort((a, b) => a.start - b.start);
+                    for (let i = 1; i < intervals.length; i++) {
+                        if (intervals[i].start - intervals[i-1].end < 11) {
+                            viols[`${nId}-${intervals[i-1].day}`] = "พักไม่ถึง 11 ชม.";
+                            viols[`${nId}-${intervals[i].day}`] = "พักไม่ถึง 11 ชม.";
+                        }
+                    }
+                    for (let d = 1; d <= daysInMonth; d++) {
+                        let hoursToday = 0;
+                        const dayStart = (d - 1) * 24; const dayEnd = d * 24;
+                        intervals.forEach(inv => {
+                            const overlapStart = Math.max(dayStart, inv.start);
+                            const overlapEnd = Math.min(dayEnd, inv.end);
+                            if (overlapStart < overlapEnd) hoursToday += (overlapEnd - overlapStart);
+                        });
+                        if (hoursToday > 12) viols[`${nId}-${d}`] = "เกิน 12 ชม./วัน";
+                    }
+                    const weeklyData = {}; 
+                    intervals.forEach(inv => {
+                        const d = inv.day;
+                        const weekIndex = Math.floor((d - 1 + firstDayOfWeekOffset) / 7);
+                        if (!weeklyData[weekIndex]) weeklyData[weekIndex] = { hours: 0, twelveHourCount: 0, daysWith12h: new Set(), allDays: new Set() };
+                        weeklyData[weekIndex].hours += inv.duration;
+                        weeklyData[weekIndex].allDays.add(d);
+                        if (inv.duration === 12) {
+                            weeklyData[weekIndex].twelveHourCount += 1;
+                            weeklyData[weekIndex].daysWith12h.add(d);
+                        }
+                    });
+                    Object.values(weeklyData).forEach(week => {
+                        if (week.hours > 60) week.allDays.forEach(d => viols[`${nId}-${d}`] = "เกิน 60 ชม./สัปดาห์");
+                        if (week.twelveHourCount > 3) week.daysWith12h.forEach(d => viols[`${nId}-${d}`] = "เวร 12 ชม. เกิน 3 วัน/สัปดาห์");
+                    });
+                });
+                return viols;
+            }, [schedules, filteredNurses, daysInMonth, currentYear, currentMonth, shiftOptions]);
+
+            const handleCellClick = (nurse, day) => {
+                if (currentUser.role === 'Headward') setSelectedCell({ nurse, day });
+                else if (currentUser.id === nurse.id) {
+                    const currentShifts = schedules[`${nurse.id}-${day}`] || [];
+                    if (currentShifts.length > 0) setRequestSwapModal({ isOpen: true, cell: { nurse, day }, shiftToSwap: currentShifts[0] });
+                    else setAlertMsg("คุณไม่สามารถเพิ่มเวรเองได้ กรุณาติดต่อหัวหน้าวอร์ด");
+                }
+            };
+
+            const handleNameClick = (nurse) => {
+                const freshNurseData = nurses.find(n => n.id === nurse.id) || nurse;
+                setNurseModal({ isOpen: true, data: { ...freshNurseData } });
+            };
+
+            const handleToggleShift = async (exactShiftId) => {
+                if (!selectedCell || isSaving) return;
+                const { nurse, day } = selectedCell;
+                const cellKey = `${nurse.id}-${day}`;
+                const currentShifts = schedules[cellKey] || [];
+                const isRemoving = currentShifts.includes(exactShiftId);
+                
+                let newShifts;
+                if (isRemoving) newShifts = currentShifts.filter(s => s !== exactShiftId);
+                else {
+                    if (currentShifts.length >= 2) return; 
+                    const isLeave = exactShiftId.startsWith('O') || exactShiftId.startsWith('VAC');
+                    if (isLeave) newShifts = [exactShiftId];
+                    else if (currentShifts.some(s => s.startsWith('O') || s.startsWith('VAC'))) newShifts = [exactShiftId];
+                    else newShifts = [...currentShifts, exactShiftId];
+                }
+                
+                setSchedules(prev => ({ ...prev, [cellKey]: newShifts }));
+                const payload = {
+                    action: 'saveShift',
+                    data: {
+                        recordId: `${nurse.id}-${currentYear}-${currentMonth}-${day.toString().padStart(2, '0')}`,
+                        date: `${currentYear}-${currentMonth}-${day.toString().padStart(2, '0')}`,
+                        ward: selectedWard, nurseId: nurse.id, nurseName: nurse.name, shifts: newShifts
+                    }
+                };
+
+                setIsSaving(true);
+                try {
+                    const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                    const result = await response.json();
+                    if (result.status !== 'success') throw new Error("Save failed");
+                } catch (error) {
+                    setSchedules(prev => ({ ...prev, [cellKey]: currentShifts }));
+                    setAlertMsg("บันทึกข้อมูลไม่สำเร็จ");
+                } finally { setIsSaving(false); }
+            };
+
+            const submitSwapRequest = async () => {
+                if (!swapTargetNurse) return setAlertMsg("กรุณาเลือกผู้ที่จะมาขึ้นเวรแทน");
+                setIsSaving(true);
+                
+                const toNurse = nurses.find(n => n.id === swapTargetNurse);
+                const { day } = requestSwapModal.cell;
+                const dateStr = `${currentYear}-${currentMonth}-${day.toString().padStart(2, '0')}`;
+
+                const payload = {
+                    action: 'requestSwap',
+                    data: {
+                        date: dateStr, ward: selectedWard,
+                        fromId: currentUser.id, fromName: currentUser.name,
+                        toId: toNurse.id, toName: toNurse.name,
+                        shiftCode: requestSwapModal.shiftToSwap
+                    }
+                };
+
+                try {
+                    const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        setAlertMsg(`ส่งคำขอเปลี่ยนเวรเรียบร้อยแล้ว\n(ส่งแจ้งเตือนไปยังเมล์: ${result.sentEmails})`);
+                        setRequestSwapModal({ isOpen: false, cell: null, shiftToSwap: null });
+                        setSwapTargetNurse('');
+                    } else throw new Error(result.message);
+                } catch (error) { setAlertMsg("ส่งคำขอไม่สำเร็จ"); } 
+                finally { setIsSaving(false); }
+            };
+
+            const handleApproveSwap = async (reqId, isApprove) => {
+                if(!confirm(`ยืนยันการ ${isApprove ? 'อนุมัติ' : 'ไม่อนุมัติ'} คำขอนี้?`)) return;
+                setIsSaving(true);
+                try {
+                    const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'processSwap', data: { reqId: reqId, status: isApprove ? 'Approved' : 'Rejected' } }) });
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        setSelectedWard(''); setTimeout(() => setSelectedWard(selectedWard), 50); // refresh
+                        if (isApprove) {
+                            const req = result.requestInfo;
+                            const text = `แจ้งอนุมัติเปลี่ยนเวร ✅\nวันที่: ${req.date}\nเวร: ${req.shiftCode}\nผู้เปลี่ยน: ${req.fromName} 🔄 ${req.toName}\nอนุมัติโดย: ${currentUser.name}`;
+                            setNotifyModal({ isOpen: true, message: text, emailSent: result.sentEmail });
+                        } else {
+                            setAlertMsg(`ไม่อนุมัติคำขอแล้ว\nระบบได้ส่งเมล์แจ้งไปยัง: ${result.sentEmail}`);
+                        }
+                    } else throw new Error(result.message);
+                } catch (error) { setAlertMsg("ดำเนินการไม่สำเร็จ: " + error.message); } 
+                finally { setIsSaving(false); }
+            };
+
+            const handleSaveNurse = async (e) => {
+                e.preventDefault();
+                if (isSaving) return;
+                const { id, name, ward, position, status, role, calendarId, fullName, email, orderIndex } = nurseModal.data;
+                if (!name.trim() || !ward.trim()) return setAlertMsg("กรุณากรอกชื่อและหน่วยงาน");
+
+                setIsSaving(true);
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'saveNurse', data: nurseModal.data })
+                    });
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        if (id === 'NEW') setNurses(prev => [...prev, result.nurse]);
+                        else {
+                            setNurses(prev => prev.map(n => n.id === id ? result.nurse : n));
+                            if(currentUser.id === id) setCurrentUser(result.nurse); 
+                        }
+                        setNurseModal({ isOpen: false, data: null });
+                        if(showEmailWarning && currentUser.id === id && result.nurse.email) setShowEmailWarning(false);
+                        setAlertMsg("บันทึกข้อมูลเรียบร้อยแล้ว");
+                    } else throw new Error(result.message);
+                } catch (error) { setAlertMsg("บันทึกไม่สำเร็จ: " + error.message); } 
+                finally { setIsSaving(false); }
+            };
+
+            const handleSaveSettings = async (e) => {
+                e.preventDefault();
+                setIsSaving(true);
+                try {
+                    const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'saveSettings', data: { shifts: shiftOptions } }) });
+                    const result = await response.json();
+                    if (result.status === 'success') setAlertMsg("บันทึกการตั้งค่าเวรเรียบร้อยแล้ว");
+                    else throw new Error(result.message);
+                } catch (error) { setAlertMsg("บันทึกไม่สำเร็จ: " + error.message); } 
+                finally { setIsSaving(false); }
+            };
+
+            const getShiftColor = (shiftId) => {
+                const base = getBaseShift(shiftId);
+                const shift = shiftOptions.find(s => s.id === base);
+                return shift ? shift.color : 'bg-gray-100 text-gray-800 border-gray-200';
+            };
+
+            // Summary
+            const summaryData = useMemo(() => {
+                const workingDays = daysArray.filter(d => !isNonWorkingDay(d)).length;
+                const requiredHours = workingDays * 8;
+                
+                let ruleStats = { over12h: 0, over60hWeek: 0, consecutive12h: 0, restUnder11h: 0 };
+
+                const summary = filteredNurses.map(nurse => {
+                    let counts = { 'ช': 0, 'บ': 0, 'ด': 0, '8-20': 0, '20-8': 0, 'O': 0, 'VAC': 0, 'อื่นๆ': 0, 'เสริม': 0 };
+                    let totalHours = 0;
+                    let otherDetails = [];
+
+                    daysArray.forEach(day => {
+                        const shifts = schedules[`${nurse.id}-${day}`] || [];
+                        shifts.forEach(s => {
+                            const base = getBaseShift(s);
+                            const opt = shiftOptions.find(x => x.id === base);
+                            
+                            if (counts[base] !== undefined) counts[base]++;
+                            else if (base.startsWith('*')) counts['เสริม']++;
+                            else counts['อื่นๆ']++;
+
+                            if (base === 'อื่นๆ') otherDetails.push({ day, text: getShiftDisplay(s) });
+                            
+                            let dur = 8;
+                            if (opt && opt.countValue) dur = parseFloat(opt.countValue) * 8;
+                            if (opt && opt.type === 'Leave') dur = 0;
+                            totalHours += dur;
+                        });
+                        
+                        // Count Violations for summary stats
+                        const v = ruleViolations[`${nurse.id}-${day}`];
+                        if (v) {
+                            if (v.includes("12 ชม./วัน")) ruleStats.over12h++;
+                            if (v.includes("60 ชม.")) ruleStats.over60hWeek++;
+                            if (v.includes("3 วัน/สัปดาห์")) ruleStats.consecutive12h++;
+                            if (v.includes("11 ชม.")) ruleStats.restUnder11h++;
+                        }
+                    });
+
+                    const otHours = totalHours - requiredHours;
+                    const otShifts = otHours > 0 ? (otHours / 8).toFixed(1) : 0;
+                    return { ...nurse, counts, totalHours, otShifts, otherDetails };
+                });
+                
+                return { workingDays, requiredHours, summary, ruleStats };
+            }, [schedules, filteredNurses, daysArray, customHolidays, shiftOptions, ruleViolations]);
+
+            const calendarDays = useMemo(() => {
+                const firstDayOffset = getDayOfWeek(1); 
+                const emptyDaysBefore = Array.from({ length: firstDayOffset }, () => null);
+                const days = [...emptyDaysBefore, ...daysArray];
+                const remainingCells = (7 - (days.length % 7)) % 7;
+                const emptyDaysAfter = Array.from({ length: remainingCells }, () => null);
+                return [...days, ...emptyDaysAfter];
+            }, [daysArray, currentYear, currentMonth]);
+
+            if (isInitialLoading) return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-indigo-600"><Icons.Spinner /> <span className="ml-2">กำลังเชื่อมต่อระบบ...</span></div>;
+
+            if (!currentUser) {
+                return (
+                    <div className="min-h-screen flex flex-col items-center justify-center bg-indigo-50 px-4 relative">
+                        <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm border border-indigo-100 relative z-10">
+                            <div className="w-16 h-16 bg-indigo-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"><Icons.Calendar /></div>
+                            <h2 className="text-2xl font-bold text-center text-slate-800 mb-2">ระบบจัดเวรพยาบาล</h2>
+                            <p className="text-center text-sm text-slate-500 mb-6">กรุณาเข้าสู่ระบบด้วยรหัสบุคลากร</p>
+                            <form onSubmit={handleLogin}>
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">รหัสพยาบาล (Nurse ID)</label>
+                                    <input type="text" autoFocus placeholder="เช่น N001" value={loginId} onChange={(e) => setLoginId(e.target.value)} className="w-full border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 rounded-lg px-4 py-2.5 outline-none transition-all font-mono uppercase text-center text-lg tracking-widest" />
+                                </div>
+                                {loginError && <div className="mb-4 text-sm text-red-600 bg-red-50 p-2 rounded-lg border border-red-100 text-center">{loginError}</div>}
+                                <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg shadow-md transition-colors">เข้าสู่ระบบ</button>
+                            </form>
+                        </div>
+                        <div className="absolute bottom-4 text-xs text-slate-400 text-center w-full">จัดทำโดย คณะกรรมการปฏิบัติการ รพ.สวี (HA I-6)</div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="h-screen flex flex-col text-slate-900 bg-slate-50">
+                    {/* Warning Email */}
+                    {showEmailWarning && (
+                        <div className="bg-amber-100 text-amber-800 px-4 py-2 text-sm flex justify-between items-center shadow-sm z-50 shrink-0">
+                            <span className="flex items-center gap-2"><Icons.AlertTriangle /> คุณยังไม่ได้ระบุข้อมูล Email กรุณาเข้าไปที่ "ข้อมูลส่วนตัว" เพื่ออัปเดตข้อมูล</span>
+                            <div className="flex gap-2">
+                                <button onClick={() => { setActiveTab('profile'); setShowEmailWarning(false); }} className="bg-amber-600 text-white px-3 py-1 rounded text-xs font-semibold hover:bg-amber-700">อัปเดตเดี๋ยวนี้</button>
+                                <button onClick={() => setShowEmailWarning(false)} className="text-amber-600 hover:text-amber-800"><Icons.Close /></button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Navbar */}
+                    <header className="bg-indigo-700 text-white shadow-md relative z-40 shrink-0">
+                        <div className="max-w-full mx-auto px-4 h-16 flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2">
+                                    <Icons.Calendar />
+                                    <h1 className="text-xl font-bold hidden sm:block">ระบบจัดเวร</h1>
+                                </div>
+                                
+                                <div className="flex bg-indigo-800/50 p-1 rounded-lg">
+                                    <button onClick={() => setActiveTab('schedule')} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'schedule' ? 'bg-white text-indigo-800 shadow-sm' : 'text-indigo-100 hover:bg-indigo-600'}`}>ตารางเวร</button>
+                                    
+                                    {currentUser.role === 'Headward' && (
+                                        <>
+                                            <button onClick={() => setActiveTab('approvals')} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1 ${activeTab === 'approvals' ? 'bg-white text-indigo-800 shadow-sm' : 'text-indigo-100 hover:bg-indigo-600'}`}>
+                                                คำขออนุมัติ {pendingRequestsCount > 0 && <span className="bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">{pendingRequestsCount}</span>}
+                                            </button>
+                                            <button onClick={() => setActiveTab('nurses')} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'nurses' ? 'bg-white text-indigo-800 shadow-sm' : 'text-indigo-100 hover:bg-indigo-600'}`}>จัดการจนท.</button>
+                                            <button onClick={() => setActiveTab('settings')} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === 'settings' ? 'bg-white text-indigo-800 shadow-sm' : 'text-indigo-100 hover:bg-indigo-600'}`}>ตั้งค่าเวร</button>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-2 relative">
+                                <button onClick={() => setIsSummaryOpen(!isSummaryOpen)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium shadow-sm transition-colors mr-2 ${isSummaryOpen ? 'bg-rose-500 hover:bg-rose-600 text-white' : 'bg-emerald-500 hover:bg-emerald-600 text-white'}`}>
+                                    <Icons.BarChart /> สรุปข้อมูล
+                                </button>
+                                <div className="flex items-center gap-2 bg-indigo-800/50 px-3 py-1.5 rounded-lg border border-indigo-500">
+                                    <Icons.Building />
+                                    <select value={selectedWard} onChange={(e) => setSelectedWard(e.target.value)} className="bg-transparent text-white font-medium focus:outline-none cursor-pointer text-sm">
+                                        {/* รองรับหลาย ward แยกด้วย comma ใน DB ให้มาสร้าง option ให้เลือก */}
+                                        {wards.map(w => <option key={w} value={w} className="text-slate-900">{w}</option>)}
+                                    </select>
+                                </div>
+                                <div className="flex items-center bg-indigo-800/50 px-2 py-1.5 rounded-lg border border-indigo-500 mr-2">
+                                    <input type="month" value={`${currentYear}-${currentMonth}`} onChange={(e) => { if(e.target.value){ const [y, m] = e.target.value.split('-'); setCurrentYear(y); setCurrentMonth(m); } }} className="bg-transparent text-white text-sm focus:outline-none cursor-pointer [color-scheme:dark]" />
+                                </div>
+                                
+                                <div className="h-6 w-px bg-indigo-500 hidden sm:block mx-1"></div>
+
+                                {/* Profile Menu */}
+                                <div className="relative">
+                                    <button onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)} className="flex items-center gap-2 bg-indigo-800 px-3 py-1.5 rounded-full border border-indigo-500/50 hover:bg-indigo-600 transition-colors">
+                                        <Icons.UserCircle />
+                                        <div className="flex flex-col text-left leading-tight">
+                                            <span className="text-sm font-semibold truncate max-w-[100px]">{currentUser.name}</span>
+                                            <span className="text-[10px] text-indigo-200">{currentUser.role === 'Headward' ? 'Headward' : 'RN'}</span>
+                                        </div>
+                                    </button>
+                                    {isProfileDropdownOpen && (
+                                        <>
+                                            <div className="fixed inset-0 z-40" onClick={() => setIsProfileDropdownOpen(false)}></div>
+                                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-slate-200 z-50">
+                                                <button onClick={() => { handleNameClick(currentUser); setIsProfileDropdownOpen(false); }} className="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2 border-b border-slate-100">
+                                                    <Icons.Settings /> ข้อมูลส่วนตัว
+                                                </button>
+                                                <button onClick={handleLogout} className="w-full text-left px-4 py-3 text-sm text-rose-600 hover:bg-rose-50 flex items-center gap-2 rounded-b-lg">
+                                                    <Icons.LogOut /> ออกจากระบบ
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Content Area */}
+                    <main className="w-full p-4 flex-1 flex flex-col min-h-0 relative">
+                        
+                        {/* TAB 1: ตารางเวร */}
+                        {activeTab === 'schedule' && (
+                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full overflow-hidden">
+                                <div className="p-3 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0">
+                                    <div className="flex items-center gap-2">
+                                        <h2 className="text-lg font-semibold flex items-center gap-2 text-indigo-900">
+                                            <Icons.Users /> ตารางเวร : {selectedWard} 
+                                            <span className="text-sm font-normal text-slate-500">({displayMonthName} {displayYearThai})</span>
+                                        </h2>
+                                        {isOrderChanged && currentUser.role === 'Headward' && (
+                                            <button onClick={saveNurseOrderToDB} disabled={isSaving} className="ml-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-xs font-semibold flex items-center gap-1 shadow-sm">
+                                                {isSaving ? <Icons.Spinner /> : <Icons.Save />} บันทึกลำดับ
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        {isLoading && <span className="text-sm text-indigo-500 flex items-center"><Icons.Spinner /> ดึงข้อมูล...</span>}
+                                        <div className="flex bg-slate-200 p-1 rounded-lg">
+                                            <button onClick={() => setViewMode('table')} className={`px-3 py-1 rounded text-xs font-medium flex items-center gap-1 transition-all ${viewMode === 'table' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:bg-slate-300'}`}><Icons.Table /> ตารางเต็มเดือน</button>
+                                            <button onClick={() => setViewMode('calendar')} className={`px-3 py-1 rounded text-xs font-medium flex items-center gap-1 transition-all ${viewMode === 'calendar' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:bg-slate-300'}`}><Icons.LayoutGrid /> ปฏิทิน 7 วัน</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* โหมด 1: ตารางเต็มเดือน */}
+                                {viewMode === 'table' && (
+                                    <div className="overflow-auto flex-1 relative no-scrollbar bg-slate-100">
+                                        <table className="w-full border-collapse text-sm bg-white">
+                                            <thead className="sticky top-0 z-20 bg-slate-100 shadow-sm">
+                                                <tr>
+                                                    <th className="sticky left-0 z-30 bg-slate-100 border-b border-r border-slate-300 p-2 min-w-[150px] text-left text-slate-700 font-semibold shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                                                        รายชื่อพยาบาล ({filteredNurses.length})
+                                                    </th>
+                                                    {daysArray.map(day => {
+                                                        const isWknd = isWeekend(day);
+                                                        const isCustom = customHolidays.includes(day);
+                                                        return (
+                                                            <th key={day} onClick={() => currentUser.role === 'Headward' && setDayManagerModal({ isOpen: true, day })} title={currentUser.role === 'Headward' ? "คลิกจัดการวันหยุด/สรุปเวร" : ""} className={`border-b border-r border-slate-200 p-2 min-w-[45px] text-center font-medium ${currentUser.role === 'Headward' ? 'cursor-pointer hover:bg-slate-300' : ''} ${isWknd || isCustom ? 'bg-slate-200 text-slate-700' : 'text-slate-600'} ${isCustom ? 'text-red-600 font-bold bg-red-50' : ''}`}>
+                                                                {day}
+                                                            </th>
+                                                        )
+                                                    })}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {filteredNurses.map((nurse, index) => {
+                                                    const isMe = nurse.id === currentUser.id;
+                                                    return (
+                                                        <tr key={nurse.id} draggable={currentUser.role === 'Headward'} onDragStart={(e) => handleDragStart(e, index)} onDragOver={(e) => handleDragOver(e, index)} onDragLeave={handleDragLeave} onDrop={(e) => handleDrop(e, index)} onDragEnd={handleDragEnd} className={`transition-colors group ${isMe ? 'bg-indigo-50/30' : 'hover:bg-slate-50'}`}>
+                                                            <td className={`sticky left-0 z-10 border-b border-r border-slate-200 p-2 font-medium shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] ${isMe ? 'bg-indigo-50 text-indigo-700' : 'bg-white text-slate-700'}`}>
+                                                                <div className="flex items-center gap-2">
+                                                                    {currentUser.role === 'Headward' && (
+                                                                        <div className="cursor-grab active:cursor-grabbing text-slate-300 hover:text-slate-500" title="ลากเพื่อเรียงลำดับ"><Icons.GripVertical /></div>
+                                                                    )}
+                                                                    <div className="flex items-center gap-1 cursor-pointer hover:text-indigo-600 transition-colors flex-1" onClick={() => handleNameClick(nurse)} title="คลิกเพื่อดู/แก้ไขข้อมูลส่วนตัว">
+                                                                        <span className="truncate">{index + 1}. {nurse.name}</span>
+                                                                        {nurse.role === 'Headward' && <span className="text-[9px] bg-amber-100 text-amber-800 px-1 rounded border border-amber-200 shrink-0">HW</span>}
+                                                                        {isMe && <span className="text-[9px] bg-indigo-600 text-white px-1 rounded ml-auto shrink-0">ฉัน</span>}
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            {daysArray.map(day => {
+                                                                const cellKey = `${nurse.id}-${day}`;
+                                                                const shifts = schedules[cellKey] || [];
+                                                                const isWknd = isWeekend(day);
+                                                                const isClickable = currentUser.role === 'Headward' || isMe;
+                                                                const violationError = ruleViolations[cellKey];
+                                                                let bgClass = isWknd ? 'bg-slate-50' : 'bg-white';
+                                                                if (violationError) bgClass = 'bg-pink-100 border-pink-300';
+                                                                if (selectedCell?.nurse.id === nurse.id && selectedCell?.day === day) bgClass = 'bg-indigo-100 ring-2 ring-inset ring-indigo-500';
+
+                                                                return (
+                                                                    <td key={day} title={violationError || ''} onClick={() => isClickable && handleCellClick(nurse, day)} className={`border-b border-r border-slate-200 p-1 h-12 transition-all ${bgClass} ${isClickable ? 'cursor-pointer hover:bg-indigo-50' : 'cursor-default'}`}>
+                                                                        <div className="flex flex-col gap-0.5 items-center justify-center h-full relative">
+                                                                            {violationError && <div className="absolute top-0 right-0 text-pink-600"><Icons.AlertTriangle /></div>}
+                                                                            {shifts.length === 0 ? <span className="text-slate-300 text-xs">-</span> : shifts.map((shiftId, idx) => (
+                                                                                <span key={idx} className={`text-[10px] px-1 py-0.5 rounded border leading-none font-medium w-full text-center truncate ${getShiftColor(shiftId)}`}>{getShiftDisplay(shiftId)}</span>
+                                                                            ))}
+                                                                        </div>
+                                                                    </td>
+                                                                );
+                                                            })}
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+
+                                {/* โหมด 2: ปฏิทิน 7 วัน */}
+                                {viewMode === 'calendar' && (
+                                    <div className="overflow-auto flex-1 p-4 bg-slate-100">
+                                        <div className="grid grid-cols-7 gap-1 mb-1">
+                                            {['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์'].map((d, i) => (
+                                                <div key={d} className={`text-center font-bold py-2 rounded-t-lg text-sm ${i >= 5 ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-200 text-slate-700'}`}>{d}</div>
+                                            ))}
+                                        </div>
+                                        <div className="calendar-grid rounded-b-lg overflow-hidden">
+                                            {calendarDays.map((day, idx) => {
+                                                const isWknd = (idx % 7) === 5 || (idx % 7) === 6;
+                                                const isCustom = day ? customHolidays.includes(day) : false;
+                                                const dayShifts = {};
+                                                if (day) {
+                                                    filteredNurses.forEach(nurse => {
+                                                        const shifts = schedules[`${nurse.id}-${day}`] || [];
+                                                        shifts.forEach(s => {
+                                                            const base = getBaseShift(s);
+                                                            if (!dayShifts[base]) dayShifts[base] = [];
+                                                            dayShifts[base].push({ nurse, exactShift: s });
+                                                        });
+                                                    });
+                                                }
+
+                                                return (
+                                                    <div key={idx} className={`calendar-cell p-1 flex flex-col ${!day ? 'other-month' : ''} ${isWknd ? 'weekend' : ''} ${isCustom ? 'bg-red-50/50' : ''}`}>
+                                                        {day && <div className={`text-right text-xs font-bold p-1 mb-1 rounded cursor-pointer hover:bg-slate-200 transition-colors ${isCustom ? 'text-red-600 bg-red-100' : 'text-slate-500'}`} onClick={() => currentUser.role === 'Headward' && setDayManagerModal({ isOpen: true, day })} title={currentUser.role === 'Headward' ? "จัดการวันหยุด/ดูสรุปเวร" : ""}>{day}</div>}
+                                                        {day && (
+                                                            <div className="flex-1 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
+                                                                {shiftOptions.map(shiftDef => {
+                                                                    const nursesInThisShift = dayShifts[shiftDef.id];
+                                                                    if (!nursesInThisShift) return null;
+                                                                    return (
+                                                                        <div key={shiftDef.id} className="text-[10px] leading-tight">
+                                                                            <div className="font-semibold text-slate-600 mb-0.5 border-b border-slate-100 pb-0.5">{shiftDef.id}</div>
+                                                                            <div className="flex flex-wrap gap-1">
+                                                                                {nursesInThisShift.map((item, nIdx) => {
+                                                                                    const { nurse, exactShift } = item;
+                                                                                    const isMe = nurse.id === currentUser.id;
+                                                                                    const isClickable = currentUser.role === 'Headward' || isMe;
+                                                                                    const viol = ruleViolations[`${nurse.id}-${day}`];
+                                                                                    const displayShift = getShiftDisplay(exactShift);
+                                                                                    return (
+                                                                                        <button key={nIdx} onClick={() => isClickable && handleCellClick(nurse, day)} title={viol || (isClickable ? 'คลิกเพื่อแก้ไขเวร' : '')} className={`px-1.5 py-0.5 rounded shadow-sm border truncate max-w-full text-left transition-transform hover:scale-105 ${getShiftColor(exactShift)} ${viol ? 'ring-1 ring-red-500 border-red-500' : ''} ${!isClickable ? 'cursor-default opacity-80' : 'cursor-pointer'}`}>
+                                                                                            <span className={isMe ? 'font-bold underline' : ''}>{nurse.name}</span>
+                                                                                            {displayShift !== shiftDef.id && <span className="ml-1 opacity-75">({displayShift})</span>}
+                                                                                            {viol && <Icons.AlertTriangle className="inline w-2 h-2 ml-1 text-red-600" />}
+                                                                                        </button>
+                                                                                    );
+                                                                                })}
+                                                                            </div>
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* TAB 2: คำขออนุมัติ (ทั้งหมด ไม่แยกวอร์ด) */}
+                        {activeTab === 'approvals' && currentUser.role === 'Headward' && (
+                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full overflow-hidden">
+                                <div className="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                                    <h2 className="text-lg font-semibold text-indigo-900 flex items-center gap-2">
+                                        <Icons.RefreshCcw /> รายการขอเปลี่ยนเวรทั้งหมด (ระบบส่วนกลาง)
+                                    </h2>
+                                </div>
+                                <div className="p-4 overflow-auto flex-1 bg-slate-50">
+                                    {swapRequests.length === 0 ? (
+                                        <div className="text-center py-12 text-slate-500">ไม่มีคำขอเปลี่ยนเวรในระบบ</div>
+                                    ) : (
+                                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                            {swapRequests.filter(r => r.status === 'Pending').map(req => (
+                                                <div key={req.reqId} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+                                                    <div className="absolute top-0 left-0 w-1 h-full bg-amber-400"></div>
+                                                    <div className="flex justify-between items-start mb-3">
+                                                        <div>
+                                                            <div className="text-xs text-slate-500 font-mono">{req.reqId}</div>
+                                                            <div className="text-xs font-semibold text-indigo-600">{req.ward}</div>
+                                                        </div>
+                                                        <div className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-semibold">รออนุมัติ</div>
+                                                    </div>
+                                                    <div className="mb-4">
+                                                        <p className="text-sm text-slate-600">วันที่: <span className="font-bold text-slate-800">{req.date}</span></p>
+                                                        <p className="text-sm text-slate-600">เวรที่ขอเปลี่ยน: <span className="font-bold text-indigo-600 px-1 border border-indigo-200 rounded bg-indigo-50">{req.shiftCode}</span></p>
+                                                    </div>
+                                                    <div className="flex items-center justify-between bg-slate-50 p-2 rounded-lg mb-4 border border-slate-100">
+                                                        <div className="text-center flex-1">
+                                                            <div className="text-[10px] text-slate-500">ผู้ขอ (ให้เวร)</div>
+                                                            <div className="text-sm font-semibold text-rose-600">{req.fromName}</div>
+                                                        </div>
+                                                        <div className="text-slate-300 px-2">➡️</div>
+                                                        <div className="text-center flex-1">
+                                                            <div className="text-[10px] text-slate-500">ผู้รับ (ขึ้นแทน)</div>
+                                                            <div className="text-sm font-semibold text-emerald-600">{req.toName}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <button onClick={() => handleApproveSwap(req.reqId, false)} className="flex-1 py-1.5 border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 transition">ไม่อนุมัติ</button>
+                                                        <button onClick={() => handleApproveSwap(req.reqId, true)} className="flex-1 py-1.5 bg-emerald-500 text-white rounded-lg text-sm font-medium hover:bg-emerald-600 shadow-sm transition">อนุมัติ</button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    <h3 className="mt-8 mb-3 font-semibold text-slate-700 text-sm">ประวัติการอนุมัติ (เดือนนี้)</h3>
+                                    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+                                        <table className="w-full text-left text-sm">
+                                            <thead className="bg-slate-100 text-slate-600 text-xs">
+                                                <tr><th className="p-2 border-b">หน่วยงาน</th><th className="p-2 border-b">วันที่เวร</th><th className="p-2 border-b">เวร</th><th className="p-2 border-b">รายละเอียด</th><th className="p-2 border-b">สถานะ</th></tr>
+                                            </thead>
+                                            <tbody>
+                                                {swapRequests.filter(r => r.status !== 'Pending').length === 0 ? <tr><td colSpan="5" className="text-center p-4 text-slate-400">ยังไม่มีประวัติ</td></tr> : swapRequests.filter(r => r.status !== 'Pending').map(req => (
+                                                    <tr key={req.reqId} className="border-b last:border-0 hover:bg-slate-50">
+                                                        <td className="p-2 text-indigo-600 font-medium">{req.ward}</td>
+                                                        <td className="p-2 text-slate-800">{req.date}</td>
+                                                        <td className="p-2"><span className="bg-slate-100 px-1 border rounded">{req.shiftCode}</span></td>
+                                                        <td className="p-2 text-slate-600">{req.fromName} ➡️ {req.toName}</td>
+                                                        <td className="p-2">{req.status === 'Approved' ? <span className="text-emerald-600 font-semibold">อนุมัติแล้ว</span> : <span className="text-rose-600 font-semibold">ไม่อนุมัติ</span>}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* TAB 3: จัดการเจ้าหน้าที่ */}
+                        {activeTab === 'nurses' && currentUser.role === 'Headward' && (
+                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full overflow-hidden">
+                                <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0">
+                                    <h2 className="text-lg font-semibold text-indigo-900">ฐานข้อมูลบุคลากร ({selectedWard})</h2>
+                                    <button onClick={() => setNurseModal({ isOpen: true, data: { id: 'NEW', name: '', fullName: '', email: '', ward: selectedWard, position: 'RN', status: 'Active', role: '', calendarId: '' } })} className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                                        <Icons.Plus /> เพิ่มบุคลากร
+                                    </button>
+                                </div>
+                                <div className="p-6 overflow-auto">
+                                    <table className="w-full border-collapse text-left text-sm">
+                                        <thead>
+                                            <tr className="bg-slate-100 text-slate-600">
+                                                <th className="p-3 border-b">รหัส</th>
+                                                <th className="p-3 border-b">ชื่อ-สกุล (เต็ม)</th>
+                                                <th className="p-3 border-b">ชื่อในตาราง</th>
+                                                <th className="p-3 border-b">ตำแหน่ง/สถานะ</th>
+                                                <th className="p-3 border-b">อีเมล / Calendar ID</th>
+                                                <th className="p-3 border-b text-center">จัดการ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {filteredNurses.map(nurse => (
+                                                <tr key={nurse.id} className="hover:bg-slate-50 border-b border-slate-100">
+                                                    <td className="p-3 text-slate-500 font-mono text-xs">{nurse.id}</td>
+                                                    <td className="p-3 font-medium text-slate-800">{nurse.fullName || '-'}</td>
+                                                    <td className="p-3 text-indigo-600 font-medium">{nurse.name}</td>
+                                                    <td className="p-3">
+                                                        <div className="flex flex-col gap-1">
+                                                            <span>{nurse.position} {nurse.role === 'Headward' && <span className="text-[10px] text-amber-600 bg-amber-50 px-1 rounded border border-amber-200">HW</span>}</span>
+                                                            <span className={`w-max px-2 py-0.5 rounded-full text-[10px] font-semibold ${nurse.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{nurse.status}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-3 text-xs text-slate-500">
+                                                        <div className="mb-1">✉️ {nurse.email || '-'}</div>
+                                                        <div>📅 {nurse.calendarId || '-'}</div>
+                                                    </td>
+                                                    <td className="p-3 text-center">
+                                                        <div className="flex justify-center gap-2">
+                                                            <button onClick={() => setNurseModal({ isOpen: true, data: { ...nurse } })} className="text-indigo-600 hover:text-indigo-800 bg-indigo-50 p-1.5 rounded-lg transition-colors"><Icons.Edit /></button>
+                                                            <button onClick={() => { if(confirm(`ต้องการลบ ${nurse.name} ใช่หรือไม่?`)){ setNurseModal({isOpen: true, data: {...nurse, status: 'Deleted'}}); } }} className="text-rose-600 hover:text-rose-800 bg-rose-50 p-1.5 rounded-lg transition-colors" title="ลบข้อมูล"><Icons.Trash2 /></button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* TAB 4: ตั้งค่าเวร (Settings - Headward เท่านั้น) */}
+                        {activeTab === 'settings' && currentUser.role === 'Headward' && (
+                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full overflow-hidden">
+                                <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0">
+                                    <h2 className="text-lg font-semibold text-indigo-900">ตั้งค่าประเภทเวร (Settings)</h2>
+                                    <div className="flex gap-2">
+                                        <button onClick={() => {
+                                            const newShifts = [...shiftOptions, { id: 'ใหม่', label: 'เวรใหม่', color: 'bg-slate-100 text-slate-800 border-slate-200', countValue: 1, type: 'Main' }];
+                                            setShiftOptions(newShifts);
+                                        }} className="flex items-center gap-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                                            <Icons.Plus /> เพิ่มประเภทเวร
+                                        </button>
+                                        <button onClick={handleSaveSettings} disabled={isSaving} className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                                            {isSaving ? <Icons.Spinner /> : <Icons.Save />} บันทึกการตั้งค่า
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="p-6 overflow-auto bg-slate-50">
+                                    <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg text-xs text-amber-800 mb-4 flex items-start gap-2">
+                                        <Icons.AlertTriangle /> <span>คำเตือน: การเปลี่ยน Code หรือลบเวรที่เคยใช้ไปแล้ว อาจทำให้ตารางเวรที่จัดไปแล้วแสดงผลผิดพลาด แนะนำให้แก้ไขเฉพาะ Label หรือสี</span>
+                                    </div>
+                                    <table className="w-full border-collapse text-left text-sm bg-white border border-slate-200 rounded-lg">
+                                        <thead className="bg-slate-100 text-slate-600">
+                                            <tr>
+                                                <th className="p-2 border-b">Code (ห้ามซ้ำ)</th>
+                                                <th className="p-2 border-b">ชื่อ Label (ที่แสดง)</th>
+                                                <th className="p-2 border-b">ธีมสี</th>
+                                                <th className="p-2 border-b">ค่าตัวนับเวร</th>
+                                                <th className="p-2 border-b">ประเภท</th>
+                                                <th className="p-2 border-b text-center">จัดการ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {shiftOptions.map((shift, idx) => (
+                                                <tr key={idx} className="border-b border-slate-100">
+                                                    <td className="p-2"><input type="text" value={shift.id} onChange={(e) => { const n = [...shiftOptions]; n[idx].id = e.target.value; setShiftOptions(n); }} className="w-20 border rounded px-2 py-1 text-sm font-bold" /></td>
+                                                    <td className="p-2"><input type="text" value={shift.label} onChange={(e) => { const n = [...shiftOptions]; n[idx].label = e.target.value; setShiftOptions(n); }} className="w-full border rounded px-2 py-1 text-sm" /></td>
+                                                    <td className="p-2">
+                                                        <select value={COLOR_THEMES.find(t => shift.color.includes(t.id))?.id || 'slate'} onChange={(e) => {
+                                                            const theme = COLOR_THEMES.find(t => t.id === e.target.value);
+                                                            if (theme) { const n = [...shiftOptions]; n[idx].color = theme.cls; setShiftOptions(n); }
+                                                        }} className={`border rounded px-2 py-1 text-sm ${shift.color}`}>
+                                                            {COLOR_THEMES.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                                                        </select>
+                                                    </td>
+                                                    <td className="p-2"><input type="number" step="0.5" value={shift.countValue || 1} onChange={(e) => { const n = [...shiftOptions]; n[idx].countValue = e.target.value; setShiftOptions(n); }} className="w-16 border rounded px-2 py-1 text-sm text-center" /></td>
+                                                    <td className="p-2">
+                                                        <select value={shift.type || 'Main'} onChange={(e) => { const n = [...shiftOptions]; n[idx].type = e.target.value; setShiftOptions(n); }} className="border rounded px-2 py-1 text-sm">
+                                                            <option value="Main">Main (เวรหลัก)</option><option value="OT">OT (โอที)</option><option value="Leave">Leave (ลา/หยุด)</option><option value="Refer">Refer (รีเฟอร์)</option><option value="Other">Other (อื่นๆ)</option>
+                                                        </select>
+                                                    </td>
+                                                    <td className="p-2 text-center">
+                                                        <button onClick={() => { if(confirm('แน่ใจที่จะลบเวรนี้?')){ const n = [...shiftOptions]; n.splice(idx, 1); setShiftOptions(n); } }} className="text-rose-600 p-1 bg-rose-50 rounded"><Icons.Trash2 /></button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* TAB 5: ข้อมูลส่วนตัว */}
+                        {activeTab === 'profile' && (
+                            <div className="flex justify-center py-8 overflow-auto">
+                                <div className="bg-white rounded-2xl shadow-lg border border-slate-200 w-full max-w-2xl overflow-hidden h-max">
+                                    <div className="bg-indigo-600 p-6 text-white text-center relative">
+                                        <div className="w-20 h-20 bg-white text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-md border-4 border-indigo-200">
+                                            <Icons.UserCircle />
+                                        </div>
+                                        <h2 className="text-2xl font-bold">{currentUser.fullName || currentUser.name}</h2>
+                                        <p className="text-indigo-200">{currentUser.id} • {currentUser.position} • {selectedWard}</p>
+                                    </div>
+                                    
+                                    <form onSubmit={handleSaveNurse} className="p-8 space-y-6">
+                                        <div className="grid grid-cols-2 gap-6">
+                                            <div>
+                                                <label className="block text-sm font-medium text-slate-700 mb-1">ชื่อ-สกุลจริง <span className="text-red-500">*</span></label>
+                                                <input required type="text" value={nurseModal?.data?.fullName ?? currentUser.fullName} 
+                                                    onChange={e => setNurseModal({ isOpen: true, data: { ...(nurseModal.data || currentUser), fullName: e.target.value } })}
+                                                    className="w-full border border-slate-300 focus:border-indigo-500 rounded-lg px-4 py-2 outline-none" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-slate-700 mb-1">ชื่อที่ใช้ในตารางเวร <span className="text-red-500">*</span></label>
+                                                <input required type="text" value={nurseModal?.data?.name ?? currentUser.name} 
+                                                    onChange={e => setNurseModal({ isOpen: true, data: { ...(nurseModal.data || currentUser), name: e.target.value } })}
+                                                    className="w-full border border-slate-300 focus:border-indigo-500 rounded-lg px-4 py-2 outline-none" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-slate-700 mb-1">อีเมล (Email) <span className="text-red-500">*</span></label>
+                                                <input required type="email" autoComplete="email" value={nurseModal?.data?.email ?? currentUser.email} 
+                                                    onChange={e => setNurseModal({ isOpen: true, data: { ...(nurseModal.data || currentUser), email: e.target.value } })}
+                                                    className="w-full border border-slate-300 focus:border-indigo-500 rounded-lg px-4 py-2 outline-none" placeholder="example@email.com" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-slate-700 mb-1">Google Calendar ID</label>
+                                                <input type="text" value={nurseModal?.data?.calendarId ?? currentUser.calendarId} 
+                                                    onChange={e => setNurseModal({ isOpen: true, data: { ...(nurseModal.data || currentUser), calendarId: e.target.value } })}
+                                                    className="w-full border border-slate-300 focus:border-indigo-500 rounded-lg px-4 py-2 outline-none" placeholder="สำหรับซิงค์ปฏิทิน" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                            <p className="text-xs text-slate-500 font-semibold mb-2">ข้อมูลระบบ (แก้ไขไม่ได้ ติดต่อหัวหน้าวอร์ด)</p>
+                                            <div className="grid grid-cols-3 gap-4 text-sm text-slate-600">
+                                                <div>รหัส: <span className="font-mono text-slate-800">{currentUser.id}</span></div>
+                                                <div>สังกัด: <span className="text-slate-800">{currentUser.ward}</span></div>
+                                                <div>ตำแหน่ง: <span className="text-slate-800">{currentUser.position}</span></div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-end pt-4 border-t border-slate-100">
+                                            {nurseModal.data && (
+                                                <button type="submit" disabled={isSaving} className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-2.5 rounded-lg font-semibold flex items-center gap-2 transition-colors">
+                                                    {isSaving && <Icons.Spinner />} บันทึกข้อมูล
+                                                </button>
+                                            )}
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
+
+                    </main>
+
+                    {/* ================= MODALS ================= */}
+
+                    {/* Draggable Summary Modal (Realtime) */}
+                    <DraggableModal 
+                        isOpen={isSummaryOpen} 
+                        onClose={() => setIsSummaryOpen(false)}
+                        title={`สรุปข้อมูล ${selectedWard} (${displayMonthName} ${displayYearThai})`}
+                    >
+                        {(() => {
+                            const { workingDays, requiredHours, summary, ruleStats } = summaryData;
+                            return (
+                                <div className="flex flex-col h-full space-y-4">
+                                    {/* Dashboard Cards */}
+                                    <div className="grid grid-cols-2 gap-4 shrink-0">
+                                        <div className="bg-indigo-50 border border-indigo-100 p-3 rounded-lg text-center">
+                                            <div className="text-xs text-indigo-600 font-medium">บุคลากรทั้งหมด</div>
+                                            <div className="text-xl font-bold text-indigo-900">{filteredNurses.length} <span className="text-sm font-normal">คน</span></div>
+                                        </div>
+                                        <div className="bg-green-50 border border-green-100 p-3 rounded-lg text-center">
+                                            <div className="text-xs text-green-600 font-medium">วันทำการ (ไม่รวมวันหยุด)</div>
+                                            <div className="text-xl font-bold text-green-900">{workingDays} <span className="text-sm font-normal">วัน</span></div>
+                                        </div>
+                                    </div>
+
+                                    {/* ตารางสรุปเวรละเอียด (Scroll ได้) */}
+                                    <div className="overflow-auto border border-slate-200 rounded-lg flex-1 min-h-[150px] custom-scrollbar">
+                                        <table className="w-full text-xs text-left min-w-[700px] bg-white">
+                                            <thead className="bg-slate-100 text-slate-700 sticky top-0 z-10 shadow-sm">
+                                                <tr>
+                                                    <th className="p-2 border-b border-r sticky left-0 bg-slate-100 z-20">ชื่อพยาบาล</th>
+                                                    <th className="p-2 border-b text-center">ช</th>
+                                                    <th className="p-2 border-b text-center">บ</th>
+                                                    <th className="p-2 border-b text-center">ด</th>
+                                                    <th className="p-2 border-b text-center">8-20</th>
+                                                    <th className="p-2 border-b text-center">20-8</th>
+                                                    <th className="p-2 border-b text-center border-l">OFF</th>
+                                                    <th className="p-2 border-b text-center">VAC</th>
+                                                    <th className="p-2 border-b text-center border-l">เสริม</th>
+                                                    <th className="p-2 border-b text-center">อื่นๆ</th>
+                                                    <th className="p-2 border-b text-center bg-slate-200 border-l font-bold">OT(เวร)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {summary.map((row, i) => (
+                                                    <tr key={i} className="hover:bg-slate-50 border-b last:border-0">
+                                                        <td className="p-2 border-r font-medium text-slate-800 sticky left-0 bg-white" title={row.fullName}>{row.name}</td>
+                                                        <td className="p-2 text-center text-green-700">{row.counts['ช'] || '-'}</td>
+                                                        <td className="p-2 text-center text-orange-700">{row.counts['บ'] || '-'}</td>
+                                                        <td className="p-2 text-center text-purple-700">{row.counts['ด'] || '-'}</td>
+                                                        <td className="p-2 text-center text-teal-700">{row.counts['8-20'] || '-'}</td>
+                                                        <td className="p-2 text-center text-indigo-700">{row.counts['20-8'] || '-'}</td>
+                                                        <td className="p-2 text-center text-slate-500 border-l">{row.counts['O'] || '-'}</td>
+                                                        <td className="p-2 text-center text-sky-600">{row.counts['VAC'] || '-'}</td>
+                                                        <td className="p-2 text-center text-amber-600 border-l">{row.counts['เสริม'] || '-'}</td>
+                                                        <td className="p-2 text-center text-slate-700">{row.counts['อื่นๆ'] || '-'}</td>
+                                                        <td className="p-2 text-center font-bold text-indigo-700 bg-indigo-50/50 border-l">{row.otShifts > 0 ? row.otShifts : '-'}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    {/* สรุปข้อผิดพลาด (Rule Violations Stats) */}
+                                    <div className="bg-rose-50 border border-rose-200 rounded-lg p-3 shrink-0">
+                                        <h4 className="font-bold text-rose-800 mb-2 text-xs flex items-center gap-1">
+                                            <Icons.AlertTriangle /> สรุปการจัดเวรที่ผิดเงื่อนไข (จำนวนครั้ง)
+                                        </h4>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                            <div className="bg-white p-2 rounded border border-rose-100 text-center">
+                                                <div className="text-[10px] text-slate-500">ทำงาน &gt; 12 ชม./วัน</div>
+                                                <div className={`font-bold ${ruleStats.over12h > 0 ? 'text-rose-600' : 'text-slate-700'}`}>{ruleStats.over12h}</div>
+                                            </div>
+                                            <div className="bg-white p-2 rounded border border-rose-100 text-center">
+                                                <div className="text-[10px] text-slate-500">ทำงาน &gt; 60 ชม./สัปดาห์</div>
+                                                <div className={`font-bold ${ruleStats.over60hWeek > 0 ? 'text-rose-600' : 'text-slate-700'}`}>{ruleStats.over60hWeek}</div>
+                                            </div>
+                                            <div className="bg-white p-2 rounded border border-rose-100 text-center">
+                                                <div className="text-[10px] text-slate-500">เวร 12 ชม. &gt; 3 วัน/สัปดาห์</div>
+                                                <div className={`font-bold ${ruleStats.consecutive12h > 0 ? 'text-rose-600' : 'text-slate-700'}`}>{ruleStats.consecutive12h}</div>
+                                            </div>
+                                            <div className="bg-white p-2 rounded border border-rose-100 text-center">
+                                                <div className="text-[10px] text-slate-500">พักระหว่างเวร &lt; 11 ชม.</div>
+                                                <div className={`font-bold ${ruleStats.restUnder11h > 0 ? 'text-rose-600' : 'text-slate-700'}`}>{ruleStats.restUnder11h}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* รายละเอียดงานอื่นๆ */}
+                                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 shrink-0 max-h-32 overflow-y-auto custom-scrollbar">
+                                        <h4 className="font-bold text-slate-700 mb-2 text-xs">รายการเวร "อื่นๆ"</h4>
+                                        {summary.filter(r => r.otherDetails.length > 0).length === 0 ? (
+                                            <div className="text-xs text-slate-400">ไม่มีบันทึกการไปปฏิบัติภารกิจอื่นๆ</div>
+                                        ) : (
+                                            <ul className="space-y-2">
+                                                {summary.filter(r => r.otherDetails.length > 0).map((row, idx) => (
+                                                    <li key={idx} className="text-xs border-b border-slate-200 pb-1 last:border-0 last:pb-0 flex items-start gap-2">
+                                                        <span className="font-semibold text-slate-700 w-24 shrink-0">{row.name}</span>
+                                                        <div className="flex flex-wrap gap-1">
+                                                            {row.otherDetails.map((od, odIdx) => (
+                                                                <span key={odIdx} className="bg-white border border-slate-300 px-1.5 py-0.5 rounded shadow-sm text-slate-600">
+                                                                    <span className="font-medium text-indigo-600 mr-1">{od.day} {displayMonthName}:</span> {od.text}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })()}
+                    </DraggableModal>
+
+                    {/* Modal แจ้งเตือน */}
+                    {alertMsg && (
+                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[80] backdrop-blur-sm p-4">
+                            <div className="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden">
+                                <div className="p-6 text-center">
+                                    <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4"><Icons.AlertCircle /></div>
+                                    <h3 className="font-semibold text-slate-800 mb-2">แจ้งเตือน</h3>
+                                    <p className="text-sm text-slate-600 whitespace-pre-line">{alertMsg}</p>
+                                </div>
+                                <div className="p-3 bg-slate-50 border-t flex justify-center">
+                                    <button onClick={() => setAlertMsg('')} className="bg-indigo-600 text-white px-8 py-2 rounded-lg text-sm">ตกลง</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modal กรอกข้อมูลเวร "อื่นๆ" */}
+                    {otherPrompt.isOpen && (
+                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[70] backdrop-blur-sm p-4">
+                            <div className="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden">
+                                <div className="p-5">
+                                    <h3 className="font-semibold text-slate-800 mb-1">ระบุรายละเอียดเวร "อื่นๆ"</h3>
+                                    <input autoFocus type="text" value={otherPrompt.text} onChange={e => setOtherPrompt({ ...otherPrompt, text: e.target.value })} className="w-full border border-slate-300 rounded-lg px-3 py-2 outline-none mt-2" placeholder="เช่น ประชุม..." />
+                                </div>
+                                <div className="p-3 bg-slate-50 border-t flex justify-end gap-2">
+                                    <button onClick={() => setOtherPrompt({ isOpen: false, text: '' })} className="px-4 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-200">ยกเลิก</button>
+                                    <button onClick={() => {
+                                        handleToggleShift(otherPrompt.text.trim() ? `อื่นๆ(${otherPrompt.text.trim()})` : 'อื่นๆ');
+                                        setOtherPrompt({ isOpen: false, text: '' });
+                                    }} className="bg-indigo-600 text-white px-5 py-1.5 rounded-md text-sm">ตกลง</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modal จัดการวันหยุด (คลิกจาก Header วันที่) */}
+                    {dayManagerModal.isOpen && currentUser.role === 'Headward' && (
+                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[60] backdrop-blur-sm p-4">
+                            <div className="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden">
+                                <div className="flex justify-between items-center p-4 border-b bg-slate-50">
+                                    <h3 className="font-semibold text-slate-800">จัดการข้อมูลวันที่ {dayManagerModal.day}</h3>
+                                    <button onClick={() => setDayManagerModal({isOpen:false, day:null})} className="p-1 text-slate-500"><Icons.Close /></button>
+                                </div>
+                                <div className="p-5">
+                                    <div className="flex items-center justify-between bg-slate-100 p-3 rounded-lg mb-4">
+                                        <span className="text-sm font-medium text-slate-700">ตั้งเป็นวันหยุดพิเศษ</span>
+                                        <button onClick={() => toggleHoliday(dayManagerModal.day)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${customHolidays.includes(dayManagerModal.day) ? 'bg-indigo-600' : 'bg-slate-300'}`}>
+                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${customHolidays.includes(dayManagerModal.day) ? 'translate-x-6' : 'translate-x-1'}`}/>
+                                        </button>
+                                    </div>
+                                    <h4 className="text-sm font-bold text-slate-700 mb-2 border-b pb-1">สรุปเวรที่จัดแล้ว</h4>
+                                    <div className="space-y-1 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                                        {(() => {
+                                            const d = dayManagerModal.day;
+                                            const countMap = {};
+                                            filteredNurses.forEach(nurse => {
+                                                const shifts = schedules[`${nurse.id}-${d}`] || [];
+                                                shifts.forEach(s => {
+                                                    const base = getBaseShift(s);
+                                                    countMap[base] = (countMap[base] || 0) + 1;
+                                                });
+                                            });
+                                            const entries = Object.entries(countMap);
+                                            if (entries.length === 0) return <div className="text-xs text-slate-500 text-center py-4">ยังไม่มีการจัดเวร</div>;
+                                            return entries.map(([shift, count]) => (
+                                                <div key={shift} className="flex justify-between items-center text-sm bg-slate-50 p-2 rounded border border-slate-100">
+                                                    <span className="font-semibold text-slate-700">{shiftOptions.find(s=>s.id===shift)?.label || shift}</span>
+                                                    <span className="font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">{count} คน</span>
+                                                </div>
+                                            ));
+                                        })()}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modal จัดเวร/ขอเปลี่ยนเวร (คลิกจาก Cell) */}
+                    {selectedCell && !otherPrompt.isOpen && !dayManagerModal.isOpen && (
+                        <div className="fixed inset-0 bg-slate-900/40 flex items-center justify-center z-[60] backdrop-blur-sm p-4">
+                            <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
+                                <div className="flex justify-between items-center p-4 border-b bg-slate-50">
+                                    <h3 className="font-semibold text-slate-800">จัดเวร {selectedCell.day} {displayMonthName}</h3>
+                                    <button onClick={() => setSelectedCell(null)} className="p-1 text-slate-500"><Icons.Close /></button>
+                                </div>
+                                <div className="p-5">
+                                    <div className="mb-4">
+                                        <div className="text-base font-bold text-indigo-900">{selectedCell.nurse.name}</div>
+                                        <div className="text-xs text-slate-500">{selectedCell.nurse.fullName}</div>
+                                    </div>
+                                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-[50vh] overflow-y-auto p-1 custom-scrollbar">
+                                        {shiftOptions.map(shift => {
+                                            const cellKey = `${selectedCell.nurse.id}-${selectedCell.day}`;
+                                            const currentShifts = schedules[cellKey] || [];
+                                            const existingExact = currentShifts.find(s => getBaseShift(s) === shift.id);
+                                            const isSelected = !!existingExact;
+                                            return (
+                                                <button
+                                                    key={shift.id} disabled={isSaving}
+                                                    onClick={() => {
+                                                        if (shift.id === 'อื่นๆ' && !isSelected) setOtherPrompt({ isOpen: true, text: '' });
+                                                        else if (shift.id === 'อื่นๆ' && isSelected) handleToggleShift(existingExact);
+                                                        else handleToggleShift(shift.id);
+                                                    }}
+                                                    className={`py-3 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 text-center transition-all ${isSelected ? `${shift.color} ring-2 ring-offset-1 border-transparent shadow-sm scale-[1.02]` : 'bg-white hover:bg-slate-50 border-slate-200'}`}
+                                                    title={shift.label}
+                                                >
+                                                    <span className="font-bold text-[15px] leading-none">{shift.id}</span>
+                                                    <span className="text-[9px] text-slate-500 leading-tight w-full truncate px-1">{shift.label}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                                <div className="p-3 bg-slate-50 border-t flex justify-end">
+                                    <button onClick={() => setSelectedCell(null)} className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-2 rounded-lg text-sm font-semibold transition-colors">เสร็จสิ้น</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modal ขอเปลี่ยนเวร (พยาบาลทั่วไป) */}
+                    {requestSwapModal.isOpen && (
+                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[60] backdrop-blur-sm p-4">
+                            <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+                                <div className="p-4 border-b bg-indigo-50 text-indigo-900 font-semibold flex justify-between items-center">
+                                    <span>สร้างคำขอเปลี่ยนเวร</span>
+                                    <button onClick={() => setRequestSwapModal({ isOpen: false, cell: null, shiftToSwap: null })}><Icons.Close /></button>
+                                </div>
+                                <div className="p-5">
+                                    <p className="text-sm text-slate-600 mb-4">คุณกำลังทำรายการขอเปลี่ยนเวรในวันที่ <span className="font-bold text-slate-900">{requestSwapModal.cell.day} {displayMonthName}</span></p>
+                                    <div className="mb-4">
+                                        <label className="block text-xs font-medium text-slate-500 mb-1">เวรปัจจุบันของคุณที่ต้องการเปลี่ยน</label>
+                                        <select value={requestSwapModal.shiftToSwap} onChange={e => setRequestSwapModal({...requestSwapModal, shiftToSwap: e.target.value})} className="w-full border border-slate-300 rounded-lg px-3 py-2 outline-none font-semibold text-indigo-700 bg-indigo-50">
+                                            {(schedules[`${currentUser.id}-${requestSwapModal.cell.day}`] || []).map(s => <option key={s} value={s}>{s}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="mb-6">
+                                        <label className="block text-xs font-medium text-slate-500 mb-1">เลือกพยาบาลที่จะมาขึ้นเวรแทน <span className="text-red-500">*</span></label>
+                                        <select value={swapTargetNurse} onChange={e => setSwapTargetNurse(e.target.value)} className="w-full border border-slate-300 focus:border-indigo-500 rounded-lg px-3 py-2 outline-none bg-white">
+                                            <option value="">-- เลือกรายชื่อ --</option>
+                                            {filteredNurses.filter(n => n.id !== currentUser.id).map(n => <option key={n.id} value={n.id}>{n.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="bg-amber-50 border border-amber-200 text-amber-700 text-xs p-3 rounded-lg flex gap-2">
+                                        <Icons.AlertCircle /><span>คำขอนี้จะถูกส่ง Email แจ้งไปยังหัวหน้าวอร์ด (อัตโนมัติ) และรอการอนุมัติเข้าระบบต่อไป</span>
+                                    </div>
+                                </div>
+                                <div className="p-3 bg-slate-50 border-t flex justify-end gap-2">
+                                    <button onClick={() => setRequestSwapModal({ isOpen: false, cell: null, shiftToSwap: null })} className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-200 rounded-lg">ยกเลิก</button>
+                                    <button onClick={submitSwapRequest} disabled={isSaving} className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors">
+                                        {isSaving ? <Icons.Spinner /> : 'ส่งคำขออนุมัติ'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modal แก้ไขพยาบาล */}
+                    {nurseModal.isOpen && nurseModal.data && (
+                        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[70] backdrop-blur-sm p-4">
+                            <form onSubmit={handleSaveNurse} className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+                                <div className="p-4 border-b bg-slate-50 flex justify-between">
+                                    <h3 className="font-bold text-slate-800">
+                                        {nurseModal.data.id === 'NEW' ? 'เพิ่มบุคลากรใหม่' : (currentUser.role === 'Headward' ? 'แก้ไขข้อมูลบุคลากร' : 'ข้อมูลส่วนตัว')}
+                                    </h3>
+                                    <button type="button" onClick={() => setNurseModal({isOpen:false, data:null})}><Icons.Close /></button>
+                                </div>
+                                <div className="p-5 space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="col-span-2 sm:col-span-1">
+                                            <label className="block text-xs font-medium text-slate-600 mb-1">ชื่อ-สกุลจริง <span className="text-red-500">*</span></label>
+                                            <input required type="text" value={nurseModal.data.fullName || ''} onChange={e => setNurseModal({...nurseModal, data: {...nurseModal.data, fullName: e.target.value}})} className="w-full border rounded px-3 py-1.5 text-sm" />
+                                        </div>
+                                        <div className="col-span-2 sm:col-span-1">
+                                            <label className="block text-xs font-medium text-slate-600 mb-1">ชื่อในตารางเวร <span className="text-red-500">*</span></label>
+                                            <input required type="text" value={nurseModal.data.name} onChange={e => setNurseModal({...nurseModal, data: {...nurseModal.data, name: e.target.value}})} className="w-full border rounded px-3 py-1.5 text-sm" />
+                                        </div>
+                                        <div className="col-span-2 sm:col-span-1">
+                                            <label className="block text-xs font-medium text-slate-600 mb-1">อีเมล <span className="text-red-500">*</span></label>
+                                            <input required type="email" autoComplete="email" value={nurseModal.data.email || ''} onChange={e => setNurseModal({...nurseModal, data: {...nurseModal.data, email: e.target.value}})} className="w-full border rounded px-3 py-1.5 text-sm" />
+                                        </div>
+                                        <div className="col-span-2 sm:col-span-1">
+                                            <label className="block text-xs font-medium text-slate-600 mb-1">Calendar ID</label>
+                                            <input type="text" value={nurseModal.data.calendarId || ''} onChange={e => setNurseModal({...nurseModal, data: {...nurseModal.data, calendarId: e.target.value}})} className="w-full border rounded px-3 py-1.5 text-sm" />
+                                        </div>
+                                        
+                                        <div className="col-span-2 sm:col-span-1">
+                                            <label className="block text-xs font-medium text-slate-600 mb-1">วอร์ด (ใส่หลายวอร์ดคั่นด้วย ,)</label>
+                                            <input type="text" value={nurseModal.data.ward} onChange={e => setNurseModal({...nurseModal, data: {...nurseModal.data, ward: e.target.value}})} disabled={currentUser.role !== 'Headward'} className={`w-full border rounded px-3 py-1.5 text-sm ${currentUser.role !== 'Headward' ? 'bg-slate-100 text-slate-500' : ''}`} placeholder="เช่น วอร์ดชาย, วอร์ดหญิง" />
+                                        </div>
+                                        <div className="col-span-2 sm:col-span-1">
+                                            <label className="block text-xs font-medium text-slate-600 mb-1">ตำแหน่ง</label>
+                                            <input type="text" value={nurseModal.data.position || ''} onChange={e => setNurseModal({...nurseModal, data: {...nurseModal.data, position: e.target.value}})} disabled={currentUser.role !== 'Headward'} className={`w-full border rounded px-3 py-1.5 text-sm ${currentUser.role !== 'Headward' ? 'bg-slate-100 text-slate-500' : ''}`} />
+                                        </div>
+                                        <div className="col-span-2 sm:col-span-1">
+                                            <label className="block text-xs font-medium text-slate-600 mb-1">บทบาท</label>
+                                            <select value={nurseModal.data.role} onChange={e => setNurseModal({...nurseModal, data: {...nurseModal.data, role: e.target.value}})} disabled={currentUser.role !== 'Headward'} className={`w-full border rounded px-3 py-1.5 text-sm ${currentUser.role !== 'Headward' ? 'bg-slate-100 text-slate-500' : ''}`}>
+                                                <option value="">RN ปกติ</option><option value="Headward">หัวหน้าวอร์ด</option>
+                                            </select>
+                                        </div>
+                                        <div className="col-span-2 sm:col-span-1">
+                                            <label className="block text-xs font-medium text-slate-600 mb-1">สถานะ</label>
+                                            <select value={nurseModal.data.status} onChange={e => setNurseModal({...nurseModal, data: {...nurseModal.data, status: e.target.value}})} disabled={currentUser.role !== 'Headward'} className={`w-full border rounded px-3 py-1.5 text-sm ${currentUser.role !== 'Headward' ? 'bg-slate-100 text-slate-500' : ''}`}>
+                                                <option value="Active">Active</option><option value="Inactive">Inactive</option><option value="Deleted">Deleted (ซ่อน)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="p-3 border-t bg-slate-50 flex justify-end gap-2">
+                                    <button type="button" onClick={() => setNurseModal({isOpen:false, data:null})} className="px-4 py-1.5 rounded bg-slate-200 text-sm">ยกเลิก</button>
+                                    <button type="submit" disabled={isSaving} className="px-6 py-1.5 rounded bg-indigo-600 text-white text-sm font-bold flex items-center gap-2">
+                                        {isSaving && <Icons.Spinner />} บันทึก
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
