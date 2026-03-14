@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เพิ่มวันสำคัญลงปฏิทิน</title>
+    <style>
+        body { font-family: 'Sarabun', sans-serif; text-align: center; padding: 50px 20px; background-color: #f4f6f9; }
+        .card { max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .btn { display: inline-block; padding: 15px 25px; font-size: 16px; font-weight: bold; color: white; background-color: #1a73e8; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; margin-top: 20px; width: 100%; box-sizing: border-box;}
+        .btn:hover { background-color: #1557b0; }
+        .alt-links { margin-top: 20px; font-size: 14px; }
+        .alt-links a { color: #1a73e8; text-decoration: none; display: block; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>📅 เพิ่มปฏิทินวันสำคัญ</h2>
+        <p>ระบบจะเลือกปฏิทินที่เหมาะสมกับอุปกรณ์ของคุณโดยอัตโนมัติ</p>
+        
+        <a href="#" id="addCalendarBtn" class="btn">เพิ่มลงปฏิทินของฉันเลย</a>
+
+        <div class="alt-links">
+            <p>หรือเลือกเพิ่มด้วยตัวเอง:</p>
+            <a href="https://calendar.google.com/calendar/render?cid=c8286fff0545f74e2274b3aee6edd2a81b1438d24743df93507922e50602f0c3@group.calendar.google.com" target="_blank">👉 เพิ่มลง Google Calendar (สำหรับ Android/PC)</a>
+            <a href="webcal://calendar.google.com/calendar/ical/c8286fff0545f74e2274b3aee6edd2a81b1438d24743df93507922e50602f0c3%40group.calendar.google.com/public/basic.ics">👉 เพิ่มลง Apple Calendar (สำหรับ iOS)</a>
+        </div>
+    </div>
+
+    <script>
+        // กำหนด Calendar ID
+        const calendarId = "c8286fff0545f74e2274b3aee6edd2a81b1438d24743df93507922e50602f0c3@group.calendar.google.com";
+        
+        // สร้าง URL ทั้งสองแบบ
+        const googleCalUrl = `https://calendar.google.com/calendar/render?cid=${calendarId}`;
+        // ใช้ webcal:// เพื่อบังคับให้ iOS เปิดแอปปฏิทิน
+        const appleCalUrl = `webcal://calendar.google.com/calendar/ical/${encodeURIComponent(calendarId)}/public/basic.ics`;
+
+        // ฟังก์ชันเช็ค Device
+        function getCalendarLink() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+            // ตรวจจับ iOS (iPhone, iPad, iPod)
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return appleCalUrl;
+            }
+            // ถ้าเป็น Android หรือ Desktop ให้คืนค่าเป็น Google Calendar
+            return googleCalUrl;
+        }
+
+        // เซ็ตค่า href ให้ปุ่มทันทีที่โหลดหน้าเว็บเสร็จ
+        window.onload = function() {
+            const btn = document.getElementById("addCalendarBtn");
+            const targetLink = getCalendarLink();
+            btn.href = targetLink;
+            
+            // ถ้าอยากให้คลิกแล้วเปิดแท็บใหม่เฉพาะ Google Calendar
+            if(targetLink === googleCalUrl){
+                btn.target = "_blank";
+            }
+        };
+    </script>
+</body>
+</html>
