@@ -1,1 +1,812 @@
 
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>โรงพยาบาลสวี - 5 ทศวรรษแห่งการพึ่งพา</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            900: '#050B14', // Deepest background
+                            800: '#0A1325', // Card background
+                            700: '#111D36', // Lighter card
+                        },
+                        gold: {
+                            300: '#FDE047',
+                            400: '#EAB308',
+                            500: '#D4AF37', // Imperial Gold
+                            600: '#B49020',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'sans-serif'],
+                        heading: ['Prompt', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'gold-glow': '0 0 15px rgba(212, 175, 55, 0.3)',
+                        'gold-glow-lg': '0 0 25px rgba(212, 175, 55, 0.5)',
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-dark: #050B14;
+            --gold: #D4AF37;
+        }
+        
+        body {
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at top right, rgba(17, 29, 54, 0.8), transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(212, 175, 55, 0.05), transparent 40%);
+            color: #F8FAFC;
+            background-attachment: fixed;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 10px; }
+        
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        
+        /* Typography Gradients */
+        .text-gradient-gold {
+            background: linear-gradient(to right, #FDE047, #D4AF37, #B49020);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* UI Elements */
+        .glass-card {
+            background: rgba(10, 19, 37, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: var(--glass);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37, #B49020);
+            color: #050B14;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover, .btn-gold:active {
+            box-shadow: var(--gold-glow);
+            transform: translateY(-2px);
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+
+        /* Page System */
+        .page-section {
+            display: none;
+            padding-bottom: 6rem;
+            min-height: 100vh;
+        }
+        .page-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            background: rgba(5, 11, 20, 0.85);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(212, 175, 55, 0.15);
+        }
+        .nav-item { transition: all 0.3s; color: #64748b; }
+        .nav-item.active { color: var(--gold); transform: translateY(-3px); text-shadow: 0 0 10px rgba(212,175,55,0.5); }
+
+        /* SVG Flow Path animations */
+        .flow-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            transition: stroke-dashoffset 2s ease-in-out;
+        }
+        .flow-path.active {
+            stroke-dashoffset: 0;
+            animation: pulsePath 2s infinite alternate;
+        }
+        @keyframes pulsePath {
+            0% { filter: drop-shadow(0 0 2px #D4AF37); }
+            100% { filter: drop-shadow(0 0 8px #FDE047); }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-gold-500 selection:text-navy-900">
+
+    <!-- Top Header -->
+    <header class="fixed top-0 w-full z-40 glass-card border-x-0 border-t-0 rounded-none px-4 py-3 flex justify-between items-center transition-transform duration-300" id="main-header">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-navy-800 border border-gold-500/50 flex items-center justify-center shadow-gold-glow">
+                <i class="ph ph-hospital text-gold-500 text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="font-heading font-semibold text-white leading-tight tracking-wide">โรงพยาบาลสวี</h1>
+                <p class="text-[10px] text-gold-400">SAWI HOSPITAL</p>
+            </div>
+        </div>
+        <div class="text-xs font-medium text-white/70 bg-navy-800 px-3 py-1.5 rounded-full border border-white/10">
+            อ.สวี จ.ชุมพร
+        </div>
+    </header>
+
+    <main class="pt-20">
+        
+        <!-- ==================== HOME ==================== -->
+        <section id="page-home" class="page-section active">
+            
+            <!-- Hero Immersive -->
+            <div class="relative w-full h-[60vh] sm:h-[70vh] flex items-center justify-center overflow-hidden">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1538108149393-fbbd81895907?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center opacity-30 mix-blend-luminosity animate-[pulseBg_15s_infinite_alternate]"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-navy-900 via-navy-900/60 to-transparent"></div>
+                
+                <div class="relative z-10 text-center px-4 w-full max-w-2xl fade-in-up">
+                    <p class="text-gold-500 font-medium tracking-widest text-sm mb-3">ก้าวสู่ปีที่ 52</p>
+                    <h2 class="text-4xl sm:text-5xl font-heading font-bold text-white mb-4 leading-tight">
+                        5 ทศวรรษ <br> <span class="text-gradient-gold">ที่พึ่งพาของทุกชีวิต</span>
+                    </h2>
+                    <p class="text-white/70 text-sm sm:text-base mb-8 px-4">มุ่งมั่นพัฒนาคุณภาพชีวิต เพื่อประชาชนอำเภอสวีและพื้นที่ใกล้เคียง</p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center px-6">
+                        <button onclick="openModal('modal-rights')" class="btn-gold py-3 px-8 rounded-full shadow-gold-glow flex items-center justify-center gap-2">
+                            <i class="ph ph-shield-check text-xl"></i> ตรวจสอบสิทธิการรักษา
+                        </button>
+                        <button onclick="openModal('modal-appointment')" class="glass-card py-3 px-8 rounded-full text-white hover:bg-white/10 transition flex items-center justify-center gap-2 border-white/20">
+                            <i class="ph ph-calendar-plus text-xl text-gold-400"></i> จำลองนัดหมายออนไลน์
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Highlight Updates -->
+            <div class="px-4 -mt-10 relative z-20 container mx-auto max-w-4xl">
+                <div class="flex justify-between items-end mb-4 fade-in-up delay-200">
+                    <h3 class="font-heading text-lg font-semibold text-white flex items-center gap-2">
+                        <i class="ph-fill ph-sparkle text-gold-500"></i> ข่าวสารและประกาศ
+                    </h3>
+                </div>
+                
+                <div class="flex overflow-x-auto hide-scroll gap-4 pb-4 snap-x snap-mandatory">
+                    <!-- News 1 -->
+                    <div class="min-w-[280px] w-3/4 sm:w-[320px] glass-card rounded-2xl p-4 snap-center shrink-0 fade-in-up delay-200 group cursor-pointer">
+                        <div class="h-32 rounded-xl overflow-hidden mb-3 relative">
+                            <img src="https://images.unsplash.com/photo-1581594693702-fbdc51b2763b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 mix-blend-luminosity opacity-70 group-hover:opacity-100 group-hover:mix-blend-normal">
+                            <div class="absolute top-2 left-2 bg-gold-500 text-navy-900 text-[10px] px-2 py-1 rounded font-bold shadow-md">อัปเดต</div>
+                        </div>
+                        <h4 class="font-heading font-medium text-white mb-1 line-clamp-2">ตารางคลินิกเฉพาะทาง ประจำเดือนนี้</h4>
+                        <p class="text-xs text-white/50"><i class="ph ph-clock mr-1"></i>อัปเดตล่าสุด: วันนี้</p>
+                    </div>
+                    <!-- News 2 -->
+                    <div class="min-w-[280px] w-3/4 sm:w-[320px] glass-card rounded-2xl p-4 snap-center shrink-0 fade-in-up delay-300 group cursor-pointer">
+                        <div class="h-32 rounded-xl overflow-hidden mb-3 relative bg-navy-800">
+                            <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 mix-blend-luminosity opacity-70 group-hover:opacity-100 group-hover:mix-blend-normal">
+                        </div>
+                        <h4 class="font-heading font-medium text-white mb-1 line-clamp-2">เปิดรับบริจาคสมทบทุนจัดซื้อเครื่องมือแพทย์</h4>
+                        <p class="text-xs text-white/50"><i class="ph ph-heart mr-1 text-red-400"></i>ร่วมสร้างกุศล</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TIMELINE (5 ทศวรรษ) ==================== -->
+        <section id="page-timeline" class="page-section">
+            <div class="container mx-auto px-4 max-w-3xl pt-6">
+                <div class="text-center mb-10 fade-in-up">
+                    <h2 class="font-heading text-3xl font-bold text-white mb-2">5 ทศวรรษ</h2>
+                    <p class="text-gradient-gold font-medium">ประวัติศาสตร์แห่งการดูแลรักษา</p>
+                </div>
+
+                <div class="relative border-l border-gold-500/30 ml-4 md:ml-1/2 space-y-8 pb-8">
+                    <!-- Era 1 -->
+                    <div class="relative pl-6 sm:pl-8 fade-in-up">
+                        <div class="absolute -left-2 top-1 w-4 h-4 bg-navy-900 border-2 border-gold-500 rounded-full shadow-gold-glow"></div>
+                        <div class="glass-card p-5 rounded-2xl">
+                            <span class="inline-block px-3 py-1 rounded bg-gold-500/10 text-gold-400 text-xs font-bold mb-2 border border-gold-500/20">พ.ศ. 2515 - 2525</span>
+                            <h3 class="font-heading text-lg text-white font-semibold mb-2">จุดเริ่มต้นแห่งการพึ่งพา</h3>
+                            <p class="text-sm text-white/70 mb-3">ก่อตั้งสถานีอนามัยชั้น 1 อำเภอสวี เพื่อรองรับผู้ป่วยในพื้นที่ที่ห่างไกล ด้วยบุคลากรและทรัพยากรที่จำกัด แต่เปี่ยมด้วยความตั้งใจ</p>
+                            <img src="https://images.unsplash.com/photo-1516549655169-df83a0774514?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" class="w-full h-32 object-cover rounded-xl grayscale opacity-70 border border-white/10">
+                        </div>
+                    </div>
+                    <!-- Era 2 -->
+                    <div class="relative pl-6 sm:pl-8 fade-in-up delay-100">
+                        <div class="absolute -left-2 top-1 w-4 h-4 bg-navy-900 border-2 border-gold-500 rounded-full shadow-gold-glow"></div>
+                        <div class="glass-card p-5 rounded-2xl">
+                            <span class="inline-block px-3 py-1 rounded bg-gold-500/10 text-gold-400 text-xs font-bold mb-2 border border-gold-500/20">พ.ศ. 2526 - 2535</span>
+                            <h3 class="font-heading text-lg text-white font-semibold mb-2">ยกระดับสู่โรงพยาบาลชุมชน</h3>
+                            <p class="text-sm text-white/70">ขยายพื้นที่และเตียงรองรับผู้ป่วย ยกฐานะเป็นโรงพยาบาลชุมชนขนาด 30 เตียง เริ่มมีแพทย์เฉพาะทางหมุนเวียนมาให้บริการ</p>
+                        </div>
+                    </div>
+                    <!-- Era 3 -->
+                    <div class="relative pl-6 sm:pl-8 fade-in-up delay-200">
+                        <div class="absolute -left-2 top-1 w-4 h-4 bg-navy-900 border-2 border-gold-500 rounded-full shadow-gold-glow"></div>
+                        <div class="glass-card p-5 rounded-2xl">
+                            <span class="inline-block px-3 py-1 rounded bg-gold-500/10 text-gold-400 text-xs font-bold mb-2 border border-gold-500/20">พ.ศ. 2536 - 2545</span>
+                            <h3 class="font-heading text-lg text-white font-semibold mb-2">ขยายศักยภาพการรักษา</h3>
+                            <p class="text-sm text-white/70">เปิดตึกอุบัติเหตุ-ฉุกเฉิน 24 ชั่วโมง และห้องคลอดที่ได้มาตรฐาน พร้อมสร้างเครือข่ายเชื่อมโยงกับชุมชน</p>
+                        </div>
+                    </div>
+                    <!-- Era 4 -->
+                    <div class="relative pl-6 sm:pl-8 fade-in-up delay-300">
+                        <div class="absolute -left-2 top-1 w-4 h-4 bg-navy-900 border-2 border-gold-500 rounded-full shadow-gold-glow"></div>
+                        <div class="glass-card p-5 rounded-2xl">
+                            <span class="inline-block px-3 py-1 rounded bg-gold-500/10 text-gold-400 text-xs font-bold mb-2 border border-gold-500/20">พ.ศ. 2546 - 2555</span>
+                            <h3 class="font-heading text-lg text-white font-semibold mb-2">ยุคทองแห่งคุณภาพ (HA)</h3>
+                            <p class="text-sm text-white/70">ผ่านการรับรองคุณภาพสถานพยาบาล (HA) เน้นผู้ป่วยเป็นศูนย์กลาง นำเทคโนโลยีสารสนเทศมาใช้ในระบบเวชระเบียน</p>
+                        </div>
+                    </div>
+                    <!-- Era 5 -->
+                    <div class="relative pl-6 sm:pl-8 fade-in-up delay-300">
+                        <div class="absolute -left-2 top-1 w-4 h-4 bg-gold-500 rounded-full shadow-gold-glow-lg animate-pulse"></div>
+                        <div class="glass-card p-5 rounded-2xl border-gold-500/50 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gold-500/5"></div>
+                            <span class="relative inline-block px-3 py-1 rounded bg-gold-500 text-navy-900 text-xs font-bold mb-2">ปัจจุบัน</span>
+                            <h3 class="relative font-heading text-lg text-gradient-gold font-semibold mb-2">Smart Hospital สู่ก้าวต่อไป</h3>
+                            <p class="relative text-sm text-white/80 mb-3">พัฒนาสู่ระบบดิจิทัลเต็มรูปแบบ เพิ่มบริการคลินิกพิเศษเฉพาะทาง เชื่อมต่อ รพ.สต. แบบไร้รอยต่อ</p>
+                            <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" class="relative w-full h-32 object-cover rounded-xl border border-white/10 mix-blend-luminosity">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SERVICES & SCHEDULE ==================== -->
+        <section id="page-services" class="page-section">
+            <div class="container mx-auto px-4 max-w-4xl pt-6">
+                <div class="mb-6 fade-in-up">
+                    <h2 class="font-heading text-2xl font-bold text-white">ตารางบริการคลินิก</h2>
+                    <p class="text-sm text-gold-400">เวลา 08:00 - 16:00 น. (วันราชการ)</p>
+                </div>
+
+                <!-- Interactive Day Filter -->
+                <div class="flex gap-2 overflow-x-auto hide-scroll pb-2 mb-6 fade-in-up delay-100" id="day-filters">
+                    <button class="day-btn active flex-none px-5 py-2 rounded-full text-sm font-medium border transition-all glass-card border-gold-500 text-gold-400 shadow-gold-glow" data-day="all">ทั้งหมด</button>
+                    <button class="day-btn flex-none px-5 py-2 rounded-full text-sm font-medium border border-white/10 text-white/60 bg-navy-800 hover:text-white transition-all" data-day="mon">จันทร์</button>
+                    <button class="day-btn flex-none px-5 py-2 rounded-full text-sm font-medium border border-white/10 text-white/60 bg-navy-800 hover:text-white transition-all" data-day="tue">อังคาร</button>
+                    <button class="day-btn flex-none px-5 py-2 rounded-full text-sm font-medium border border-white/10 text-white/60 bg-navy-800 hover:text-white transition-all" data-day="wed">พุธ</button>
+                    <button class="day-btn flex-none px-5 py-2 rounded-full text-sm font-medium border border-white/10 text-white/60 bg-navy-800 hover:text-white transition-all" data-day="thu">พฤหัส</button>
+                    <button class="day-btn flex-none px-5 py-2 rounded-full text-sm font-medium border border-white/10 text-white/60 bg-navy-800 hover:text-white transition-all" data-day="fri">ศุกร์</button>
+                </div>
+
+                <!-- Clinic Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 fade-in-up delay-200" id="clinic-grid">
+                    <!-- Data rendered via JS -->
+                </div>
+
+                <div class="mt-8 fade-in-up delay-300">
+                    <h3 class="font-heading text-lg font-bold text-white mb-4">บริการทั่วไป (เปิดทุกวันทำการ)</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="glass-card p-4 rounded-2xl flex flex-col items-center text-center">
+                            <i class="ph ph-syringe text-3xl text-gold-400 mb-2"></i>
+                            <span class="text-xs text-white">ฉีดยา/ทำแผล</span>
+                        </div>
+                        <div class="glass-card p-4 rounded-2xl flex flex-col items-center text-center">
+                            <i class="ph ph-tooth text-3xl text-gold-400 mb-2"></i>
+                            <span class="text-xs text-white">ทันตกรรม</span>
+                        </div>
+                        <div class="glass-card p-4 rounded-2xl flex flex-col items-center text-center">
+                            <i class="ph ph-leaf text-3xl text-gold-400 mb-2"></i>
+                            <span class="text-xs text-white">แพทย์แผนไทย</span>
+                        </div>
+                        <div class="glass-card p-4 rounded-2xl flex flex-col items-center text-center">
+                            <i class="ph ph-person-arms-spread text-3xl text-gold-400 mb-2"></i>
+                            <span class="text-xs text-white">กายภาพบำบัด</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== INTERACTIVE FLOW MAP ==================== -->
+        <section id="page-flow" class="page-section">
+            <div class="container mx-auto px-4 max-w-4xl pt-6">
+                <div class="text-center mb-6 fade-in-up">
+                    <h2 class="font-heading text-2xl font-bold text-white">แผนผังจุดบริการ</h2>
+                    <p class="text-sm text-white/60">เลือกประเภทผู้ป่วยเพื่อดูเส้นทางการรับบริการ</p>
+                </div>
+
+                <!-- Map Controls -->
+                <div class="flex justify-center gap-2 mb-6 fade-in-up delay-100">
+                    <button class="flow-btn active px-4 py-2 text-xs font-medium rounded-lg bg-gold-500/20 text-gold-400 border border-gold-500/50" data-flow="opd">ผู้ป่วยนอก (OPD)</button>
+                    <button class="flow-btn px-4 py-2 text-xs font-medium rounded-lg bg-navy-800 text-white/60 border border-white/10" data-flow="ipd">ผู้ป่วยใน (IPD)</button>
+                    <button class="flow-btn px-4 py-2 text-xs font-medium rounded-lg bg-navy-800 text-white/60 border border-white/10" data-flow="rx">รับยา/ชำระเงิน</button>
+                </div>
+
+                <!-- SVG Map Container -->
+                <div class="glass-card rounded-3xl p-4 sm:p-8 relative overflow-hidden fade-in-up delay-200 shadow-xl border-t border-white/10">
+                    <svg viewBox="0 0 500 400" class="w-full h-auto drop-shadow-lg">
+                        <!-- Background Structure -->
+                        <rect x="50" y="50" width="400" height="300" rx="20" fill="rgba(10, 19, 37, 0.8)" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+                        
+                        <!-- Rooms/Nodes -->
+                        <g class="nodes">
+                            <!-- 1. คัดกรอง -->
+                            <rect x="80" y="180" width="80" height="60" rx="10" fill="#111D36" stroke="rgba(255,255,255,0.2)"/>
+                            <text x="120" y="215" fill="#fff" font-size="12" text-anchor="middle" font-family="Prompt">1. คัดกรอง</text>
+                            
+                            <!-- 2. พบแพทย์ -->
+                            <rect x="210" y="80" width="80" height="60" rx="10" fill="#111D36" stroke="rgba(255,255,255,0.2)"/>
+                            <text x="250" y="115" fill="#fff" font-size="12" text-anchor="middle" font-family="Prompt">2. พบแพทย์</text>
+
+                            <!-- 3. ห้องพักฟื้น IPD -->
+                            <rect x="340" y="80" width="80" height="60" rx="10" fill="#111D36" stroke="rgba(255,255,255,0.2)"/>
+                            <text x="380" y="115" fill="#fff" font-size="12" text-anchor="middle" font-family="Prompt">3. แอดมิท</text>
+
+                            <!-- 4. ชำระเงิน -->
+                            <rect x="210" y="260" width="80" height="60" rx="10" fill="#111D36" stroke="rgba(255,255,255,0.2)"/>
+                            <text x="250" y="295" fill="#fff" font-size="12" text-anchor="middle" font-family="Prompt">4. ชำระเงิน</text>
+
+                            <!-- 5. รับยา -->
+                            <rect x="340" y="260" width="80" height="60" rx="10" fill="#111D36" stroke="rgba(255,255,255,0.2)"/>
+                            <text x="380" y="295" fill="#fff" font-size="12" text-anchor="middle" font-family="Prompt">5. รับยา</text>
+                        </g>
+
+                        <!-- Paths (Hidden by default, animated via JS) -->
+                        <g fill="none" stroke="#D4AF37" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                            <!-- OPD Path: 1 -> 2 -> 4 -> 5 -->
+                            <path id="path-opd" class="flow-path active" d="M160 210 L210 210 L210 110 L210 210 L250 210 L250 260 L290 290 L340 290" />
+                            <!-- IPD Path: 1 -> 2 -> 3 -->
+                            <path id="path-ipd" class="flow-path" d="M160 210 L210 210 L210 110 L290 110 L340 110" />
+                            <!-- RX Path: 4 -> 5 -->
+                            <path id="path-rx" class="flow-path" d="M290 290 L340 290" />
+                        </g>
+
+                        <!-- Highlight Dots -->
+                        <g fill="#FDE047" id="flow-dots">
+                            <circle cx="160" cy="210" r="4" class="animate-pulse"/>
+                            <circle cx="210" cy="110" r="4" class="animate-pulse"/>
+                            <circle cx="250" cy="260" r="4" class="animate-pulse"/>
+                            <circle cx="340" cy="290" r="4" class="animate-pulse"/>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ABOUT & NETWORK ==================== -->
+        <section id="page-about" class="page-section">
+            <div class="container mx-auto px-4 max-w-4xl pt-6">
+                <!-- Vision -->
+                <div class="glass-card p-6 rounded-3xl text-center mb-8 fade-in-up">
+                    <i class="ph ph-eye text-4xl text-gold-500 mb-3"></i>
+                    <h2 class="font-heading text-xl font-bold text-white mb-2">วิสัยทัศน์</h2>
+                    <p class="text-sm text-white/80">"โรงพยาบาลชุมชนคุณภาพคู่คุณธรรม นวัตกรรมนำหน้า ประชาชนมีสุขภาวะ"</p>
+                </div>
+
+                <div class="mb-8 fade-in-up delay-100">
+                    <h3 class="font-heading text-xl font-bold text-white mb-4">เครือข่าย รพ.สต. อำเภอสวี</h3>
+                    <!-- Abstract Network Map -->
+                    <div class="glass-card h-64 rounded-3xl relative overflow-hidden flex items-center justify-center border border-white/10">
+                        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-navy-700 to-navy-900 opacity-50"></div>
+                        
+                        <!-- Nodes (Mockup logic) -->
+                        <div class="relative w-full max-w-xs h-48">
+                            <!-- Center (Hospital) -->
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center z-10">
+                                <div class="w-12 h-12 bg-gold-500 rounded-full flex items-center justify-center shadow-gold-glow-lg border-2 border-white/20 mx-auto mb-1">
+                                    <i class="ph-fill ph-hospital text-navy-900 text-xl"></i>
+                                </div>
+                                <span class="text-[10px] font-bold text-gold-400 bg-navy-900/80 px-2 py-0.5 rounded">รพ.สวี</span>
+                            </div>
+
+                            <!-- Satellites -->
+                            <div class="absolute top-0 left-1/4 node-point cursor-pointer" onclick="showNode('รพ.สต. ปากแพรก')">
+                                <div class="w-3 h-3 bg-white rounded-full shadow-[0_0_10px_#fff] animate-pulse"></div>
+                            </div>
+                            <div class="absolute top-1/4 right-0 node-point cursor-pointer" onclick="showNode('รพ.สต. ทุ่งระยะ')">
+                                <div class="w-3 h-3 bg-white rounded-full shadow-[0_0_10px_#fff] animate-pulse"></div>
+                            </div>
+                            <div class="absolute bottom-1/4 left-0 node-point cursor-pointer" onclick="showNode('รพ.สต. เขาทะลุ')">
+                                <div class="w-3 h-3 bg-white rounded-full shadow-[0_0_10px_#fff] animate-pulse"></div>
+                            </div>
+                            <div class="absolute bottom-0 right-1/4 node-point cursor-pointer" onclick="showNode('รพ.สต. นาโพธิ์')">
+                                <div class="w-3 h-3 bg-white rounded-full shadow-[0_0_10px_#fff] animate-pulse"></div>
+                            </div>
+
+                            <!-- Connecting Lines SVG -->
+                            <svg class="absolute inset-0 w-full h-full -z-10" style="opacity:0.3">
+                                <line x1="50%" y1="50%" x2="25%" y2="0%" stroke="#D4AF37" stroke-width="1" stroke-dasharray="4"/>
+                                <line x1="50%" y1="50%" x2="100%" y2="25%" stroke="#D4AF37" stroke-width="1" stroke-dasharray="4"/>
+                                <line x1="50%" y1="50%" x2="0%" y2="75%" stroke="#D4AF37" stroke-width="1" stroke-dasharray="4"/>
+                                <line x1="50%" y1="50%" x2="75%" y2="100%" stroke="#D4AF37" stroke-width="1" stroke-dasharray="4"/>
+                            </svg>
+                        </div>
+
+                        <!-- Node Info Panel (Hidden initially) -->
+                        <div id="node-info" class="absolute bottom-4 left-4 right-4 glass-card p-3 rounded-xl border-gold-500/30 transform translate-y-full opacity-0 transition-all duration-300">
+                            <h4 class="font-bold text-gold-400 text-sm" id="node-name">รพ.สต.</h4>
+                            <p class="text-xs text-white/70">ระยะทาง: 12 กม. | โทร: 077-xxx-xxx</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== CONTACT & SUPPORT ==================== -->
+        <section id="page-contact" class="page-section">
+            <div class="container mx-auto px-4 max-w-4xl pt-6 space-y-6">
+                
+                <!-- Donation Card (Mockup) -->
+                <div class="glass-card p-6 rounded-3xl border-gold-500/40 relative overflow-hidden fade-in-up">
+                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-gold-500/20 rounded-full blur-2xl"></div>
+                    <div class="flex flex-col md:flex-row items-center gap-6 relative z-10">
+                        <div class="w-32 h-32 bg-white rounded-2xl p-2 flex-shrink-0 mx-auto">
+                            <!-- Mock QR Code -->
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=MockDonation&color=050B14" alt="QR" class="w-full h-full opacity-90 mix-blend-multiply">
+                        </div>
+                        <div class="text-center md:text-left flex-1">
+                            <h3 class="font-heading text-xl font-bold text-gradient-gold mb-2">ร่วมบริจาคสมทบทุน</h3>
+                            <p class="text-xs text-white/70 mb-3 leading-relaxed">เพื่อจัดซื้อเครื่องมือทางการแพทย์ และปรับปรุงอาคารผู้ป่วย สแกนผ่านแอปธนาคาร (ลดหย่อนภาษีได้ 2 เท่า - e-Donation)</p>
+                            <p class="text-sm font-mono bg-navy-900/50 inline-block px-3 py-1 rounded text-gold-300 border border-gold-500/20">เลขที่บัญชี: 123-4-56789-0 (ธ.กรุงไทย)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Complaint Form -->
+                <div class="glass-card p-6 rounded-3xl fade-in-up delay-100">
+                    <h3 class="font-heading text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="ph ph-envelope-open text-gold-500"></i> ข้อเสนอแนะ / ร้องเรียน
+                    </h3>
+                    <form onsubmit="submitComplaint(event)" class="space-y-4">
+                        <input type="text" placeholder="หัวข้อ" required class="w-full bg-navy-900 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-gold-500 transition">
+                        <textarea rows="3" placeholder="รายละเอียด..." required class="w-full bg-navy-900 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-gold-500 transition"></textarea>
+                        <button type="submit" class="w-full btn-gold py-3 rounded-xl shadow-gold-glow">ส่งข้อความ (สร้าง Ticket)</button>
+                    </form>
+                </div>
+
+                <!-- FAQ (Accordion) -->
+                <div class="fade-in-up delay-200">
+                    <h3 class="font-heading text-lg font-bold text-white mb-4">คำถามที่พบบ่อย</h3>
+                    <div class="space-y-2">
+                        <div class="glass-card rounded-xl overflow-hidden cursor-pointer border border-white/5" onclick="toggleFaq(this)">
+                            <div class="p-4 flex justify-between items-center text-sm font-medium text-white/90">
+                                เปิดให้บริการนอกเวลาราชการหรือไม่?
+                                <i class="ph ph-caret-down transition-transform"></i>
+                            </div>
+                            <div class="px-4 pb-0 max-h-0 overflow-hidden transition-all duration-300 text-xs text-white/60 bg-navy-900/30">
+                                <p class="pb-4">แผนกอุบัติเหตุ-ฉุกเฉิน เปิดให้บริการ 24 ชั่วโมง ส่วนคลินิกเฉพาะทางเปิดเฉพาะวันเวลาราชการ (08:00 - 16:00 น.)</p>
+                            </div>
+                        </div>
+                        <div class="glass-card rounded-xl overflow-hidden cursor-pointer border border-white/5" onclick="toggleFaq(this)">
+                            <div class="p-4 flex justify-between items-center text-sm font-medium text-white/90">
+                                ขั้นตอนการรับยาเดิม ทำอย่างไร?
+                                <i class="ph ph-caret-down transition-transform"></i>
+                            </div>
+                            <div class="px-4 pb-0 max-h-0 overflow-hidden transition-all duration-300 text-xs text-white/60 bg-navy-900/30">
+                                <p class="pb-4">สามารถติดต่อจุดคัดกรอง แจ้งความประสงค์รับยาเดิม หากไม่มีอาการผิดปกติ แพทย์จะสั่งจ่ายยาและรับยาได้รวดเร็วขึ้น</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact & Map -->
+                <div class="glass-card p-6 rounded-3xl fade-in-up delay-300">
+                    <h3 class="font-heading text-lg font-bold text-white mb-4">ติดต่อโรงพยาบาล</h3>
+                    <p class="text-sm text-white/70 mb-2"><i class="ph ph-phone mr-2 text-gold-500"></i>077-531-xxx</p>
+                    <p class="text-sm text-white/70 mb-4"><i class="ph ph-map-pin mr-2 text-gold-500"></i>ต.นาโพธิ์ อ.สวี จ.ชุมพร 86130</p>
+                    <div class="w-full h-40 bg-navy-900 rounded-xl overflow-hidden border border-white/10 flex items-center justify-center relative">
+                         <!-- Placeholder for iframe map -->
+                         <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')] bg-cover opacity-30 mix-blend-luminosity"></div>
+                         <button class="relative z-10 glass-card px-4 py-2 rounded-full text-xs font-bold text-gold-400 flex items-center gap-2 hover:bg-gold-500/20 transition">
+                            <i class="ph ph-map-trifold"></i> เปิด Google Maps
+                         </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 w-full z-40 bottom-nav pb-safe">
+        <div class="flex justify-around items-center h-16 max-w-lg mx-auto">
+            <button class="nav-item active flex-1 flex flex-col items-center justify-center gap-1" onclick="switchPage('home')">
+                <i class="ph-fill ph-house text-xl"></i>
+                <span class="text-[9px] font-medium">หน้าแรก</span>
+            </button>
+            <button class="nav-item flex-1 flex flex-col items-center justify-center gap-1" onclick="switchPage('timeline')">
+                <i class="ph ph-hourglass-high text-xl"></i>
+                <span class="text-[9px] font-medium">5 ทศวรรษ</span>
+            </button>
+            <button class="nav-item flex-1 flex flex-col items-center justify-center gap-1" onclick="switchPage('services')">
+                <i class="ph ph-calendar-plus text-xl"></i>
+                <span class="text-[9px] font-medium">บริการ</span>
+            </button>
+            <button class="nav-item flex-1 flex flex-col items-center justify-center gap-1" onclick="switchPage('flow')">
+                <i class="ph ph-git-merge text-xl"></i>
+                <span class="text-[9px] font-medium">เส้นทาง</span>
+            </button>
+            <button class="nav-item flex-1 flex flex-col items-center justify-center gap-1" onclick="switchPage('about')">
+                <i class="ph ph-hospital text-xl"></i>
+                <span class="text-[9px] font-medium">รพ.สต.</span>
+            </button>
+            <button class="nav-item flex-1 flex flex-col items-center justify-center gap-1" onclick="switchPage('contact')">
+                <i class="ph ph-dots-three-circle text-xl"></i>
+                <span class="text-[9px] font-medium">ติดต่อ</span>
+            </button>
+        </div>
+    </nav>
+    <style> @supports (padding-bottom: env(safe-area-inset-bottom)) { .pb-safe { padding-bottom: env(safe-area-inset-bottom); } } </style>
+
+    <!-- MODALS -->
+    <!-- Modal: Check Rights -->
+    <div id="modal-rights" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="glass-card w-[90%] max-w-sm rounded-3xl p-6 border-gold-500/50 transform scale-95 transition-transform duration-300 shadow-gold-glow-lg" id="modal-rights-content">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="font-heading text-lg font-bold text-gold-400">ตรวจสอบสิทธิ</h3>
+                <button onclick="closeModal('modal-rights')" class="text-white/50 hover:text-white"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            <p class="text-xs text-white/70 mb-4">กรุณากรอกเลขบัตรประชาชน 13 หลักเพื่อตรวจสอบสิทธิการรักษาพยาบาล (ระบบจำลอง)</p>
+            <input type="tel" placeholder="x-xxxx-xxxxx-xx-x" class="w-full bg-navy-900 border border-white/20 rounded-xl p-3 text-center tracking-widest text-white mb-4 outline-none focus:border-gold-500">
+            <button onclick="closeModal('modal-rights'); openModal('modal-success')" class="w-full btn-gold py-3 rounded-xl font-bold">ตรวจสอบ</button>
+        </div>
+    </div>
+
+    <!-- Modal: Mock Appointment -->
+    <div id="modal-appointment" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="glass-card w-[90%] max-w-sm rounded-3xl p-6 border-gold-500/50 transform scale-95 transition-transform duration-300 shadow-gold-glow-lg" id="modal-appointment-content">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="font-heading text-lg font-bold text-gold-400">จำลองนัดหมาย</h3>
+                <button onclick="closeModal('modal-appointment')" class="text-white/50 hover:text-white"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            <select class="w-full bg-navy-900 border border-white/20 rounded-xl p-3 text-sm text-white mb-3 outline-none">
+                <option>เลือกคลินิก...</option>
+                <option>คลินิกเบาหวาน</option>
+                <option>คลินิกความดันโลหิตสูง</option>
+                <option>คลินิกทันตกรรม</option>
+            </select>
+            <input type="date" class="w-full bg-navy-900 border border-white/20 rounded-xl p-3 text-sm text-white mb-4 outline-none [color-scheme:dark]">
+            <button onclick="closeModal('modal-appointment'); openModal('modal-success')" class="w-full btn-gold py-3 rounded-xl font-bold">ยืนยันนัดหมาย</button>
+        </div>
+    </div>
+
+    <!-- Modal: Success/Ticket -->
+    <div id="modal-success" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="glass-card w-[80%] max-w-xs rounded-3xl p-6 border-green-500/50 transform scale-95 transition-transform duration-300 text-center text-white" id="modal-success-content">
+            <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/50 shadow-[0_0_15px_rgba(34,197,94,0.4)]">
+                <i class="ph ph-check text-3xl text-green-400"></i>
+            </div>
+            <h3 class="font-heading text-lg font-bold mb-2">ดำเนินการสำเร็จ</h3>
+            <p class="text-xs text-white/70 mb-4" id="ticket-text">Ticket Ref: #SWI-0921</p>
+            <button onclick="closeModal('modal-success')" class="w-full py-2 bg-navy-800 rounded-xl border border-white/10 hover:bg-navy-700 transition">ปิด</button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- Navigation Logic ---
+        function switchPage(targetPageId) {
+            // Update Nav Icons
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.classList.remove('active');
+                const icon = nav.querySelector('i');
+                if(icon) icon.className = icon.className.replace('ph-fill', 'ph');
+            });
+
+            // Set Active Nav
+            const btnIndex = ['home', 'timeline', 'services', 'flow', 'about', 'contact'].indexOf(targetPageId);
+            if(btnIndex !== -1) {
+                const activeNav = document.querySelectorAll('.nav-item')[btnIndex];
+                activeNav.classList.add('active');
+                const icon = activeNav.querySelector('i');
+                if(icon) icon.className = icon.className.replace('ph ', 'ph-fill ');
+            }
+
+            // Hide all pages, show target
+            document.querySelectorAll('.page-section').forEach(page => page.classList.remove('active'));
+            document.getElementById(`page-${targetPageId}`).classList.add('active');
+            window.scrollTo(0, 0);
+
+            // Re-trigger animations in the new active page
+            const elements = document.getElementById(`page-${targetPageId}`).querySelectorAll('.fade-in-up');
+            elements.forEach(el => {
+                el.style.animation = 'none';
+                el.offsetHeight; /* trigger reflow */
+                el.style.animation = null; 
+            });
+        }
+
+        // --- Clinic Data & Filtering Logic ---
+        const clinicData = [
+            { name: 'คลินิกเบาหวาน', days: ['mon', 'fri'], color: 'text-blue-400', border: 'border-blue-500/30', bg: 'bg-blue-500/10' },
+            { name: 'คลินิกความดันโลหิตสูง', days: ['mon'], color: 'text-red-400', border: 'border-red-500/30', bg: 'bg-red-500/10' },
+            { name: 'คลินิกฝากครรภ์', days: ['mon', 'tue', 'wed'], color: 'text-pink-400', border: 'border-pink-500/30', bg: 'bg-pink-500/10' },
+            { name: 'จิตเวช', days: ['tue'], color: 'text-purple-400', border: 'border-purple-500/30', bg: 'bg-purple-500/10' },
+            { name: 'โรคหืดและปอดอุดกั้น', days: ['tue'], color: 'text-teal-400', border: 'border-teal-500/30', bg: 'bg-teal-500/10' },
+            { name: 'ไขมันในเลือด', days: ['wed'], color: 'text-yellow-400', border: 'border-yellow-500/30', bg: 'bg-yellow-500/10' },
+            { name: 'โรคไตเรื้อรัง (พุธ 2,4)', days: ['wed'], color: 'text-orange-400', border: 'border-orange-500/30', bg: 'bg-orange-500/10' },
+            { name: 'วาร์ฟาริน (พุธ 1,3)', days: ['wed'], color: 'text-red-500', border: 'border-red-500/30', bg: 'bg-red-500/10' },
+            { name: 'วัณโรค (พฤหัส 1)', days: ['thu'], color: 'text-emerald-400', border: 'border-emerald-500/30', bg: 'bg-emerald-500/10' },
+            { name: 'โรคเลือด (พฤหัส 2,3,4)', days: ['thu'], color: 'text-rose-400', border: 'border-rose-500/30', bg: 'bg-rose-500/10' },
+            { name: 'เบาหวานระยะสงบ', days: ['mon', 'fri'], color: 'text-indigo-400', border: 'border-indigo-500/30', bg: 'bg-indigo-500/10' },
+            { name: 'เลิกบุหรี่', days: ['mon','tue','wed','thu','fri'], color: 'text-gray-400', border: 'border-gray-500/30', bg: 'bg-gray-500/10' }
+        ];
+
+        function renderClinics(filterDay) {
+            const grid = document.getElementById('clinic-grid');
+            grid.innerHTML = '';
+            
+            const filtered = filterDay === 'all' 
+                ? clinicData 
+                : clinicData.filter(c => c.days.includes(filterDay));
+
+            if(filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-2 text-center text-white/50 text-sm py-4">ไม่มีคลินิกเฉพาะทางในวันนี้ (ให้บริการทั่วไป)</div>`;
+                return;
+            }
+
+            filtered.forEach(clinic => {
+                // Map day codes to Thai names for display
+                const dayMap = { 'mon':'จ.', 'tue':'อ.', 'wed':'พ.', 'thu':'พฤ.', 'fri':'ศ.' };
+                const daysStr = clinic.days.map(d => dayMap[d]).join(', ');
+
+                const card = document.createElement('div');
+                card.className = `glass-card p-4 rounded-2xl flex items-center justify-between border ${clinic.border} hover:bg-white/5 transition cursor-pointer`;
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full ${clinic.bg} ${clinic.color} flex items-center justify-center shrink-0">
+                            <i class="ph-fill ph-stethoscope text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-sm">${clinic.name}</h4>
+                            <p class="text-[10px] text-white/50">ให้บริการ: ${filterDay === 'all' ? daysStr : 'เปิดทำการวันนี้'}</p>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Initialize clinics
+        renderClinics('all');
+
+        // Day Filter Click Events
+        document.querySelectorAll('.day-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Reset styling
+                document.querySelectorAll('.day-btn').forEach(b => {
+                    b.classList.remove('active', 'border-gold-500', 'text-gold-400', 'shadow-gold-glow');
+                    b.classList.add('border-white/10', 'text-white/60', 'bg-navy-800');
+                });
+                // Apply active styling
+                const target = e.target;
+                target.classList.remove('border-white/10', 'text-white/60', 'bg-navy-800');
+                target.classList.add('active', 'border-gold-500', 'text-gold-400', 'shadow-gold-glow', 'glass-card');
+                
+                renderClinics(target.dataset.day);
+            });
+        });
+
+        // --- Interactive Map (Flow) Logic ---
+        document.querySelectorAll('.flow-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Reset Buttons
+                document.querySelectorAll('.flow-btn').forEach(b => {
+                    b.classList.remove('active', 'bg-gold-500/20', 'text-gold-400', 'border-gold-500/50');
+                    b.classList.add('bg-navy-800', 'text-white/60', 'border-white/10');
+                });
+                // Activate clicked button
+                const target = e.target;
+                target.classList.remove('bg-navy-800', 'text-white/60', 'border-white/10');
+                target.classList.add('active', 'bg-gold-500/20', 'text-gold-400', 'border-gold-500/50');
+
+                // Hide all SVG paths
+                document.querySelectorAll('.flow-path').forEach(p => p.classList.remove('active'));
+                
+                // Show target SVG path
+                const flowType = target.dataset.flow;
+                document.getElementById(`path-${flowType}`).classList.add('active');
+
+                // Re-trigger dot animations
+                const dots = document.getElementById('flow-dots');
+                dots.style.display = 'none';
+                setTimeout(() => dots.style.display = 'block', 50);
+            });
+        });
+
+        // --- Network Node Logic ---
+        function showNode(name) {
+            const panel = document.getElementById('node-info');
+            document.getElementById('node-name').innerText = name;
+            
+            panel.classList.remove('translate-y-full', 'opacity-0');
+            
+            // Auto hide after 3 seconds
+            setTimeout(() => {
+                panel.classList.add('translate-y-full', 'opacity-0');
+            }, 3000);
+        }
+
+        // --- FAQ Accordion Logic ---
+        function toggleFaq(el) {
+            const content = el.children[1];
+            const icon = el.querySelector('i');
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                icon.style.transform = "rotate(0deg)";
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                icon.style.transform = "rotate(180deg)";
+            }
+        }
+
+        // --- Modal Logic ---
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            const content = document.getElementById(`${id}-content`);
+            modal.classList.remove('hidden');
+            void modal.offsetWidth; // Force reflow
+            modal.classList.remove('opacity-0');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            const content = document.getElementById(`${id}-content`);
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function submitComplaint(e) {
+            e.preventDefault();
+            const ticketId = Math.floor(Math.random() * 9000) + 1000;
+            document.getElementById('ticket-text').innerText = `Ticket Ref: #SWI-${ticketId}`;
+            e.target.reset(); // clear form
+            openModal('modal-success');
+        }
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('main-header');
+            if (window.scrollY > 50) {
+                header.classList.replace('border-t-0', 'border-b');
+                header.classList.add('border-gold-500/20', 'bg-navy-900/90');
+            } else {
+                header.classList.remove('border-b', 'border-gold-500/20', 'bg-navy-900/90');
+            }
+        });
+
+    </script>
+</body>
+</html>
