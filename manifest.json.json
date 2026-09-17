@@ -1,0 +1,21 @@
+{
+  "name": "ตารางนัด รพ.สวี",
+  "short_name": "นัด สวี",
+  "description": "ระบบแสดงตารางนัดผู้ป่วยนอก โรงพยาบาลสวี",
+  "lang": "th",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait",
+  "background_color": "#070b18",
+  "theme_color": "#070b18",
+  "categories": ["medical", "productivity"],
+  "icons": [
+    { "src": "icon.svg",     "sizes": "any",     "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png",     "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png",     "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png",     "purpose": "maskable" }
+  ]
+}

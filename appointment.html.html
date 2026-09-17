@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070b18">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>ตารางนัด รพ.สวี</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070b18; --card:rgba(255,255,255,.055); --line:rgba(255,255,255,.12);
+  --txt:#e8edf7; --dim:#93a0bd; --acc:#4dd6ff; --acc2:#8b7dff;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--txt);font-family:'IBM Plex Sans Thai',system-ui,sans-serif;
+  font-size:13px;overflow:hidden}
+
+/* ---------- พื้นหลังเคลื่อนไหว ---------- */
+#bg{position:fixed;inset:-35%;z-index:-2;filter:blur(72px);opacity:.78;
+  background:
+    radial-gradient(38% 38% at 20% 25%,#1b5cff 0,transparent 62%),
+    radial-gradient(34% 34% at 80% 18%,#a855f7 0,transparent 62%),
+    radial-gradient(42% 42% at 65% 85%,#06b6d4 0,transparent 62%),
+    radial-gradient(30% 30% at 12% 82%,#f43f5e 0,transparent 62%);
+  animation:drift 28s ease-in-out infinite alternate}
+@keyframes drift{
+  0%{transform:translate(0,0) scale(1) rotate(0deg)}
+  50%{transform:translate(4%,-3%) scale(1.16) rotate(9deg)}
+  100%{transform:translate(-4%,4%) scale(1.08) rotate(-7deg)}}
+#grid{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.32;
+  background:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px) 0 0/100% 34px,
+             linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px) 0 0/34px 100%}
+
+.wrap{height:100%;display:flex;flex-direction:column;max-width:560px;margin:0 auto}
+
+/* ---------- Header ---------- */
+header{padding:9px 12px 7px;backdrop-filter:blur(14px);
+  background:linear-gradient(180deg,rgba(10,14,28,.92),rgba(10,14,28,.55));
+  border-bottom:1px solid var(--line)}
+.hrow{display:flex;align-items:center;gap:8px}
+.hlogo{width:26px;height:26px;flex:0 0 26px}
+h1{margin:0;font-family:'Chakra Petch';font-size:17px;letter-spacing:.3px;line-height:1.15;
+  background:linear-gradient(92deg,#fff,#7fdcff 45%,#b9a8ff);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font-size:10.5px;color:var(--dim);margin-top:3px;display:flex;gap:6px;align-items:center}
+.dot{width:6px;height:6px;border-radius:50%;background:#22e38a;box-shadow:0 0 8px #22e38a;flex:0 0 6px}
+.stale{color:#ff5f6d!important;font-weight:600;animation:blink 1.1s steps(2) infinite}
+.stale .dot{background:#ff5f6d;box-shadow:0 0 10px #ff5f6d}
+@keyframes blink{50%{opacity:.22}}
+.logout{margin-left:auto;font-size:10px;color:var(--dim);background:none;border:none;cursor:pointer;padding:2px 4px}
+
+/* ---------- Tabs / Bar ---------- */
+.tabs{display:flex;gap:5px;padding:7px 12px 0}
+.tab{flex:1;padding:7px;text-align:center;border-radius:9px 9px 0 0;cursor:pointer;
+  font-size:12px;font-weight:600;color:var(--dim);background:rgba(255,255,255,.04);
+  border:1px solid transparent;border-bottom:none;transition:.18s}
+.tab.on{color:#fff;background:linear-gradient(180deg,rgba(77,214,255,.22),rgba(77,214,255,.05));
+  border-color:var(--line);box-shadow:inset 0 2px 0 var(--acc)}
+.bar{display:flex;gap:6px;padding:8px 12px;align-items:center;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  background:rgba(8,12,24,.6);backdrop-filter:blur(12px)}
+select,input,button{font-family:inherit;font-size:12.5px;color:var(--txt);background:var(--card);
+  border:1px solid var(--line);border-radius:9px;padding:7px 9px;outline:none}
+select{flex:1;min-width:0}
+option{background:#121a30}
+button{cursor:pointer;transition:.18s;white-space:nowrap}
+button:hover{border-color:var(--acc);background:rgba(77,214,255,.14)}
+.btn-p{background:linear-gradient(95deg,#2563eb,#7c3aed);border:none;font-weight:600;color:#fff}
+.legend{display:flex;gap:4px;font-size:9px;color:var(--dim);align-items:center;flex-wrap:wrap;
+  padding:5px 12px 0}
+.sw{width:13px;height:9px;border-radius:2px}
+
+main{flex:1;overflow:auto;padding:0 0 62px;-webkit-overflow-scrolling:touch}
+main::-webkit-scrollbar{width:7px;height:7px}
+main::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:4px}
+
+/* ---------- ตาราง ---------- */
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:12px}
+th{position:sticky;top:0;z-index:5;background:#0d1426;color:#a9b7d4;font-weight:600;
+  padding:7px 6px;font-size:10.5px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:0;border-bottom:1px solid rgba(255,255,255,.055);text-align:center}
+.c-date,.c-day{position:sticky;background:#0b1120;z-index:4}
+.c-date{left:0;width:58px;min-width:58px}
+.c-day{left:58px;width:26px;min-width:26px;color:var(--dim);font-size:11px}
+th.c-date,th.c-day{z-index:6}
+.dcell{padding:5px 4px;line-height:1.16}
+.dnum{font-family:'Chakra Petch';font-size:12.5px}
+.dyr{font-size:8.5px;color:var(--dim)}
+.plus{display:inline-block;font-size:8.5px;color:#7fdcff;background:rgba(77,214,255,.14);
+  border-radius:5px;padding:0 3px;margin-top:1px}
+tr.today .c-date,tr.today .c-day{background:#13204a;box-shadow:inset 3px 0 0 var(--acc)}
+tr.wknd .dnum{color:#ff9ab0}
+tr.past{opacity:.42}
+.cell{display:flex;align-items:baseline;justify-content:center;gap:1px;padding:6px 5px;
+  min-width:62px;border-radius:7px;margin:2px;transition:.2s}
+.rem{font-size:10.5px;font-weight:600;opacity:.95}
+.sep{font-size:10px;opacity:.5}
+.bk{font-size:16px;font-weight:700;font-family:'Chakra Petch';
+  background:linear-gradient(180deg,#ffffff,#ccd3e4);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.7))}
+.full .rem{color:#fff;font-weight:700}
+.empty{color:#4a5674;font-size:11px}
+.sum .cell{border:1px solid rgba(255,255,255,.2)}
+.blinky{animation:blink 1.3s steps(2) infinite}
+
+/* ---------- ปฏิทิน ---------- */
+.calnav{display:flex;align-items:center;gap:6px;padding:9px 12px 4px}
+.calnav .mt{flex:1;text-align:center;font-family:'Chakra Petch';font-size:15px}
+.calnav button{padding:6px 11px}
+.calstat{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;
+  font-size:10.5px;color:var(--dim);padding:0 12px 7px}
+.calstat b{color:#cfe3ff;font-family:'Chakra Petch'}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:0 9px 12px}
+.cal .hd{text-align:center;font-size:10px;color:var(--dim);padding:3px 0 5px;font-weight:600}
+.cd{position:relative;min-height:56px;border-radius:10px;border:1px solid rgba(255,255,255,.09);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  background:rgba(255,255,255,.03);transition:.18s}
+.cd .n{position:absolute;top:3px;left:5px;font-size:9.5px;color:rgba(255,255,255,.62);
+  font-family:'Chakra Petch'}
+.cd .v{font-size:19px;font-weight:700;font-family:'Chakra Petch';
+  background:linear-gradient(180deg,#fff,#cdd5e6);-webkit-background-clip:text;
+  background-clip:text;color:transparent;filter:drop-shadow(0 1px 2px rgba(0,0,0,.7))}
+.cd .u{font-size:8.5px;color:rgba(255,255,255,.62);margin-top:-2px}
+.cd.mute{opacity:.22}
+.cd.zero .v{color:#3d4763;background:none;-webkit-text-fill-color:#3d4763;filter:none}
+.cd.now{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc),0 0 16px rgba(77,214,255,.35)}
+.cd.wk .n{color:#ff9ab0}
+
+/* ---------- Footer ---------- */
+footer{position:fixed;bottom:0;left:0;right:0;max-width:560px;margin:0 auto;display:flex;gap:6px;
+  padding:8px 12px;background:rgba(8,12,24,.92);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+footer button{flex:1;padding:9px 6px}
+
+/* ---------- Modal ---------- */
+.mask{position:fixed;inset:0;background:rgba(4,7,16,.84);backdrop-filter:blur(7px);
+  display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.mask.on{display:flex}
+.modal{width:100%;max-width:430px;max-height:86vh;overflow:auto;border-radius:16px;padding:18px;
+  background:linear-gradient(160deg,rgba(24,32,58,.97),rgba(12,17,34,.98));
+  border:1px solid var(--line);box-shadow:0 24px 70px rgba(0,0,0,.65)}
+.modal h2{margin:0 0 4px;font-family:'Chakra Petch';font-size:16px}
+.modal p{margin:0 0 14px;color:var(--dim);font-size:11.5px;line-height:1.55}
+.row{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.row label{flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row input{width:80px;text-align:center}
+.err{color:#ff6b7f;font-size:11.5px;min-height:16px;margin-top:6px}
+.lg{display:flex;flex-direction:column;gap:9px}
+.lg input{padding:12px;text-align:center;font-size:15px;letter-spacing:3px}
+.code{background:#0a0f20;border:1px solid var(--line);border-radius:8px;padding:9px;
+  margin:7px 0;font-size:10.5px;word-break:break-all;font-family:ui-monospace,monospace;color:#9fe8ff}
+</style>
+</head>
+<body>
+<div id="bg"></div><div id="grid"></div>
+
+<!-- ============ LOGIN ============ -->
+<div class="mask on" id="mLogin"><div class="modal" style="text-align:center">
+  <svg viewBox="0 0 512 512" style="width:66px;height:66px;margin-bottom:6px">
+    <defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#06b6d4"/></linearGradient></defs>
+    <rect width="512" height="512" rx="112" fill="url(#lg1)"/>
+    <rect x="92" y="136" width="328" height="284" rx="34" fill="rgba(255,255,255,.14)"
+          stroke="#fff" stroke-width="22"/>
+    <path d="M92 218h328" stroke="#fff" stroke-width="20"/>
+    <path d="M176 96v66M336 96v66" stroke="#fff" stroke-width="24" stroke-linecap="round"/>
+    <path d="M256 258v112M200 314h112" stroke="#fff" stroke-width="34" stroke-linecap="round"/>
+  </svg>
+  <h2 style="text-align:center">ตารางนัด รพ.สวี</h2>
+  <p style="text-align:center">กรุณาใส่รหัสผ่านเพื่อเข้าใช้งาน</p>
+  <div class="lg">
+    <input id="pw" type="password" placeholder="••••••" autocomplete="current-password">
+    <button class="btn-p" style="padding:12px" onclick="doLogin()">เข้าสู่ระบบ</button>
+  </div>
+  <div class="err" id="loginErr"></div>
+</div></div>
+
+<!-- ============ APP ============ -->
+<div class="wrap" id="app" style="display:none">
+  <header>
+    <div class="hrow">
+      <svg class="hlogo" viewBox="0 0 512 512">
+        <defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#06b6d4"/>
+        </linearGradient></defs>
+        <rect width="512" height="512" rx="112" fill="url(#lg2)"/>
+        <rect x="92" y="136" width="328" height="284" rx="34" fill="none" stroke="#fff" stroke-width="26"/>
+        <path d="M92 218h328" stroke="#fff" stroke-width="24"/>
+        <path d="M176 96v66M336 96v66" stroke="#fff" stroke-width="28" stroke-linecap="round"/>
+        <path d="M256 258v112M200 314h112" stroke="#fff" stroke-width="38" stroke-linecap="round"/>
+      </svg>
+      <h1>ตารางนัด รพ.สวี</h1>
+      <button class="logout" onclick="logout()">ออก</button>
+    </div>
+    <div class="sub" id="status"><span class="dot"></span><span id="upd">กำลังโหลด…</span></div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab on" id="tabT" onclick="setView('t')">📋 ตารางนัด</div>
+    <div class="tab"    id="tabC" onclick="setView('c')">🗓 ปฏิทินภาพรวม</div>
+  </div>
+
+  <div class="bar">
+    <select id="selClinic" onchange="render()"><option value="*">ทุกคลินิก</option></select>
+    <select id="selRange" onchange="render()" style="flex:0 0 92px">
+      <option value="30">30 วัน</option><option value="45">45 วัน</option>
+      <option value="60">60 วัน</option><option value="90">90 วัน</option>
+      <option value="m">เดือนนี้</option>
+    </select>
+  </div>
+
+  <div class="legend" id="legend"></div>
+  <main id="out"></main>
+
+  <footer>
+    <button onclick="loadData(1)">↻ รีเฟรช</button>
+    <button id="btnSlot" onclick="openSlot()" style="display:none">⚙ ตั้ง Slot</button>
+    <button onclick="openHelp()">📌 ติดตั้ง</button>
+  </footer>
+</div>
+
+<!-- ============ SLOT ============ -->
+<div class="mask" id="mSlot"><div class="modal">
+  <h2>⚙ ตั้งจำนวน Slot สูงสุด</h2>
+  <p>เว้นว่าง = ไม่จำกัด (∞) · ค่าที่ตั้งใช้กับทุกวันของคลินิกนั้น</p>
+  <div id="slotRows"></div>
+  <div class="err" id="slotErr"></div>
+  <div style="display:flex;gap:8px;margin-top:12px">
+    <button style="flex:1" onclick="closeM('mSlot')">ยกเลิก</button>
+    <button class="btn-p" style="flex:1" onclick="saveSlot()">บันทึก</button>
+  </div>
+</div></div>
+
+<!-- ============ HELP ============ -->
+<div class="mask" id="mHelp"><div class="modal">
+  <h2>📌 เปิดเป็นหน้าต่างลอยข้าง HOSxP</h2>
+  <p>เลือกวิธีใดวิธีหนึ่ง</p>
+  <div style="font-size:12px;line-height:1.75">
+    <b>วิธีที่ 1 — ติดตั้งเป็นแอป</b><br>
+    <button class="btn-p" style="width:100%;margin:6px 0;padding:10px" id="btnPwa"
+            onclick="installApp()">⊞ ติดตั้งแอปเดี๋ยวนี้</button>
+    <span style="color:var(--dim);font-size:11px">ถ้าปุ่มไม่ทำงาน ให้กดไอคอน ⊞ ท้ายช่อง URL ของ Chrome</span>
+    <hr style="border:none;border-top:1px solid var(--line);margin:13px 0">
+    <b>วิธีที่ 2 — Shortcut แนวสูงแคบ (แนะนำ)</b><br>
+    <span style="color:var(--dim);font-size:11px">คลิกขวาที่ Desktop ▸ New ▸ Shortcut ▸ วางข้อความนี้</span>
+    <div class="code" id="cmdBox"></div>
+    <button style="width:100%" onclick="copyCmd()">📋 คัดลอกคำสั่ง</button>
+  </div>
+  <div style="margin-top:12px"><button style="width:100%" onclick="closeM('mHelp')">ปิด</button></div>
+</div></div>
+
+<script>
+/*==================== CONFIG ====================*/
+const API       = 'https://script.google.com/macros/s/XXXXXXXXXXXX/exec'; // ← URL /exec
+const REFRESH   = 60000;   // รีเฟรชทุก 60 วิ
+const STALE_MIN = 5;       // เกินกี่นาที ถือว่าข้อมูลค้าง
+/*================================================*/
+
+let TOKEN = localStorage.getItem('tk') || '';
+let ROLE  = localStorage.getItem('rl') || '';
+let DATA = null, timer = null, deferredPrompt = null;
+let VIEW = 't';
+let calY = 0, calM = 0;
+
+const TH_DAY  = ['อา','จ','อ','พ','พฤ','ศ','ส'];
+const TH_MONS = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const TH_MONL = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
+                 'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
+/*==================== API ====================*/
+async function post(body){
+  const r = await fetch(API,{method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify(body),redirect:'follow'});
+  return r.json();
+}
+async function get(params){
+  const r = await fetch(API+'?'+new URLSearchParams(params),{redirect:'follow'});
+  return r.json();
+}
+
+/*==================== LOGIN ====================*/
+async function doLogin(){
+  const pw = document.getElementById('pw').value.trim();
+  const e  = document.getElementById('loginErr');
+  if(!pw){ e.textContent='กรุณาใส่รหัสผ่าน'; return; }
+  e.textContent='กำลังตรวจสอบ…';
+  try{
+    const j = await post({action:'login',pass:pw});
+    if(!j.ok){ e.textContent=j.err||'เข้าสู่ระบบไม่สำเร็จ'; return; }
+    TOKEN=j.token; ROLE=j.role;
+    localStorage.setItem('tk',TOKEN); localStorage.setItem('rl',ROLE);
+    e.textContent=''; startApp();
+  }catch(x){ e.textContent='เชื่อมต่อไม่ได้: '+x.message; }
+}
+document.getElementById('pw').addEventListener('keydown',ev=>{ if(ev.key==='Enter') doLogin(); });
+function logout(){ localStorage.clear(); location.reload(); }
+
+function startApp(){
+  document.getElementById('mLogin').classList.remove('on');
+  document.getElementById('app').style.display='flex';
+  document.getElementById('btnSlot').style.display = (ROLE==='nurse')?'':'none';
+  const n=new Date(); calY=n.getFullYear(); calM=n.getMonth();
+  loadData(1);
+  clearInterval(timer);
+  timer=setInterval(()=>loadData(0),REFRESH);
+}
+
+/*==================== LOAD ====================*/
+async function loadData(first){
+  if(first) document.getElementById('out').innerHTML =
+    '<div style="padding:40px;text-align:center;color:var(--dim)">กำลังโหลดข้อมูล…</div>';
+  try{
+    const j = await get({action:'data',token:TOKEN});
+    if(!j.ok){ if(j.err==='unauthorized'){ logout(); return; } throw new Error(j.err); }
+    DATA=j; fillClinics(); render();
+  }catch(x){
+    if(first) document.getElementById('out').innerHTML =
+      '<div style="padding:34px;text-align:center;color:#ff6b7f">เชื่อมต่อไม่ได้<br><small>'+
+      esc(x.message)+'</small></div>';
+  }
+}
+function fillClinics(){
+  const s=document.getElementById('selClinic'), cur=s.value;
+  s.innerHTML='<option value="*">ทุกคลินิก</option>'+
+    DATA.clinics.map(c=>`<option value="${esc(c.code)}">${esc(c.name)}</option>`).join('');
+  if([...s.options].some(o=>o.value===cur)) s.value=cur;
+}
+function setView(v){
+  VIEW=v;
+  document.getElementById('tabT').classList.toggle('on',v==='t');
+  document.getElementById('tabC').classList.toggle('on',v==='c');
+  document.getElementById('selRange').style.display = (v==='t')?'':'none';
+  render();
+}
+function render(){ if(!DATA) return; (VIEW==='t')?renderTable():renderCal(); updStatus(); }
+
+/*==================== TABLE VIEW ====================*/
+function renderTable(){
+  document.getElementById('legend').innerHTML =
+    '<span class="sw" style="background:#12b981"></span>ว่าง'+
+    '<span class="sw" style="background:#eab308"></span>ปานกลาง'+
+    '<span class="sw" style="background:#f97316"></span>ใกล้เต็ม'+
+    '<span class="sw" style="background:#ef4444"></span>เต็ม/เกิน'+
+    '<span style="margin-left:5px">· รูปแบบ <b>รับได้อีก / นัดแล้ว</b></span>';
+
+  const mode=document.getElementById('selClinic').value;
+  const rg=document.getElementById('selRange').value;
+  const today=new Date(); today.setHours(0,0,0,0);
+
+  let start,n;
+  if(rg==='m'){ start=new Date(today.getFullYear(),today.getMonth(),1);
+    n=new Date(today.getFullYear(),today.getMonth()+1,0).getDate(); }
+  else { start=new Date(today); n=parseInt(rg,10); }
+
+  const cols = (mode==='*') ? DATA.clinics : DATA.clinics.filter(c=>c.code===mode);
+  if(!cols.length){ document.getElementById('out').innerHTML=
+    '<div style="padding:34px;text-align:center;color:var(--dim)">ยังไม่มีข้อมูลคลินิก</div>'; return; }
+
+  let h='<table><thead><tr><th class="c-date">วันที่</th><th class="c-day">วัน</th>'+
+        cols.map(c=>`<th title="${esc(c.name)}">${esc(shortName(c.name))}</th>`).join('')+
+        (mode==='*'?'<th>รวม</th>':'')+'</tr></thead><tbody>';
+
+  for(let i=0;i<n;i++){
+    const d=new Date(start); d.setDate(start.getDate()+i);
+    const key=iso(d), dw=d.getDay();
+    const diff=Math.round((d-today)/86400000);
+    const cls=[diff===0?'today':'',(dw===0||dw===6)?'wknd':'',diff<0?'past':''].join(' ');
+    h+=`<tr class="${cls}" title="อีก ${diff} วัน">
+      <td class="c-date"><div class="dcell">
+        <div class="dnum">${d.getDate()} ${TH_MONS[d.getMonth()]}</div>
+        <div class="dyr">${(d.getFullYear()+543)%100}</div>
+        ${diff>0?`<div class="plus">+${diff}</div>`:(diff===0?'<div class="plus">วันนี้</div>':'')}
+      </div></td><td class="c-day">${TH_DAY[dw]}</td>`;
+    let tb=0,tm=0,anyMax=false;
+    cols.forEach(c=>{
+      const bk=(DATA.counts[key]&&DATA.counts[key][c.code])||0;
+      tb+=bk; if(c.max!=null){ tm+=c.max; anyMax=true; }
+      h+='<td>'+cellHtml(bk,c.max)+'</td>';
+    });
+    if(mode==='*') h+='<td class="sum">'+cellHtml(tb,anyMax?tm:null)+'</td>';
+    h+='</tr>';
+  }
+  document.getElementById('out').innerHTML=h+'</tbody></table>';
+}
+
+function cellHtml(bk,max){
+  if(bk===0 && (max==null||max===0)) return '<div class="cell"><span class="empty">–</span></div>';
+  if(max==null) return '<div class="cell" style="background:rgba(120,140,190,.18)">'+
+    '<span class="rem" style="color:#9fb0d4">∞</span><span class="sep">/</span>'+
+    '<span class="bk">'+bk+'</span></div>';
+  const rem=max-bk, pct=(max>0)?(bk/max):2, full=rem<=0;
+  return '<div class="cell '+(full?'full':'')+(pct>1.1?' blinky':'')+
+    '" style="background:'+heat(pct)+'">'+
+    '<span class="rem" style="color:'+(full?'#fff':'#e4f7ee')+'">'+(full?'Full':rem)+'</span>'+
+    '<span class="sep">/</span><span class="bk">'+bk+'</span></div>';
+}
+function heat(p){
+  if(p>=1)  return 'linear-gradient(180deg,rgba(239,68,68,.93),rgba(178,26,36,.93))';
+  if(p>=.8) return 'linear-gradient(180deg,rgba(249,115,22,.85),rgba(201,80,10,.85))';
+  if(p>=.5) return 'linear-gradient(180deg,rgba(234,179,8,.74),rgba(181,133,6,.74))';
+  if(p>0)   return 'linear-gradient(180deg,rgba(16,185,129,.72),rgba(5,132,92,.72))';
+  return 'linear-gradient(180deg,rgba(16,185,129,.28),rgba(5,132,92,.28))';
+}
+
+/*==================== CALENDAR VIEW ====================*/
+function renderCal(){
+  const mode=document.getElementById('selClinic').value;
+  const label=(mode==='*')?'ทุกคลินิก':(DATA.clinics.find(c=>c.code===mode)||{}).name;
+  const today=new Date(); today.setHours(0,0,0,0);
+  const first=new Date(calY,calM,1);
+  const dim=new Date(calY,calM+1,0).getDate();
+  const pad=first.getDay();
+
+  /*--- รวมยอดรายวัน + ค่าเฉลี่ย (นับเฉพาะวันที่มีนัด) ---*/
+  const vals=[]; let sum=0,mx=0;
+  for(let i=1;i<=dim;i++){
+    const v=dayTotal(iso(new Date(calY,calM,i)),mode);
+    vals.push(v); if(v>0){ sum+=v; } if(v>mx) mx=v;
+  }
+  const nz=vals.filter(v=>v>0).length;
+  const avg=nz?(sum/nz):0;
+
+  const canPrev = !DATA.minDate || iso(new Date(calY,calM,1)) > DATA.minDate;
+  const canNext = !DATA.maxDate || iso(new Date(calY,calM,dim)) < DATA.maxDate;
+
+  document.getElementById('legend').innerHTML =
+    '<span class="sw" style="background:rgba(16,185,129,.30)"></span>น้อย'+
+    '<span class="sw" style="background:rgba(16,185,129,.75)"></span>ใกล้เฉลี่ย'+
+    '<span class="sw" style="background:rgba(239,68,68,.6)"></span>เกินเฉลี่ย'+
+    '<span class="sw" style="background:rgba(239,68,68,.98)"></span>เกินมาก';
+
+  let h='<div class="calnav">'+
+    '<button onclick="moveMonth(-1)" '+(canPrev?'':'disabled style="opacity:.3"')+'>‹</button>'+
+    '<div class="mt">'+TH_MONL[calM]+' '+(calY+543)+'</div>'+
+    '<button onclick="moveMonth(1)" '+(canNext?'':'disabled style="opacity:.3"')+'>›</button>'+
+    '</div>'+
+    '<div class="calstat"><span>'+esc(label)+'</span>'+
+    '<span>รวม <b>'+sum+'</b> ราย</span>'+
+    '<span>เฉลี่ย <b>'+avg.toFixed(1)+'</b> ราย/วัน</span>'+
+    '<span>สูงสุด <b>'+mx+'</b></span></div>'+
+    '<div class="cal">'+TH_DAY.map(d=>'<div class="hd">'+d+'</div>').join('');
+
+  for(let i=0;i<pad;i++) h+='<div></div>';
+  for(let i=1;i<=dim;i++){
+    const d=new Date(calY,calM,i), key=iso(d), dw=d.getDay();
+    const v=vals[i-1];
+    const diff=Math.round((d-today)/86400000);
+    const cls=['cd',(v===0?'zero':''),(dw===0||dw===6?'wk':''),
+               (diff===0?'now':''),(diff<0?'mute':'')].join(' ');
+    const tip='วันที่ '+i+' '+TH_MONL[calM]+' '+(calY+543)+
+              ' · '+v+' ราย'+(diff>0?(' · อีก '+diff+' วัน'):(diff===0?' · วันนี้':''));
+    h+='<div class="'+cls+'" style="background:'+calHeat(v,avg)+
+       (v>avg*1.6&&avg>0?';animation:blink 1.4s steps(2) infinite':'')+
+       '" title="'+esc(tip)+'"><span class="n">'+i+'</span>'+
+       '<span class="v">'+v+'</span><span class="u">ราย</span></div>';
+  }
+  document.getElementById('out').innerHTML=h+'</div>';
+}
+
+function dayTotal(key,mode){
+  const o=DATA.counts[key]; if(!o) return 0;
+  if(mode!=='*') return o[mode]||0;
+  let s=0; for(const k in o) s+=o[k];
+  return s;
+}
+/* น้อยกว่าเฉลี่ย = เขียวไล่เฉด | มากกว่าเฉลี่ย = แดงไล่เฉด */
+function calHeat(v,avg){
+  if(v===0) return 'rgba(255,255,255,.03)';
+  if(avg<=0) return 'rgba(16,185,129,.45)';
+  const r=v/avg;
+  if(r<=1){ const a=0.16+0.58*Math.min(1,r); return 'rgba(16,185,129,'+a.toFixed(3)+')'; }
+  const t=Math.min(1,(r-1)/0.8);
+  return 'rgba(239,68,68,'+(0.42+0.56*t).toFixed(3)+')';
+}
+function moveMonth(k){
+  const d=new Date(calY,calM+k,1);
+  calY=d.getFullYear(); calM=d.getMonth();
+  renderCal();
+}
+
+/*==================== STATUS ====================*/
+function updStatus(){
+  const s=document.getElementById('status'), u=document.getElementById('upd');
+  const t=DATA.updated;
+  if(!t){ u.textContent='ยังไม่มีข้อมูลจาก HOSxP'; s.classList.add('stale'); return; }
+  const dt=new Date(t.replace(' ','T')+'+07:00');
+  const mins=Math.floor((Date.now()-dt.getTime())/60000);
+  u.textContent='last update '+t.slice(11,16)+' น. · '+
+    (mins<1?'เมื่อสักครู่':(mins<60?mins+' นาทีที่แล้ว':Math.floor(mins/60)+' ชม.ที่แล้ว'));
+  s.classList.toggle('stale',mins>=STALE_MIN);
+}
+
+/*==================== SLOT ====================*/
+function openSlot(){
+  document.getElementById('slotRows').innerHTML = DATA.clinics.map(c=>
+    '<div class="row"><label title="'+esc(c.name)+'">'+esc(c.name)+'</label>'+
+    '<input data-code="'+esc(c.code)+'" type="number" min="0" placeholder="∞" value="'+
+    (c.max==null?'':c.max)+'"></div>').join('');
+  document.getElementById('slotErr').textContent='';
+  document.getElementById('mSlot').classList.add('on');
+}
+async function saveSlot(){
+  const items=[...document.querySelectorAll('#slotRows input')]
+    .map(i=>({code:i.dataset.code,max:i.value.trim()}));
+  const e=document.getElementById('slotErr'); e.textContent='กำลังบันทึก…';
+  try{
+    const j=await post({action:'setslot',token:TOKEN,items});
+    if(!j.ok){ e.textContent=j.err||'บันทึกไม่สำเร็จ'; return; }
+    closeM('mSlot'); loadData(0);
+  }catch(x){ e.textContent='เชื่อมต่อไม่ได้: '+x.message; }
+}
+function closeM(id){ document.getElementById(id).classList.remove('on'); }
+
+/*==================== PWA / INSTALL ====================*/
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault(); deferredPrompt=e;
+});
+function openHelp(){
+  document.getElementById('cmdBox').textContent =
+    '"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" --app='+
+    location.href.split('#')[0]+' --window-size=440,1040 --window-position=1470,0';
+  document.getElementById('btnPwa').style.display = deferredPrompt?'':'none';
+  document.getElementById('mHelp').classList.add('on');
+}
+async function installApp(){
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt=null;
+  document.getElementById('btnPwa').style.display='none';
+}
+function copyCmd(){
+  const t=document.getElementById('cmdBox').textContent;
+  navigator.clipboard.writeText(t).then(()=>alert('คัดลอกแล้ว ✓'))
+    .catch(()=>{ const a=document.createElement('textarea'); a.value=t;
+      document.body.appendChild(a); a.select(); document.execCommand('copy');
+      a.remove(); alert('คัดลอกแล้ว ✓'); });
+}
+if('serviceWorker' in navigator)
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+
+/*==================== UTILS ====================*/
+function iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+
+  '-'+String(d.getDate()).padStart(2,'0'); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,
+  c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function shortName(s){ return String(s).replace(/^คลินิก\s*/,'').trim().slice(0,12); }
+
+if(TOKEN) startApp();
+</script>
+</body>
+</html>
