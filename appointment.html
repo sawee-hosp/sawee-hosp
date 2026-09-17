@@ -224,6 +224,19 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
 .row{display:flex;gap:8px;align-items:center;margin-bottom:6px}
 .row label{flex:1;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row input[type=number]{width:82px;text-align:center}
+
+/* Slot Settings Chip UI */
+.slot-chip {
+  display: inline-block; padding: 5px 9px; font-size: 11px; font-weight: 600;
+  color: var(--dim); background: var(--chip); border: 1px solid var(--line);
+  border-radius: 7px; cursor: pointer; transition: 0.15s; user-select: none;
+}
+.slot-chip:hover { border-color: rgba(77,214,255,0.4); }
+.slot-chip.on {
+  color: var(--txt); background: linear-gradient(180deg,rgba(77,214,255,.2),rgba(77,214,255,.05));
+  border-color: var(--acc); box-shadow: 0 0 8px rgba(77,214,255,.15);
+}
+
 .ck{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;cursor:pointer;
   background:var(--chip);margin-bottom:5px;font-size:13px;transition:.13s}
 .ck:hover{background:rgba(77,214,255,.14)}
@@ -235,22 +248,26 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
 .mfoot{display:flex;gap:8px;margin-top:13px;flex:0 0 auto}
 .mfoot button{flex:1;padding:10px}
 
-/* สไตล์ปุ่มกดตั้งค่า Slot */
-.slot-chip {
-  font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 6px; cursor: pointer;
-  background: var(--card); color: var(--dim); border: 1px solid transparent;
-  transition: .13s; user-select: none; white-space: nowrap;
+/* Popover คำนวณยา */
+#medPop {
+  position: fixed; background: var(--head); border: 1px solid var(--line);
+  border-radius: 12px; padding: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  z-index: 100; display: none; flex-direction: column; gap: 6px;
+  min-width: 170px; color: var(--txt); pointer-events: none;
 }
-.slot-chip:hover { background: var(--hover); border-color: var(--line); }
-.slot-chip.on {
-  background: linear-gradient(180deg,rgba(77,214,255,.25),rgba(77,214,255,.1));
-  color: var(--txt); border-color: var(--acc);
-}
+body.light #medPop { box-shadow: 0 10px 25px rgba(40,60,110,0.25); border-color: rgba(0,0,0,0.08); }
+.med-row { display: flex; justify-content: space-between; font-family: var(--num); font-size: 13px; align-items: center; }
+.med-box { padding: 5px 8px; border-radius: 8px; font-size: 12px; font-weight: 700; flex:1; text-align:center; }
+.mb-day { background: rgba(244,63,94,0.15); color: #f43f5e; border: 1px solid rgba(244,63,94,0.3); }
+.mb-pill { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+body.light .mb-day { background: rgba(225,29,72,0.1); color: #e11d48; }
+body.light .mb-pill { background: rgba(5,150,105,0.1); color: #059669; }
 </style>
 </head>
 <body>
 <div id="bg"></div><div id="grid"></div>
 <div id="toast"></div>
+<div id="medPop"></div>
 
 <!-- ================= LOGIN ================= -->
 <div class="mask on" id="mLogin"><div class="modal" style="text-align:center">
@@ -305,17 +322,14 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
   <div class="bar">
     <button class="pick" id="btnPick" onclick="openPick()">🏥 รวมทุกคลินิก</button>
     
-    <!-- ปุ่มเลือกโหมดวันว่าง (3 สถานะ) -->
     <button id="btnAvail" onclick="toggleAvail()" style="flex:0 0 auto; padding:8px 9px; border-radius:9px; border:1px solid var(--line); background:var(--chip); font-weight:600; font-size:12px; cursor:pointer;" title="ตัวกรองวัน"></button>
 
-    <!-- ตัวเลือก 30, 90, 150 วัน -->
     <select id="selRange" onchange="onRangeChange()" style="flex:0 0 auto; padding:8px 6px; font-weight:600; font-size:12px;">
       <option value="30">30 วัน</option>
       <option value="90">90 วัน</option>
       <option value="150">150 วันข้างหน้า</option>
     </select>
 
-    <!-- ชิปสัปดาห์ 1 ถึง 16 และ All (UI ชมพูไล่สี) -->
     <div class="wk-filters" id="wkFilters" style="display:flex;"></div>
   </div>
 
@@ -387,11 +401,9 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
 </div></div>
 
 <script>
-/*==================== CONFIG ====================*/
 const API='https://script.google.com/macros/s/AKfycbxTI_2167EzQ1GO_eCJtq7BHXuxr8hNUjZ_IWkjefySDkyouU42yjLf5HrswDJHONxY4g/exec';
 const REFRESH=60000, STALE_MIN=5;
 
-/* วันหยุดราชการ */
 const HOLIDAYS={
  '2025-01-01':'ปีใหม่','2025-02-12':'มาฆบูชา','2025-04-06':'จักรี','2025-04-13':'สงกรานต์',
  '2025-04-14':'สงกรานต์','2025-04-15':'สงกรานต์','2025-05-01':'แรงงาน','2025-05-04':'ฉัตรมงคล',
@@ -406,14 +418,11 @@ const HOLIDAYS={
  '2026-07-30':'เข้าพรรษา','2026-08-12':'วันแม่','2026-10-13':'วันนวมินทรมหาราช',
  '2026-10-23':'ปิยมหาราช','2026-12-05':'วันพ่อ','2026-12-10':'รัฐธรรมนูญ','2026-12-31':'สิ้นปี'
 };
-/*================================================*/
 
-/* ตัวแปรระบบ (กำหนดให้ถูกต้อง) */
 let TOKEN=localStorage.getItem('tk')||'', ROLE=localStorage.getItem('rl')||'';
 let DATA=null,timer=null,VIEW='t',loading=false;
 let MODE=localStorage.getItem('md')||'sum';
 let SEL=new Set(JSON.parse(localStorage.getItem('sel')||'[]'));
-/* default เลือก จ-ศ (1,2,3,4,5) */
 let DOW=new Set(JSON.parse(localStorage.getItem('dow')||'[1,2,3,4,5]'));
 let SHOWHOL=localStorage.getItem('hol')==='1';
 let FILTER_MODE=parseInt(localStorage.getItem('fm')||'1',10); // 0=ทุกวัน, 1=เฉพาะมีคลินิก, 2=เฉพาะวันว่าง
@@ -426,7 +435,6 @@ const TH_MS=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','ม�
 const TH_ML=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
              'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 
-/*========== ธีม ==========*/
 function applyTheme(){
   let savedTheme = localStorage.getItem('th');
   if(!savedTheme){ savedTheme = 'light'; localStorage.setItem('th', 'light'); }
@@ -443,7 +451,6 @@ function toggleTheme(){
 }
 applyTheme();
 
-/*========== วันว่าง & ช่วงสัปดาห์ & ตัวเลือกวัน ==========*/
 function toggleAvail(){
   FILTER_MODE = (FILTER_MODE + 1) % 3; // วนลูป 0 -> 1 -> 2
   localStorage.setItem('fm', String(FILTER_MODE));
@@ -499,7 +506,6 @@ function renderWkChips(){
   box.innerHTML = h;
 }
 
-/*========== Login & Remember Password ==========*/
 function initRememberedPw(){
   const saved = localStorage.getItem('saved_pw') || '';
   const pwInput = document.getElementById('pw');
@@ -512,7 +518,6 @@ function initRememberedPw(){
     }
   }
 }
-
 async function doLogin(){
   const pwEl=document.getElementById('pw');
   const pw=(pwEl?pwEl.value:'').trim(), e=document.getElementById('loginErr');
@@ -549,13 +554,14 @@ function startApp(){
   if(selR) selR.value = String(FORWARD_DAYS);
 
   const n=new Date(); calY=n.getFullYear(); calM=n.getMonth();
-  updAvailBtn(); renderWkChips(); updPickLabel(); drawLegend(); skeleton();
+  updAvailBtn(); renderWkChips(); updPickLabel(); drawLegend();
+  
+  // เรียกโหลดครั้งแรก
   loadData(1);
   clearInterval(timer); timer=setInterval(()=>loadData(0),REFRESH);
   document.addEventListener('visibilitychange',()=>{ if(!document.hidden) loadData(0); });
 }
 
-/*========== JSONP + retry ==========*/
 function jsonp(params,ms){
   ms=ms||25000;
   return new Promise((resolve,reject)=>{
@@ -585,7 +591,6 @@ async function call(params,tries){
   throw last;
 }
 
-/*========== Skeleton ==========*/
 function skeleton(){
   let h='<div class="skwrap"><div class="spin"></div>'+
         '<div class="loadtxt">กำลังดึงข้อมูลจาก HOSxP…</div>';
@@ -593,11 +598,14 @@ function skeleton(){
   document.getElementById('out').innerHTML=h+'</div>';
 }
 
-/*========== Load ==========*/
-async function loadData(first){
+async function loadData(forceReload){
   if(loading) return;
   loading=true;
-  if(first&&!DATA) skeleton();
+  if(forceReload) {
+    DATA = null; // ล้างของเดิม
+    document.getElementById('out').innerHTML = ''; // เคลียร์ตารางเดิม
+    skeleton(); // แสดงโครงโหลดวิบวับ
+  }
   try{
     const j=await call({action:'data',token:TOKEN});
     if(!j.ok){ if(j.err==='unauthorized'){ logout(); return; } throw new Error(j.err||'ไม่ทราบสาเหตุ'); }
@@ -606,7 +614,7 @@ async function loadData(first){
     if(!DATA) document.getElementById('out').innerHTML=
       '<div style="padding:36px;text-align:center;color:#e11d48">เชื่อมต่อไม่ได้<br>'+
       '<small style="color:var(--dim)">'+esc(x.message)+'</small><br><br>'+
-      '<button onclick="skeleton();loadData(1)">ลองอีกครั้ง</button></div>';
+      '<button onclick="loadData(1)">ลองอีกครั้ง</button></div>';
     else{ const u=document.getElementById('upd');
       u.textContent=u.textContent.replace(/ ⚠.*$/,'')+' ⚠ รอบล่าสุดไม่สำเร็จ'; }
   }finally{ loading=false; }
@@ -624,7 +632,6 @@ function setView(v){
 }
 function render(){ if(!DATA) return; (VIEW==='t')?renderTable():renderCal(); updStatus(); }
 
-/*========== Legend + ตัวกรองวัน ==========*/
 function drawLegend(){
   const chips=[1,2,3,4,5,6,0].map(d=>
     '<span class="dw'+(DOW.has(d)?' on':'')+'" onclick="tgDow('+d+')">'+TH_DAY[d]+'</span>').join('')+
@@ -649,7 +656,6 @@ function tgDow(d){
 }
 function tgHol(){ SHOWHOL=!SHOWHOL; localStorage.setItem('hol',SHOWHOL?'1':'0'); drawLegend(); render(); }
 
-/*========== เลือกคลินิก ==========*/
 function openPick(){ TMP=new Set(SEL); document.getElementById('pkSearch').value='';
   fillPick(); document.getElementById('mPick').classList.add('on'); }
 function fillPick(){
@@ -691,13 +697,11 @@ function clinicTotals(){
 
 function rangeInfo(){
   const today=new Date(); today.setHours(0,0,0,0);
-  /* เริ่มต้นตั้งแต่วันนี้เป็นต้นไป และบวกไปข้างหน้าตาม FORWARD_DAYS (default 150) */
   const start = new Date(today);
   const n = FORWARD_DAYS;
   return {start, n, today};
 }
 
-/*========== ตารางนัด ==========*/
 function renderTable(){
   const {start,n,today}=rangeInfo();
   const tot=clinicTotals();
@@ -708,7 +712,6 @@ function renderTable(){
   const codes=cols.length?cols.map(c=>c.code):null;
   const maxMap={}; DATA.clinics.forEach(c=>{ maxMap[c.code]=c.max; });
 
-  /* หาค่าสูงสุดในช่วง เพื่อไล่เฉดคลินิกที่ไม่ตั้ง slot */
   const peak={}; let peakSum=0;
   for(let i=0;i<n;i++){
     const d=new Date(start); d.setDate(start.getDate()+i);
@@ -735,21 +738,20 @@ function renderTable(){
     if(codes) codes.forEach(c=>{ sum+=row[c]||0; });
     else for(const k in row) sum+=row[k];
 
-    // ซ่อนวันที่ไม่ตรงกับช่วงสัปดาห์ที่เลือก (แสดงทุกวันในสัปดาห์นั้นที่เข้าเงื่อนไข)
-    // 1wk = วันที่ 1 ถึง 7 ล่วงหน้า, 2wk = วันที่ 8 ถึง 14 ล่วงหน้า
+    // ตัวกรองช่วงสัปดาห์ (แสดงทุกวันที่อยู่ในช่วงสัปดาห์นั้น)
     if(WK_SEL.size > 0){
       if(diff <= 0) continue;
       const targetWk = Math.ceil(diff / 7);
       if(!WK_SEL.has(targetWk)) continue;
     }
 
-    if(!DOW.has(dw)) continue;                       // กรองตามวันในสัปดาห์ (จ-ศ)
-    if(hol&&!SHOWHOL) continue;                      // ซ่อนวันหยุดราชการ
-    if(MODE!=='sum'&&(sum===0||diff<0)) continue;    // เลือกคลินิก → ซ่อนวันว่าง/อดีต
+    if(!DOW.has(dw)) continue;                       
+    if(hol&&!SHOWHOL) continue;                      
+    if(MODE!=='sum'&&(sum===0||diff<0)) continue;    
 
-    // คำนวณความว่างและเงื่อนไขคลินิก
+    // เช็กเงื่อนไขรายคลินิก (วัน/สัปดาห์)
     let isAvailable = false;
-    let isScheduled = false; // มีคลินิกเปิดในวันนี้หรือไม่
+    let isScheduled = false; 
     
     const weekOfMonth = Math.ceil(d.getDate() / 7);
     const dayOfWeek = d.getDay();
@@ -777,17 +779,17 @@ function renderTable(){
       }
     }
     
-    // ตรวจสอบเงื่อนไขปุ่ม FILTER_MODE (0=แสดงทุกวัน, 1=เฉพาะวันที่มีคลินิก, 2=เฉพาะวันว่าง)
+    // ตรวจสอบเงื่อนไขปุ่ม 3 สถานะ
     if (FILTER_MODE >= 1) {
-      if (diff < 0) continue; // ไม่แสดงอดีตในโหมดนี้
-      if (!isScheduled) continue; // ถ้าไม่มีคลินิกเปิดเลย ให้ซ่อน
-      if (FILTER_MODE === 2 && !isAvailable) continue; // ถ้าเลือกวันว่างแล้วมันไม่ว่าง ให้ซ่อน
+      if (diff < 0) continue; 
+      if (!isScheduled) continue; 
+      if (FILTER_MODE === 2 && !isAvailable) continue; 
     }
 
     shown++;
 
     const cls=[diff===0?'today':'',(dw===0||dw===6)?'wknd':'',diff<0?'past':''].join(' ');
-    h+='<tr class="'+cls+'"><td class="c-date"><div class="dcell">'+
+    h+='<tr class="'+cls+'"><td class="c-date" onmouseenter="showMed(event,'+diff+')" onmouseleave="hideMed()"><div class="dcell">'+
       '<div class="dnum">'+d.getDate()+' '+TH_MS[d.getMonth()]+' '+((d.getFullYear()+543)%100)+
       (hol?'<span class="hol" title="'+esc(hol)+'">หยุด</span>':'')+'</div>'+
       (diff>0?'<div class="plus num">+'+diff+' วัน</div>'
@@ -804,7 +806,6 @@ function renderTable(){
   document.getElementById('out').innerHTML=h;
 }
 
-/* ช่องรวม — ไม่มี Full แสดงแค่จำนวน */
 function sumCell(v,peak){
   if(v===0) return '<div class="cell"><span class="empty">–</span></div>';
   const r=peak>0?(v/peak):0;
@@ -812,10 +813,9 @@ function sumCell(v,peak){
   return '<div class="cell" style="background:rgba(99,140,225,'+a+')"><span class="bk">'+v+'</span></div>';
 }
 
-/* ช่องคลินิก */
 function cellHtml(bk,max,peak){
   if(bk===0&&(max==null||max===0)) return '<div class="cell"><span class="empty">–</span></div>';
-  if(max==null){          // ไม่ตั้ง slot → ไล่เฉดเฉย ๆ ไม่มี Full ไม่กระพริบ
+  if(max==null){
     const r=peak>0?(bk/peak):0;
     const a=(0.16+0.46*r).toFixed(3);
     return '<div class="cell" style="background:rgba(94,166,225,'+a+')">'+
@@ -835,7 +835,6 @@ function heat(p){
   return 'linear-gradient(180deg,rgba(16,185,129,.24),rgba(5,130,91,.24))';
 }
 
-/*========== ปฏิทิน ==========*/
 function renderCal(){
   const label=MODE==='sel'?('เลือก '+SEL.size+' คลินิก'):'ทุกคลินิก';
   const today=new Date(); today.setHours(0,0,0,0);
@@ -883,7 +882,6 @@ function calHeat(v,avg){
 }
 function moveMonth(k){ const d=new Date(calY,calM+k,1); calY=d.getFullYear(); calM=d.getMonth(); renderCal(); }
 
-/*========== สถานะ / บันทึกมุมมอง ==========*/
 function updStatus(){
   const s=document.getElementById('status'), u=document.getElementById('upd'), t=DATA.updated;
   if(!t){ u.textContent='ยังไม่มีข้อมูลจาก HOSxP'; s.classList.add('stale'); return; }
@@ -909,29 +907,58 @@ function toast(msg){
   clearTimeout(tmT); tmT=setTimeout(()=>t.classList.remove('on'),2200);
 }
 
-/*========== Slot (อัปเดต UI แบบปุ่มชิป Multi-Select) ==========*/
+/* Hover แสดง Popover คำนวณยา (แยกเป็นกล่องสีชัดเจน) */
+function showMed(e, diff) {
+  if(diff <= 0) return; // ซ่อนสำหรับอดีตและวันนี้
+  
+  // ปัดเศษขึ้นให้เป็นจำนวนเต็ม 10 (เช่น 91 -> 100)
+  const n = Math.ceil(diff / 10) * 10;
+  
+  let h = '<div style="display:flex; gap:6px; margin-bottom:4px; justify-content:center;">'+
+          '<div class="med-box mb-day">นัด <span class="num" style="font-size:14px">'+diff+'</span> วัน</div>'+
+          '<div class="med-box mb-pill">สั่งยา <span class="num" style="font-size:14px">'+n+'</span></div>'+
+          '</div>';
+          
+  for(let i=1; i<=6; i++) {
+    h += '<div class="med-row"><span style="color:var(--dim)">ตัวคูณ '+i+'</span><b style="font-size:14.5px">'+(i*n)+'</b></div>';
+  }
+  
+  const pop = document.getElementById('medPop');
+  pop.innerHTML = h;
+  pop.style.display = 'flex';
+  
+  let top = e.clientY - 40;
+  let left = e.clientX + 30;
+  if(left + 180 > window.innerWidth) left = window.innerWidth - 190;
+  if(top + 240 > window.innerHeight) top = window.innerHeight - 250;
+  if(top < 10) top = 10;
+  
+  pop.style.top = top + 'px';
+  pop.style.left = left + 'px';
+}
+function hideMed() {
+  const pop = document.getElementById('medPop');
+  if (pop) pop.style.display = 'none';
+}
+
 function openSlot(){
   if(!DATA || !DATA.clinics) return toast('⚠ ข้อมูลยังไม่พร้อม กรุณารอสักครู่');
-  
-  const dowArr = ['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
+  const dowArr = ['อา','จ','อ','พ','พฤ','ศ','ส'];
   
   document.getElementById('slotRows').innerHTML=DATA.clinics.map(c=>{
-    // แปลงค่าที่โหลดมาจากฐานข้อมูลให้เป็น Array ไว้เช็คเพื่อเปลี่ยนสีปุ่ม
     const cdow = c.dow ? String(c.dow).split(',') : [];
     const cwom = c.wom ? String(c.wom).split(',') : [];
     
-    // สร้างปุ่มวันในสัปดาห์ 0-6
     let dowHtml = '';
     for(let i=0; i<7; i++){
       let on = cdow.includes(String(i)) ? ' on' : '';
       dowHtml += `<span class="slot-chip${on}" data-val="${i}" onclick="tgSlot(this,'dow','${esc(c.code)}')">${dowArr[i]}</span>`;
     }
     
-    // สร้างปุ่มสัปดาห์ของเดือน 1-5
     let womHtml = '';
     for(let i=1; i<=5; i++){
       let on = cwom.includes(String(i)) ? ' on' : '';
-      womHtml += `<span class="slot-chip${on}" data-val="${i}" onclick="tgSlot(this,'wom','${esc(c.code)}')">สัปดาห์ ${i}</span>`;
+      womHtml += `<span class="slot-chip${on}" data-val="${i}" onclick="tgSlot(this,'wom','${esc(c.code)}')">wk${i}</span>`;
     }
 
     return `
@@ -941,13 +968,13 @@ function openSlot(){
         <input data-code="${esc(c.code)}" type="number" min="0" placeholder="Max Slot (เว้น=∞)" value="${c.max==null?'':c.max}" style="width:135px; flex:0 0 auto;">
       </div>
       
-      <div style="font-size:11px; color:var(--dim); margin-bottom:6px;">เลือกวันเปิดรับนัด (ถ้าไม่เลือก = รับทุกวัน)</div>
+      <div style="font-size:11px; color:var(--dim); margin-bottom:6px;">วันเปิดรับนัด (ไม่เลือก = รับทุกวัน)</div>
       <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;">
         ${dowHtml}
         <input type="hidden" data-dow="${esc(c.code)}" value="${esc(c.dow||'')}">
       </div>
       
-      <div style="font-size:11px; color:var(--dim); margin-bottom:6px;">เลือกสัปดาห์ของเดือน (ถ้าไม่เลือก = รับทุกสัปดาห์)</div>
+      <div style="font-size:11px; color:var(--dim); margin-bottom:6px;">สัปดาห์ของเดือน (ไม่เลือก = รับทุกสัปดาห์)</div>
       <div style="display:flex; flex-wrap:wrap; gap:5px;">
         ${womHtml}
         <input type="hidden" data-wom="${esc(c.code)}" value="${esc(c.wom||'')}">
@@ -959,13 +986,10 @@ function openSlot(){
   document.getElementById('mSlot').classList.add('on');
 }
 
-/* ฟังก์ชันกดสลับสีปุ่มและอัปเดตค่าเข้า Input ซ่อนไว้รอเซฟ */
 function tgSlot(btn, type, code){
   btn.classList.toggle('on');
   const box = btn.parentElement;
-  // ดึงค่าของปุ่มทั้งหมดในกลุ่มนี้ที่มีคลาส .on
   const vals = Array.from(box.querySelectorAll('.on')).map(el=>el.dataset.val);
-  // ใส่ค่าที่คั่นด้วยลูกน้ำลงใน Input
   box.querySelector(`input[data-${type}="${code}"]`).value = vals.join(',');
 }
 
@@ -982,12 +1006,11 @@ async function saveSlot(){
   try{
     const j=await call({action:'setslot',token:TOKEN,items:JSON.stringify(items)});
     if(!j.ok){ e.textContent=j.err||'บันทึกไม่สำเร็จ'; return; }
-    closeM('mSlot'); toast('✓ บันทึก Slot แล้ว'); loadData(0);
+    closeM('mSlot'); toast('✓ บันทึก Slot แล้ว'); loadData(1);
   }catch(x){ e.textContent='เชื่อมต่อไม่ได้: '+x.message; }
 }
 function closeM(id){ document.getElementById(id).classList.remove('on'); }
 
-/*========== สร้าง Shortcut แบบ Manual ==========*/
 function openHelp(){
   const targetUrl = "https://sawee-hosp.github.io/sawee-hosp/appointment.html";
   const cmd = `"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" --app="${targetUrl}" --window-size=300,1040 --window-position=0,0`;
@@ -1003,7 +1026,6 @@ function copyCmd(){
   });
 }
 
-/*========== Utils ==========*/
 function iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+
   String(d.getDate()).padStart(2,'0'); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,
