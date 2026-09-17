@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#070b18">
+<meta name="theme-color" content="#eef1f7">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<!-- SVG Favicon ปฏิทินแบบ Data URI สวยงามและไม่ต้องใช้ไฟล์ภายนอก -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230a84c9'><path d='M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5z'/></svg>" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>ตารางนัด รพ.สวี</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,7 +37,6 @@ body{background:var(--bg);color:var(--txt);font-family:var(--fnt);font-size:13.5
   transition:background .3s,color .3s}
 .num{font-family:var(--num);font-variant-numeric:tabular-nums}
 
-/* ---------- พื้นหลัง ---------- */
 #bg{position:fixed;inset:-30%;z-index:-2;filter:blur(64px);opacity:.72;
   will-change:transform;transform:translateZ(0);
   background:
@@ -62,9 +62,8 @@ body.light #grid{opacity:.5;
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
 @media(prefers-reduced-motion:reduce){#bg{animation:none}}
 
-.wrap{height:100%;display:flex;flex-direction:column;max-width:640px;margin:0 auto;position:relative}
+.wrap{height:100%;display:flex;flex-direction:column;width:100%;max-width:100%;margin:0;position:relative}
 
-/* ---------- Header ---------- */
 header{padding:9px 12px 7px;backdrop-filter:blur(14px);z-index:20;
   background:linear-gradient(180deg,rgba(10,14,28,.93),rgba(10,14,28,.6));
   border-bottom:1px solid var(--line)}
@@ -84,14 +83,13 @@ body.light h1{background:linear-gradient(92deg,#0f2f6b,#0a84c9 55%,#6d4fd0);
 .stale{color:#ff6070!important;font-weight:600;animation:pulse 1.6s ease-in-out infinite}
 .stale .dot{background:#ff6070;box-shadow:0 0 10px #ff6070}
 
-/* ---------- Tabs / Bar ---------- */
 .tabs{display:flex;gap:5px;padding:7px 12px 0}
 .tab{flex:1;padding:7px;text-align:center;border-radius:10px 10px 0 0;cursor:pointer;
   font-size:12.5px;font-weight:600;color:var(--dim);background:var(--chip);
   border:1px solid transparent;border-bottom:none;transition:.16s}
 .tab.on{color:var(--txt);background:linear-gradient(180deg,rgba(77,214,255,.22),rgba(77,214,255,.05));
   border-color:var(--line);box-shadow:inset 0 2px 0 var(--acc)}
-.bar{display:flex;gap:6px;padding:8px 12px;align-items:center;
+.bar{display:flex;gap:6px;padding:8px 12px;align-items:center; flex-wrap:wrap;
   border-top:1px solid var(--line);border-bottom:1px solid var(--line);
   background:var(--chip);backdrop-filter:blur(12px)}
 select,input,button{font-family:inherit;font-size:13px;color:var(--txt);background:var(--card);
@@ -100,9 +98,18 @@ option{background:var(--head);color:var(--txt)}
 button{cursor:pointer;transition:.16s;white-space:nowrap}
 button:hover{border-color:var(--acc)}
 .btn-p{background:linear-gradient(95deg,#2563eb,#7c3aed);border:none;font-weight:600;color:#fff}
-.pick{flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.pick{flex:1;min-width:130px;text-align:left;overflow:hidden;text-overflow:ellipsis;font-weight:600}
 
-/* ---------- Legend + DOW chips ---------- */
+/* สไตล์ชิปเลือกสัปดาห์ 1-16 + All โทนชมพูไล่สี */
+.wk-filters{display:flex;gap:3px;width:100%;overflow-x:auto;padding:3px 0 2px;align-items:center}
+.wk-filters::-webkit-scrollbar{display:none;}
+.wkw{font-size:10.5px;font-weight:600;padding:3px 7px;border-radius:6px;cursor:pointer;
+  background:var(--chip);color:var(--dim);border:1px solid transparent;
+  transition:.13s;user-select:none;min-width:24px;text-align:center;white-space:nowrap;flex:0 0 auto}
+.wkw:hover{border-color:rgba(236,72,153,.4)}
+.wkw.on{background:linear-gradient(180deg,rgba(236,72,153,.34),rgba(244,63,94,.16));
+  color:var(--txt);border-color:#ec4899;box-shadow:0 0 8px rgba(236,72,153,.28)}
+
 .legend{display:flex;gap:4px;font-size:10px;color:var(--dim);align-items:center;
   flex-wrap:wrap;padding:6px 12px 2px}
 .sw{width:14px;height:9px;border-radius:2px}
@@ -118,7 +125,6 @@ main{flex:1;overflow:auto;padding:0 0 66px;-webkit-overflow-scrolling:touch;posi
 main::-webkit-scrollbar{width:8px;height:8px}
 main::-webkit-scrollbar-thumb{background:rgba(128,145,180,.45);border-radius:4px}
 
-/* ---------- Skeleton ---------- */
 @keyframes shim{0%{background-position:-420px 0}100%{background-position:420px 0}}
 .sk{height:34px;border-radius:9px;margin:6px 12px;
   background:linear-gradient(90deg,var(--chip) 8%,rgba(128,150,200,.22) 18%,var(--chip) 33%);
@@ -129,7 +135,6 @@ main::-webkit-scrollbar-thumb{background:rgba(128,145,180,.45);border-radius:4px
 @keyframes spin{to{transform:rotate(360deg)}}
 .loadtxt{text-align:center;color:var(--dim);font-size:12px;padding-bottom:4px}
 
-/* ---------- ตาราง ---------- */
 table{border-collapse:separate;border-spacing:0;width:100%}
 th{position:sticky;top:0;z-index:6;background:var(--head);color:var(--dim);font-weight:600;
   padding:8px 6px;font-size:11px;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -168,7 +173,6 @@ tr:hover td{background-color:var(--hover)}
 .empty{color:var(--dim);opacity:.5;font-size:12px}
 .c-sum .cell{border:1px solid var(--line);min-width:0}
 
-/* ---------- ปฏิทิน ---------- */
 .calnav{display:flex;align-items:center;gap:6px;padding:10px 12px 4px}
 .calnav .mt{flex:1;text-align:center;font-size:15.5px;font-weight:700}
 .calnav button{padding:6px 13px;font-size:15px}
@@ -193,21 +197,18 @@ tr:hover td{background-color:var(--hover)}
   animation:pulse 1.8s ease-in-out infinite}
 .cd.wk .n{color:#e5567a}
 
-/* ---------- Footer ---------- */
-footer{position:fixed;bottom:0;left:0;right:0;max-width:640px;margin:0 auto;display:flex;gap:5px;
+footer{position:fixed;bottom:0;left:0;right:0;width:100%;max-width:100%;margin:0 auto;display:flex;gap:5px;
   padding:9px 10px;background:rgba(7,11,22,.97);backdrop-filter:blur(16px);
   border-top:1px solid var(--line);z-index:40;box-shadow:0 -6px 22px rgba(0,0,0,.5)}
 body.light footer{background:rgba(248,250,254,.97);box-shadow:0 -6px 22px rgba(60,80,130,.16)}
 footer button{flex:1;padding:10px 4px;font-weight:600;font-size:12.5px}
 
-/* ---------- Toast ---------- */
 #toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%) translateY(14px);
   background:linear-gradient(95deg,#16a34a,#0d9488);color:#fff;padding:9px 18px;border-radius:11px;
   font-size:12.5px;font-weight:600;z-index:90;opacity:0;pointer-events:none;
   transition:opacity .25s,transform .25s;box-shadow:0 8px 26px rgba(0,0,0,.4)}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ---------- Modal ---------- */
 .mask{position:fixed;inset:0;background:rgba(4,7,16,.85);backdrop-filter:blur(8px);
   display:none;align-items:center;justify-content:center;z-index:80;padding:16px}
 body.light .mask{background:rgba(190,205,230,.75)}
@@ -232,8 +233,6 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
 .err{color:#e11d48;font-size:12px;min-height:17px;margin-top:6px}
 .lg{display:flex;flex-direction:column;gap:9px}
 .lg input{padding:13px;text-align:center;font-size:16px;letter-spacing:3px}
-.code{background:var(--chip);border:1px solid var(--line);border-radius:8px;padding:9px;margin:7px 0;
-  font-size:11px;word-break:break-all;font-family:ui-monospace,Consolas,monospace;color:#2f9fd6}
 .mfoot{display:flex;gap:8px;margin-top:13px;flex:0 0 auto}
 .mfoot button{flex:1;padding:10px}
 </style>
@@ -258,6 +257,10 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
   <p>กรุณาใส่รหัสผ่านเพื่อเข้าใช้งาน</p>
   <div class="lg">
     <input id="pw" type="password" placeholder="••••••" autocomplete="current-password">
+    <label style="display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;color:var(--dim);cursor:pointer;user-select:none;margin-top:-2px">
+      <input type="checkbox" id="chkRememberPw" style="width:16px;height:16px;accent-color:#2563eb" checked>
+      จำรหัสผ่านในเครื่องนี้
+    </label>
     <button class="btn-p" style="padding:13px" onclick="doLogin()">เข้าสู่ระบบ</button>
   </div>
   <div class="err" id="loginErr"></div>
@@ -290,11 +293,19 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
 
   <div class="bar">
     <button class="pick" id="btnPick" onclick="openPick()">🏥 รวมทุกคลินิก</button>
-    <select id="selRange" onchange="render()" style="flex:0 0 96px">
-      <option value="30">30 วัน</option><option value="45">45 วัน</option>
-      <option value="60">60 วัน</option><option value="90">90 วัน</option>
-      <option value="m">เดือนนี้</option>
+    
+    <!-- ปุ่มเลือกโหมดวันว่าง (อยู่หน้าปุ่มเลือกช่วงวัน) -->
+    <button id="btnAvail" onclick="toggleAvail()" style="flex:0 0 auto; padding:8px 9px; border-radius:9px; border:1px solid var(--line); background:var(--chip); font-weight:600; font-size:12px; cursor:pointer;" title="ซ่อนวันที่คิวเต็มทั้งหมด">✅ แสดงทุกวัน</button>
+
+    <!-- ตัวเลือก 30, 90, 150 วัน (Default = 150 วัน) -->
+    <select id="selRange" onchange="onRangeChange()" style="flex:0 0 auto; padding:8px 6px; font-weight:600; font-size:12px;">
+      <option value="30">30 วัน</option>
+      <option value="90">90 วัน</option>
+      <option value="150" selected>150 วันข้างหน้า</option>
     </select>
+
+    <!-- ชิปสัปดาห์ 1 ถึง 16 และ All (UI ชมพูไล่สี) -->
+    <div class="wk-filters" id="wkFilters" style="display:flex;"></div>
   </div>
 
   <div class="legend" id="legend"></div>
@@ -304,7 +315,7 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
     <button onclick="loadData(1)">↻ รีเฟรช</button>
     <button onclick="saveView()">💾 บันทึกมุมมอง</button>
     <button id="btnSlot" onclick="openSlot()" style="display:none">⚙ Slot</button>
-    <button onclick="openHelp()">📌 ติดตั้ง</button>
+    <button onclick="openHelp()">📌 ติดตั้งหน้าต่างลอย</button>
   </footer>
 </div>
 
@@ -340,16 +351,20 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
 <!-- ================= HELP ================= -->
 <div class="mask" id="mHelp"><div class="modal">
   <h2>📌 เปิดเป็นหน้าต่างลอยข้าง HOSxP</h2>
-  <p>เลือกวิธีใดวิธีหนึ่ง</p>
+  <p>ขนาดกว้าง 300px พอดีขอบจอ</p>
   <div class="mbody" style="font-size:12.5px;line-height:1.75">
-    <b>วิธีที่ 1 — ติดตั้งเป็นแอป</b><br>
-    <button class="btn-p" style="width:100%;margin:6px 0;padding:10px" id="btnPwa" onclick="installApp()">⊞ ติดตั้งแอปเดี๋ยวนี้</button>
-    <span style="color:var(--dim);font-size:11.5px">ถ้าปุ่มไม่ขึ้น ให้กดไอคอน ⊞ ท้ายช่อง URL ของ Chrome</span>
-    <hr style="border:none;border-top:1px solid var(--line);margin:13px 0">
-    <b>วิธีที่ 2 — Shortcut แนวสูงแคบ (แนะนำ)</b><br>
-    <span style="color:var(--dim);font-size:11.5px">คลิกขวาที่ Desktop ▸ New ▸ Shortcut ▸ วางข้อความนี้</span>
-    <div class="code" id="cmdBox"></div>
-    <button style="width:100%" onclick="copyCmd()">📋 คัดลอกคำสั่ง</button>
+    <b>วิธีสร้าง Shortcut ด้วยตนเอง (ชัวร์ที่สุด)</b><br>
+    <span style="color:var(--dim);font-size:11.5px">
+    1. คลิกขวาที่พื้นที่ว่างบนหน้า Desktop เลือก <b>New ▸ Shortcut</b><br>
+    2. คัดลอกคำสั่งด้านล่างนี้ไปวางในช่อง Location:
+    </span>
+    <textarea id="cmdBox" readonly style="width:100%;height:68px;margin:7px 0;padding:8px;font-size:11px;font-family:monospace;background:var(--chip);color:#4dd6ff;border:1px solid var(--line);border-radius:6px;resize:none;"></textarea>
+    <button class="btn-p" style="width:100%;padding:10px;margin-bottom:8px" onclick="copyCmd()">📋 คัดลอกคำสั่ง</button>
+    <span style="color:var(--dim);font-size:11.5px">
+    3. กด Next แล้วตั้งชื่อว่า <b>ดูวันนัด</b> และกด Finish<br>
+    <br>
+    <b style="color:#f43f5e">หมายเหตุ:</b> หากเปิดไม่ขึ้น ให้ลองเปลี่ยน <code>Program Files</code> ในคำสั่งเป็น <code>Program Files (x86)</code>
+    </span>
   </div>
   <div class="mfoot"><button onclick="closeM('mHelp')">ปิด</button></div>
 </div></div>
@@ -359,7 +374,7 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
 const API='https://script.google.com/macros/s/AKfycbxTI_2167EzQ1GO_eCJtq7BHXuxr8hNUjZ_IWkjefySDkyouU42yjLf5HrswDJHONxY4g/exec';
 const REFRESH=60000, STALE_MIN=5;
 
-/* วันหยุดราชการ — แก้ไข/เพิ่มได้ตามประกาศแต่ละปี */
+/* วันหยุดราชการ */
 const HOLIDAYS={
  '2025-01-01':'ปีใหม่','2025-02-12':'มาฆบูชา','2025-04-06':'จักรี','2025-04-13':'สงกรานต์',
  '2025-04-14':'สงกรานต์','2025-04-15':'สงกรานต์','2025-05-01':'แรงงาน','2025-05-04':'ฉัตรมงคล',
@@ -377,11 +392,15 @@ const HOLIDAYS={
 /*================================================*/
 
 let TOKEN=localStorage.getItem('tk')||'', ROLE=localStorage.getItem('rl')||'';
-let DATA=null,timer=null,deferredPrompt=null,VIEW='t',loading=false;
+let DATA=null,timer=null,VIEW='t',loading=false;
 let MODE=localStorage.getItem('md')||'sum';
 let SEL=new Set(JSON.parse(localStorage.getItem('sel')||'[]'));
+/* default เลือก จ-ศ (1,2,3,4,5) */
 let DOW=new Set(JSON.parse(localStorage.getItem('dow')||'[1,2,3,4,5]'));
 let SHOWHOL=localStorage.getItem('hol')==='1';
+let ONLY_AVAIL=localStorage.getItem('avail')==='1';
+let FORWARD_DAYS=parseInt(localStorage.getItem('forwardDays')||'150',10);
+let WK_SEL=new Set(JSON.parse(localStorage.getItem('wk_sel')||'[]'));
 let TMP=new Set(),calY=0,calM=0;
 
 const TH_DAY=['อา','จ','อ','พ','พฤ','ศ','ส'];
@@ -391,7 +410,9 @@ const TH_ML=['มกราคม','กุมภาพันธ์','มีนา
 
 /*========== ธีม ==========*/
 function applyTheme(){
-  const light=localStorage.getItem('th')==='light';
+  let savedTheme = localStorage.getItem('th');
+  if(!savedTheme){ savedTheme = 'light'; localStorage.setItem('th', 'light'); }
+  const light = savedTheme === 'light';
   document.body.classList.toggle('light',light);
   const b=document.getElementById('btnTheme');
   if(b) b.textContent=light?'☀️':'🌙';
@@ -399,12 +420,118 @@ function applyTheme(){
   if(m) m.setAttribute('content',light?'#eef1f7':'#070b18');
 }
 function toggleTheme(){
-  localStorage.setItem('th',localStorage.getItem('th')==='light'?'dark':'light');
+  localStorage.setItem('th',localStorage.getItem('th')==='dark'?'light':'dark');
   applyTheme();
 }
 applyTheme();
 
-/*========== JSONP + retry (กัน Unexpected token '<') ==========*/
+/*========== วันว่าง & ช่วงสัปดาห์ & ตัวเลือกวัน ==========*/
+function toggleAvail(){
+  ONLY_AVAIL = !ONLY_AVAIL;
+  localStorage.setItem('avail', ONLY_AVAIL ? '1' : '0');
+  updAvailBtn();
+  render();
+}
+function updAvailBtn(){
+  const b = document.getElementById('btnAvail');
+  if(b) {
+    b.innerHTML = ONLY_AVAIL ? '🟢 เฉพาะวันว่าง' : '✅ แสดงทุกวัน';
+    b.style.borderColor = ONLY_AVAIL ? 'var(--acc)' : 'var(--line)';
+    b.style.color = ONLY_AVAIL ? 'var(--acc)' : 'var(--txt)';
+  }
+}
+function onRangeChange(){
+  const sel = document.getElementById('selRange');
+  if(sel) {
+    FORWARD_DAYS = parseInt(sel.value, 10) || 150;
+    localStorage.setItem('forwardDays', String(FORWARD_DAYS));
+    render();
+  }
+}
+function toggleWk(wk){
+  if(wk === 'all') {
+    WK_SEL.clear();
+  } else {
+    const num = parseInt(wk, 10);
+    WK_SEL.has(num) ? WK_SEL.delete(num) : WK_SEL.add(num);
+  }
+  localStorage.setItem('wk_sel', JSON.stringify([...WK_SEL]));
+  renderWkChips();
+  render();
+}
+function renderWkChips(){
+  const box = document.getElementById('wkFilters');
+  if(!box) return;
+  let h = '';
+  for(let i=1; i<=16; i++){
+    const active = WK_SEL.has(i) ? ' on' : '';
+    h += '<span class="wkw'+active+'" onclick="toggleWk('+i+')">'+i+'wk</span>';
+  }
+  const allActive = WK_SEL.size === 0 ? ' on' : '';
+  h += '<span class="wkw'+allActive+'" onclick="toggleWk(\'all\')">All</span>';
+  box.innerHTML = h;
+}
+function toggleTheme(){
+  localStorage.setItem('th',localStorage.getItem('th')==='dark'?'light':'dark');
+  applyTheme();
+}
+/*========== Login & Remember Password ==========*/
+function initRememberedPw(){
+  const saved = localStorage.getItem('saved_pw') || '';
+  const pwInput = document.getElementById('pw');
+  const chk = document.getElementById('chkRememberPw');
+  if(saved && pwInput){
+    pwInput.value = saved;
+    if(chk) chk.checked = true;
+    if(!TOKEN) {
+      setTimeout(() => doLogin(), 150);
+    }
+  }
+}
+
+async function doLogin(){
+  const pwEl=document.getElementById('pw');
+  const pw=(pwEl?pwEl.value:'').trim(), e=document.getElementById('loginErr');
+  const remember = document.getElementById('chkRememberPw')?.checked;
+  if(!pw){ e.textContent='กรุณาใส่รหัสผ่าน'; return; }
+  e.textContent='กำลังตรวจสอบ…';
+  try{
+    const j=await call({action:'login',pass:pw});
+    if(!j.ok){ e.textContent=j.err||'เข้าสู่ระบบไม่สำเร็จ'; return; }
+    TOKEN=j.token; ROLE=j.role;
+    localStorage.setItem('tk',TOKEN); localStorage.setItem('rl',ROLE);
+    if(remember){
+      localStorage.setItem('saved_pw', pw);
+    } else {
+      localStorage.removeItem('saved_pw');
+    }
+    e.textContent=''; startApp();
+  }catch(x){ e.textContent='เชื่อมต่อไม่ได้: '+x.message; }
+}
+document.getElementById('pw').addEventListener('keydown',ev=>{ if(ev.key==='Enter') doLogin(); });
+function logout(){ 
+  localStorage.removeItem('tk'); 
+  localStorage.removeItem('rl'); 
+  localStorage.removeItem('saved_pw');
+  location.reload(); 
+}
+
+function startApp(){
+  document.getElementById('mLogin').classList.remove('on');
+  document.getElementById('app').style.display='flex';
+  document.getElementById('btnSlot').style.display=(ROLE==='nurse')?'':'none';
+  
+  const selR = document.getElementById('selRange');
+  if(selR) selR.value = String(FORWARD_DAYS);
+
+  const n=new Date(); calY=n.getFullYear(); calM=n.getMonth();
+  updAvailBtn(); renderWkChips(); updPickLabel(); drawLegend(); skeleton();
+  loadData(1);
+  clearInterval(timer); timer=setInterval(()=>loadData(0),REFRESH);
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) loadData(0); });
+}
+
+/*========== JSONP + retry ==========*/
 function jsonp(params,ms){
   ms=ms||25000;
   return new Promise((resolve,reject)=>{
@@ -432,34 +559,6 @@ async function call(params,tries){
     }catch(e){ last=e; if(i<tries-1) await sleep(700*Math.pow(2,i)); }
   }
   throw last;
-}
-
-/*========== Login ==========*/
-async function doLogin(){
-  const pw=document.getElementById('pw').value.trim(), e=document.getElementById('loginErr');
-  if(!pw){ e.textContent='กรุณาใส่รหัสผ่าน'; return; }
-  e.textContent='กำลังตรวจสอบ…';
-  try{
-    const j=await call({action:'login',pass:pw});
-    if(!j.ok){ e.textContent=j.err||'เข้าสู่ระบบไม่สำเร็จ'; return; }
-    TOKEN=j.token; ROLE=j.role;
-    localStorage.setItem('tk',TOKEN); localStorage.setItem('rl',ROLE);
-    e.textContent=''; startApp();
-  }catch(x){ e.textContent='เชื่อมต่อไม่ได้: '+x.message; }
-}
-document.getElementById('pw').addEventListener('keydown',ev=>{ if(ev.key==='Enter') doLogin(); });
-function logout(){ localStorage.removeItem('tk'); localStorage.removeItem('rl'); location.reload(); }
-
-function startApp(){
-  document.getElementById('mLogin').classList.remove('on');
-  document.getElementById('app').style.display='flex';
-  document.getElementById('btnSlot').style.display=(ROLE==='nurse')?'':'none';
-  const r=localStorage.getItem('rg'); if(r) document.getElementById('selRange').value=r;
-  const n=new Date(); calY=n.getFullYear(); calM=n.getMonth();
-  updPickLabel(); drawLegend(); skeleton();
-  loadData(1);
-  clearInterval(timer); timer=setInterval(()=>loadData(0),REFRESH);
-  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) loadData(0); });
 }
 
 /*========== Skeleton ==========*/
@@ -493,7 +592,10 @@ function setView(v){
   VIEW=v;
   document.getElementById('tabT').classList.toggle('on',v==='t');
   document.getElementById('tabC').classList.toggle('on',v==='c');
-  document.getElementById('selRange').style.display=(v==='t')?'':'none';
+  const wkEl = document.getElementById('wkFilters');
+  if(wkEl) wkEl.style.display=(v==='t')?'flex':'none';
+  const selREl = document.getElementById('selRange');
+  if(selREl) selREl.style.display=(v==='t')?'inline-block':'none';
   drawLegend(); render();
 }
 function render(){ if(!DATA) return; (VIEW==='t')?renderTable():renderCal(); updStatus(); }
@@ -562,12 +664,13 @@ function clinicTotals(){
   }
   return t;
 }
+
 function rangeInfo(){
-  const rg=document.getElementById('selRange').value;
   const today=new Date(); today.setHours(0,0,0,0);
-  if(rg==='m') return {start:new Date(today.getFullYear(),today.getMonth(),1),
-    n:new Date(today.getFullYear(),today.getMonth()+1,0).getDate(),today};
-  return {start:new Date(today),n:parseInt(rg,10),today};
+  /* เริ่มต้นตั้งแต่วันนี้เป็นต้นไป และบวกไปข้างหน้าตาม FORWARD_DAYS (default 150) */
+  const start = new Date(today);
+  const n = FORWARD_DAYS;
+  return {start, n, today};
 }
 
 /*========== ตารางนัด ==========*/
@@ -598,6 +701,7 @@ function renderTable(){
     '</tr></thead><tbody>';
 
   let shown=0;
+  
   for(let i=0;i<n;i++){
     const d=new Date(start); d.setDate(start.getDate()+i);
     const key=iso(d), dw=d.getDay(), hol=HOLIDAYS[key];
@@ -607,9 +711,34 @@ function renderTable(){
     if(codes) codes.forEach(c=>{ sum+=row[c]||0; });
     else for(const k in row) sum+=row[k];
 
-    if(!DOW.has(dw)) continue;                       // กรองตามวันในสัปดาห์
+    // ซ่อนวันที่ไม่ตรงกับสัปดาห์ที่เลือก (เช่น เลือก 2wk จะแสดงเฉพาะวันที่บวกไปอีก 14 วันเป๊ะๆ)
+    // สามารถเลือกพร้อมกันได้หลายสัปดาห์ เช่น 1wk และ 4wk 
+    if(WK_SEL.size > 0){
+      if(diff <= 0 || diff % 7 !== 0 || !WK_SEL.has(diff / 7)) continue;
+    }
+
+    if(!DOW.has(dw)) continue;                       // กรองตามวันในสัปดาห์ (จ-ศ)
     if(hol&&!SHOWHOL) continue;                      // ซ่อนวันหยุดราชการ
     if(MODE!=='sum'&&(sum===0||diff<0)) continue;    // เลือกคลินิก → ซ่อนวันว่าง/อดีต
+
+    // คำนวณความว่าง: เช็คว่ามีคลินิกไหนที่ยังไม่เต็มหรือไม่
+    let isAvailable = false;
+    const clinicsToCheck = codes || DATA.clinics.map(c=>c.code);
+    for(let c of clinicsToCheck) {
+      const bk = row[c] || 0;
+      const mx = maxMap[c];
+      if (mx == null || bk < mx) {
+        isAvailable = true;
+        break;
+      }
+    }
+    
+    // ตรวจสอบเงื่อนไขปุ่ม "เฉพาะวันว่าง" -> ถ้าเต็มทุกคลินิก ซ่อนออกไปเลย
+    if (ONLY_AVAIL) {
+      if (diff < 0) continue;
+      if (!isAvailable) continue;
+    }
+
     shown++;
 
     const cls=[diff===0?'today':'',(dw===0||dw===6)?'wknd':'',diff<0?'past':''].join(' ');
@@ -626,7 +755,7 @@ function renderTable(){
   }
   h+='</tbody></table>';
   if(!shown) h='<div style="padding:44px;text-align:center;color:var(--dim)">'+
-    'ไม่มีวันนัดที่ตรงเงื่อนไข<br><small>ลองขยายช่วงวัน เปิดวันเพิ่ม หรือเลือกคลินิกอื่น</small></div>';
+    'ไม่มีวันนัดที่ตรงเงื่อนไข<br><small>ลองขยายช่วงสัปดาห์ เปิดวันเพิ่ม หรือเลือกคลินิกอื่น</small></div>';
   document.getElementById('out').innerHTML=h;
 }
 
@@ -721,9 +850,11 @@ function updStatus(){
 }
 function saveView(){
   save();
-  localStorage.setItem('rg',document.getElementById('selRange').value);
+  localStorage.setItem('forwardDays', String(FORWARD_DAYS));
+  localStorage.setItem('wk_sel', JSON.stringify([...WK_SEL]));
   localStorage.setItem('dow',JSON.stringify([...DOW]));
   localStorage.setItem('hol',SHOWHOL?'1':'0');
+  localStorage.setItem('avail',ONLY_AVAIL?'1':'0');
   toast('💾 บันทึกมุมมองนี้เป็นค่าเริ่มต้นแล้ว');
 }
 let tmT=null;
@@ -754,28 +885,21 @@ async function saveSlot(){
 }
 function closeM(id){ document.getElementById(id).classList.remove('on'); }
 
-/*========== PWA ==========*/
-window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; });
+/*========== สร้าง Shortcut แบบ Manual ==========*/
 function openHelp(){
-  document.getElementById('cmdBox').textContent=
-    '"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" --app='+
-    location.href.split('#')[0]+' --window-size=470,1040 --window-position=1440,0';
-  document.getElementById('btnPwa').style.display=deferredPrompt?'':'none';
+  const targetUrl = "https://sawee-hosp.github.io/sawee-hosp/appointment.html";
+  const cmd = `"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" --app="${targetUrl}" --window-size=300,1040 --window-position=0,0`;
+  document.getElementById('cmdBox').value = cmd;
   document.getElementById('mHelp').classList.add('on');
 }
-async function installApp(){
-  if(!deferredPrompt) return;
-  deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null;
-  document.getElementById('btnPwa').style.display='none';
-}
+
 function copyCmd(){
-  const t=document.getElementById('cmdBox').textContent;
+  const t=document.getElementById('cmdBox').value;
   navigator.clipboard.writeText(t).then(()=>toast('📋 คัดลอกแล้ว')).catch(()=>{
     const a=document.createElement('textarea'); a.value=t; document.body.appendChild(a);
-    a.select(); document.execCommand('copy'); a.remove(); toast('📋 คัดลอกแล้ว'); });
+    a.select(); document.execCommand('copy'); a.remove(); toast('📋 คัดลอกแล้ว'); 
+  });
 }
-if('serviceWorker' in navigator)
-  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 
 /*========== Utils ==========*/
 function iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+
@@ -784,6 +908,8 @@ function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,
   c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function shortName(s){ return String(s).replace(/^คลินิก\s*/,'').trim().slice(0,14); }
 
+// ตรวจสอบและล็อกอินอัตโนมัติหากจำรหัสไว้
+initRememberedPw();
 if(TOKEN) startApp();
 </script>
 </body>
