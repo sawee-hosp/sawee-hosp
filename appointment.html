@@ -721,22 +721,41 @@ function renderTable(){
     if(hol&&!SHOWHOL) continue;                      // ซ่อนวันหยุดราชการ
     if(MODE!=='sum'&&(sum===0||diff<0)) continue;    // เลือกคลินิก → ซ่อนวันว่าง/อดีต
 
-    // คำนวณความว่าง: เช็คว่ามีคลินิกไหนที่ยังไม่เต็มหรือไม่
+    // คำนวณความว่างและเงื่อนไขคลินิก
     let isAvailable = false;
-    const clinicsToCheck = codes || DATA.clinics.map(c=>c.code);
+    let isScheduled = false; // มีคลินิกเปิดในวันนี้หรือไม่
+    
+    const weekOfMonth = Math.ceil(d.getDate() / 7);
+    const dayOfWeek = d.getDay();
+    const clinicsToCheck = codes ? DATA.clinics.filter(c=>codes.includes(c.code)) : DATA.clinics;
+    
     for(let c of clinicsToCheck) {
-      const bk = row[c] || 0;
-      const mx = maxMap[c];
-      if (mx == null || bk < mx) {
-        isAvailable = true;
-        break;
+      let dowMatch = true;
+      let womMatch = true;
+      if(c.dow) {
+        const dows = c.dow.split(',').map(Number);
+        if(!dows.includes(dayOfWeek)) dowMatch = false;
+      }
+      if(c.wom) {
+        const woms = c.wom.split(',').map(Number);
+        if(!woms.includes(weekOfMonth)) womMatch = false;
+      }
+      
+      if(dowMatch && womMatch) {
+        isScheduled = true;
+        const bk = row[c.code] || 0;
+        const mx = maxMap[c.code];
+        if (mx == null || bk < mx) {
+          isAvailable = true;
+        }
       }
     }
     
-    // ตรวจสอบเงื่อนไขปุ่ม "เฉพาะวันว่าง" -> ถ้าเต็มทุกคลินิก ซ่อนออกไปเลย
-    if (ONLY_AVAIL) {
-      if (diff < 0) continue;
-      if (!isAvailable) continue;
+    // ตรวจสอบเงื่อนไขปุ่ม FILTER_MODE (0=แสดงทุกวัน, 1=เฉพาะวันที่มีคลินิก, 2=เฉพาะวันว่าง)
+    if (FILTER_MODE >= 1) {
+      if (diff < 0) continue; // ไม่แสดงอดีตในโหมดนี้
+      if (!isScheduled) continue; // ถ้าไม่มีคลินิกเปิดเลย ให้ซ่อน
+      if (FILTER_MODE === 2 && !isAvailable) continue; // ถ้าเลือกวันว่างแล้วมันไม่ว่าง ให้ซ่อน
     }
 
     shown++;
