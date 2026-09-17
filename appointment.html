@@ -100,7 +100,6 @@ button:hover{border-color:var(--acc)}
 .btn-p{background:linear-gradient(95deg,#2563eb,#7c3aed);border:none;font-weight:600;color:#fff}
 .pick{flex:1;min-width:130px;text-align:left;overflow:hidden;text-overflow:ellipsis;font-weight:600}
 
-/* สไตล์ชิปเลือกสัปดาห์ 1-16 + All โทนชมพูไล่สี */
 .wk-filters{display:flex;gap:3px;width:100%;overflow-x:auto;padding:3px 0 2px;align-items:center}
 .wk-filters::-webkit-scrollbar{display:none;}
 .wkw{font-size:10.5px;font-weight:600;padding:3px 7px;border-radius:6px;cursor:pointer;
@@ -235,6 +234,18 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
 .lg input{padding:13px;text-align:center;font-size:16px;letter-spacing:3px}
 .mfoot{display:flex;gap:8px;margin-top:13px;flex:0 0 auto}
 .mfoot button{flex:1;padding:10px}
+
+/* สไตล์ปุ่มกดตั้งค่า Slot */
+.slot-chip {
+  font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 6px; cursor: pointer;
+  background: var(--card); color: var(--dim); border: 1px solid transparent;
+  transition: .13s; user-select: none; white-space: nowrap;
+}
+.slot-chip:hover { background: var(--hover); border-color: var(--line); }
+.slot-chip.on {
+  background: linear-gradient(180deg,rgba(77,214,255,.25),rgba(77,214,255,.1));
+  color: var(--txt); border-color: var(--acc);
+}
 </style>
 </head>
 <body>
@@ -294,14 +305,14 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
   <div class="bar">
     <button class="pick" id="btnPick" onclick="openPick()">🏥 รวมทุกคลินิก</button>
     
-    <!-- ปุ่มเลือกโหมดวันว่าง (อยู่หน้าปุ่มเลือกช่วงวัน) -->
-    <button id="btnAvail" onclick="toggleAvail()" style="flex:0 0 auto; padding:8px 9px; border-radius:9px; border:1px solid var(--line); background:var(--chip); font-weight:600; font-size:12px; cursor:pointer;" title="ซ่อนวันที่คิวเต็มทั้งหมด">✅ แสดงทุกวัน</button>
+    <!-- ปุ่มเลือกโหมดวันว่าง (3 สถานะ) -->
+    <button id="btnAvail" onclick="toggleAvail()" style="flex:0 0 auto; padding:8px 9px; border-radius:9px; border:1px solid var(--line); background:var(--chip); font-weight:600; font-size:12px; cursor:pointer;" title="ตัวกรองวัน"></button>
 
-    <!-- ตัวเลือก 30, 90, 150 วัน (Default = 150 วัน) -->
+    <!-- ตัวเลือก 30, 90, 150 วัน -->
     <select id="selRange" onchange="onRangeChange()" style="flex:0 0 auto; padding:8px 6px; font-weight:600; font-size:12px;">
       <option value="30">30 วัน</option>
       <option value="90">90 วัน</option>
-      <option value="150" selected>150 วันข้างหน้า</option>
+      <option value="150">150 วันข้างหน้า</option>
     </select>
 
     <!-- ชิปสัปดาห์ 1 ถึง 16 และ All (UI ชมพูไล่สี) -->
@@ -338,8 +349,8 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
 
 <!-- ================= SLOT ================= -->
 <div class="mask" id="mSlot"><div class="modal">
-  <h2>⚙ ตั้งจำนวน Slot สูงสุด</h2>
-  <p>เว้นว่าง = ไม่จำกัด (∞) · ค่าที่ตั้งใช้กับทุกวันของคลินิกนั้น</p>
+  <h2>⚙ ตั้งค่าคลินิก (Slot, วัน, สัปดาห์)</h2>
+  <p>กดเลือกวัน/สัปดาห์ที่รับคิวเพื่อตั้งค่า หากไม่เลือกเลยแปลว่า "รับทุกวัน/สัปดาห์"</p>
   <div class="mbody" id="slotRows"></div>
   <div class="err" id="slotErr"></div>
   <div class="mfoot">
@@ -351,11 +362,17 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
 <!-- ================= HELP ================= -->
 <div class="mask" id="mHelp"><div class="modal">
   <h2>📌 เปิดเป็นหน้าต่างลอยข้าง HOSxP</h2>
-  <p>ขนาดกว้าง 300px พอดีขอบจอ</p>
   <div class="mbody" style="font-size:12.5px;line-height:1.75">
-    <b>วิธีสร้าง Shortcut ด้วยตนเอง (ชัวร์ที่สุด)</b><br>
+    <b>วิธีที่ 1 — ติดตั้งผ่านเบราว์เซอร์ Chrome (แนะนำ)</b><br>
     <span style="color:var(--dim);font-size:11.5px">
-    1. คลิกขวาที่พื้นที่ว่างบนหน้า Desktop เลือก <b>New ▸ Shortcut</b><br>
+    1. คลิกที่ไอคอน <b>จุด 3 จุด (มุมขวาบน)</b> ของเบราว์เซอร์<br>
+    2. เลือก <b>บันทึกและแชร์</b> ▸ <b>ติดตั้งหน้าเว็บเป็นแอป...</b> (Install page as app)<br>
+    3. คลิกขวาที่ไอคอนบน Taskbar ด้านล่างจอ แล้วเลือก Pin to taskbar
+    </span>
+    <hr style="border:none;border-top:1px solid var(--line);margin:13px 0">
+    <b>วิธีที่ 2 — สร้าง Shortcut ด้วยตนเอง</b><br>
+    <span style="color:var(--dim);font-size:11.5px">
+    1. คลิกขวาที่หน้าจอ Desktop เลือก <b>New ▸ Shortcut</b><br>
     2. คัดลอกคำสั่งด้านล่างนี้ไปวางในช่อง Location:
     </span>
     <textarea id="cmdBox" readonly style="width:100%;height:68px;margin:7px 0;padding:8px;font-size:11px;font-family:monospace;background:var(--chip);color:#4dd6ff;border:1px solid var(--line);border-radius:6px;resize:none;"></textarea>
@@ -363,7 +380,7 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
     <span style="color:var(--dim);font-size:11.5px">
     3. กด Next แล้วตั้งชื่อว่า <b>ดูวันนัด</b> และกด Finish<br>
     <br>
-    <b style="color:#f43f5e">หมายเหตุ:</b> หากเปิดไม่ขึ้น ให้ลองเปลี่ยน <code>Program Files</code> ในคำสั่งเป็น <code>Program Files (x86)</code>
+    <b style="color:#f43f5e">หมายเหตุ:</b> หากเปิดไม่ขึ้น ให้เปลี่ยน <code>Program Files</code> ในคำสั่งเป็น <code>Program Files (x86)</code>
     </span>
   </div>
   <div class="mfoot"><button onclick="closeM('mHelp')">ปิด</button></div>
@@ -391,6 +408,7 @@ const HOLIDAYS={
 };
 /*================================================*/
 
+/* ตัวแปรระบบ (กำหนดให้ถูกต้อง) */
 let TOKEN=localStorage.getItem('tk')||'', ROLE=localStorage.getItem('rl')||'';
 let DATA=null,timer=null,VIEW='t',loading=false;
 let MODE=localStorage.getItem('md')||'sum';
@@ -398,7 +416,7 @@ let SEL=new Set(JSON.parse(localStorage.getItem('sel')||'[]'));
 /* default เลือก จ-ศ (1,2,3,4,5) */
 let DOW=new Set(JSON.parse(localStorage.getItem('dow')||'[1,2,3,4,5]'));
 let SHOWHOL=localStorage.getItem('hol')==='1';
-let ONLY_AVAIL=localStorage.getItem('avail')==='1';
+let FILTER_MODE=parseInt(localStorage.getItem('fm')||'1',10); // 0=ทุกวัน, 1=เฉพาะมีคลินิก, 2=เฉพาะวันว่าง
 let FORWARD_DAYS=parseInt(localStorage.getItem('forwardDays')||'150',10);
 let WK_SEL=new Set(JSON.parse(localStorage.getItem('wk_sel')||'[]'));
 let TMP=new Set(),calY=0,calM=0;
@@ -427,17 +445,26 @@ applyTheme();
 
 /*========== วันว่าง & ช่วงสัปดาห์ & ตัวเลือกวัน ==========*/
 function toggleAvail(){
-  ONLY_AVAIL = !ONLY_AVAIL;
-  localStorage.setItem('avail', ONLY_AVAIL ? '1' : '0');
+  FILTER_MODE = (FILTER_MODE + 1) % 3; // วนลูป 0 -> 1 -> 2
+  localStorage.setItem('fm', String(FILTER_MODE));
   updAvailBtn();
   render();
 }
 function updAvailBtn(){
   const b = document.getElementById('btnAvail');
-  if(b) {
-    b.innerHTML = ONLY_AVAIL ? '🟢 เฉพาะวันว่าง' : '✅ แสดงทุกวัน';
-    b.style.borderColor = ONLY_AVAIL ? 'var(--acc)' : 'var(--line)';
-    b.style.color = ONLY_AVAIL ? 'var(--acc)' : 'var(--txt)';
+  if(!b) return;
+  if(FILTER_MODE === 1) {
+    b.innerHTML = '📅 เฉพาะวันที่มีคลินิก';
+    b.style.borderColor = '#c084fc';
+    b.style.color = '#c084fc';
+  } else if(FILTER_MODE === 2) {
+    b.innerHTML = '🟢 เฉพาะวันว่าง';
+    b.style.borderColor = 'var(--acc)';
+    b.style.color = 'var(--acc)';
+  } else {
+    b.innerHTML = '✅ แสดงทุกวัน';
+    b.style.borderColor = 'var(--line)';
+    b.style.color = 'var(--txt)';
   }
 }
 function onRangeChange(){
@@ -471,10 +498,7 @@ function renderWkChips(){
   h += '<span class="wkw'+allActive+'" onclick="toggleWk(\'all\')">All</span>';
   box.innerHTML = h;
 }
-function toggleTheme(){
-  localStorage.setItem('th',localStorage.getItem('th')==='dark'?'light':'dark');
-  applyTheme();
-}
+
 /*========== Login & Remember Password ==========*/
 function initRememberedPw(){
   const saved = localStorage.getItem('saved_pw') || '';
@@ -711,10 +735,12 @@ function renderTable(){
     if(codes) codes.forEach(c=>{ sum+=row[c]||0; });
     else for(const k in row) sum+=row[k];
 
-    // ซ่อนวันที่ไม่ตรงกับสัปดาห์ที่เลือก (เช่น เลือก 2wk จะแสดงเฉพาะวันที่บวกไปอีก 14 วันเป๊ะๆ)
-    // สามารถเลือกพร้อมกันได้หลายสัปดาห์ เช่น 1wk และ 4wk 
+    // ซ่อนวันที่ไม่ตรงกับช่วงสัปดาห์ที่เลือก (แสดงทุกวันในสัปดาห์นั้นที่เข้าเงื่อนไข)
+    // 1wk = วันที่ 1 ถึง 7 ล่วงหน้า, 2wk = วันที่ 8 ถึง 14 ล่วงหน้า
     if(WK_SEL.size > 0){
-      if(diff <= 0 || diff % 7 !== 0 || !WK_SEL.has(diff / 7)) continue;
+      if(diff <= 0) continue;
+      const targetWk = Math.ceil(diff / 7);
+      if(!WK_SEL.has(targetWk)) continue;
     }
 
     if(!DOW.has(dw)) continue;                       // กรองตามวันในสัปดาห์ (จ-ศ)
@@ -873,7 +899,7 @@ function saveView(){
   localStorage.setItem('wk_sel', JSON.stringify([...WK_SEL]));
   localStorage.setItem('dow',JSON.stringify([...DOW]));
   localStorage.setItem('hol',SHOWHOL?'1':'0');
-  localStorage.setItem('avail',ONLY_AVAIL?'1':'0');
+  localStorage.setItem('fm',String(FILTER_MODE));
   toast('💾 บันทึกมุมมองนี้เป็นค่าเริ่มต้นแล้ว');
 }
 let tmT=null;
@@ -883,18 +909,75 @@ function toast(msg){
   clearTimeout(tmT); tmT=setTimeout(()=>t.classList.remove('on'),2200);
 }
 
-/*========== Slot ==========*/
+/*========== Slot (อัปเดต UI แบบปุ่มชิป Multi-Select) ==========*/
 function openSlot(){
-  document.getElementById('slotRows').innerHTML=DATA.clinics.map(c=>
-    '<div class="row"><label title="'+esc(c.name)+'">'+esc(c.name)+'</label>'+
-    '<input data-code="'+esc(c.code)+'" type="number" min="0" placeholder="∞" value="'+
-    (c.max==null?'':c.max)+'"></div>').join('');
+  if(!DATA || !DATA.clinics) return toast('⚠ ข้อมูลยังไม่พร้อม กรุณารอสักครู่');
+  
+  const dowArr = ['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
+  
+  document.getElementById('slotRows').innerHTML=DATA.clinics.map(c=>{
+    // แปลงค่าที่โหลดมาจากฐานข้อมูลให้เป็น Array ไว้เช็คเพื่อเปลี่ยนสีปุ่ม
+    const cdow = c.dow ? String(c.dow).split(',') : [];
+    const cwom = c.wom ? String(c.wom).split(',') : [];
+    
+    // สร้างปุ่มวันในสัปดาห์ 0-6
+    let dowHtml = '';
+    for(let i=0; i<7; i++){
+      let on = cdow.includes(String(i)) ? ' on' : '';
+      dowHtml += `<span class="slot-chip${on}" data-val="${i}" onclick="tgSlot(this,'dow','${esc(c.code)}')">${dowArr[i]}</span>`;
+    }
+    
+    // สร้างปุ่มสัปดาห์ของเดือน 1-5
+    let womHtml = '';
+    for(let i=1; i<=5; i++){
+      let on = cwom.includes(String(i)) ? ' on' : '';
+      womHtml += `<span class="slot-chip${on}" data-val="${i}" onclick="tgSlot(this,'wom','${esc(c.code)}')">สัปดาห์ ${i}</span>`;
+    }
+
+    return `
+    <div class="row" style="flex-direction:column; align-items:flex-start; background:var(--chip); padding:12px; border-radius:10px; margin-bottom:10px; border:1px solid var(--line);">
+      <div style="display:flex; width:100%; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <strong style="color:var(--acc); font-size:13.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding-right:8px;" title="${esc(c.name)}">${esc(c.name)}</strong>
+        <input data-code="${esc(c.code)}" type="number" min="0" placeholder="Max Slot (เว้น=∞)" value="${c.max==null?'':c.max}" style="width:135px; flex:0 0 auto;">
+      </div>
+      
+      <div style="font-size:11px; color:var(--dim); margin-bottom:6px;">เลือกวันเปิดรับนัด (ถ้าไม่เลือก = รับทุกวัน)</div>
+      <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;">
+        ${dowHtml}
+        <input type="hidden" data-dow="${esc(c.code)}" value="${esc(c.dow||'')}">
+      </div>
+      
+      <div style="font-size:11px; color:var(--dim); margin-bottom:6px;">เลือกสัปดาห์ของเดือน (ถ้าไม่เลือก = รับทุกสัปดาห์)</div>
+      <div style="display:flex; flex-wrap:wrap; gap:5px;">
+        ${womHtml}
+        <input type="hidden" data-wom="${esc(c.code)}" value="${esc(c.wom||'')}">
+      </div>
+    </div>`;
+  }).join('');
+  
   document.getElementById('slotErr').textContent='';
   document.getElementById('mSlot').classList.add('on');
 }
+
+/* ฟังก์ชันกดสลับสีปุ่มและอัปเดตค่าเข้า Input ซ่อนไว้รอเซฟ */
+function tgSlot(btn, type, code){
+  btn.classList.toggle('on');
+  const box = btn.parentElement;
+  // ดึงค่าของปุ่มทั้งหมดในกลุ่มนี้ที่มีคลาส .on
+  const vals = Array.from(box.querySelectorAll('.on')).map(el=>el.dataset.val);
+  // ใส่ค่าที่คั่นด้วยลูกน้ำลงใน Input
+  box.querySelector(`input[data-${type}="${code}"]`).value = vals.join(',');
+}
+
 async function saveSlot(){
-  const items=[...document.querySelectorAll('#slotRows input')]
-    .map(i=>({code:i.dataset.code,max:i.value.trim()}));
+  const rows = [...document.querySelectorAll('#slotRows .row')];
+  const items = rows.map(r => ({
+    code: r.querySelector('input[data-code]').dataset.code,
+    max: r.querySelector('input[data-code]').value.trim(),
+    dow: r.querySelector('input[data-dow]').value.trim(),
+    wom: r.querySelector('input[data-wom]').value.trim()
+  }));
+
   const e=document.getElementById('slotErr'); e.textContent='กำลังบันทึก…';
   try{
     const j=await call({action:'setslot',token:TOKEN,items:JSON.stringify(items)});
