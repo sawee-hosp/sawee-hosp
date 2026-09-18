@@ -562,42 +562,33 @@ function startApp(){
   document.addEventListener('visibilitychange',()=>{ if(!document.hidden) loadData(0); });
 }
 
-/*========== Fetch API (แทนที่ JSONP เดิมเพื่อแก้ปัญหามือถือบล็อก) ==========*/
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-
-async function fetchApi(params, ms = 25000) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), ms);
-  try {
-    const q = new URLSearchParams(Object.assign({}, params, { _: Date.now() })).toString();
-    // ใช้ credentials: 'omit' เพื่อไม่ส่ง Cookie ไปให้ Google (แก้บั๊กบัญชี Google ชนกันในมือถือ)
-    const res = await fetch(API + '?' + q, {
-      method: 'GET',
-      mode: 'cors',
-      credentials: 'omit',
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    return await res.json();
-  } catch (err) {
-    clearTimeout(timeoutId);
-    if (err.name === 'AbortError') throw new Error('หมดเวลาเชื่อมต่อ');
-    throw new Error('เซิร์ฟเวอร์ตอบกลับผิดพลาด (' + err.message + ')');
-  }
+/*========== JSONP แทน Fetch ป้องกันปัญหา CORS/Auth บนมือถือ ==========*/
+function jsonp(params,ms){
+  ms=ms||25000;
+  return new Promise((resolve,reject)=>{
+    const cb='__jp'+Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36);
+    const s=document.createElement('script'); let done=false;
+    const t=setTimeout(()=>{fin();reject(new Error('หมดเวลาเชื่อมต่อ'));},ms);
+    function fin(){ if(done)return; done=true; clearTimeout(t);
+      try{delete window[cb];}catch(e){window[cb]=undefined;}
+      if(s.parentNode) s.parentNode.removeChild(s); }
+    window[cb]=d=>{fin();resolve(d);};
+    s.onerror=()=>{fin();reject(new Error('เซิร์ฟเวอร์ตอบกลับผิดพลาด'));};
+    s.async=true;
+    s.crossOrigin="anonymous"; // หัวใจสำคัญ! ป้องกัน Google Account หลายบัญชีตีกันบน Chrome มือถือ
+    s.src=API+'?'+new URLSearchParams(Object.assign({},params,{callback:cb,_:Date.now()}));
+    (document.head||document.documentElement).appendChild(s);
+  });
 }
-
-async function call(params, tries = 3) {
-  let last;
-  for (let i = 0; i < tries; i++) {
-    try {
-      const r = await fetchApi(params);
-      if (r && typeof r === 'object') return r;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function call(params,tries){
+  tries=tries||3; let last;
+  for(let i=0;i<tries;i++){
+    try{
+      const r=await jsonp(params);
+      if(r&&typeof r==='object') return r;
       throw new Error('รูปแบบข้อมูลไม่ถูกต้อง');
-    } catch (e) { 
-      last = e; 
-      if (i < tries - 1) await sleep(700 * Math.pow(2, i)); 
-    }
+    }catch(e){ last=e; if(i<tries-1) await sleep(700*Math.pow(2,i)); }
   }
   throw last;
 }
@@ -749,6 +740,7 @@ function renderTable(){
     if(codes) codes.forEach(c=>{ sum+=row[c]||0; });
     else for(const k in row) sum+=row[k];
 
+    // ซ่อนวันที่ไม่ตรงกับสัปดาห์ที่เลือก (แสดงทั้ง 7 วันในสัปดาห์นั้นๆ)
     if(WK_SEL.size > 0){
       if(diff <= 0) continue;
       const targetWk = Math.ceil(diff / 7);
