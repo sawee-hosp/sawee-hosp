@@ -1024,6 +1024,11 @@ function copyCmd(){
   });
 }
 
+/*========== Utils ==========*/
+function iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function shortName(s){ return String(s).replace(/^คลินิก\s*/,'').trim().slice(0,14); }
+
 initRememberedPw();
 if(TOKEN) startApp();
 </script>
