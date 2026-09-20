@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>แบบพิมพ์ใบขอรับเงินค่าตอบแทนฯ รพ.สวี</title>
+<title>ระบบเอกสาร Sawee Docs</title>
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 /* === TH Sarabun New (for A4 document) === */
 @font-face{font-family:'TH Sarabun New';src:url('https://github.com/sawee-hosp/sawee-vmi/raw/refs/heads/main/font/THSarabunNew.ttf') format('truetype');font-weight:normal;font-style:normal}
@@ -58,47 +59,51 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 .modal-box p{font-size:15px;margin-bottom:20px;line-height:1.7;white-space:pre-line;color:var(--text)}
 
 /* ============================================================
-   LANDING PAGE — 3 Mode Cards
+   LANDING PAGE — Sawee Docs
    ============================================================ */
 .landing-page{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%)}
-.landing-header{text-align:center;margin-bottom:40px}
-.landing-header h1{font-family:'Prompt',sans-serif;font-size:28px;font-weight:700;color:var(--text);line-height:1.3}
+.landing-header{text-align:center;margin-bottom:32px}
+.landing-header h1{font-family:'Prompt',sans-serif;font-size:32px;font-weight:700;color:var(--text);line-height:1.3}
 .landing-header p{font-family:'Prompt',sans-serif;font-size:15px;color:var(--text-light);margin-top:6px;font-weight:300}
 
+/* Submenu cards */
+.submenu-cards{display:flex;gap:20px;max-width:600px;width:100%;justify-content:center;flex-wrap:wrap}
+.submenu-card{background:#fff;border-radius:16px;padding:28px 32px;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);box-shadow:var(--shadow);display:flex;align-items:center;gap:16px;min-width:280px}
+.submenu-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.submenu-card .icon-circle{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.submenu-card .icon-circle svg{width:28px;height:28px}
+.submenu-card .card-text h3{font-family:'Prompt',sans-serif;font-size:17px;font-weight:600;color:var(--text)}
+.submenu-card .card-text p{font-size:13px;color:var(--text-light);margin-top:2px}
+
+/* Mode selector page */
+.mode-selector-page{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%)}
 .mode-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:960px;width:100%}
-.mode-card{position:relative;border-radius:20px;padding:36px 28px;cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1);overflow:hidden;min-height:260px;display:flex;flex-direction:column}
+.mode-card{position:relative;border-radius:20px;padding:36px 28px;cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1);overflow:hidden;min-height:280px;display:flex;flex-direction:column}
 .mode-card::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;opacity:0;transition:opacity .35s;border-radius:20px}
 .mode-card:hover{transform:translateY(-6px) scale(1.02)}
 .mode-card:hover::before{opacity:1}
+.mode-card .card-bg-svg{position:absolute;right:-10px;bottom:-10px;width:180px;height:180px;opacity:.15;z-index:0;pointer-events:none}
 
 /* Ghost card */
 .mode-card.ghost{background:linear-gradient(135deg,#334155 0%,#0f172a 100%);color:#e2e8f0;box-shadow:0 8px 32px rgba(15,23,42,.3)}
 .mode-card.ghost::before{background:linear-gradient(135deg,#475569 0%,#1e293b 100%)}
-.mode-card.ghost .mode-num{color:#64748b}
 .mode-card.ghost .mode-title{color:#f1f5f9}
 .mode-card.ghost .mode-tagline{color:#94a3b8}
-.mode-card.ghost .mode-desc{color:#64748b}
 
 /* Local card */
 .mode-card.local{background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);color:#fff;box-shadow:0 8px 32px rgba(217,119,6,.3)}
 .mode-card.local::before{background:linear-gradient(135deg,#fbbf24 0%,#f59e0b 100%)}
-.mode-card.local .mode-num{color:rgba(255,255,255,.5)}
 .mode-card.local .mode-title{color:#fff}
 .mode-card.local .mode-tagline{color:rgba(255,255,255,.9)}
-.mode-card.local .mode-desc{color:rgba(255,255,255,.65)}
 
 /* Cloud card */
 .mode-card.cloud{background:linear-gradient(135deg,#0ea5e9 0%,#0369a1 100%);color:#fff;box-shadow:0 8px 32px rgba(14,165,233,.3)}
 .mode-card.cloud::before{background:linear-gradient(135deg,#38bdf8 0%,#0ea5e9 100%)}
-.mode-card.cloud .mode-num{color:rgba(255,255,255,.4)}
 .mode-card.cloud .mode-title{color:#fff}
 .mode-card.cloud .mode-tagline{color:rgba(255,255,255,.9)}
-.mode-card.cloud .mode-desc{color:rgba(255,255,255,.6)}
 
-.mode-num{font-family:'Prompt',sans-serif;font-size:64px;font-weight:800;line-height:1;position:relative;z-index:1}
 .mode-title{font-family:'Prompt',sans-serif;font-size:22px;font-weight:700;margin-top:8px;position:relative;z-index:1}
 .mode-tagline{font-family:'Sarabun',sans-serif;font-size:14px;font-weight:400;margin-top:8px;line-height:1.5;position:relative;z-index:1}
-.mode-desc{font-family:'Sarabun',sans-serif;font-size:12px;margin-top:auto;padding-top:16px;line-height:1.4;position:relative;z-index:1}
 
 /* === PDPA Page (cloud mode only) === */
 .auth-page{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:24px;background:var(--bg)}
@@ -126,12 +131,13 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 /* Month grid */
 .year-selector{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;background:#f1f5f9;padding:6px 12px;border-radius:8px}
 .year-btn{background:none;color:var(--primary);font-weight:bold;font-size:18px;padding:4px 12px;border:none;cursor:pointer}
-.month-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .month-cell{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;font-size:13px;transition:.2s}
 .month-cell:hover{background:#e2e8f0}
 .month-cell.selected{background:var(--primary);color:#fff;border-color:var(--primary)}
 .month-cell.printed{border-color:var(--success);box-shadow:inset 0 0 0 1px var(--success)}
 .month-status{font-size:10px;margin-top:4px}
+.month-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.print-timestamp{font-size:9px;color:var(--success);margin-top:2px;line-height:1.2}
 
 /* Calendar */
 .cal-container{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px}
@@ -153,10 +159,17 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 .hosp-group{border:1px dashed var(--border);padding:12px;border-radius:8px;margin-bottom:12px;background:#fafbfc}
 .hosp-group-label{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:8px}
 
+/* === Action buttons under calendar === */
+.action-buttons{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.action-buttons .btn{font-size:13px;padding:10px 16px}
+.btn-email{background:#8b5cf6}.btn-email:hover{background:#7c3aed}
+.btn-pdf-download{background:#059669}.btn-pdf-download:hover{background:#047857}
+
 /* === Preview === */
 .preview-section{background:#475569;padding:20px;border-radius:var(--radius);margin:16px 24px;max-width:1400px;margin-left:auto;margin-right:auto}
-.preview-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.preview-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
 .preview-toolbar h2{color:#fff;font-size:15px;font-family:'Prompt',sans-serif;font-weight:500}
+.btn-print{background:#f59e0b;font-size:15px;padding:12px 28px;font-weight:700}.btn-print:hover{background:#d97706}
 .preview-container{width:210mm;margin:0 auto}
 
 /* === A4 PAGE (mm-perfect match to reference PDF) === */
@@ -182,6 +195,8 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 .sign-center{text-align:center;margin-left:35%;margin-top:12pt}
 .sign-center .dots-line{display:inline-block;border-bottom:1px dotted #000;width:200px;text-align:center}
 .bottom-right{margin-left:28%;margin-top:10pt;text-align:center}
+/* Supervisor approval section for ลูกจ้าง */
+.approval-section{margin-left:28%;margin-top:8pt;text-align:center}
 .p2-title{text-align:center;font-weight:bold;font-size:20pt;margin-top:26pt}
 .p2-subtitle{text-align:center;font-weight:bold;font-size:16pt;margin-top:14pt}
 .leave-tbl{width:100%;border-collapse:collapse;margin-top:12pt;border:1px solid #000}
@@ -191,6 +206,9 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 .p2-sign{text-align:center;margin-top:40pt;font-weight:bold;font-size:16pt}
 .p2-sign-area{margin-left:35%;margin-top:20pt}
 .p2-sign-area .dots-line{display:inline-block;border-bottom:1px dotted #000;width:220px}
+
+/* === html2pdf export mode === */
+.pdf-export-mode .page-a4{box-shadow:none!important;margin:0!important}
 
 /* === Print === */
 @media print{
@@ -211,10 +229,10 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
   .form-row{flex-direction:column;gap:8px}
   .preview-section{margin:12px}
   .preview-container,.page-a4{width:100%;min-height:auto}
-  .landing-header h1{font-size:22px}
-  .mode-card{min-height:200px;padding:28px 24px}
-  .mode-num{font-size:48px}
+  .landing-header h1{font-size:24px}
+  .mode-card{min-height:220px;padding:28px 24px}
   .mode-title{font-size:18px}
+  .submenu-card{min-width:auto;width:100%}
 }
 
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
@@ -244,35 +262,85 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 <div id="save-indicator" class="save-indicator hidden"></div>
 
 <!-- ============================================================
-     LANDING PAGE — 3 Mode Cards
+     LANDING PAGE — ระบบเอกสาร Sawee Docs
      ============================================================ -->
 <div id="page-landing" class="landing-page">
   <div class="landing-header">
-    <h1>แบบพิมพ์ใบขอรับเงินค่าตอบแทนฯ</h1>
+    <h1>ระบบเอกสาร Sawee Docs</h1>
     <p>โรงพยาบาลสวี จังหวัดชุมพร</p>
+  </div>
+  <div class="submenu-cards">
+    <div class="submenu-card" onclick="showPage('page-mode-select')">
+      <div class="icon-circle" style="background:linear-gradient(135deg,#4f46e5,#7c3aed)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      </div>
+      <div class="card-text">
+        <h3>พิมพ์ พตส.รพ.สวี</h3>
+        <p>ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่าย</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODE SELECT PAGE — 3 Mode Cards
+     ============================================================ -->
+<div id="page-mode-select" class="mode-selector-page hidden">
+  <div class="landing-header">
+    <h1>พิมพ์ พตส.รพ.สวี</h1>
+    <p>เลือกโหมดการใช้งาน</p>
   </div>
   <div class="mode-cards">
     <!-- Card 1: Ghost -->
     <div class="mode-card ghost" onclick="enterGhostMode()">
-      <div class="mode-num">1</div>
-      <div class="mode-title">โหมดล่องหน</div>
-      <div class="mode-tagline">พิมพ์แล้วลบหาย<br>ต้องพิมพ์ข้อมูลใหม่ทุกครั้ง</div>
-      <div class="mode-desc">ไม่บันทึกข้อมูลใดๆ ปลอดภัยที่สุด</div>
+      <svg class="card-bg-svg" viewBox="0 0 200 200" fill="currentColor" opacity="0.3">
+        <circle cx="100" cy="60" r="35" fill="currentColor"/>
+        <rect x="60" y="95" width="80" height="70" rx="10" fill="currentColor"/>
+        <rect x="55" y="40" width="90" height="12" rx="6" fill="currentColor"/>
+        <rect x="50" y="30" width="100" height="15" rx="7" fill="currentColor"/>
+        <circle cx="82" cy="58" r="10" fill="none" stroke="currentColor" stroke-width="4"/>
+        <circle cx="118" cy="58" r="10" fill="none" stroke="currentColor" stroke-width="4"/>
+        <line x1="92" y1="58" x2="108" y2="58" stroke="currentColor" stroke-width="3"/>
+        <rect x="50" y="18" width="100" height="18" rx="9" fill="currentColor"/>
+        <rect x="70" y="5" width="60" height="16" rx="8" fill="currentColor"/>
+      </svg>
+      <div class="mode-title" style="position:relative;z-index:1">โหมดล่องหน</div>
+      <div class="mode-tagline" style="position:relative;z-index:1">ไม่บันทึกข้อมูลใดๆ<br>ปริ้นแล้วฉันไปละ</div>
     </div>
     <!-- Card 2: Local -->
     <div class="mode-card local" onclick="showPage('page-local-login')">
-      <div class="mode-num">2</div>
-      <div class="mode-title">โหมดอุ่นใจ</div>
-      <div class="mode-tagline">บันทึกข้อมูลทั้งหมด<br>ในคอมพิวเตอร์ของคุณ</div>
-      <div class="mode-desc">มีโอกาสหายขึ้นกับ browser history ของคุณ</div>
+      <svg class="card-bg-svg" viewBox="0 0 200 200" fill="currentColor" opacity="0.25">
+        <rect x="30" y="50" width="140" height="120" rx="8" fill="currentColor"/>
+        <rect x="40" y="55" width="120" height="5" rx="2" fill="currentColor" opacity="0.5"/>
+        <rect x="35" y="150" width="30" height="15" rx="3" fill="currentColor" opacity="0.4"/>
+        <rect x="70" y="150" width="30" height="15" rx="3" fill="currentColor" opacity="0.4"/>
+        <circle cx="120" cy="110" r="20" fill="currentColor" opacity="0.6"/>
+        <rect x="100" y="130" width="40" height="30" rx="5" fill="currentColor" opacity="0.6"/>
+        <rect x="45" y="70" width="50" height="35" rx="4" fill="currentColor" opacity="0.3"/>
+        <rect x="45" y="110" width="50" height="5" rx="2" fill="currentColor" opacity="0.3"/>
+        <rect x="45" y="120" width="35" height="5" rx="2" fill="currentColor" opacity="0.3"/>
+      </svg>
+      <div class="mode-title" style="position:relative;z-index:1">โหมดอุ่นใจ</div>
+      <div class="mode-tagline" style="position:relative;z-index:1">บันทึกข้อมูลทั้งหมด<br>ในคอมพิวเตอร์ของคุณ</div>
     </div>
     <!-- Card 3: Cloud -->
     <div class="mode-card cloud" onclick="showPage('page-pdpa')">
-      <div class="mode-num">3</div>
-      <div class="mode-title">โหมดไปทุกที่</div>
-      <div class="mode-tagline">อนุญาตให้เก็บข้อมูลใน cloud<br>เข้าถึงได้จากทุกที่</div>
-      <div class="mode-desc">กรุณาอ่าน PDPA ก่อนลงทะเบียน</div>
+      <svg class="card-bg-svg" viewBox="0 0 200 200" fill="currentColor" opacity="0.25">
+        <ellipse cx="100" cy="120" rx="75" ry="35" fill="currentColor"/>
+        <ellipse cx="70" cy="110" rx="40" ry="25" fill="currentColor"/>
+        <ellipse cx="135" cy="108" rx="45" ry="28" fill="currentColor"/>
+        <ellipse cx="100" cy="100" rx="55" ry="30" fill="currentColor"/>
+        <circle cx="100" cy="80" r="18" fill="currentColor" opacity="0.8"/>
+        <rect x="85" y="98" width="30" height="25" rx="5" fill="currentColor" opacity="0.8"/>
+        <line x1="85" y1="123" x2="78" y2="145" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
+        <line x1="115" y1="123" x2="122" y2="145" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
+      </svg>
+      <div class="mode-title" style="position:relative;z-index:1">โหมดไปทุกที่</div>
+      <div class="mode-tagline" style="position:relative;z-index:1">อนุญาตให้เก็บข้อมูลใน cloud<br>เข้าถึงได้จากทุกที่</div>
     </div>
+  </div>
+  <div class="text-center" style="margin-top:24px">
+    <a href="#" class="back-link" onclick="showPage('page-landing');return false">← กลับหน้าหลัก</a>
   </div>
 </div>
 
@@ -289,7 +357,7 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
       <input type="text" id="local-username" placeholder="พิมพ์ชื่อ เช่น สมชาย" onkeydown="if(event.key==='Enter')enterLocalMode()">
     </div>
     <button class="btn-primary btn-block" onclick="enterLocalMode()" style="background:var(--warning)">เข้าใช้งาน</button>
-    <div class="text-center"><a href="#" class="back-link" onclick="showPage('page-landing');return false">← กลับหน้าแรก</a></div>
+    <div class="text-center"><a href="#" class="back-link" onclick="showPage('page-mode-select');return false">← กลับหน้าเลือกโหมด</a></div>
   </div>
 </div>
 
@@ -315,7 +383,7 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
     <div style="display:flex;gap:10px">
       <button class="btn-primary btn-block" id="btn-pdpa-accept" disabled onclick="showPage('page-cloud-login')" style="background:#0ea5e9">เข้าสู่ระบบ / ลงทะเบียน</button>
     </div>
-    <div class="text-center"><a href="#" class="back-link" onclick="showPage('page-landing');return false">← กลับหน้าแรก</a></div>
+    <div class="text-center"><a href="#" class="back-link" onclick="showPage('page-mode-select');return false">← กลับหน้าเลือกโหมด</a></div>
   </div>
 </div>
 
@@ -333,7 +401,7 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
       <a href="#" onclick="showForgotUsername();return false" style="color:#0ea5e9">ลืม Username?</a>
       <a href="#" onclick="showPage('page-cloud-register');return false" style="color:var(--success)">ลงทะเบียนใหม่</a>
     </div>
-    <div class="text-center"><a href="#" class="back-link" onclick="showPage('page-landing');return false">← กลับหน้าแรก</a></div>
+    <div class="text-center"><a href="#" class="back-link" onclick="showPage('page-mode-select');return false">← กลับหน้าเลือกโหมด</a></div>
   </div>
 </div>
 
@@ -390,39 +458,86 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
           <div class="form-group"><label>จำนวนเงิน (บาท)</label><input type="number" id="fm-money" placeholder="เช่น 6500"></div>
         </div>
         <div class="hosp-group">
-          <div class="hosp-group-label">รพ. 1 (ข้อ 2) — รพ.ปัจจุบัน</div>
-          <div class="form-row">
-            <div class="form-group"><label>ชื่อ รพ.</label><input type="text" id="fm-hosp1" placeholder="เช่น สวี"></div>
-            <div class="form-group"><label>จังหวัด</label><input type="text" id="fm-prov1" placeholder="เช่น ชุมพร"></div>
-            <div class="form-group"><label>ระดับ/กลุ่ม</label><input type="text" id="fm-level1" placeholder="เช่น พื้นที่ปกติ 2"></div>
+          <div class="hosp-group-label" style="display:flex;justify-content:space-between;align-items:center">
+            <span>รพ. 1 (ข้อ 2) — รพ.ปัจจุบัน</span>
+            <label style="font-size:12px;font-weight:600;color:var(--success);cursor:pointer;display:flex;align-items:center;gap:4px">
+              <input type="checkbox" onchange="fillSawee(1,this.checked)" style="width:auto;accent-color:var(--success)"> ✓ รพ.สวี
+            </label>
           </div>
           <div class="form-row">
-            <div class="form-group"><label>เริ่มปฏิบัติงาน รพ.นี้</label><input type="date" id="fm-start1"></div>
-            <div class="form-group"><label>สิ้นสุด (เว้นว่างถ้ายังอยู่)</label><input type="date" id="fm-end1"></div>
-          </div>
-        </div>
-        <div class="hosp-group">
-          <div class="hosp-group-label">รพ. 2 (ข้อ 3) — ก่อนหน้า</div>
-          <div class="form-row">
-            <div class="form-group"><label>ชื่อ รพ.</label><input type="text" id="fm-hosp2"></div>
-            <div class="form-group"><label>จังหวัด</label><input type="text" id="fm-prov2"></div>
-            <div class="form-group"><label>ระดับ/กลุ่ม</label><input type="text" id="fm-level2"></div>
+            <div class="form-group"><label>ชื่อ รพ.</label><input type="text" id="fm-hosp1" placeholder="เช่น สวี" oninput="onFormInput()"></div>
+            <div class="form-group"><label>จังหวัด</label><input type="text" id="fm-prov1" placeholder="เช่น ชุมพร" oninput="onFormInput()"></div>
+            <div class="form-group"><label>ระดับ/กลุ่ม</label><input type="text" id="fm-level1" placeholder="เช่น พื้นที่ปกติ 2" oninput="onFormInput()"></div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label>เริ่ม</label><input type="date" id="fm-start2"></div>
-            <div class="form-group"><label>สิ้นสุด</label><input type="date" id="fm-end2"></div>
+            <div class="form-group"><label>เริ่มปฏิบัติงาน รพ.นี้</label><input type="date" id="fm-start1" oninput="onFormInput()"></div>
+            <div class="form-group"><label>สิ้นสุด (เว้นว่างถ้ายังอยู่)</label><input type="date" id="fm-end1" oninput="onFormInput()"></div>
           </div>
         </div>
         <div class="hosp-group">
-          <div class="hosp-group-label">รพ. 3 (ข้อ 4) — ก่อนหน้า</div>
-          <div class="form-row">
-            <div class="form-group"><label>ชื่อ รพ.</label><input type="text" id="fm-hosp3"></div>
-            <div class="form-group"><label>จังหวัด</label><input type="text" id="fm-prov3"></div>
-            <div class="form-group"><label>ระดับ/กลุ่ม</label><input type="text" id="fm-level3"></div>
+          <div class="hosp-group-label" style="display:flex;justify-content:space-between;align-items:center">
+            <span>รพ. 2 (ข้อ 3) — ก่อนหน้า</span>
+            <label style="font-size:12px;font-weight:600;color:var(--success);cursor:pointer;display:flex;align-items:center;gap:4px">
+              <input type="checkbox" onchange="fillSawee(2,this.checked)" style="width:auto;accent-color:var(--success)"> ✓ รพ.สวี
+            </label>
           </div>
           <div class="form-row">
-            <div class="form-group"><label>เริ่ม</label><input type="date" id="fm-start3"></div>
-            <div class="form-group"><label>สิ้นสุด</label><input type="date" id="fm-end3"></div>
+            <div class="form-group"><label>ชื่อ รพ.</label><input type="text" id="fm-hosp2" oninput="onFormInput()"></div>
+            <div class="form-group"><label>จังหวัด</label><input type="text" id="fm-prov2" oninput="onFormInput()"></div>
+            <div class="form-group"><label>ระดับ/กลุ่ม</label><input type="text" id="fm-level2" oninput="onFormInput()"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>เริ่ม</label><input type="date" id="fm-start2" oninput="onFormInput()"></div>
+            <div class="form-group"><label>สิ้นสุด</label><input type="date" id="fm-end2" oninput="onFormInput()"></div>
+          </div>
+        </div>
+        <div class="hosp-group">
+          <div class="hosp-group-label" style="display:flex;justify-content:space-between;align-items:center">
+            <span>รพ. 3 (ข้อ 4) — ก่อนหน้า</span>
+            <label style="font-size:12px;font-weight:600;color:var(--success);cursor:pointer;display:flex;align-items:center;gap:4px">
+              <input type="checkbox" onchange="fillSawee(3,this.checked)" style="width:auto;accent-color:var(--success)"> ✓ รพ.สวี
+            </label>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>ชื่อ รพ.</label><input type="text" id="fm-hosp3" oninput="onFormInput()"></div>
+            <div class="form-group"><label>จังหวัด</label><input type="text" id="fm-prov3" oninput="onFormInput()"></div>
+            <div class="form-group"><label>ระดับ/กลุ่ม</label><input type="text" id="fm-level3" oninput="onFormInput()"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>เริ่ม</label><input type="date" id="fm-start3" oninput="onFormInput()"></div>
+            <div class="form-group"><label>สิ้นสุด</label><input type="date" id="fm-end3" oninput="onFormInput()"></div>
+          </div>
+        </div>
+        <!-- Doctor collapsible section (minority case) -->
+        <div class="hosp-group" style="border-color:#7c3aed33;background:#faf5ff">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:700;color:#7c3aed">
+            <input type="checkbox" id="chk-doctor" onchange="toggleDoctorForm()" style="width:auto;accent-color:#7c3aed">
+            กรณีแพทย์
+          </label>
+          <div id="doctor-form" style="display:none;margin-top:10px">
+            <div style="font-size:12px;font-weight:700;color:#7c3aed;margin-bottom:6px">ฝึกเพิ่มพูนทักษะ (ปีที่ 1) รวมระยะเวลา</div>
+            <div class="form-row">
+              <div class="form-group"><label>ปี</label><input type="number" id="fm-train-y" min="0" max="5" placeholder="0" oninput="onFormInput()"></div>
+              <div class="form-group"><label>เดือน</label><input type="number" id="fm-train-m" min="0" max="11" placeholder="0" oninput="onFormInput()"></div>
+            </div>
+            <div style="font-size:11px;font-weight:700;color:#64748b;margin:6px 0 4px">○ รพศ./รพท.</div>
+            <div class="form-row">
+              <div class="form-group"><label>ชื่อ รพ.</label><input type="text" id="fm-train-hosp1" placeholder="ชื่อ" oninput="onFormInput()"></div>
+              <div class="form-group"><label>จังหวัด</label><input type="text" id="fm-train-prov1" placeholder="จ." oninput="onFormInput()"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>ตั้งแต่</label><input type="date" id="fm-train-start1" oninput="onFormInput()"></div>
+              <div class="form-group"><label>ถึง</label><input type="date" id="fm-train-end1" oninput="onFormInput()"></div>
+            </div>
+            <div style="font-size:11px;font-weight:700;color:#64748b;margin:6px 0 4px">○ รพช./</div>
+            <div class="form-row">
+              <div class="form-group"><label>ชื่อ รพ.</label><input type="text" id="fm-train-hosp2" placeholder="ชื่อ" oninput="onFormInput()"></div>
+              <div class="form-group"><label>จังหวัด</label><input type="text" id="fm-train-prov2" placeholder="จ." oninput="onFormInput()"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>ตั้งแต่</label><input type="date" id="fm-train-start2" oninput="onFormInput()"></div>
+              <div class="form-group"><label>ถึง</label><input type="date" id="fm-train-end2" oninput="onFormInput()"></div>
+            </div>
           </div>
         </div>
         <button id="btn-save-profile" class="btn-success btn-block" onclick="saveCurrentProfile()">บันทึกข้อมูล</button>
@@ -439,8 +554,17 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
       </div>
       <div class="month-grid" id="month-grid-container"></div>
       <div style="background:#f1f5f9;padding:16px;border-radius:8px;margin-top:12px;text-align:center">
-        <h4 style="color:var(--primary);margin-bottom:12px;font-family:'Prompt'" id="lbl-selected-month">ยังไม่ได้เลือกเดือน</h4>
-        <button class="btn-primary btn-block" onclick="doPrint()">พิมพ์ / บันทึก PDF</button>
+        <h4 style="color:var(--primary);margin-bottom:8px;font-family:'Prompt'" id="lbl-selected-month">ยังไม่ได้เลือกเดือน</h4>
+        <div class="action-buttons">
+          <button class="btn btn-email btn-block" onclick="doSendEmail()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            ส่ง email ไปหาฉัน (เฉพาะคนที่ลงทะเบียนเท่านั้น)
+          </button>
+          <button class="btn btn-pdf-download btn-block" onclick="doSavePDF()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            บันทึกไฟล์ PDF
+          </button>
+        </div>
         <p style="color:var(--text-muted);font-size:11px;margin-top:8px">เอกสารสร้างในเบราว์เซอร์ ไม่ถูกบันทึก</p>
       </div>
       <div class="watermark">By Bm MR Sawee</div>
@@ -475,11 +599,14 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
       <div class="watermark">By Bm MR Sawee</div>
     </div>
   </div>
-  <!-- PREVIEW -->
+  <!-- PREVIEW with Print button above -->
   <div class="preview-section" id="preview-section">
     <div class="preview-toolbar">
       <h2>พรีวิวเอกสาร (เหมือนพิมพ์จริง)</h2>
-      <button class="btn-primary" onclick="doPrint()">พิมพ์ / บันทึก PDF</button>
+      <button class="btn btn-print" onclick="doPrint()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        พิมพ์
+      </button>
     </div>
     <div id="print-area" class="preview-container">
       <div class="page-a4" id="preview-page1"></div>
@@ -510,7 +637,7 @@ let S = {
   profiles: [],      // [{id, name, surname, job, ...}]
   activeProfileId: null,
   leaves: [],        // [{id, profile_id, month_year, type_of_leave, days:[], half, period}]
-  printHistory: [],   // [{profile_id, month_year}]
+  printHistory: [],   // [{profile_id, month_year, timestamp}]
   currentMonthYear: '',
   currentViewYear: new Date().getFullYear() + 543,
   selectedDays: [],
@@ -533,7 +660,7 @@ function closeConfirm(){document.getElementById('modal-confirm').classList.remov
 // ================================================================
 //  NAVIGATION
 // ================================================================
-const PAGES=['page-landing','page-local-login','page-pdpa','page-cloud-login','page-cloud-register','page-dashboard'];
+const PAGES=['page-landing','page-mode-select','page-local-login','page-pdpa','page-cloud-login','page-cloud-register','page-dashboard'];
 function showPage(id){
   PAGES.forEach(p=>{const el=document.getElementById(p);if(el)el.classList.toggle('hidden',p!==id)});
   if(id==='page-local-login') renderLocalUsers();
@@ -635,7 +762,6 @@ function enterLocalMode(){
   if(!u) return showAlert('กรุณากรอกชื่อผู้ใช้');
   S.mode='local';S.username=u;S.email='';S.profiles=[];S.leaves=[];S.printHistory=[];
   S.activeProfileId=null;S.selectedDays=[];
-  // track local users
   try{
     let users=JSON.parse(localStorage.getItem('ptsd_local_users')||'[]');
     if(!users.includes(u)){users.push(u);localStorage.setItem('ptsd_local_users',JSON.stringify(users));}
@@ -754,7 +880,10 @@ function addNewProfile(){
   const np={id:uid(),name:'',surname:'',job:'',emp_type:'ข้าราชการ',money:0,start_date:'',
     hospital1:'',province1:'',level1:'',start_date1:'',end_date1:'',
     hospital2:'',province2:'',level2:'',start_date2:'',end_date2:'',
-    hospital3:'',province3:'',level3:'',start_date3:'',end_date3:''};
+    hospital3:'',province3:'',level3:'',start_date3:'',end_date3:'',
+    doctor_mode:false,train_y:'',train_m:'',
+    train_hosp1_name:'',train_hosp1_prov:'',train_hosp1_start:'',train_hosp1_end:'',
+    train_hosp2_name:'',train_hosp2_prov:'',train_hosp2_start:'',train_hosp2_end:''};
   S.profiles.push(np);S.activeProfileId=np.id;
   clearForm();renderProfileChips();renderLeaveTable();updatePreview();
   scheduleSave();
@@ -771,6 +900,11 @@ function populateForm(p){
   s('fm-hosp1',p.hospital1);s('fm-prov1',p.province1);s('fm-level1',p.level1);s('fm-start1',p.start_date1);s('fm-end1',p.end_date1);
   s('fm-hosp2',p.hospital2);s('fm-prov2',p.province2);s('fm-level2',p.level2);s('fm-start2',p.start_date2);s('fm-end2',p.end_date2);
   s('fm-hosp3',p.hospital3);s('fm-prov3',p.province3);s('fm-level3',p.level3);s('fm-start3',p.start_date3);s('fm-end3',p.end_date3);
+  // Doctor fields
+  const chk=document.getElementById('chk-doctor');if(chk){chk.checked=!!p.doctor_mode;toggleDoctorForm();}
+  s('fm-train-y',p.train_y);s('fm-train-m',p.train_m);
+  s('fm-train-hosp1',p.train_hosp1_name);s('fm-train-prov1',p.train_hosp1_prov);s('fm-train-start1',p.train_hosp1_start);s('fm-train-end1',p.train_hosp1_end);
+  s('fm-train-hosp2',p.train_hosp2_name);s('fm-train-prov2',p.train_hosp2_prov);s('fm-train-start2',p.train_hosp2_start);s('fm-train-end2',p.train_hosp2_end);
   updatePreview();
 }
 function clearForm(){
@@ -786,17 +920,36 @@ function getFormData(){
     hospital1:g('fm-hosp1'),province1:g('fm-prov1'),level1:g('fm-level1'),start_date1:g('fm-start1'),end_date1:g('fm-end1'),
     hospital2:g('fm-hosp2'),province2:g('fm-prov2'),level2:g('fm-level2'),start_date2:g('fm-start2'),end_date2:g('fm-end2'),
     hospital3:g('fm-hosp3'),province3:g('fm-prov3'),level3:g('fm-level3'),start_date3:g('fm-start3'),end_date3:g('fm-end3'),
+    doctor_mode:document.getElementById('chk-doctor')?.checked||false,
+    train_y:g('fm-train-y'),train_m:g('fm-train-m'),
+    train_hosp1_name:g('fm-train-hosp1'),train_hosp1_prov:g('fm-train-prov1'),train_hosp1_start:g('fm-train-start1'),train_hosp1_end:g('fm-train-end1'),
+    train_hosp2_name:g('fm-train-hosp2'),train_hosp2_prov:g('fm-train-prov2'),train_hosp2_start:g('fm-train-start2'),train_hosp2_end:g('fm-train-end2'),
   };
 }
+function fillSawee(n,checked){
+  if(checked){
+    document.getElementById('fm-hosp'+n).value='สวี';
+    document.getElementById('fm-prov'+n).value='ชุมพร';
+    document.getElementById('fm-level'+n).value='พื้นที่ปกติ 2';
+  } else {
+    document.getElementById('fm-hosp'+n).value='';
+    document.getElementById('fm-prov'+n).value='';
+    document.getElementById('fm-level'+n).value='';
+  }
+  onFormInput();
+}
+function toggleDoctorForm(){
+  const chk=document.getElementById('chk-doctor');
+  const form=document.getElementById('doctor-form');
+  if(form) form.style.display=chk&&chk.checked?'block':'none';
+  onFormInput();
+}
 function onFormInput(){
-  // Sync form to active profile
   if(S.activeProfileId){
     const fd=getFormData();
     const p=S.profiles.find(x=>x.id===S.activeProfileId);
     if(p) Object.assign(p,fd);
-    else{
-      fd.id=S.activeProfileId;S.profiles.push(fd);
-    }
+    else{ fd.id=S.activeProfileId;S.profiles.push(fd); }
     renderProfileChips();
   }
   updatePreview();
@@ -819,11 +972,16 @@ function renderMonthGrid(){
   const g=document.getElementById('month-grid-container');g.innerHTML='';
   THAI_MONTHS.forEach(m=>{
     const mStr=m+' '+S.currentViewYear;
-    const printed=S.printHistory.some(h=>h.profile_id===S.activeProfileId && h.month_year===mStr);
+    const printEntry=S.printHistory.find(h=>h.profile_id===S.activeProfileId && h.month_year===mStr);
+    const printed=!!printEntry;
     const selected=mStr===S.currentMonthYear;
     const div=document.createElement('div');
     div.className='month-cell '+(printed?'printed ':'')+( selected?'selected':'');
-    div.innerHTML='<div>'+m+'</div><div class="month-status">'+(printed?'พิมพ์แล้ว':'ยังไม่พิมพ์')+'</div>';
+    let statusHtml='<div class="month-status">'+(printed?'✓ พิมพ์แล้ว':'ยังไม่พิมพ์')+'</div>';
+    if(printed && printEntry.timestamp){
+      statusHtml+='<div class="print-timestamp">'+printEntry.timestamp+'</div>';
+    }
+    div.innerHTML='<div>'+m+'</div>'+statusHtml;
     div.onclick=()=>selectMonth(mStr);
     g.appendChild(div);
   });
@@ -885,7 +1043,6 @@ function clearSelectedDays(){
   renderCalendar();
 }
 function formatDaysCompact(days,info){
-  // Format: "2, 10, 15 ก.ย. 69"
   return days.join(', ')+' '+info.monthAbbr+' '+info.yearShort;
 }
 function updateCalSummary(){
@@ -912,13 +1069,11 @@ function addLeaveFromCal(){
   const profileId=S.activeProfileId;
 
   if(isHalf){
-    // Half-day: always separate entry (single day)
     S.leaves.push({
       id:uid(),profile_id:profileId,month_year:monthYear,
       type_of_leave:type,days:[S.selectedDays[0]],half:true,period:period
     });
   } else {
-    // Full-day: merge with existing same-type full-day entry
     const existing=S.leaves.find(l=>
       l.profile_id===profileId && l.month_year===monthYear &&
       l.type_of_leave===type && !l.half
@@ -1012,11 +1167,9 @@ function updatePreview(){
   const data=getFormData();
   const endDate=parseThaiMonth(S.currentMonthYear);
   const totalDur=calculateDuration(parseDate(data.start_date),endDate);
-  // Work duration (total service)
   let workStart=data.start_date;
   if(!workStart){for(let i=1;i<=3;i++){if(data['hospital'+i]&&data['start_date'+i])workStart=data['start_date'+i];}}
   const workDur=workStart?calculateDuration(parseDate(workStart),endDate):{y:'',m:''};
-  // Hospital details
   const hospitals=[];
   for(let i=1;i<=3;i++){
     if(data['hospital'+i]){
@@ -1038,6 +1191,7 @@ function renderPage1(data,workDur,totalDur,hospitals,moneyFmt,moneyTxt){
   const curProv=data.province1||'ชุมพร';
   const curLevel=data.level1||'';
   const fullName=(data.name||'')+' '+(data.surname||'');
+  const isLookjang=data.emp_type==='ลูกจ้าง';
 
   let hospHtml='';
   for(let i=0;i<4;i++){
@@ -1067,6 +1221,9 @@ function renderPage1(data,workDur,totalDur,hospitals,moneyFmt,moneyTxt){
   const tY=totalDur.y!==''?String(totalDur.y):'';
   const tM=totalDur.m!==''?String(totalDur.m):'';
   const tD=totalDur.d?String(totalDur.d):'';
+
+  // Bottom section: two-column for ลูกจ้าง (left=supervisor, right=ผอ.), right-only for ข้าราชการ
+  const approvalSection = '';
 
   return `
   <div class="p-title">ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่ายสำหรับเจ้าหน้าที่</div>
@@ -1100,15 +1257,15 @@ function renderPage1(data,workDur,totalDur,hospitals,moneyFmt,moneyTxt){
   </div>
 
   <div class="fl" style="margin-top:2pt">
-    <span class="lb">1. ฝึกเพิ่มพูนทักษะ (ปีที่ 1) รวมระยะเวลาการปฏิบัติงาน</span>${D()}
-    <span class="lb">ปี</span>${D('4px')}
+    <span class="lb">1. ฝึกเพิ่มพูนทักษะ (ปีที่ 1) รวมระยะเวลาการปฏิบัติงาน</span>${D()}${data.doctor_mode&&data.train_y?V(data.train_y,'18px'):D('4px')}
+    <span class="lb">ปี</span>${D('4px')}${data.doctor_mode&&data.train_m?V(data.train_m,'18px'):''}
     <span class="lb">เดือนดังนี้</span>
   </div>
   <div class="fl" style="padding-left:5mm;margin-top:0">
-    <span class="lb">&#9675; รพศ./รพท.</span>${D()}<span class="lb">จังหวัด</span>${D()}<span class="lb">ตั้งแต่</span>${D()}<span class="lb">ถึง</span>${D()}
+    <span class="lb">&#9675; รพศ./รพท.</span>${D()}${data.doctor_mode&&data.train_hosp1_name?V(data.train_hosp1_name):''}${D()}<span class="lb">จังหวัด</span>${D()}${data.doctor_mode&&data.train_hosp1_prov?V(data.train_hosp1_prov):''}${D()}<span class="lb">ตั้งแต่</span>${D()}${data.doctor_mode&&data.train_hosp1_start?V(formatThaiDate(data.train_hosp1_start)):''}${D()}<span class="lb">ถึง</span>${D()}${data.doctor_mode&&data.train_hosp1_end?V(formatThaiDate(data.train_hosp1_end)):''}${D()}
   </div>
   <div class="fl" style="padding-left:5mm;margin-top:0">
-    <span class="lb">&#9675; รพช./</span>${D()}<span class="lb">จังหวัด</span>${D()}<span class="lb">ตั้งแต่</span>${D()}<span class="lb">ถึง</span>${D()}
+    <span class="lb">&#9675; รพช./</span>${D()}${data.doctor_mode&&data.train_hosp2_name?V(data.train_hosp2_name):''}${D()}<span class="lb">จังหวัด</span>${D()}${data.doctor_mode&&data.train_hosp2_prov?V(data.train_hosp2_prov):''}${D()}<span class="lb">ตั้งแต่</span>${D()}${data.doctor_mode&&data.train_hosp2_start?V(formatThaiDate(data.train_hosp2_start)):''}${D()}<span class="lb">ถึง</span>${D()}${data.doctor_mode&&data.train_hosp2_end?V(formatThaiDate(data.train_hosp2_end)):''}${D()}
   </div>
 
   ${hospHtml}
@@ -1140,6 +1297,30 @@ function renderPage1(data,workDur,totalDur,hospitals,moneyFmt,moneyTxt){
     </div>
   </div>
 
+  ${isLookjang ? `
+  <div style="display:flex;margin-top:10pt">
+    <div style="flex:1;text-align:center;padding-right:8pt">
+      <div style="text-align:center;font-size:14pt">รับรองความถูกต้อง</div>
+      <div style="margin-top:8pt">
+        <div style="text-align:center">(ลงชื่อ)<span class="dots-fixed" style="width:140px"><b>&nbsp;นางอทิตา มณีรัตน์&nbsp;</b></span></div>
+        <div style="margin-top:3pt;text-align:center">(<span class="dots-fixed" style="width:120px"><b>&nbsp;นางอทิตา มณีรัตน์&nbsp;</b></span>)</div>
+        <div style="margin-top:2pt;text-align:center">ตำแหน่ง<span class="dots-fixed" style="width:130px"><b>&nbsp;เจ้าพนักงานธุรการชำนาญงาน&nbsp;</b></span></div>
+        <div style="margin-top:2pt;text-align:center">หัวหน้างาน</div>
+      </div>
+    </div>
+    <div style="flex:1;text-align:center;border-left:1px dotted #aaa;padding-left:8pt">
+      <div style="text-align:center">เรียน&nbsp; ผู้อำนวยการโรงพยาบาลสวี</div>
+      <div style="text-align:center;margin-top:3pt">ได้ตรวจสอบ / วันปฏิบัติงานแล้ว</div>
+      <div style="text-align:center;margin-top:2pt;white-space:nowrap">
+        (&nbsp;&nbsp;&nbsp;) ครบ 15 วันทำการ&nbsp;&nbsp;(&nbsp;&nbsp;&nbsp;) ไม่ครบ 15 วันทำการ
+      </div>
+      <div style="text-align:center;margin-top:8pt">
+        <div>(ลงชื่อ)<span class="dots-fixed" style="width:130px"></span></div>
+        <div style="margin-top:3pt">(<span class="dots-fixed" style="width:120px"></span>)</div>
+        <div style="margin-top:2pt">ตำแหน่ง<span class="dots-fixed" style="width:130px"></span></div>
+      </div>
+    </div>
+  </div>` : `
   <div class="bottom-right" style="margin-top:10pt">
     <div style="text-align:center">เรียน&nbsp; ผู้อำนวยการโรงพยาบาลสวี</div>
     <div style="text-align:center;margin-top:3pt">ได้ตรวจสอบ / วันปฏิบัติงานแล้ว</div>
@@ -1151,38 +1332,36 @@ function renderPage1(data,workDur,totalDur,hospitals,moneyFmt,moneyTxt){
       <div style="margin-top:3pt">(<span class="dots-fixed" style="width:150px"></span>)</div>
       <div style="margin-top:2pt">ตำแหน่ง<span class="dots-fixed" style="width:160px"></span></div>
     </div>
-  </div>`;
+  </div>`}
+`;
 }
 
 function renderPage2(data){
   const curLeaves=S.leaves.filter(l=>l.profile_id===S.activeProfileId && l.month_year===S.currentMonthYear);
   const info=getMonthInfo();
 
-  // Group by type and consolidate
   function consolidate(type){
     const entries=curLeaves.filter(l=>l.type_of_leave===type);
     if(entries.length===0) return {text:'-',count:0};
-    const parts=[];
     let total=0;
-    // full-day entries
+    // Collect all day tokens: full days as number, half days as "day(period)"
+    const dayTokens=[];
     const fullDays=[];
-    entries.filter(e=>!e.half).forEach(e=>{fullDays.push(...e.days);total+=e.days.length;});
-    if(fullDays.length>0){
-      fullDays.sort((a,b)=>a-b);
-      const unique=[...new Set(fullDays)];
-      if(info) parts.push(unique.join(', ')+' '+info.monthAbbr+' '+info.yearShort);
-      else parts.push(unique.join(', '));
-      total=unique.length;
-    }
-    // half-day entries
+    entries.filter(e=>!e.half).forEach(e=>{fullDays.push(...e.days);});
+    const uniqueFull=[...new Set(fullDays)].sort((a,b)=>a-b);
+    uniqueFull.forEach(d=>dayTokens.push({n:d,sort:d,label:String(d)}));
+    total+=uniqueFull.length;
     entries.filter(e=>e.half).forEach(e=>{
-      let t=e.days[0];
-      if(info) t+=' '+info.monthAbbr+' '+info.yearShort;
-      if(e.period) t+=' ('+e.period+')';
-      parts.push(t);
+      const d=e.days[0];
+      const label=e.period?d+'('+e.period+')':String(d);
+      dayTokens.push({n:d,sort:d+0.5,label});
       total+=0.5;
     });
-    return {text:parts.join(', '),count:total};
+    if(dayTokens.length===0) return {text:'-',count:0};
+    dayTokens.sort((a,b)=>a.sort-b.sort);
+    const joined=dayTokens.map(t=>t.label).join(', ');
+    const text=info?joined+' '+info.monthAbbr+' '+info.yearShort:joined;
+    return {text,count:total};
   }
 
   const sick=consolidate('ลาป่วย');
@@ -1225,25 +1404,148 @@ function renderPage2(data){
 }
 
 // ================================================================
-//  PRINT
+//  PRINT — Only this button marks month as printed with timestamp
 // ================================================================
 function doPrint(){
-  // Mark as printed
-  if(S.mode!=='ghost' && S.activeProfileId && S.currentMonthYear){
-    const exists=S.printHistory.some(h=>h.profile_id===S.activeProfileId && h.month_year===S.currentMonthYear);
-    if(!exists){
-      S.printHistory.push({profile_id:S.activeProfileId,month_year:S.currentMonthYear});
-      renderMonthGrid();
-      scheduleSave();
+  if(S.activeProfileId && S.currentMonthYear){
+    const now=new Date();
+    const ts=now.getDate()+'/'+(now.getMonth()+1)+'/'+(now.getFullYear()+543)+' '+
+             now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+    const existing=S.printHistory.find(h=>h.profile_id===S.activeProfileId && h.month_year===S.currentMonthYear);
+    if(existing){
+      existing.timestamp=ts;
+    } else {
+      S.printHistory.push({profile_id:S.activeProfileId,month_year:S.currentMonthYear,timestamp:ts});
     }
+    renderMonthGrid();
+    if(S.mode!=='ghost') scheduleSave();
   }
   window.print();
 }
 
 // ================================================================
+//  PDF GENERATION (html2pdf.js)
+// ================================================================
+async function generatePDFBlob(){
+  await preloadTHFont();        // ensure font blob URL is ready
+  await document.fonts.ready;  // wait for all fonts to paint
+  return new Promise((resolve,reject)=>{
+    const area=document.getElementById('print-area');
+    area.classList.add('pdf-export-mode');
+    const opt={
+      margin: 0,
+      filename: 'พตส_'+(S.currentMonthYear||'').replace(/ /g,'_')+'.pdf',
+      image: {type:'jpeg',quality:0.98},
+      html2canvas: {scale:2,useCORS:true,letterRendering:true},
+      jsPDF: {unit:'mm',format:'a4',orientation:'portrait'},
+      pagebreak: {mode:['css','legacy'],before:'.page-a4'}
+    };
+    html2pdf().set(opt).from(area).outputPdf('blob').then(blob=>{
+      area.classList.remove('pdf-export-mode');
+      resolve(blob);
+    }).catch(err=>{
+      area.classList.remove('pdf-export-mode');
+      reject(err);
+    });
+  });
+}
+
+async function doSavePDF(){
+  try{
+    const blob=await generatePDFBlob();
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='พตส_'+(S.currentMonthYear||'').replace(/ /g,'_')+'.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }catch(e){
+    showAlert('สร้าง PDF ล้มเหลว: '+e.message);
+  }
+}
+
+// ================================================================
+//  SEND EMAIL (cloud mode only — via GAS confirmPrint)
+// ================================================================
+async function doSendEmail(){
+  if(S.mode!=='cloud'){
+    return showAlert('ฟีเจอร์นี้สำหรับผู้ที่ลงทะเบียน (โหมดไปทุกที่) เท่านั้น');
+  }
+  showConfirm('ส่ง PDF ไปที่ '+S.email+' ?',async ()=>{
+    try{
+      flashSave('กำลังสร้าง PDF...','#8b5cf6');
+      await preloadTHFont();
+      await document.fonts.ready;
+      const area=document.getElementById('print-area');
+      area.classList.add('pdf-export-mode');
+      const opt={
+        margin:0,
+        image:{type:'jpeg',quality:0.95},
+        html2canvas:{scale:2,useCORS:true,letterRendering:true},
+        jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+        pagebreak:{mode:['css','legacy'],before:'.page-a4'}
+      };
+      const base64=await html2pdf().set(opt).from(area).outputPdf('datauristring');
+      area.classList.remove('pdf-export-mode');
+      // Strip data URI prefix to get raw base64
+      const pdfBase64=base64.split(',')[1]||base64;
+      flashSave('กำลังส่ง email...','#8b5cf6');
+      const data=getFormData();
+      const res=await gasCall('confirmPrint',{
+        email:S.email,
+        username:S.username,
+        month_year:S.currentMonthYear,
+        name:(data.name||'')+' '+(data.surname||''),
+        pdf_base64:pdfBase64
+      });
+      if(res.ok){
+        flashSave('ส่ง email สำเร็จ!','#059669');
+      } else {
+        showAlert('ส่ง email ล้มเหลว: '+(res.error||''));
+      }
+    }catch(e){
+      showAlert('เกิดข้อผิดพลาด: '+e.message);
+    }
+  });
+}
+
+// ================================================================
+//  FONT PRELOAD — blob URL ให้ html2canvas ใช้ได้ (ไม่ติด CORS)
+// ================================================================
+const FONT_BASE = 'https://github.com/sawee-hosp/sawee-vmi/raw/refs/heads/main/font/';
+let _fontsReady = false;
+
+async function preloadTHFont() {
+  if (_fontsReady) return;
+  try {
+    const [rBlob, bBlob] = await Promise.all([
+      fetch(FONT_BASE + 'THSarabunNew.ttf').then(r => r.ok ? r.blob() : null).catch(() => null),
+      fetch(FONT_BASE + 'THSarabunNew%20Bold.ttf').then(r => r.ok ? r.blob() : null).catch(() => null)
+    ]);
+    const rules = [];
+    if (rBlob) rules.push(`@font-face{font-family:'TH Sarabun New';src:url('${URL.createObjectURL(rBlob)}') format('truetype');font-weight:normal;font-style:normal}`);
+    if (bBlob) rules.push(`@font-face{font-family:'TH Sarabun New';src:url('${URL.createObjectURL(bBlob)}') format('truetype');font-weight:bold;font-style:normal}`);
+    if (rules.length > 0) {
+      const s = document.createElement('style');
+      s.textContent = rules.join('\n');
+      document.head.appendChild(s);
+      await document.fonts.ready;
+    }
+    _fontsReady = true;
+  } catch(e) {
+    console.warn('TH Sarabun New preload:', e);
+    _fontsReady = true; // continue anyway
+  }
+}
+
+// ================================================================
 //  INIT
 // ================================================================
-window.addEventListener('DOMContentLoaded',()=>{});
+window.addEventListener('DOMContentLoaded', () => {
+  preloadTHFont(); // start preloading immediately
+});
 </script>
 </body>
 </html>
