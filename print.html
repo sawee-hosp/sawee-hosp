@@ -6,22 +6,23 @@
     name="viewport"
     content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
-  <title>ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่าย</title>
+
+  <title>PDF Pixel Overlay Editor</title>
 
   <style>
     @font-face {
       font-family: "THSarabunNew";
-      src: url("./fonts/THSarabunNew.ttf") format("truetype");
-      font-weight: 400;
+      src: url("https://raw.githubusercontent.com/sawee-hosp/sawee-hosp/refs/heads/main/fonts/THSarabunNew.ttf") format("truetype");
       font-style: normal;
+      font-weight: 400;
       font-display: block;
     }
 
     @font-face {
       font-family: "THSarabunNew";
-      src: url("./fonts/THSarabunNew-Bold.ttf") format("truetype");
-      font-weight: 700;
+      src: url("https://raw.githubusercontent.com/sawee-hosp/sawee-hosp/refs/heads/main/fonts/THSarabunNew-Bold.ttf") format("truetype");
       font-style: normal;
+      font-weight: 700;
       font-display: block;
     }
 
@@ -31,1190 +32,2208 @@
     }
 
     :root {
-      --page-width: 210mm;
-      --page-height: 297mm;
-      --ink: #000;
-      --paper: #fff;
-      --workspace: #5c6066;
+      --toolbar-height: 56px;
+      --sidebar-width: 320px;
+      --background: #4c5056;
+      --panel: #20242a;
+      --panel-secondary: #2b3037;
+      --line: #434a54;
+      --primary: #1976d2;
+      --danger: #c62828;
+      --success: #2e7d32;
+      --field: #ff1744;
+      --selection: #00a8ff;
     }
 
     * {
       box-sizing: border-box;
+    }
+
+    html,
+    body,
+    button,
+    input,
+    select,
+    textarea {
       font-family: "THSarabunNew";
     }
 
     html,
     body {
+      min-width: 100%;
+      min-height: 100%;
       margin: 0;
-      padding: 0;
-      background: var(--workspace);
-      color: var(--ink);
-      font-family: "THSarabunNew";
-      font-size: 16pt;
-      font-weight: 400;
-      line-height: 1.05;
+      background: var(--background);
+      color: #fff;
+      font-size: 18px;
     }
 
-    body.font-not-ready .application {
+    body.font-loading .app {
       visibility: hidden;
     }
 
     button,
     input,
-    textarea,
-    select {
-      font-family: "THSarabunNew";
+    select,
+    textarea {
+      font-size: 17px;
     }
 
     button {
-      font-size: 17pt;
-    }
-
-    .font-error {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      padding: 40px;
-      background: #fff;
-      color: #a40000;
-      font-size: 24pt;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    .font-error.show {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .toolbar {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      min-height: 58px;
-      padding: 8px 16px;
-      background: #25282c;
-      box-shadow: 0 2px 8px rgb(0 0 0 / 35%);
-    }
-
-    .toolbar button {
-      min-width: 135px;
-      padding: 5px 18px;
-      border: 1px solid #d8d8d8;
+      min-height: 36px;
+      padding: 3px 12px;
+      border: 1px solid #626974;
       border-radius: 4px;
       background: #fff;
       color: #111;
       cursor: pointer;
-      font-weight: 700;
     }
 
-    .toolbar button.primary {
-      border-color: #1565c0;
-      background: #1565c0;
-      color: #fff;
-    }
-
-    .toolbar button:hover {
+    button:hover {
       filter: brightness(0.94);
     }
 
-    .toolbar-status {
-      margin-left: 8px;
+    button.primary {
+      border-color: var(--primary);
+      background: var(--primary);
       color: #fff;
-      font-size: 15pt;
     }
 
-    .document-viewer {
+    button.danger {
+      border-color: var(--danger);
+      background: var(--danger);
+      color: #fff;
+    }
+
+    button.success {
+      border-color: var(--success);
+      background: var(--success);
+      color: #fff;
+    }
+
+    button.active {
+      outline: 3px solid #ffd600;
+      outline-offset: 1px;
+    }
+
+    input,
+    select,
+    textarea {
       width: 100%;
-      padding: 12mm 0 18mm;
+      min-height: 34px;
+      padding: 3px 7px;
+      border: 1px solid #656d78;
+      border-radius: 3px;
+      background: #fff;
+      color: #111;
     }
 
-    .page {
-      position: relative;
-      width: var(--page-width);
-      height: var(--page-height);
-      margin: 0 auto 12mm;
-      overflow: hidden;
-      background: var(--paper);
-      box-shadow: 0 4px 18px rgb(0 0 0 / 35%);
+    input[type="checkbox"] {
+      width: auto;
+      min-height: auto;
     }
 
-    .page-inner {
-      position: absolute;
+    input[type="color"] {
+      height: 36px;
+      padding: 1px;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .fatal-error {
+      display: none;
+      position: fixed;
       inset: 0;
-      padding: 14mm 15mm 12mm;
-    }
-
-    .page-number {
-      position: absolute;
-      right: 9mm;
-      bottom: 6mm;
-      font-size: 11pt;
-      color: #777;
-    }
-
-    .editable {
-      min-width: 5mm;
-      outline: none;
-    }
-
-    .editable:focus {
-      background: #fff6c8;
-      box-shadow: 0 0 0 1px #d79f00;
-    }
-
-    .line-value {
-      display: inline-block;
-      min-height: 5.8mm;
-      padding: 0 1mm;
-      border-bottom: 0.25mm dotted #000;
-      text-align: center;
-      vertical-align: baseline;
-    }
-
-    .line-solid {
-      border-bottom-style: solid;
-    }
-
-    .w-15 {
-      min-width: 15mm;
-    }
-
-    .w-20 {
-      min-width: 20mm;
-    }
-
-    .w-25 {
-      min-width: 25mm;
-    }
-
-    .w-30 {
-      min-width: 30mm;
-    }
-
-    .w-35 {
-      min-width: 35mm;
-    }
-
-    .w-40 {
-      min-width: 40mm;
-    }
-
-    .w-45 {
-      min-width: 45mm;
-    }
-
-    .w-50 {
-      min-width: 50mm;
-    }
-
-    .w-55 {
-      min-width: 55mm;
-    }
-
-    .w-60 {
-      min-width: 60mm;
-    }
-
-    .w-70 {
-      min-width: 70mm;
-    }
-
-    .w-80 {
-      min-width: 80mm;
-    }
-
-    .w-100 {
-      min-width: 100mm;
-    }
-
-    .center {
-      text-align: center;
-    }
-
-    .right {
-      text-align: right;
-    }
-
-    .bold {
+      z-index: 999999;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      background: #fff;
+      color: #a00000;
+      font-family: "THSarabunNew";
+      font-size: 28px;
       font-weight: 700;
+      text-align: center;
     }
 
-    .nowrap {
+    .fatal-error.show {
+      display: flex;
+    }
+
+    .toolbar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      height: var(--toolbar-height);
+      padding: 8px 12px;
+      overflow-x: auto;
+      background: #191c21;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 45%);
       white-space: nowrap;
     }
 
-    .document-title {
-      margin: 0;
-      font-size: 20pt;
+    .toolbar-separator {
+      width: 1px;
+      height: 32px;
+      margin: 0 3px;
+      background: #50565e;
+    }
+
+    .toolbar-label {
+      color: #ddd;
+    }
+
+    .zoom-select {
+      width: 92px;
+    }
+
+    .status {
+      margin-left: auto;
+      color: #cfd8dc;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: var(--toolbar-height);
+      bottom: 0;
+      left: 0;
+      z-index: 9000;
+      width: var(--sidebar-width);
+      overflow-y: auto;
+      padding: 12px;
+      background: var(--panel);
+      border-right: 1px solid #111;
+    }
+
+    .panel {
+      margin-bottom: 12px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: var(--panel-secondary);
+    }
+
+    .panel-title {
+      margin: 0 0 7px;
+      font-size: 20px;
       font-weight: 700;
-      line-height: 1;
-      text-align: center;
     }
 
-    .document-subtitle {
-      margin: 1.5mm 0 0;
-      font-size: 18pt;
-      font-weight: 700;
-      line-height: 1;
-      text-align: center;
+    .control {
+      margin-bottom: 7px;
     }
 
-    .organization-line {
-      margin-top: 4mm;
-      text-align: center;
+    .control:last-child {
+      margin-bottom: 0;
     }
 
-    .month-line {
-      margin-top: 1mm;
-      text-align: center;
+    .control label {
+      display: block;
+      margin-bottom: 2px;
+      color: #d7dce2;
     }
 
-    .paragraph {
-      margin: 2mm 0 0;
-      text-indent: 12mm;
-      line-height: 1.18;
+    .control-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
     }
 
-    .paragraph.no-indent {
-      text-indent: 0;
+    .control-row-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
     }
 
-    .details-heading {
-      margin: 3mm 0 1.5mm;
-      font-weight: 700;
-    }
-
-    .form-row {
+    .button-row {
       display: flex;
-      align-items: baseline;
-      width: 100%;
-      min-height: 6.3mm;
-      gap: 1mm;
-    }
-
-    .form-row.wrap {
       flex-wrap: wrap;
+      gap: 6px;
     }
 
-    .grow {
+    .button-row button {
       flex: 1;
     }
 
-    .checkbox {
-      display: inline-block;
+    .coordinate-output {
+      margin: 0;
+      padding: 8px;
+      overflow-x: auto;
+      border: 1px solid #555d67;
+      border-radius: 3px;
+      background: #111419;
+      color: #b9f6ca;
+      font-family: monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .hint {
+      color: #b9c2cc;
+      font-size: 15px;
+      line-height: 1.3;
+    }
+
+    .workspace {
+      min-height: 100vh;
+      margin-left: var(--sidebar-width);
+      padding: calc(var(--toolbar-height) + 22px) 24px 50px;
+      overflow: auto;
+    }
+
+    .empty-state {
+      max-width: 620px;
+      margin: 100px auto;
+      padding: 35px;
+      border-radius: 7px;
+      background: #fff;
+      color: #222;
+      font-size: 24px;
+      text-align: center;
+      box-shadow: 0 5px 24px rgb(0 0 0 / 35%);
+    }
+
+    .page-container {
       position: relative;
-      width: 4.1mm;
-      height: 4.1mm;
-      margin: 0 1mm;
-      border: 0.3mm solid #000;
-      vertical-align: -0.5mm;
-      cursor: pointer;
+      width: max-content;
+      margin: 0 auto 28px;
+      background: #fff;
+      box-shadow: 0 5px 22px rgb(0 0 0 / 50%);
       user-select: none;
     }
 
-    .checkbox.checked::after {
-      content: "✓";
+    .page-header {
       position: absolute;
-      left: 0.1mm;
-      top: -2.1mm;
-      font-size: 19pt;
-      font-weight: 700;
-      line-height: 1;
+      top: -22px;
+      left: 0;
+      color: #fff;
+      font-size: 15px;
     }
 
-    .work-table {
-      width: 100%;
-      margin-top: 1.5mm;
-      border-collapse: collapse;
-      table-layout: fixed;
-      font-size: 14.8pt;
-      line-height: 1;
-    }
-
-    .work-table th,
-    .work-table td {
-      height: 9.2mm;
-      padding: 0.7mm 1mm;
-      border: 0.25mm solid #000;
-      vertical-align: middle;
-    }
-
-    .work-table th {
-      font-weight: 700;
-      text-align: center;
-    }
-
-    .work-table .number {
-      width: 8mm;
-      text-align: center;
-    }
-
-    .work-table .hospital {
-      width: 33mm;
-    }
-
-    .work-table .province {
-      width: 21mm;
-    }
-
-    .work-table .group {
-      width: 24mm;
-    }
-
-    .work-table .date {
-      width: 29mm;
-      text-align: center;
-    }
-
-    .work-table .duration {
-      width: 25mm;
-      text-align: center;
-    }
-
-    .work-table .training-row td {
-      height: 18mm;
-    }
-
-    .work-table .empty-row td {
-      height: 9mm;
-    }
-
-    .summary-block {
-      margin-top: 2mm;
-      line-height: 1.2;
-    }
-
-    .certification {
-      margin-top: 3mm;
-      line-height: 1.13;
-      text-indent: 12mm;
-      text-align: justify;
-    }
-
-    .signature-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14mm;
-      margin-top: 4mm;
-    }
-
-    .signature-box {
-      min-height: 39mm;
-      text-align: center;
-      line-height: 1.15;
-    }
-
-    .signature-space {
-      height: 10mm;
-    }
-
-    .signature-line {
-      display: inline-block;
-      min-width: 52mm;
-      border-bottom: 0.25mm dotted #000;
-    }
-
-    .verification-title {
-      margin-bottom: 1.5mm;
-      text-align: left;
-    }
-
-    .verification-options {
-      margin: 1mm 0 1.5mm 7mm;
-      text-align: left;
-    }
-
-    .verification-options > div {
-      min-height: 5.5mm;
-    }
-
-    .leave-page .page-inner {
-      padding: 18mm 15mm 15mm;
-    }
-
-    .leave-title {
-      margin: 0;
-      font-size: 22pt;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    .leave-name {
-      margin-top: 6mm;
-      text-align: center;
-    }
-
-    .leave-table {
-      width: 100%;
-      margin-top: 7mm;
-      border-collapse: collapse;
-      table-layout: fixed;
-      font-size: 16pt;
-      line-height: 1.05;
-    }
-
-    .leave-table th,
-    .leave-table td {
-      border: 0.3mm solid #000;
-      padding: 2mm 1.5mm;
-      text-align: center;
-      vertical-align: middle;
-    }
-
-    .leave-table th {
-      height: 17mm;
-      font-weight: 700;
-    }
-
-    .leave-table td {
-      height: 22mm;
-    }
-
-    .leave-table .month-column {
-      width: 31mm;
-    }
-
-    .leave-table .leave-column {
-      width: 40mm;
-    }
-
-    .leave-table .total-column {
-      width: 25mm;
-    }
-
-    .leave-footer {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 17mm;
-    }
-
-    .leave-signature {
-      width: 78mm;
-      text-align: center;
-      line-height: 1.2;
-    }
-
-    .leave-signature .signature-space {
-      height: 14mm;
-    }
-
-    .screen-note {
+    .pdf-canvas {
+      position: relative;
+      z-index: 1;
       display: block;
-      margin-top: 2mm;
-      color: #666;
-      font-size: 12pt;
+      background: #fff;
+      pointer-events: none;
+    }
+
+    .overlay-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      cursor: crosshair;
+      overflow: hidden;
+    }
+
+    .overlay-layer.locked {
+      cursor: default;
+    }
+
+    .measurement-box {
+      position: absolute;
+      z-index: 5;
+      min-width: 2px;
+      min-height: 2px;
+      border: 1px solid var(--field);
+      background: rgb(255 23 68 / 6%);
+      cursor: move;
+    }
+
+    .measurement-box:hover {
+      background: rgb(255 23 68 / 11%);
+    }
+
+    .measurement-box.selected {
+      z-index: 10;
+      border: 2px solid var(--selection);
+      background: rgb(0 168 255 / 10%);
+      box-shadow: 0 0 0 1px #fff;
+    }
+
+    .measurement-box.hide-frame {
+      border-color: transparent;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .measurement-box .field-label {
+      position: absolute;
+      top: -18px;
+      left: -1px;
+      max-width: 200px;
+      padding: 0 4px;
+      overflow: hidden;
+      border-radius: 2px 2px 0 0;
+      background: var(--field);
+      color: #fff;
+      font-family: "THSarabunNew";
+      font-size: 13px;
+      line-height: 17px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .measurement-box.selected .field-label {
+      background: var(--selection);
+    }
+
+    .measurement-box.hide-frame .field-label {
+      display: none;
+    }
+
+    .field-content {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      min-height: 0;
+      padding: 0 2px;
+      overflow: hidden;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #000;
+      font-family: "THSarabunNew";
+      font-size: 16pt;
+      font-weight: 400;
+      line-height: 1;
+      white-space: pre-wrap;
+      user-select: text;
+    }
+
+    .field-content.align-left {
+      justify-content: flex-start;
+      text-align: left;
+    }
+
+    .field-content.align-center {
+      justify-content: center;
       text-align: center;
     }
 
-    @media screen and (max-width: 900px) {
-      .document-viewer {
-        padding: 8px 0 20px;
-        overflow-x: auto;
+    .field-content.align-right {
+      justify-content: flex-end;
+      text-align: right;
+    }
+
+    .field-content[contenteditable="true"]:focus {
+      background: rgb(255 255 180 / 45%);
+    }
+
+    .resize-handle {
+      position: absolute;
+      right: -5px;
+      bottom: -5px;
+      z-index: 20;
+      width: 10px;
+      height: 10px;
+      border: 1px solid #fff;
+      background: var(--selection);
+      cursor: nwse-resize;
+    }
+
+    .measurement-box:not(.selected) .resize-handle,
+    .measurement-box.hide-frame .resize-handle {
+      display: none;
+    }
+
+    .draft-box {
+      position: absolute;
+      z-index: 100;
+      border: 2px dashed #00e5ff;
+      background: rgb(0 229 255 / 12%);
+      pointer-events: none;
+    }
+
+    .crosshair-x,
+    .crosshair-y {
+      position: absolute;
+      z-index: 200;
+      display: none;
+      background: rgb(0 188 212 / 70%);
+      pointer-events: none;
+    }
+
+    .crosshair-x {
+      right: 0;
+      left: 0;
+      height: 1px;
+    }
+
+    .crosshair-y {
+      top: 0;
+      bottom: 0;
+      width: 1px;
+    }
+
+    .overlay-layer:hover .crosshair-x,
+    .overlay-layer:hover .crosshair-y {
+      display: block;
+    }
+
+    body.hide-all-frames .measurement-box {
+      border-color: transparent !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    body.hide-all-frames .field-label,
+    body.hide-all-frames .resize-handle,
+    body.hide-all-frames .crosshair-x,
+    body.hide-all-frames .crosshair-y {
+      display: none !important;
+    }
+
+    body.overlay-locked .measurement-box {
+      cursor: default;
+    }
+
+    .drop-active::after {
+      content: "วางไฟล์ PDF ที่นี่";
+      position: fixed;
+      inset: var(--toolbar-height) 0 0 var(--sidebar-width);
+      z-index: 50000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 6px dashed #00e5ff;
+      background: rgb(0 0 0 / 70%);
+      color: #fff;
+      font-size: 42px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      :root {
+        --sidebar-width: 270px;
       }
 
-      .page {
-        margin-right: auto;
-        margin-left: auto;
-        transform-origin: top center;
-      }
-
-      .toolbar {
-        justify-content: flex-start;
-        overflow-x: auto;
-      }
-
-      .toolbar-status {
-        white-space: nowrap;
+      .status {
+        display: none;
       }
     }
 
     @media print {
       html,
       body {
-        width: 210mm;
-        height: auto;
-        background: #fff;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
       }
 
       .toolbar,
-      .font-error,
-      .screen-note,
-      .page-number {
+      .sidebar,
+      .empty-state,
+      .page-header,
+      .fatal-error {
         display: none !important;
       }
 
-      .document-viewer {
-        width: 210mm;
-        padding: 0;
+      .workspace {
+        width: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
       }
 
-      .page {
-        width: 210mm;
-        height: 297mm;
-        margin: 0;
-        box-shadow: none;
+      .page-container {
+        margin: 0 !important;
+        box-shadow: none !important;
         break-after: page;
         page-break-after: always;
       }
 
-      .page:last-child {
+      .page-container:last-child {
         break-after: auto;
         page-break-after: auto;
       }
 
-      .editable:focus {
-        background: transparent;
-        box-shadow: none;
+      .measurement-box {
+        border-color: transparent !important;
+        background: transparent !important;
+        box-shadow: none !important;
       }
 
-      .editable {
+      .field-label,
+      .resize-handle,
+      .crosshair-x,
+      .crosshair-y {
+        display: none !important;
+      }
+
+      .field-content {
         caret-color: transparent;
       }
     }
   </style>
 </head>
 
-<body class="font-not-ready">
-  <div id="fontError" class="font-error">
-    ไม่สามารถโหลดฟอนต์ THSarabunNew ได้<br>
-    ระบบหยุดแสดงเอกสารเพื่อไม่ให้ใช้ฟอนต์อื่นทดแทน
-  </div>
+<body class="font-loading">
+  <div id="fatalError" class="fatal-error"></div>
 
-  <div class="application">
-    <nav class="toolbar" aria-label="เครื่องมือเอกสาร">
-      <button id="printButton" type="button" class="primary">
-        พิมพ์ / บันทึก PDF
+  <div class="app">
+    <header class="toolbar">
+      <label for="pdfFileInput">
+        <span class="button-like">
+          <button id="selectPdfButton" type="button">เลือกไฟล์ PDF</button>
+        </span>
+      </label>
+
+      <input
+        id="pdfFileInput"
+        type="file"
+        accept="application/pdf,.pdf"
+      >
+
+      <button id="loadDefaultButton" type="button">
+        โหลด original.pdf
       </button>
-      <button id="resetButton" type="button">
-        คืนค่าข้อมูลเดิม
+
+      <span class="toolbar-separator"></span>
+
+      <button id="drawModeButton" class="primary active" type="button">
+        โหมดวาดกรอบ
       </button>
-      <button id="toggleEditButton" type="button">
-        ล็อกการแก้ไข
+
+      <button id="selectModeButton" type="button">
+        โหมดเลือก
       </button>
-      <span id="toolbarStatus" class="toolbar-status">
-        กำลังตรวจสอบฟอนต์...
+
+      <button id="toggleFramesButton" type="button">
+        ซ่อนกรอบ
+      </button>
+
+      <button id="lockButton" type="button">
+        ล็อก Overlay
+      </button>
+
+      <span class="toolbar-separator"></span>
+
+      <span class="toolbar-label">Zoom</span>
+
+      <select id="zoomSelect" class="zoom-select">
+        <option value="0.75">75%</option>
+        <option value="1">100%</option>
+        <option value="1.25">125%</option>
+        <option value="1.5" selected>150%</option>
+        <option value="2">200%</option>
+        <option value="2.5">250%</option>
+      </select>
+
+      <button id="printButton" type="button">
+        พิมพ์
+      </button>
+
+      <span id="status" class="status">
+        กำลังโหลดระบบ
       </span>
-    </nav>
+    </header>
 
-    <main class="document-viewer">
-      <!-- หน้า 1 -->
-      <section class="page reimbursement-page" aria-label="หน้า 1">
-        <div class="page-inner">
-          <header>
-            <h1 class="document-title">
-              ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่ายสำหรับเจ้าหน้าที่
-            </h1>
-            <h2 class="document-subtitle">
-              ที่ปฏิบัติงานในหน่วยบริการสังกัดกระทรวงสาธารณสุข
-            </h2>
+    <aside class="sidebar">
+      <section class="panel">
+        <h2 class="panel-title">ฟิลด์ที่เลือก</h2>
 
-            <div class="organization-line">
-              หน่วยบริการ
-              <span class="line-value w-55 editable" contenteditable="true">
-                โรงพยาบาลสวี
-              </span>
-            </div>
-
-            <div class="month-line">
-              ประจำเดือน
-              <span class="line-value w-30 editable" contenteditable="true">
-                สิงหาคม
-              </span>
-              พ.ศ.
-              <span class="line-value w-20 editable" contenteditable="true">
-                2569
-              </span>
-            </div>
-          </header>
-
-          <div class="paragraph">
-            ข้าพเจ้า
-            <span class="line-value w-60 editable" contenteditable="true">
-              นายเทิดพงษ์ ซงากรณ์
-            </span>
-            ตำแหน่ง
-            <span class="line-value w-45 editable" contenteditable="true">
-              เภสัชกรชำนาญการ
-            </span>
-          </div>
-
-          <div class="form-row wrap">
-            <span>ปัจจุบันปฏิบัติงานที่</span>
-            <span class="line-value w-45 editable" contenteditable="true">
-              โรงพยาบาลสวี
-            </span>
-            <span>จังหวัด</span>
-            <span class="line-value w-30 editable" contenteditable="true">
-              ชุมพร
-            </span>
-            <span>กลุ่ม</span>
-            <span class="line-value w-30 editable" contenteditable="true">
-              พื้นที่ปกติ 2
-            </span>
-          </div>
-
-          <div class="form-row">
-            <span>รวมระยะเวลาปฏิบัติงานทั้งสิ้น</span>
-            <span class="line-value w-20 editable" contenteditable="true">
-              14
-            </span>
-            <span>ปี</span>
-            <span class="line-value w-20 editable" contenteditable="true">
-              4
-            </span>
-            <span>เดือน</span>
-          </div>
-
-          <div class="details-heading">
-            โดยมีรายละเอียดการปฏิบัติงาน ดังนี้
-            (เฉพาะสายแพทย์ตอบข้อ 1 ด้วย)
-          </div>
-
-          <table class="work-table">
-            <colgroup>
-              <col class="number">
-              <col class="hospital">
-              <col class="province">
-              <col class="group">
-              <col class="date">
-              <col class="date">
-              <col class="duration">
-            </colgroup>
-            <thead>
-              <tr>
-                <th rowspan="2">ลำดับ</th>
-                <th rowspan="2">สถานที่ปฏิบัติงาน</th>
-                <th rowspan="2">จังหวัด</th>
-                <th rowspan="2">กลุ่มพื้นที่</th>
-                <th colspan="2">ระยะเวลาปฏิบัติงาน</th>
-                <th rowspan="2">รวมเวลา</th>
-              </tr>
-              <tr>
-                <th>ตั้งแต่</th>
-                <th>ถึง</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="training-row">
-                <td>1</td>
-                <td colspan="6">
-                  <div>
-                    ฝึกเพิ่มพูนทักษะ (ปีที่ 1)
-                    <span class="checkbox" role="checkbox" tabindex="0"></span>
-                    รพศ./รพท.
-                    <span class="checkbox" role="checkbox" tabindex="0"></span>
-                    รพช.
-                  </div>
-                  <div>
-                    รวมระยะเวลาการปฏิบัติงาน
-                    <span
-                      class="line-value w-20 editable"
-                      contenteditable="true"
-                    ></span>
-                    ปี
-                    <span
-                      class="line-value w-20 editable"
-                      contenteditable="true"
-                    ></span>
-                    เดือน
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>2</td>
-                <td
-                  class="editable center"
-                  contenteditable="true"
-                >โรงพยาบาลสวี</td>
-                <td
-                  class="editable center"
-                  contenteditable="true"
-                >ชุมพร</td>
-                <td
-                  class="editable center"
-                  contenteditable="true"
-                >พื้นที่ปกติ 2</td>
-                <td
-                  class="editable center"
-                  contenteditable="true"
-                >30 เมษายน 2555</td>
-                <td
-                  class="editable center"
-                  contenteditable="true"
-                >31 สิงหาคม 2569</td>
-                <td
-                  class="editable center"
-                  contenteditable="true"
-                >14 ปี 4 เดือน</td>
-              </tr>
-
-              <tr class="empty-row">
-                <td>3</td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-              </tr>
-
-              <tr class="empty-row">
-                <td>4</td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-              </tr>
-
-              <tr class="empty-row">
-                <td>5</td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div class="summary-block">
-            <div class="form-row">
-              <span>รวมระยะเวลาปฏิบัติงานทั้งสิ้น</span>
-              <span class="line-value w-20 editable" contenteditable="true">
-                14
-              </span>
-              <span>ปี</span>
-              <span class="line-value w-20 editable" contenteditable="true">
-                4
-              </span>
-              <span>เดือน</span>
-            </div>
-
-            <div class="form-row wrap">
-              <span>
-                ข้าพเจ้าขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่าย
-                เป็นจำนวนเงิน
-              </span>
-              <span class="line-value w-30 editable" contenteditable="true">
-                6,500
-              </span>
-              <span>บาท</span>
-              <span>(</span>
-              <span class="line-value w-60 editable" contenteditable="true">
-                หกพันห้าร้อยบาทถ้วน
-              </span>
-              <span>)</span>
-            </div>
-          </div>
-
-          <div class="certification editable" contenteditable="true">
-            ข้าพเจ้าขอรับรองว่าข้อความและรายละเอียดดังกล่าวข้างต้น
-            ถูกต้องเป็นความจริงทุกประการ หากภายหลังปรากฏว่า
-            ข้าพเจ้าไม่มีสิทธิได้รับเงินค่าตอบแทนดังกล่าว
-            ข้าพเจ้ายินยอมรับผิดชอบและคืนเงินตามระเบียบของทางราชการทุกประการ
-          </div>
-
-          <div class="signature-grid">
-            <section class="signature-box">
-              <div>ลงชื่อ</div>
-              <div class="signature-space"></div>
-              <div>
-                (
-                <span class="signature-line editable" contenteditable="true">
-                  นายเทิดพงษ์ ซงากรณ์
-                </span>
-                )
-              </div>
-              <div>
-                ตำแหน่ง
-                <span class="line-value w-45 editable" contenteditable="true">
-                  เภสัชกรชำนาญการ
-                </span>
-              </div>
-              <div>
-                วันที่
-                <span class="line-value w-15 editable" contenteditable="true">
-                31
-              </span>
-                /
-                <span class="line-value w-20 editable" contenteditable="true">
-                  สิงหาคม
-                </span>
-                /
-                <span class="line-value w-15 editable" contenteditable="true">
-                  2569
-                </span>
-              </div>
-            </section>
-
-            <section class="signature-box">
-              <div class="verification-title">
-                เรียน ผู้อำนวยการโรงพยาบาลสวี
-              </div>
-
-              <div class="verification-options">
-                <div>
-                  <span
-                    class="checkbox checked"
-                    role="checkbox"
-                    aria-checked="true"
-                    tabindex="0"
-                  ></span>
-                  ปฏิบัติงานครบ 15 วันทำการ
-                </div>
-                <div>
-                  <span
-                    class="checkbox"
-                    role="checkbox"
-                    aria-checked="false"
-                    tabindex="0"
-                  ></span>
-                  ปฏิบัติงานไม่ครบ 15 วันทำการ
-                </div>
-              </div>
-
-              <div>ลงชื่อ</div>
-              <div class="signature-space"></div>
-              <div>
-                (
-                <span
-                  class="signature-line editable"
-                  contenteditable="true"
-                ></span>
-                )
-              </div>
-              <div>
-                ตำแหน่ง
-                <span
-                  class="line-value w-45 editable"
-                  contenteditable="true"
-                ></span>
-              </div>
-            </section>
-          </div>
-
-          <span class="screen-note">
-            คลิกข้อความหรือช่องในตารางเพื่อแก้ไข
-          </span>
+        <div class="control">
+          <label for="fieldName">ชื่อฟิลด์</label>
+          <input
+            id="fieldName"
+            type="text"
+            placeholder="เช่น employeeName"
+            disabled
+          >
         </div>
 
-        <span class="page-number">1</span>
-      </section>
-
-      <!-- หน้า 2 -->
-      <section class="page leave-page" aria-label="หน้า 2">
-        <div class="page-inner">
-          <header>
-            <h1 class="leave-title">สรุปวันลา</h1>
-
-            <div class="leave-name">
-              ชื่อ–สกุล
-              <span class="line-value w-70 editable" contenteditable="true">
-                นายเทิดพงษ์ ซงากรณ์
-              </span>
-            </div>
-          </header>
-
-          <table class="leave-table">
-            <colgroup>
-              <col class="month-column">
-              <col class="leave-column">
-              <col class="leave-column">
-              <col class="leave-column">
-              <col class="total-column">
-            </colgroup>
-            <thead>
-              <tr>
-                <th>ประจำเดือน</th>
-                <th>วัน/เดือน/ปี<br>ลาป่วย</th>
-                <th>วัน/เดือน/ปี<br>ลากิจ</th>
-                <th>วัน/เดือน/ปี<br>ลาพักผ่อน</th>
-                <th>รวม</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td
-                  class="editable"
-                  contenteditable="true"
-                >กันยายน 2569</td>
-                <td
-                  class="editable"
-                  contenteditable="true"
-                >11 ก.ย. 69</td>
-                <td
-                  class="editable"
-                  contenteditable="true"
-                >20 ก.ย. 69<br>(8–12)</td>
-                <td
-                  class="editable"
-                  contenteditable="true"
-                >2, 10 ก.ย. 69</td>
-                <td
-                  class="editable"
-                  contenteditable="true"
-                >3.5 วัน</td>
-              </tr>
-
-              <tr>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-              </tr>
-
-              <tr>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-                <td class="editable" contenteditable="true"></td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div class="leave-footer">
-            <section class="leave-signature">
-              <div class="bold">ตรวจสอบแล้วถูกต้อง</div>
-              <div class="signature-space"></div>
-
-              <div>
-                ลงชื่อ
-                <span
-                  class="signature-line editable"
-                  contenteditable="true"
-                ></span>
-              </div>
-
-              <div>
-                (
-                <span
-                  class="signature-line editable"
-                  contenteditable="true"
-                ></span>
-                )
-              </div>
-
-              <div>
-                ตำแหน่ง
-                <span
-                  class="line-value w-50 editable"
-                  contenteditable="true"
-                ></span>
-              </div>
-
-              <div>
-                วันที่
-                <span
-                  class="line-value w-15 editable"
-                  contenteditable="true"
-                ></span>
-                /
-                <span
-                  class="line-value w-20 editable"
-                  contenteditable="true"
-                ></span>
-                /
-                <span
-                  class="line-value w-15 editable"
-                  contenteditable="true"
-                ></span>
-              </div>
-            </section>
-          </div>
-
-          <span class="screen-note">
-            คลิกข้อความหรือช่องในตารางเพื่อแก้ไข
-          </span>
+        <div class="control">
+          <label for="fieldText">ข้อความ</label>
+          <textarea
+            id="fieldText"
+            rows="2"
+            placeholder="ข้อความที่แสดงทับ PDF"
+            disabled
+          ></textarea>
         </div>
 
-        <span class="page-number">2</span>
+        <div class="control-row">
+          <div class="control">
+            <label for="fontSize">ขนาดตัวอักษร</label>
+            <input
+              id="fontSize"
+              type="number"
+              min="6"
+              max="96"
+              step="0.5"
+              value="16"
+              disabled
+            >
+          </div>
+
+          <div class="control">
+            <label for="fontWeight">น้ำหนัก</label>
+            <select id="fontWeight" disabled>
+              <option value="400">ปกติ</option>
+              <option value="700">ตัวหนา</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="control-row">
+          <div class="control">
+            <label for="textAlign">จัดข้อความ</label>
+            <select id="textAlign" disabled>
+              <option value="left">ซ้าย</option>
+              <option value="center">กลาง</option>
+              <option value="right">ขวา</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <label for="textColor">สีข้อความ</label>
+            <input
+              id="textColor"
+              type="color"
+              value="#000000"
+              disabled
+            >
+          </div>
+        </div>
       </section>
+
+      <section class="panel">
+        <h2 class="panel-title">ตำแหน่ง PDF Point</h2>
+
+        <div class="control-row-4">
+          <div class="control">
+            <label for="fieldX">X</label>
+            <input
+              id="fieldX"
+              type="number"
+              step="0.1"
+              disabled
+            >
+          </div>
+
+          <div class="control">
+            <label for="fieldY">Y บน</label>
+            <input
+              id="fieldY"
+              type="number"
+              step="0.1"
+              disabled
+            >
+          </div>
+
+          <div class="control">
+            <label for="fieldW">กว้าง</label>
+            <input
+              id="fieldW"
+              type="number"
+              step="0.1"
+              disabled
+            >
+          </div>
+
+          <div class="control">
+            <label for="fieldH">สูง</label>
+            <input
+              id="fieldH"
+              type="number"
+              step="0.1"
+              disabled
+            >
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button id="applyGeometryButton" type="button" disabled>
+            ใช้ค่าพิกัด
+          </button>
+
+          <button
+            id="deleteFieldButton"
+            class="danger"
+            type="button"
+            disabled
+          >
+            ลบฟิลด์
+          </button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2 class="panel-title">ผลการวัด</h2>
+        <pre id="coordinateOutput" class="coordinate-output">ยังไม่ได้เลือกฟิลด์</pre>
+      </section>
+
+      <section class="panel">
+        <h2 class="panel-title">นำเข้า/ส่งออก</h2>
+
+        <div class="button-row">
+          <button id="exportJsonButton" class="success" type="button">
+            Export JSON
+          </button>
+
+          <button id="copyJsonButton" type="button">
+            Copy JSON
+          </button>
+        </div>
+
+        <div class="button-row" style="margin-top: 6px;">
+          <button id="importJsonButton" type="button">
+            Import JSON
+          </button>
+
+          <button id="clearFieldsButton" class="danger" type="button">
+            ล้างทุกฟิลด์
+          </button>
+        </div>
+
+        <input
+          id="jsonFileInput"
+          type="file"
+          accept="application/json,.json"
+        >
+      </section>
+
+      <section class="panel">
+        <h2 class="panel-title">วิธีใช้งาน</h2>
+
+        <div class="hint">
+          1. เปิด PDF หรือกดโหลด original.pdf<br>
+          2. เลือกโหมดวาดกรอบ<br>
+          3. ลากเมาส์ครอบช่องใน PDF<br>
+          4. ตั้งชื่อและพิมพ์ข้อความ<br>
+          5. ใช้ปุ่มลูกศรเลื่อนกรอบครั้งละ 1 px<br>
+          6. กด Shift พร้อมลูกศรเพื่อเลื่อน 10 px<br>
+          7. Export JSON เมื่อวัดครบทุกช่อง
+        </div>
+      </section>
+    </aside>
+
+    <main id="workspace" class="workspace">
+      <div id="emptyState" class="empty-state">
+        กำลังโหลด <strong>original.pdf</strong><br>
+        หากโหลดไม่ได้ ให้กด “เลือกไฟล์ PDF”
+      </div>
+
+      <div id="pages"></div>
     </main>
   </div>
 
-  <script>
-    (() => {
-      "use strict";
+  <script type="module">
+    import * as pdfjsLib from
+      "https://cdn.jsdelivr.net/npm/pdfjs-dist@6.3.289/build/pdf.mjs";
 
-      const body = document.body;
-      const fontError = document.getElementById("fontError");
-      const printButton = document.getElementById("printButton");
-      const resetButton = document.getElementById("resetButton");
-      const toggleEditButton =
-        document.getElementById("toggleEditButton");
-      const toolbarStatus =
-        document.getElementById("toolbarStatus");
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdn.jsdelivr.net/npm/pdfjs-dist@6.3.289/build/pdf.worker.mjs";
 
-      let editingEnabled = true;
-      let initialState = "";
+    const DEFAULT_PDF_URL = "./original.pdf";
+    const MINIMUM_BOX_SIZE = 3;
 
-      function saveInitialState() {
-        const pages = document.querySelector(".document-viewer");
-        initialState = pages.innerHTML;
-      }
+    const state = {
+      pdf: null,
+      pdfSource: null,
+      zoom: 1.5,
+      pages: new Map(),
+      fields: [],
+      selectedId: null,
+      mode: "draw",
+      framesVisible: true,
+      locked: false,
+      drawing: null,
+      moving: null,
+      resizing: null
+    };
 
-      async function verifyRequiredFont() {
-        try {
-          await document.fonts.load(
-            '400 24px "THSarabunNew"',
-            "ทดสอบฟอนต์ภาษาไทย"
-          );
+    const elements = {
+      body: document.body,
+      fatalError: document.getElementById("fatalError"),
+      workspace: document.getElementById("workspace"),
+      pages: document.getElementById("pages"),
+      emptyState: document.getElementById("emptyState"),
+      pdfFileInput: document.getElementById("pdfFileInput"),
+      selectPdfButton: document.getElementById("selectPdfButton"),
+      loadDefaultButton: document.getElementById("loadDefaultButton"),
+      drawModeButton: document.getElementById("drawModeButton"),
+      selectModeButton: document.getElementById("selectModeButton"),
+      toggleFramesButton: document.getElementById("toggleFramesButton"),
+      lockButton: document.getElementById("lockButton"),
+      zoomSelect: document.getElementById("zoomSelect"),
+      printButton: document.getElementById("printButton"),
+      status: document.getElementById("status"),
+      fieldName: document.getElementById("fieldName"),
+      fieldText: document.getElementById("fieldText"),
+      fontSize: document.getElementById("fontSize"),
+      fontWeight: document.getElementById("fontWeight"),
+      textAlign: document.getElementById("textAlign"),
+      textColor: document.getElementById("textColor"),
+      fieldX: document.getElementById("fieldX"),
+      fieldY: document.getElementById("fieldY"),
+      fieldW: document.getElementById("fieldW"),
+      fieldH: document.getElementById("fieldH"),
+      applyGeometryButton:
+        document.getElementById("applyGeometryButton"),
+      deleteFieldButton:
+        document.getElementById("deleteFieldButton"),
+      coordinateOutput:
+        document.getElementById("coordinateOutput"),
+      exportJsonButton:
+        document.getElementById("exportJsonButton"),
+      copyJsonButton:
+        document.getElementById("copyJsonButton"),
+      importJsonButton:
+        document.getElementById("importJsonButton"),
+      jsonFileInput:
+        document.getElementById("jsonFileInput"),
+      clearFieldsButton:
+        document.getElementById("clearFieldsButton")
+    };
 
-          await document.fonts.load(
-            '700 24px "THSarabunNew"',
-            "ทดสอบฟอนต์ภาษาไทย"
-          );
+    function setStatus(message) {
+      elements.status.textContent = message;
+    }
 
-          await document.fonts.ready;
+    function showFatalError(message) {
+      elements.fatalError.innerHTML = message;
+      elements.fatalError.classList.add("show");
+    }
 
-          const normalLoaded = document.fonts.check(
-            '400 24px "THSarabunNew"',
-            "ทดสอบฟอนต์ภาษาไทย"
-          );
-
-          const boldLoaded = document.fonts.check(
-            '700 24px "THSarabunNew"',
-            "ทดสอบฟอนต์ภาษาไทย"
-          );
-
-          if (!normalLoaded || !boldLoaded) {
-            throw new Error("THSarabunNew was not loaded");
-          }
-
-          body.classList.remove("font-not-ready");
-          toolbarStatus.textContent = "THSarabunNew พร้อมใช้งาน";
-          saveInitialState();
-        } catch (error) {
-          fontError.classList.add("show");
-          toolbarStatus.textContent = "โหลดฟอนต์ไม่สำเร็จ";
-          console.error(error);
-        }
-      }
-
-      function toggleCheckbox(element) {
-        if (!editingEnabled) {
-          return;
-        }
-
-        const isChecked = element.classList.toggle("checked");
-        element.setAttribute("aria-checked", String(isChecked));
-      }
-
-      function bindCheckboxes() {
-        document.querySelectorAll(".checkbox").forEach((checkbox) => {
-          checkbox.addEventListener("click", () => {
-            toggleCheckbox(checkbox);
-          });
-
-          checkbox.addEventListener("keydown", (event) => {
-            if (event.key === " " || event.key === "Enter") {
-              event.preventDefault();
-              toggleCheckbox(checkbox);
-            }
-          });
-        });
-      }
-
-      function setEditingState(enabled) {
-        editingEnabled = enabled;
-
-        document.querySelectorAll(".editable").forEach((element) => {
-          element.contentEditable = enabled ? "true" : "false";
-        });
-
-        document.querySelectorAll(".checkbox").forEach((element) => {
-          element.tabIndex = enabled ? 0 : -1;
-        });
-
-        toggleEditButton.textContent = enabled
-          ? "ล็อกการแก้ไข"
-          : "เปิดการแก้ไข";
-
-        toolbarStatus.textContent = enabled
-          ? "แก้ไขข้อมูลได้"
-          : "ล็อกเอกสารแล้ว";
-      }
-
-      function restoreInitialState() {
-        const confirmed = window.confirm(
-          "ต้องการคืนค่าข้อมูลทั้งหมดเป็นค่าเริ่มต้นหรือไม่"
+    async function verifyRequiredFont() {
+      try {
+        await document.fonts.load(
+          '400 24px "THSarabunNew"',
+          "ทดสอบฟอนต์ภาษาไทย"
         );
 
-        if (!confirmed) {
-          return;
-        }
+        await document.fonts.load(
+          '700 24px "THSarabunNew"',
+          "ทดสอบฟอนต์ภาษาไทย"
+        );
 
-        document.querySelector(".document-viewer").innerHTML =
-          initialState;
-
-        editingEnabled = true;
-        bindCheckboxes();
-        setEditingState(true);
-      }
-
-      function fitPagesOnSmallScreen() {
-        if (window.matchMedia("print").matches) {
-          return;
-        }
-
-        const availableWidth =
-          document.documentElement.clientWidth - 16;
-        const a4WidthPixels = 794;
-
-        document.querySelectorAll(".page").forEach((page) => {
-          if (availableWidth < a4WidthPixels) {
-            const scale = availableWidth / a4WidthPixels;
-            page.style.transform = `scale(${scale})`;
-            page.style.marginBottom =
-              `${-(page.offsetHeight * (1 - scale)) + 16}px`;
-          } else {
-            page.style.transform = "";
-            page.style.marginBottom = "";
-          }
-        });
-      }
-
-      printButton.addEventListener("click", async () => {
         await document.fonts.ready;
-        setEditingState(false);
-        window.print();
+
+        const normalReady = document.fonts.check(
+          '400 24px "THSarabunNew"',
+          "ทดสอบฟอนต์ภาษาไทย"
+        );
+
+        const boldReady = document.fonts.check(
+          '700 24px "THSarabunNew"',
+          "ทดสอบฟอนต์ภาษาไทย"
+        );
+
+        if (!normalReady || !boldReady) {
+          throw new Error("THSarabunNew unavailable");
+        }
+
+        elements.body.classList.remove("font-loading");
+      } catch (error) {
+        console.error(error);
+
+        showFatalError(
+          "ไม่สามารถโหลดฟอนต์ THSarabunNew ได้จาก GitHub<br>" +
+          "กรุณาตรวจสอบลิงก์ raw ของฟอนต์ทั้งสองไฟล์"
+        );
+
+        throw error;
+      }
+    }
+
+    function createId() {
+      if (crypto.randomUUID) {
+        return crypto.randomUUID();
+      }
+
+      return `field-${Date.now()}-${Math.random()
+        .toString(16)
+        .slice(2)}`;
+    }
+
+    function round(value, decimals = 2) {
+      const factor = 10 ** decimals;
+      return Math.round(value * factor) / factor;
+    }
+
+    function clamp(value, minimum, maximum) {
+      return Math.min(Math.max(value, minimum), maximum);
+    }
+
+    function getField(id) {
+      return state.fields.find((field) => field.id === id) || null;
+    }
+
+    function getSelectedField() {
+      return getField(state.selectedId);
+    }
+
+    function getPageInfo(pageNumber) {
+      return state.pages.get(Number(pageNumber)) || null;
+    }
+
+    function disableEditor(disabled) {
+      [
+        elements.fieldName,
+        elements.fieldText,
+        elements.fontSize,
+        elements.fontWeight,
+        elements.textAlign,
+        elements.textColor,
+        elements.fieldX,
+        elements.fieldY,
+        elements.fieldW,
+        elements.fieldH,
+        elements.applyGeometryButton,
+        elements.deleteFieldButton
+      ].forEach((element) => {
+        element.disabled = disabled;
       });
+    }
 
-      resetButton.addEventListener("click", restoreInitialState);
+    async function openPdf(source, sourceLabel = "PDF") {
+      try {
+        setStatus(`กำลังโหลด ${sourceLabel}`);
 
-      toggleEditButton.addEventListener("click", () => {
-        setEditingState(!editingEnabled);
-      });
+        state.pdfSource = source;
 
-      window.addEventListener("resize", fitPagesOnSmallScreen);
-
-      window.addEventListener("beforeprint", () => {
-        document.querySelectorAll(".page").forEach((page) => {
-          page.style.transform = "";
-          page.style.marginBottom = "";
+        const loadingTask = pdfjsLib.getDocument({
+          url: typeof source === "string" ? source : undefined,
+          data: source instanceof Uint8Array ? source : undefined,
+          cMapUrl:
+            "https://cdn.jsdelivr.net/npm/pdfjs-dist@6.3.289/cmaps/",
+          cMapPacked: true,
+          standardFontDataUrl:
+            "https://cdn.jsdelivr.net/npm/pdfjs-dist@6.3.289/standard_fonts/",
+          useSystemFonts: false
         });
+
+        state.pdf = await loadingTask.promise;
+
+        elements.emptyState.style.display = "none";
+
+        await renderDocument();
+
+        setStatus(
+          `${sourceLabel} — ${state.pdf.numPages} หน้า — ` +
+          `${state.fields.length} ฟิลด์`
+        );
+      } catch (error) {
+        console.error(error);
+
+        elements.emptyState.style.display = "block";
+        elements.emptyState.innerHTML =
+          "โหลด PDF ไม่สำเร็จ<br>" +
+          "ให้กด <strong>เลือกไฟล์ PDF</strong> " +
+          "หรือตรวจสอบว่ามีไฟล์ original.pdf ใน Repository หรือไม่";
+
+        setStatus("โหลด PDF ไม่สำเร็จ");
+      }
+    }
+
+    async function renderDocument() {
+      if (!state.pdf) {
+        return;
+      }
+
+      elements.pages.innerHTML = "";
+      state.pages.clear();
+
+      for (
+        let pageNumber = 1;
+        pageNumber <= state.pdf.numPages;
+        pageNumber += 1
+      ) {
+        await renderPage(pageNumber);
+      }
+
+      renderAllFields();
+    }
+
+    async function renderPage(pageNumber) {
+      const page = await state.pdf.getPage(pageNumber);
+      const viewport = page.getViewport({ scale: state.zoom });
+
+      const outputScale = Math.max(
+        window.devicePixelRatio || 1,
+        2
+      );
+
+      const pageContainer = document.createElement("section");
+      pageContainer.className = "page-container";
+      pageContainer.dataset.page = String(pageNumber);
+      pageContainer.style.width = `${viewport.width}px`;
+      pageContainer.style.height = `${viewport.height}px`;
+
+      const pageHeader = document.createElement("div");
+      pageHeader.className = "page-header";
+      pageHeader.textContent =
+        `หน้า ${pageNumber} — ` +
+        `${round(viewport.width)} × ${round(viewport.height)} CSS px`;
+
+      const canvas = document.createElement("canvas");
+      canvas.className = "pdf-canvas";
+      canvas.width = Math.floor(viewport.width * outputScale);
+      canvas.height = Math.floor(viewport.height * outputScale);
+      canvas.style.width = `${viewport.width}px`;
+      canvas.style.height = `${viewport.height}px`;
+
+      const overlay = document.createElement("div");
+      overlay.className = "overlay-layer";
+      overlay.dataset.page = String(pageNumber);
+      overlay.style.width = `${viewport.width}px`;
+      overlay.style.height = `${viewport.height}px`;
+
+      const crosshairX = document.createElement("div");
+      crosshairX.className = "crosshair-x";
+
+      const crosshairY = document.createElement("div");
+      crosshairY.className = "crosshair-y";
+
+      overlay.append(crosshairX, crosshairY);
+      pageContainer.append(pageHeader, canvas, overlay);
+      elements.pages.append(pageContainer);
+
+      const context = canvas.getContext("2d", {
+        alpha: false
       });
 
-      window.addEventListener("afterprint", () => {
-        fitPagesOnSmallScreen();
+      await page.render({
+        canvasContext: context,
+        viewport,
+        transform: [
+          outputScale,
+          0,
+          0,
+          outputScale,
+          0,
+          0
+        ]
+      }).promise;
+
+      const baseViewport = page.getViewport({ scale: 1 });
+
+      state.pages.set(pageNumber, {
+        pageNumber,
+        page,
+        viewport,
+        baseViewport,
+        pageContainer,
+        canvas,
+        overlay,
+        crosshairX,
+        crosshairY
       });
 
-      bindCheckboxes();
-      verifyRequiredFont().then(fitPagesOnSmallScreen);
-    })();
+      bindOverlayEvents(overlay);
+    }
+
+    function getPointerPosition(event, overlay) {
+      const rectangle = overlay.getBoundingClientRect();
+
+      return {
+        x: clamp(
+          event.clientX - rectangle.left,
+          0,
+          rectangle.width
+        ),
+        y: clamp(
+          event.clientY - rectangle.top,
+          0,
+          rectangle.height
+        )
+      };
+    }
+
+    function bindOverlayEvents(overlay) {
+      overlay.addEventListener("pointermove", (event) => {
+        const point = getPointerPosition(event, overlay);
+        const pageInfo = getPageInfo(overlay.dataset.page);
+
+        pageInfo.crosshairX.style.top = `${point.y}px`;
+        pageInfo.crosshairY.style.left = `${point.x}px`;
+
+        if (state.drawing) {
+          updateDrawing(event);
+        }
+
+        if (state.moving) {
+          updateMoving(event);
+        }
+
+        if (state.resizing) {
+          updateResizing(event);
+        }
+      });
+
+      overlay.addEventListener("pointerdown", (event) => {
+        if (
+          state.locked ||
+          state.mode !== "draw" ||
+          event.target !== overlay
+        ) {
+          return;
+        }
+
+        beginDrawing(event, overlay);
+      });
+
+      overlay.addEventListener("pointerup", finishPointerAction);
+      overlay.addEventListener("pointercancel", finishPointerAction);
+
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay && state.mode === "select") {
+          selectField(null);
+        }
+      });
+    }
+
+    function beginDrawing(event, overlay) {
+      event.preventDefault();
+
+      const point = getPointerPosition(event, overlay);
+      const pageNumber = Number(overlay.dataset.page);
+
+      const draft = document.createElement("div");
+      draft.className = "draft-box";
+      draft.style.left = `${point.x}px`;
+      draft.style.top = `${point.y}px`;
+      draft.style.width = "0px";
+      draft.style.height = "0px";
+
+      overlay.append(draft);
+      overlay.setPointerCapture(event.pointerId);
+
+      state.drawing = {
+        pointerId: event.pointerId,
+        pageNumber,
+        overlay,
+        draft,
+        startX: point.x,
+        startY: point.y,
+        currentX: point.x,
+        currentY: point.y
+      };
+    }
+
+    function updateDrawing(event) {
+      const drawing = state.drawing;
+
+      if (!drawing || event.pointerId !== drawing.pointerId) {
+        return;
+      }
+
+      const point = getPointerPosition(event, drawing.overlay);
+      drawing.currentX = point.x;
+      drawing.currentY = point.y;
+
+      const left = Math.min(drawing.startX, point.x);
+      const top = Math.min(drawing.startY, point.y);
+      const width = Math.abs(point.x - drawing.startX);
+      const height = Math.abs(point.y - drawing.startY);
+
+      drawing.draft.style.left = `${left}px`;
+      drawing.draft.style.top = `${top}px`;
+      drawing.draft.style.width = `${width}px`;
+      drawing.draft.style.height = `${height}px`;
+    }
+
+    function finishPointerAction(event) {
+      if (
+        state.drawing &&
+        event.pointerId === state.drawing.pointerId
+      ) {
+        finishDrawing();
+      }
+
+      if (
+        state.moving &&
+        event.pointerId === state.moving.pointerId
+      ) {
+        state.moving = null;
+      }
+
+      if (
+        state.resizing &&
+        event.pointerId === state.resizing.pointerId
+      ) {
+        state.resizing = null;
+      }
+    }
+
+    function finishDrawing() {
+      const drawing = state.drawing;
+
+      if (!drawing) {
+        return;
+      }
+
+      drawing.draft.remove();
+
+      const left = Math.min(
+        drawing.startX,
+        drawing.currentX
+      );
+
+      const top = Math.min(
+        drawing.startY,
+        drawing.currentY
+      );
+
+      const width = Math.abs(
+        drawing.currentX - drawing.startX
+      );
+
+      const height = Math.abs(
+        drawing.currentY - drawing.startY
+      );
+
+      state.drawing = null;
+
+      if (
+        width < MINIMUM_BOX_SIZE ||
+        height < MINIMUM_BOX_SIZE
+      ) {
+        return;
+      }
+
+      const fieldIndex = state.fields.length + 1;
+
+      const field = {
+        id: createId(),
+        name: `field_${fieldIndex}`,
+        page: drawing.pageNumber,
+        x: left / state.zoom,
+        y: top / state.zoom,
+        width: width / state.zoom,
+        height: height / state.zoom,
+        text: "",
+        fontFamily: "THSarabunNew",
+        fontSize: 16,
+        fontWeight: "400",
+        textAlign: "left",
+        color: "#000000"
+      };
+
+      state.fields.push(field);
+      renderField(field);
+      selectField(field.id);
+
+      setStatus(
+        `สร้าง ${field.name} — หน้า ${field.page}`
+      );
+    }
+
+    function renderAllFields() {
+      document
+        .querySelectorAll(".measurement-box")
+        .forEach((element) => element.remove());
+
+      state.fields.forEach(renderField);
+      selectField(state.selectedId);
+    }
+
+    function renderField(field) {
+      const pageInfo = getPageInfo(field.page);
+
+      if (!pageInfo) {
+        return;
+      }
+
+      let box = pageInfo.overlay.querySelector(
+        `[data-field-id="${field.id}"]`
+      );
+
+      if (!box) {
+        box = document.createElement("div");
+        box.className = "measurement-box";
+        box.dataset.fieldId = field.id;
+
+        const label = document.createElement("div");
+        label.className = "field-label";
+
+        const content = document.createElement("div");
+        content.className = "field-content";
+        content.contentEditable =
+          state.locked ? "false" : "true";
+        content.spellcheck = false;
+
+        const resizeHandle = document.createElement("div");
+        resizeHandle.className = "resize-handle";
+
+        box.append(label, content, resizeHandle);
+        pageInfo.overlay.append(box);
+
+        box.addEventListener("pointerdown", (event) => {
+          if (
+            event.target === resizeHandle ||
+            event.target === content
+          ) {
+            return;
+          }
+
+          beginMoving(event, field.id);
+        });
+
+        box.addEventListener("click", (event) => {
+          event.stopPropagation();
+          selectField(field.id);
+        });
+
+        content.addEventListener("pointerdown", (event) => {
+          event.stopPropagation();
+          selectField(field.id);
+        });
+
+        content.addEventListener("input", () => {
+          const currentField = getField(field.id);
+
+          if (!currentField) {
+            return;
+          }
+
+          currentField.text = content.innerText;
+          elements.fieldText.value = currentField.text;
+        });
+
+        resizeHandle.addEventListener(
+          "pointerdown",
+          (event) => beginResizing(event, field.id)
+        );
+      }
+
+      updateFieldElement(field, box);
+    }
+
+    function updateFieldElement(field, box = null) {
+      const pageInfo = getPageInfo(field.page);
+
+      if (!pageInfo) {
+        return;
+      }
+
+      const element =
+        box ||
+        pageInfo.overlay.querySelector(
+          `[data-field-id="${field.id}"]`
+        );
+
+      if (!element) {
+        renderField(field);
+        return;
+      }
+
+      element.style.left = `${field.x * state.zoom}px`;
+      element.style.top = `${field.y * state.zoom}px`;
+      element.style.width = `${field.width * state.zoom}px`;
+      element.style.height = `${field.height * state.zoom}px`;
+
+      element.classList.toggle(
+        "selected",
+        field.id === state.selectedId
+      );
+
+      const label = element.querySelector(".field-label");
+      const content = element.querySelector(".field-content");
+
+      label.textContent = field.name;
+
+      if (
+        document.activeElement !== content &&
+        content.innerText !== field.text
+      ) {
+        content.innerText = field.text;
+      }
+
+      content.style.fontFamily = '"THSarabunNew"';
+      content.style.fontSize =
+        `${field.fontSize * state.zoom}px`;
+      content.style.fontWeight = field.fontWeight;
+      content.style.color = field.color;
+
+      content.classList.remove(
+        "align-left",
+        "align-center",
+        "align-right"
+      );
+
+      content.classList.add(`align-${field.textAlign}`);
+
+      content.contentEditable =
+        state.locked ? "false" : "true";
+    }
+
+    function beginMoving(event, fieldId) {
+      if (state.locked || state.mode !== "select") {
+        selectField(fieldId);
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const field = getField(fieldId);
+      const pageInfo = getPageInfo(field.page);
+      const point = getPointerPosition(
+        event,
+        pageInfo.overlay
+      );
+
+      selectField(fieldId);
+
+      state.moving = {
+        pointerId: event.pointerId,
+        fieldId,
+        pageNumber: field.page,
+        startPointerX: point.x,
+        startPointerY: point.y,
+        startFieldX: field.x,
+        startFieldY: field.y
+      };
+
+      pageInfo.overlay.setPointerCapture(event.pointerId);
+    }
+
+    function updateMoving(event) {
+      const moving = state.moving;
+
+      if (!moving || event.pointerId !== moving.pointerId) {
+        return;
+      }
+
+      const field = getField(moving.fieldId);
+      const pageInfo = getPageInfo(moving.pageNumber);
+      const point = getPointerPosition(
+        event,
+        pageInfo.overlay
+      );
+
+      const deltaX =
+        (point.x - moving.startPointerX) / state.zoom;
+
+      const deltaY =
+        (point.y - moving.startPointerY) / state.zoom;
+
+      field.x = clamp(
+        moving.startFieldX + deltaX,
+        0,
+        pageInfo.baseViewport.width - field.width
+      );
+
+      field.y = clamp(
+        moving.startFieldY + deltaY,
+        0,
+        pageInfo.baseViewport.height - field.height
+      );
+
+      updateFieldElement(field);
+      updateEditorFromSelected();
+    }
+
+    function beginResizing(event, fieldId) {
+      if (state.locked || state.mode !== "select") {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const field = getField(fieldId);
+      const pageInfo = getPageInfo(field.page);
+      const point = getPointerPosition(
+        event,
+        pageInfo.overlay
+      );
+
+      selectField(fieldId);
+
+      state.resizing = {
+        pointerId: event.pointerId,
+        fieldId,
+        pageNumber: field.page,
+        startPointerX: point.x,
+        startPointerY: point.y,
+        startWidth: field.width,
+        startHeight: field.height
+      };
+
+      pageInfo.overlay.setPointerCapture(event.pointerId);
+    }
+
+    function updateResizing(event) {
+      const resizing = state.resizing;
+
+      if (
+        !resizing ||
+        event.pointerId !== resizing.pointerId
+      ) {
+        return;
+      }
+
+      const field = getField(resizing.fieldId);
+      const pageInfo = getPageInfo(resizing.pageNumber);
+      const point = getPointerPosition(
+        event,
+        pageInfo.overlay
+      );
+
+      const deltaX =
+        (point.x - resizing.startPointerX) / state.zoom;
+
+      const deltaY =
+        (point.y - resizing.startPointerY) / state.zoom;
+
+      field.width = clamp(
+        resizing.startWidth + deltaX,
+        MINIMUM_BOX_SIZE / state.zoom,
+        pageInfo.baseViewport.width - field.x
+      );
+
+      field.height = clamp(
+        resizing.startHeight + deltaY,
+        MINIMUM_BOX_SIZE / state.zoom,
+        pageInfo.baseViewport.height - field.y
+      );
+
+      updateFieldElement(field);
+      updateEditorFromSelected();
+    }
+
+    function selectField(fieldId) {
+      state.selectedId = fieldId;
+
+      document
+        .querySelectorAll(".measurement-box")
+        .forEach((element) => {
+          element.classList.toggle(
+            "selected",
+            element.dataset.fieldId === fieldId
+          );
+        });
+
+      updateEditorFromSelected();
+    }
+
+    function updateEditorFromSelected() {
+      const field = getSelectedField();
+
+      if (!field) {
+        disableEditor(true);
+
+        elements.coordinateOutput.textContent =
+          "ยังไม่ได้เลือกฟิลด์";
+
+        return;
+      }
+
+      disableEditor(false);
+
+      elements.fieldName.value = field.name;
+      elements.fieldText.value = field.text;
+      elements.fontSize.value = field.fontSize;
+      elements.fontWeight.value = field.fontWeight;
+      elements.textAlign.value = field.textAlign;
+      elements.textColor.value = field.color;
+      elements.fieldX.value = round(field.x, 2);
+      elements.fieldY.value = round(field.y, 2);
+      elements.fieldW.value = round(field.width, 2);
+      elements.fieldH.value = round(field.height, 2);
+
+      updateCoordinateOutput(field);
+    }
+
+    function updateCoordinateOutput(field) {
+      const pageInfo = getPageInfo(field.page);
+
+      if (!pageInfo) {
+        return;
+      }
+
+      const cssX = field.x * state.zoom;
+      const cssY = field.y * state.zoom;
+      const cssWidth = field.width * state.zoom;
+      const cssHeight = field.height * state.zoom;
+
+      const pdfBottomY =
+        pageInfo.baseViewport.height -
+        field.y -
+        field.height;
+
+      const output = {
+        name: field.name,
+        page: field.page,
+        cssPixelAtCurrentZoom: {
+          zoom: `${round(state.zoom * 100)}%`,
+          x: round(cssX),
+          yTop: round(cssY),
+          width: round(cssWidth),
+          height: round(cssHeight)
+        },
+        pdfPointTopLeft: {
+          x: round(field.x),
+          yTop: round(field.y),
+          width: round(field.width),
+          height: round(field.height)
+        },
+        pdfPointBottomLeft: {
+          x: round(field.x),
+          y: round(pdfBottomY),
+          width: round(field.width),
+          height: round(field.height)
+        },
+        pageSizePoint: {
+          width: round(pageInfo.baseViewport.width),
+          height: round(pageInfo.baseViewport.height)
+        }
+      };
+
+      elements.coordinateOutput.textContent =
+        JSON.stringify(output, null, 2);
+    }
+
+    function applySelectedFieldProperties() {
+      const field = getSelectedField();
+
+      if (!field) {
+        return;
+      }
+
+      field.name =
+        elements.fieldName.value.trim() || field.name;
+
+      field.text = elements.fieldText.value;
+      field.fontSize =
+        Number(elements.fontSize.value) || 16;
+
+      field.fontWeight = elements.fontWeight.value;
+      field.textAlign = elements.textAlign.value;
+      field.color = elements.textColor.value;
+
+      updateFieldElement(field);
+      updateCoordinateOutput(field);
+    }
+
+    function applyGeometry() {
+      const field = getSelectedField();
+
+      if (!field) {
+        return;
+      }
+
+      const pageInfo = getPageInfo(field.page);
+
+      const proposedX = Number(elements.fieldX.value);
+      const proposedY = Number(elements.fieldY.value);
+      const proposedWidth = Number(elements.fieldW.value);
+      const proposedHeight = Number(elements.fieldH.value);
+
+      field.width = clamp(
+        proposedWidth,
+        1,
+        pageInfo.baseViewport.width
+      );
+
+      field.height = clamp(
+        proposedHeight,
+        1,
+        pageInfo.baseViewport.height
+      );
+
+      field.x = clamp(
+        proposedX,
+        0,
+        pageInfo.baseViewport.width - field.width
+      );
+
+      field.y = clamp(
+        proposedY,
+        0,
+        pageInfo.baseViewport.height - field.height
+      );
+
+      updateFieldElement(field);
+      updateEditorFromSelected();
+    }
+
+    function deleteSelectedField() {
+      if (!state.selectedId) {
+        return;
+      }
+
+      const field = getSelectedField();
+
+      if (
+        !window.confirm(
+          `ต้องการลบฟิลด์ "${field.name}" หรือไม่`
+        )
+      ) {
+        return;
+      }
+
+      state.fields = state.fields.filter(
+        (item) => item.id !== state.selectedId
+      );
+
+      document
+        .querySelector(
+          `[data-field-id="${state.selectedId}"]`
+        )
+        ?.remove();
+
+      state.selectedId = null;
+      updateEditorFromSelected();
+
+      setStatus(`เหลือ ${state.fields.length} ฟิลด์`);
+    }
+
+    function setMode(mode) {
+      state.mode = mode;
+
+      elements.drawModeButton.classList.toggle(
+        "active",
+        mode === "draw"
+      );
+
+      elements.selectModeButton.classList.toggle(
+        "active",
+        mode === "select"
+      );
+
+      document
+        .querySelectorAll(".overlay-layer")
+        .forEach((overlay) => {
+          overlay.style.cursor =
+            mode === "draw" ? "crosshair" : "default";
+        });
+
+      setStatus(
+        mode === "draw"
+          ? "โหมดวาดกรอบ"
+          : "โหมดเลือกและเลื่อน"
+      );
+    }
+
+    function toggleFrames() {
+      state.framesVisible = !state.framesVisible;
+
+      document.body.classList.toggle(
+        "hide-all-frames",
+        !state.framesVisible
+      );
+
+      elements.toggleFramesButton.textContent =
+        state.framesVisible ? "ซ่อนกรอบ" : "แสดงกรอบ";
+    }
+
+    function toggleLock() {
+      state.locked = !state.locked;
+
+      document.body.classList.toggle(
+        "overlay-locked",
+        state.locked
+      );
+
+      document
+        .querySelectorAll(".field-content")
+        .forEach((content) => {
+          content.contentEditable =
+            state.locked ? "false" : "true";
+        });
+
+      elements.lockButton.textContent =
+        state.locked ? "ปลดล็อก Overlay" : "ล็อก Overlay";
+
+      setStatus(
+        state.locked
+          ? "Overlay ถูกล็อก"
+          : "ปลดล็อก Overlay แล้ว"
+      );
+    }
+
+    function createExportData() {
+      return {
+        format: "pdf-pixel-overlay",
+        version: 1,
+        fontFamily: "THSarabunNew",
+        zoomUsedForDisplay: state.zoom,
+        pageCount: state.pdf?.numPages || 0,
+        coordinateSystem:
+          "PDF points, origin at top-left unless specified",
+        fields: state.fields.map((field) => {
+          const pageInfo = getPageInfo(field.page);
+
+          const pdfBottomY = pageInfo
+            ? pageInfo.baseViewport.height -
+              field.y -
+              field.height
+            : null;
+
+          return {
+            ...field,
+            x: round(field.x, 3),
+            y: round(field.y, 3),
+            width: round(field.width, 3),
+            height: round(field.height, 3),
+            pdfBottomLeft: {
+              x: round(field.x, 3),
+              y: round(pdfBottomY, 3),
+              width: round(field.width, 3),
+              height: round(field.height, 3)
+            }
+          };
+        })
+      };
+    }
+
+    function downloadJson() {
+      const data = JSON.stringify(
+        createExportData(),
+        null,
+        2
+      );
+
+      const blob = new Blob([data], {
+        type: "application/json;charset=utf-8"
+      });
+
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+
+      anchor.href = url;
+      anchor.download = "pdf-overlay-fields.json";
+      anchor.click();
+
+      URL.revokeObjectURL(url);
+    }
+
+    async function copyJson() {
+      const data = JSON.stringify(
+        createExportData(),
+        null,
+        2
+      );
+
+      try {
+        await navigator.clipboard.writeText(data);
+        setStatus("คัดลอก JSON แล้ว");
+      } catch (error) {
+        console.error(error);
+        window.prompt("คัดลอก JSON", data);
+      }
+    }
+
+    function importJson(data) {
+      if (!Array.isArray(data.fields)) {
+        throw new Error("รูปแบบ JSON ไม่ถูกต้อง");
+      }
+
+      state.fields = data.fields.map((field, index) => ({
+        id: field.id || createId(),
+        name: field.name || `field_${index + 1}`,
+        page: Number(field.page) || 1,
+        x: Number(field.x) || 0,
+        y: Number(field.y) || 0,
+        width: Number(field.width) || 20,
+        height: Number(field.height) || 10,
+        text: field.text || "",
+        fontFamily: "THSarabunNew",
+        fontSize: Number(field.fontSize) || 16,
+        fontWeight:
+          String(field.fontWeight) === "700"
+            ? "700"
+            : "400",
+        textAlign: ["left", "center", "right"].includes(
+          field.textAlign
+        )
+          ? field.textAlign
+          : "left",
+        color: field.color || "#000000"
+      }));
+
+      state.selectedId = null;
+      renderAllFields();
+
+      setStatus(`Import แล้ว ${state.fields.length} ฟิลด์`);
+    }
+
+    function clearAllFields() {
+      if (
+        state.fields.length > 0 &&
+        !window.confirm("ต้องการล้างทุกฟิลด์หรือไม่")
+      ) {
+        return;
+      }
+
+      state.fields = [];
+      state.selectedId = null;
+
+      document
+        .querySelectorAll(".measurement-box")
+        .forEach((element) => element.remove());
+
+      updateEditorFromSelected();
+      setStatus("ล้างทุกฟิลด์แล้ว");
+    }
+
+    function nudgeSelectedField(event) {
+      const field = getSelectedField();
+
+      if (
+        !field ||
+        state.locked ||
+        !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"]
+          .includes(event.key)
+      ) {
+        return;
+      }
+
+      const activeTag = document.activeElement?.tagName;
+
+      if (
+        ["INPUT", "TEXTAREA", "SELECT"].includes(activeTag) ||
+        document.activeElement?.isContentEditable
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const pageInfo = getPageInfo(field.page);
+      const cssStep = event.shiftKey ? 10 : 1;
+      const pointStep = cssStep / state.zoom;
+
+      if (event.key === "ArrowLeft") {
+        field.x -= pointStep;
+      }
+
+      if (event.key === "ArrowRight") {
+        field.x += pointStep;
+      }
+
+      if (event.key === "ArrowUp") {
+        field.y -= pointStep;
+      }
+
+      if (event.key === "ArrowDown") {
+        field.y += pointStep;
+      }
+
+      field.x = clamp(
+        field.x,
+        0,
+        pageInfo.baseViewport.width - field.width
+      );
+
+      field.y = clamp(
+        field.y,
+        0,
+        pageInfo.baseViewport.height - field.height
+      );
+
+      updateFieldElement(field);
+      updateEditorFromSelected();
+    }
+
+    elements.selectPdfButton.addEventListener("click", () => {
+      elements.pdfFileInput.click();
+    });
+
+    elements.pdfFileInput.addEventListener(
+      "change",
+      async (event) => {
+        const file = event.target.files?.[0];
+
+        if (!file) {
+          return;
+        }
+
+        const data = new Uint8Array(
+          await file.arrayBuffer()
+        );
+
+        await openPdf(data, file.name);
+      }
+    );
+
+    elements.loadDefaultButton.addEventListener(
+      "click",
+      () => openPdf(DEFAULT_PDF_URL, "original.pdf")
+    );
+
+    elements.drawModeButton.addEventListener(
+      "click",
+      () => setMode("draw")
+    );
+
+    elements.selectModeButton.addEventListener(
+      "click",
+      () => setMode("select")
+    );
+
+    elements.toggleFramesButton.addEventListener(
+      "click",
+      toggleFrames
+    );
+
+    elements.lockButton.addEventListener(
+      "click",
+      toggleLock
+    );
+
+    elements.zoomSelect.addEventListener(
+      "change",
+      async () => {
+        state.zoom = Number(elements.zoomSelect.value);
+        await renderDocument();
+        updateEditorFromSelected();
+      }
+    );
+
+    elements.printButton.addEventListener(
+      "click",
+      async () => {
+        await document.fonts.ready;
+        window.print();
+      }
+    );
+
+    [
+      elements.fieldName,
+      elements.fieldText,
+      elements.fontSize,
+      elements.fontWeight,
+      elements.textAlign,
+      elements.textColor
+    ].forEach((element) => {
+      element.addEventListener(
+        "input",
+        applySelectedFieldProperties
+      );
+
+      element.addEventListener(
+        "change",
+        applySelectedFieldProperties
+      );
+    });
+
+    elements.applyGeometryButton.addEventListener(
+      "click",
+      applyGeometry
+    );
+
+    elements.deleteFieldButton.addEventListener(
+      "click",
+      deleteSelectedField
+    );
+
+    elements.exportJsonButton.addEventListener(
+      "click",
+      downloadJson
+    );
+
+    elements.copyJsonButton.addEventListener(
+      "click",
+      copyJson
+    );
+
+    elements.importJsonButton.addEventListener(
+      "click",
+      () => elements.jsonFileInput.click()
+    );
+
+    elements.jsonFileInput.addEventListener(
+      "change",
+      async (event) => {
+        const file = event.target.files?.[0];
+
+        if (!file) {
+          return;
+        }
+
+        try {
+          const data = JSON.parse(await file.text());
+          importJson(data);
+        } catch (error) {
+          console.error(error);
+          window.alert(
+            "Import ไม่สำเร็จ: รูปแบบ JSON ไม่ถูกต้อง"
+          );
+        }
+
+        event.target.value = "";
+      }
+    );
+
+    elements.clearFieldsButton.addEventListener(
+      "click",
+      clearAllFields
+    );
+
+    window.addEventListener("keydown", (event) => {
+      if (
+        event.key === "Delete" &&
+        !document.activeElement?.isContentEditable &&
+        !["INPUT", "TEXTAREA"].includes(
+          document.activeElement?.tagName
+        )
+      ) {
+        deleteSelectedField();
+        return;
+      }
+
+      nudgeSelectedField(event);
+    });
+
+    window.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      document.body.classList.add("drop-active");
+    });
+
+    window.addEventListener("dragleave", (event) => {
+      if (event.clientX === 0 && event.clientY === 0) {
+        document.body.classList.remove("drop-active");
+      }
+    });
+
+    window.addEventListener("drop", async (event) => {
+      event.preventDefault();
+      document.body.classList.remove("drop-active");
+
+      const file = [...event.dataTransfer.files].find(
+        (item) =>
+          item.type === "application/pdf" ||
+          item.name.toLowerCase().endsWith(".pdf")
+      );
+
+      if (!file) {
+        return;
+      }
+
+      const data = new Uint8Array(await file.arrayBuffer());
+      await openPdf(data, file.name);
+    });
+
+    async function initialize() {
+      try {
+        await verifyRequiredFont();
+        setMode("draw");
+        await openPdf(DEFAULT_PDF_URL, "original.pdf");
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    initialize();
   </script>
 </body>
 </html>
