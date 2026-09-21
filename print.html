@@ -1,0 +1,1220 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+  <title>ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่าย</title>
+
+  <style>
+    @font-face {
+      font-family: "THSarabunNew";
+      src: url("./fonts/THSarabunNew.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: "THSarabunNew";
+      src: url("./fonts/THSarabunNew-Bold.ttf") format("truetype");
+      font-weight: 700;
+      font-style: normal;
+      font-display: block;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    :root {
+      --page-width: 210mm;
+      --page-height: 297mm;
+      --ink: #000;
+      --paper: #fff;
+      --workspace: #5c6066;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "THSarabunNew";
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--workspace);
+      color: var(--ink);
+      font-family: "THSarabunNew";
+      font-size: 16pt;
+      font-weight: 400;
+      line-height: 1.05;
+    }
+
+    body.font-not-ready .application {
+      visibility: hidden;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font-family: "THSarabunNew";
+    }
+
+    button {
+      font-size: 17pt;
+    }
+
+    .font-error {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      padding: 40px;
+      background: #fff;
+      color: #a40000;
+      font-size: 24pt;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .font-error.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 58px;
+      padding: 8px 16px;
+      background: #25282c;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 35%);
+    }
+
+    .toolbar button {
+      min-width: 135px;
+      padding: 5px 18px;
+      border: 1px solid #d8d8d8;
+      border-radius: 4px;
+      background: #fff;
+      color: #111;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .toolbar button.primary {
+      border-color: #1565c0;
+      background: #1565c0;
+      color: #fff;
+    }
+
+    .toolbar button:hover {
+      filter: brightness(0.94);
+    }
+
+    .toolbar-status {
+      margin-left: 8px;
+      color: #fff;
+      font-size: 15pt;
+    }
+
+    .document-viewer {
+      width: 100%;
+      padding: 12mm 0 18mm;
+    }
+
+    .page {
+      position: relative;
+      width: var(--page-width);
+      height: var(--page-height);
+      margin: 0 auto 12mm;
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: 0 4px 18px rgb(0 0 0 / 35%);
+    }
+
+    .page-inner {
+      position: absolute;
+      inset: 0;
+      padding: 14mm 15mm 12mm;
+    }
+
+    .page-number {
+      position: absolute;
+      right: 9mm;
+      bottom: 6mm;
+      font-size: 11pt;
+      color: #777;
+    }
+
+    .editable {
+      min-width: 5mm;
+      outline: none;
+    }
+
+    .editable:focus {
+      background: #fff6c8;
+      box-shadow: 0 0 0 1px #d79f00;
+    }
+
+    .line-value {
+      display: inline-block;
+      min-height: 5.8mm;
+      padding: 0 1mm;
+      border-bottom: 0.25mm dotted #000;
+      text-align: center;
+      vertical-align: baseline;
+    }
+
+    .line-solid {
+      border-bottom-style: solid;
+    }
+
+    .w-15 {
+      min-width: 15mm;
+    }
+
+    .w-20 {
+      min-width: 20mm;
+    }
+
+    .w-25 {
+      min-width: 25mm;
+    }
+
+    .w-30 {
+      min-width: 30mm;
+    }
+
+    .w-35 {
+      min-width: 35mm;
+    }
+
+    .w-40 {
+      min-width: 40mm;
+    }
+
+    .w-45 {
+      min-width: 45mm;
+    }
+
+    .w-50 {
+      min-width: 50mm;
+    }
+
+    .w-55 {
+      min-width: 55mm;
+    }
+
+    .w-60 {
+      min-width: 60mm;
+    }
+
+    .w-70 {
+      min-width: 70mm;
+    }
+
+    .w-80 {
+      min-width: 80mm;
+    }
+
+    .w-100 {
+      min-width: 100mm;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    .bold {
+      font-weight: 700;
+    }
+
+    .nowrap {
+      white-space: nowrap;
+    }
+
+    .document-title {
+      margin: 0;
+      font-size: 20pt;
+      font-weight: 700;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .document-subtitle {
+      margin: 1.5mm 0 0;
+      font-size: 18pt;
+      font-weight: 700;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .organization-line {
+      margin-top: 4mm;
+      text-align: center;
+    }
+
+    .month-line {
+      margin-top: 1mm;
+      text-align: center;
+    }
+
+    .paragraph {
+      margin: 2mm 0 0;
+      text-indent: 12mm;
+      line-height: 1.18;
+    }
+
+    .paragraph.no-indent {
+      text-indent: 0;
+    }
+
+    .details-heading {
+      margin: 3mm 0 1.5mm;
+      font-weight: 700;
+    }
+
+    .form-row {
+      display: flex;
+      align-items: baseline;
+      width: 100%;
+      min-height: 6.3mm;
+      gap: 1mm;
+    }
+
+    .form-row.wrap {
+      flex-wrap: wrap;
+    }
+
+    .grow {
+      flex: 1;
+    }
+
+    .checkbox {
+      display: inline-block;
+      position: relative;
+      width: 4.1mm;
+      height: 4.1mm;
+      margin: 0 1mm;
+      border: 0.3mm solid #000;
+      vertical-align: -0.5mm;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checkbox.checked::after {
+      content: "✓";
+      position: absolute;
+      left: 0.1mm;
+      top: -2.1mm;
+      font-size: 19pt;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .work-table {
+      width: 100%;
+      margin-top: 1.5mm;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 14.8pt;
+      line-height: 1;
+    }
+
+    .work-table th,
+    .work-table td {
+      height: 9.2mm;
+      padding: 0.7mm 1mm;
+      border: 0.25mm solid #000;
+      vertical-align: middle;
+    }
+
+    .work-table th {
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .work-table .number {
+      width: 8mm;
+      text-align: center;
+    }
+
+    .work-table .hospital {
+      width: 33mm;
+    }
+
+    .work-table .province {
+      width: 21mm;
+    }
+
+    .work-table .group {
+      width: 24mm;
+    }
+
+    .work-table .date {
+      width: 29mm;
+      text-align: center;
+    }
+
+    .work-table .duration {
+      width: 25mm;
+      text-align: center;
+    }
+
+    .work-table .training-row td {
+      height: 18mm;
+    }
+
+    .work-table .empty-row td {
+      height: 9mm;
+    }
+
+    .summary-block {
+      margin-top: 2mm;
+      line-height: 1.2;
+    }
+
+    .certification {
+      margin-top: 3mm;
+      line-height: 1.13;
+      text-indent: 12mm;
+      text-align: justify;
+    }
+
+    .signature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14mm;
+      margin-top: 4mm;
+    }
+
+    .signature-box {
+      min-height: 39mm;
+      text-align: center;
+      line-height: 1.15;
+    }
+
+    .signature-space {
+      height: 10mm;
+    }
+
+    .signature-line {
+      display: inline-block;
+      min-width: 52mm;
+      border-bottom: 0.25mm dotted #000;
+    }
+
+    .verification-title {
+      margin-bottom: 1.5mm;
+      text-align: left;
+    }
+
+    .verification-options {
+      margin: 1mm 0 1.5mm 7mm;
+      text-align: left;
+    }
+
+    .verification-options > div {
+      min-height: 5.5mm;
+    }
+
+    .leave-page .page-inner {
+      padding: 18mm 15mm 15mm;
+    }
+
+    .leave-title {
+      margin: 0;
+      font-size: 22pt;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .leave-name {
+      margin-top: 6mm;
+      text-align: center;
+    }
+
+    .leave-table {
+      width: 100%;
+      margin-top: 7mm;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 16pt;
+      line-height: 1.05;
+    }
+
+    .leave-table th,
+    .leave-table td {
+      border: 0.3mm solid #000;
+      padding: 2mm 1.5mm;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .leave-table th {
+      height: 17mm;
+      font-weight: 700;
+    }
+
+    .leave-table td {
+      height: 22mm;
+    }
+
+    .leave-table .month-column {
+      width: 31mm;
+    }
+
+    .leave-table .leave-column {
+      width: 40mm;
+    }
+
+    .leave-table .total-column {
+      width: 25mm;
+    }
+
+    .leave-footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 17mm;
+    }
+
+    .leave-signature {
+      width: 78mm;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .leave-signature .signature-space {
+      height: 14mm;
+    }
+
+    .screen-note {
+      display: block;
+      margin-top: 2mm;
+      color: #666;
+      font-size: 12pt;
+      text-align: center;
+    }
+
+    @media screen and (max-width: 900px) {
+      .document-viewer {
+        padding: 8px 0 20px;
+        overflow-x: auto;
+      }
+
+      .page {
+        margin-right: auto;
+        margin-left: auto;
+        transform-origin: top center;
+      }
+
+      .toolbar {
+        justify-content: flex-start;
+        overflow-x: auto;
+      }
+
+      .toolbar-status {
+        white-space: nowrap;
+      }
+    }
+
+    @media print {
+      html,
+      body {
+        width: 210mm;
+        height: auto;
+        background: #fff;
+      }
+
+      .toolbar,
+      .font-error,
+      .screen-note,
+      .page-number {
+        display: none !important;
+      }
+
+      .document-viewer {
+        width: 210mm;
+        padding: 0;
+      }
+
+      .page {
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+        box-shadow: none;
+        break-after: page;
+        page-break-after: always;
+      }
+
+      .page:last-child {
+        break-after: auto;
+        page-break-after: auto;
+      }
+
+      .editable:focus {
+        background: transparent;
+        box-shadow: none;
+      }
+
+      .editable {
+        caret-color: transparent;
+      }
+    }
+  </style>
+</head>
+
+<body class="font-not-ready">
+  <div id="fontError" class="font-error">
+    ไม่สามารถโหลดฟอนต์ THSarabunNew ได้<br>
+    ระบบหยุดแสดงเอกสารเพื่อไม่ให้ใช้ฟอนต์อื่นทดแทน
+  </div>
+
+  <div class="application">
+    <nav class="toolbar" aria-label="เครื่องมือเอกสาร">
+      <button id="printButton" type="button" class="primary">
+        พิมพ์ / บันทึก PDF
+      </button>
+      <button id="resetButton" type="button">
+        คืนค่าข้อมูลเดิม
+      </button>
+      <button id="toggleEditButton" type="button">
+        ล็อกการแก้ไข
+      </button>
+      <span id="toolbarStatus" class="toolbar-status">
+        กำลังตรวจสอบฟอนต์...
+      </span>
+    </nav>
+
+    <main class="document-viewer">
+      <!-- หน้า 1 -->
+      <section class="page reimbursement-page" aria-label="หน้า 1">
+        <div class="page-inner">
+          <header>
+            <h1 class="document-title">
+              ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่ายสำหรับเจ้าหน้าที่
+            </h1>
+            <h2 class="document-subtitle">
+              ที่ปฏิบัติงานในหน่วยบริการสังกัดกระทรวงสาธารณสุข
+            </h2>
+
+            <div class="organization-line">
+              หน่วยบริการ
+              <span class="line-value w-55 editable" contenteditable="true">
+                โรงพยาบาลสวี
+              </span>
+            </div>
+
+            <div class="month-line">
+              ประจำเดือน
+              <span class="line-value w-30 editable" contenteditable="true">
+                สิงหาคม
+              </span>
+              พ.ศ.
+              <span class="line-value w-20 editable" contenteditable="true">
+                2569
+              </span>
+            </div>
+          </header>
+
+          <div class="paragraph">
+            ข้าพเจ้า
+            <span class="line-value w-60 editable" contenteditable="true">
+              นายเทิดพงษ์ ซงากรณ์
+            </span>
+            ตำแหน่ง
+            <span class="line-value w-45 editable" contenteditable="true">
+              เภสัชกรชำนาญการ
+            </span>
+          </div>
+
+          <div class="form-row wrap">
+            <span>ปัจจุบันปฏิบัติงานที่</span>
+            <span class="line-value w-45 editable" contenteditable="true">
+              โรงพยาบาลสวี
+            </span>
+            <span>จังหวัด</span>
+            <span class="line-value w-30 editable" contenteditable="true">
+              ชุมพร
+            </span>
+            <span>กลุ่ม</span>
+            <span class="line-value w-30 editable" contenteditable="true">
+              พื้นที่ปกติ 2
+            </span>
+          </div>
+
+          <div class="form-row">
+            <span>รวมระยะเวลาปฏิบัติงานทั้งสิ้น</span>
+            <span class="line-value w-20 editable" contenteditable="true">
+              14
+            </span>
+            <span>ปี</span>
+            <span class="line-value w-20 editable" contenteditable="true">
+              4
+            </span>
+            <span>เดือน</span>
+          </div>
+
+          <div class="details-heading">
+            โดยมีรายละเอียดการปฏิบัติงาน ดังนี้
+            (เฉพาะสายแพทย์ตอบข้อ 1 ด้วย)
+          </div>
+
+          <table class="work-table">
+            <colgroup>
+              <col class="number">
+              <col class="hospital">
+              <col class="province">
+              <col class="group">
+              <col class="date">
+              <col class="date">
+              <col class="duration">
+            </colgroup>
+            <thead>
+              <tr>
+                <th rowspan="2">ลำดับ</th>
+                <th rowspan="2">สถานที่ปฏิบัติงาน</th>
+                <th rowspan="2">จังหวัด</th>
+                <th rowspan="2">กลุ่มพื้นที่</th>
+                <th colspan="2">ระยะเวลาปฏิบัติงาน</th>
+                <th rowspan="2">รวมเวลา</th>
+              </tr>
+              <tr>
+                <th>ตั้งแต่</th>
+                <th>ถึง</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="training-row">
+                <td>1</td>
+                <td colspan="6">
+                  <div>
+                    ฝึกเพิ่มพูนทักษะ (ปีที่ 1)
+                    <span class="checkbox" role="checkbox" tabindex="0"></span>
+                    รพศ./รพท.
+                    <span class="checkbox" role="checkbox" tabindex="0"></span>
+                    รพช.
+                  </div>
+                  <div>
+                    รวมระยะเวลาการปฏิบัติงาน
+                    <span
+                      class="line-value w-20 editable"
+                      contenteditable="true"
+                    ></span>
+                    ปี
+                    <span
+                      class="line-value w-20 editable"
+                      contenteditable="true"
+                    ></span>
+                    เดือน
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>2</td>
+                <td
+                  class="editable center"
+                  contenteditable="true"
+                >โรงพยาบาลสวี</td>
+                <td
+                  class="editable center"
+                  contenteditable="true"
+                >ชุมพร</td>
+                <td
+                  class="editable center"
+                  contenteditable="true"
+                >พื้นที่ปกติ 2</td>
+                <td
+                  class="editable center"
+                  contenteditable="true"
+                >30 เมษายน 2555</td>
+                <td
+                  class="editable center"
+                  contenteditable="true"
+                >31 สิงหาคม 2569</td>
+                <td
+                  class="editable center"
+                  contenteditable="true"
+                >14 ปี 4 เดือน</td>
+              </tr>
+
+              <tr class="empty-row">
+                <td>3</td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+              </tr>
+
+              <tr class="empty-row">
+                <td>4</td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+              </tr>
+
+              <tr class="empty-row">
+                <td>5</td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="summary-block">
+            <div class="form-row">
+              <span>รวมระยะเวลาปฏิบัติงานทั้งสิ้น</span>
+              <span class="line-value w-20 editable" contenteditable="true">
+                14
+              </span>
+              <span>ปี</span>
+              <span class="line-value w-20 editable" contenteditable="true">
+                4
+              </span>
+              <span>เดือน</span>
+            </div>
+
+            <div class="form-row wrap">
+              <span>
+                ข้าพเจ้าขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่าย
+                เป็นจำนวนเงิน
+              </span>
+              <span class="line-value w-30 editable" contenteditable="true">
+                6,500
+              </span>
+              <span>บาท</span>
+              <span>(</span>
+              <span class="line-value w-60 editable" contenteditable="true">
+                หกพันห้าร้อยบาทถ้วน
+              </span>
+              <span>)</span>
+            </div>
+          </div>
+
+          <div class="certification editable" contenteditable="true">
+            ข้าพเจ้าขอรับรองว่าข้อความและรายละเอียดดังกล่าวข้างต้น
+            ถูกต้องเป็นความจริงทุกประการ หากภายหลังปรากฏว่า
+            ข้าพเจ้าไม่มีสิทธิได้รับเงินค่าตอบแทนดังกล่าว
+            ข้าพเจ้ายินยอมรับผิดชอบและคืนเงินตามระเบียบของทางราชการทุกประการ
+          </div>
+
+          <div class="signature-grid">
+            <section class="signature-box">
+              <div>ลงชื่อ</div>
+              <div class="signature-space"></div>
+              <div>
+                (
+                <span class="signature-line editable" contenteditable="true">
+                  นายเทิดพงษ์ ซงากรณ์
+                </span>
+                )
+              </div>
+              <div>
+                ตำแหน่ง
+                <span class="line-value w-45 editable" contenteditable="true">
+                  เภสัชกรชำนาญการ
+                </span>
+              </div>
+              <div>
+                วันที่
+                <span class="line-value w-15 editable" contenteditable="true">
+                31
+              </span>
+                /
+                <span class="line-value w-20 editable" contenteditable="true">
+                  สิงหาคม
+                </span>
+                /
+                <span class="line-value w-15 editable" contenteditable="true">
+                  2569
+                </span>
+              </div>
+            </section>
+
+            <section class="signature-box">
+              <div class="verification-title">
+                เรียน ผู้อำนวยการโรงพยาบาลสวี
+              </div>
+
+              <div class="verification-options">
+                <div>
+                  <span
+                    class="checkbox checked"
+                    role="checkbox"
+                    aria-checked="true"
+                    tabindex="0"
+                  ></span>
+                  ปฏิบัติงานครบ 15 วันทำการ
+                </div>
+                <div>
+                  <span
+                    class="checkbox"
+                    role="checkbox"
+                    aria-checked="false"
+                    tabindex="0"
+                  ></span>
+                  ปฏิบัติงานไม่ครบ 15 วันทำการ
+                </div>
+              </div>
+
+              <div>ลงชื่อ</div>
+              <div class="signature-space"></div>
+              <div>
+                (
+                <span
+                  class="signature-line editable"
+                  contenteditable="true"
+                ></span>
+                )
+              </div>
+              <div>
+                ตำแหน่ง
+                <span
+                  class="line-value w-45 editable"
+                  contenteditable="true"
+                ></span>
+              </div>
+            </section>
+          </div>
+
+          <span class="screen-note">
+            คลิกข้อความหรือช่องในตารางเพื่อแก้ไข
+          </span>
+        </div>
+
+        <span class="page-number">1</span>
+      </section>
+
+      <!-- หน้า 2 -->
+      <section class="page leave-page" aria-label="หน้า 2">
+        <div class="page-inner">
+          <header>
+            <h1 class="leave-title">สรุปวันลา</h1>
+
+            <div class="leave-name">
+              ชื่อ–สกุล
+              <span class="line-value w-70 editable" contenteditable="true">
+                นายเทิดพงษ์ ซงากรณ์
+              </span>
+            </div>
+          </header>
+
+          <table class="leave-table">
+            <colgroup>
+              <col class="month-column">
+              <col class="leave-column">
+              <col class="leave-column">
+              <col class="leave-column">
+              <col class="total-column">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>ประจำเดือน</th>
+                <th>วัน/เดือน/ปี<br>ลาป่วย</th>
+                <th>วัน/เดือน/ปี<br>ลากิจ</th>
+                <th>วัน/เดือน/ปี<br>ลาพักผ่อน</th>
+                <th>รวม</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td
+                  class="editable"
+                  contenteditable="true"
+                >กันยายน 2569</td>
+                <td
+                  class="editable"
+                  contenteditable="true"
+                >11 ก.ย. 69</td>
+                <td
+                  class="editable"
+                  contenteditable="true"
+                >20 ก.ย. 69<br>(8–12)</td>
+                <td
+                  class="editable"
+                  contenteditable="true"
+                >2, 10 ก.ย. 69</td>
+                <td
+                  class="editable"
+                  contenteditable="true"
+                >3.5 วัน</td>
+              </tr>
+
+              <tr>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+              </tr>
+
+              <tr>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+                <td class="editable" contenteditable="true"></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="leave-footer">
+            <section class="leave-signature">
+              <div class="bold">ตรวจสอบแล้วถูกต้อง</div>
+              <div class="signature-space"></div>
+
+              <div>
+                ลงชื่อ
+                <span
+                  class="signature-line editable"
+                  contenteditable="true"
+                ></span>
+              </div>
+
+              <div>
+                (
+                <span
+                  class="signature-line editable"
+                  contenteditable="true"
+                ></span>
+                )
+              </div>
+
+              <div>
+                ตำแหน่ง
+                <span
+                  class="line-value w-50 editable"
+                  contenteditable="true"
+                ></span>
+              </div>
+
+              <div>
+                วันที่
+                <span
+                  class="line-value w-15 editable"
+                  contenteditable="true"
+                ></span>
+                /
+                <span
+                  class="line-value w-20 editable"
+                  contenteditable="true"
+                ></span>
+                /
+                <span
+                  class="line-value w-15 editable"
+                  contenteditable="true"
+                ></span>
+              </div>
+            </section>
+          </div>
+
+          <span class="screen-note">
+            คลิกข้อความหรือช่องในตารางเพื่อแก้ไข
+          </span>
+        </div>
+
+        <span class="page-number">2</span>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const body = document.body;
+      const fontError = document.getElementById("fontError");
+      const printButton = document.getElementById("printButton");
+      const resetButton = document.getElementById("resetButton");
+      const toggleEditButton =
+        document.getElementById("toggleEditButton");
+      const toolbarStatus =
+        document.getElementById("toolbarStatus");
+
+      let editingEnabled = true;
+      let initialState = "";
+
+      function saveInitialState() {
+        const pages = document.querySelector(".document-viewer");
+        initialState = pages.innerHTML;
+      }
+
+      async function verifyRequiredFont() {
+        try {
+          await document.fonts.load(
+            '400 24px "THSarabunNew"',
+            "ทดสอบฟอนต์ภาษาไทย"
+          );
+
+          await document.fonts.load(
+            '700 24px "THSarabunNew"',
+            "ทดสอบฟอนต์ภาษาไทย"
+          );
+
+          await document.fonts.ready;
+
+          const normalLoaded = document.fonts.check(
+            '400 24px "THSarabunNew"',
+            "ทดสอบฟอนต์ภาษาไทย"
+          );
+
+          const boldLoaded = document.fonts.check(
+            '700 24px "THSarabunNew"',
+            "ทดสอบฟอนต์ภาษาไทย"
+          );
+
+          if (!normalLoaded || !boldLoaded) {
+            throw new Error("THSarabunNew was not loaded");
+          }
+
+          body.classList.remove("font-not-ready");
+          toolbarStatus.textContent = "THSarabunNew พร้อมใช้งาน";
+          saveInitialState();
+        } catch (error) {
+          fontError.classList.add("show");
+          toolbarStatus.textContent = "โหลดฟอนต์ไม่สำเร็จ";
+          console.error(error);
+        }
+      }
+
+      function toggleCheckbox(element) {
+        if (!editingEnabled) {
+          return;
+        }
+
+        const isChecked = element.classList.toggle("checked");
+        element.setAttribute("aria-checked", String(isChecked));
+      }
+
+      function bindCheckboxes() {
+        document.querySelectorAll(".checkbox").forEach((checkbox) => {
+          checkbox.addEventListener("click", () => {
+            toggleCheckbox(checkbox);
+          });
+
+          checkbox.addEventListener("keydown", (event) => {
+            if (event.key === " " || event.key === "Enter") {
+              event.preventDefault();
+              toggleCheckbox(checkbox);
+            }
+          });
+        });
+      }
+
+      function setEditingState(enabled) {
+        editingEnabled = enabled;
+
+        document.querySelectorAll(".editable").forEach((element) => {
+          element.contentEditable = enabled ? "true" : "false";
+        });
+
+        document.querySelectorAll(".checkbox").forEach((element) => {
+          element.tabIndex = enabled ? 0 : -1;
+        });
+
+        toggleEditButton.textContent = enabled
+          ? "ล็อกการแก้ไข"
+          : "เปิดการแก้ไข";
+
+        toolbarStatus.textContent = enabled
+          ? "แก้ไขข้อมูลได้"
+          : "ล็อกเอกสารแล้ว";
+      }
+
+      function restoreInitialState() {
+        const confirmed = window.confirm(
+          "ต้องการคืนค่าข้อมูลทั้งหมดเป็นค่าเริ่มต้นหรือไม่"
+        );
+
+        if (!confirmed) {
+          return;
+        }
+
+        document.querySelector(".document-viewer").innerHTML =
+          initialState;
+
+        editingEnabled = true;
+        bindCheckboxes();
+        setEditingState(true);
+      }
+
+      function fitPagesOnSmallScreen() {
+        if (window.matchMedia("print").matches) {
+          return;
+        }
+
+        const availableWidth =
+          document.documentElement.clientWidth - 16;
+        const a4WidthPixels = 794;
+
+        document.querySelectorAll(".page").forEach((page) => {
+          if (availableWidth < a4WidthPixels) {
+            const scale = availableWidth / a4WidthPixels;
+            page.style.transform = `scale(${scale})`;
+            page.style.marginBottom =
+              `${-(page.offsetHeight * (1 - scale)) + 16}px`;
+          } else {
+            page.style.transform = "";
+            page.style.marginBottom = "";
+          }
+        });
+      }
+
+      printButton.addEventListener("click", async () => {
+        await document.fonts.ready;
+        setEditingState(false);
+        window.print();
+      });
+
+      resetButton.addEventListener("click", restoreInitialState);
+
+      toggleEditButton.addEventListener("click", () => {
+        setEditingState(!editingEnabled);
+      });
+
+      window.addEventListener("resize", fitPagesOnSmallScreen);
+
+      window.addEventListener("beforeprint", () => {
+        document.querySelectorAll(".page").forEach((page) => {
+          page.style.transform = "";
+          page.style.marginBottom = "";
+        });
+      });
+
+      window.addEventListener("afterprint", () => {
+        fitPagesOnSmallScreen();
+      });
+
+      bindCheckboxes();
+      verifyRequiredFont().then(fitPagesOnSmallScreen);
+    })();
+  </script>
+</body>
+</html>
