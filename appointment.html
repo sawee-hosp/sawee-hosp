@@ -61,6 +61,102 @@ body.light #grid{opacity:.5;
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
 @media(prefers-reduced-motion:reduce){#bg{animation:none}}
 
+/* ===== Responsive / Ultra-compact =====
+   ไม่บังคับ min-width ของ layout เพื่อให้หน้าต่าง Chrome แคบได้มากที่สุด
+   เมื่อแคบมากจะลดขนาด element แทน โดยตารางยังเลื่อนแนวนอนได้ตามความจำเป็น
+*/
+html,body,#app,.wrap,header,.hrow,.tabs,.bar,.legend,main,footer{min-width:0}
+.hrow h1{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tab,.bar>* ,footer button{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.pick{min-width:0}
+footer button{white-space:nowrap}
+table{min-width:max-content}
+
+@media(max-width:600px){
+  :root{--wDate:72px;--wDay:26px;--wSum:58px}
+  body{font-size:12px}
+  header{padding:7px 8px 5px}
+  .hlogo{width:23px;height:23px;flex-basis:23px}
+  h1{font-size:15px}
+  .hbtn{font-size:13px;padding:2px 4px}
+  .sub{font-size:10px}
+  .tabs{gap:3px;padding:5px 7px 0}
+  .tab{padding:6px 4px;font-size:11px}
+  .bar{gap:4px;padding:6px 7px}
+  select,input,button{font-size:11px;padding:6px 7px}
+  .pick{font-size:11px;padding:7px 8px}
+  .wk-filters{gap:2px}
+  .wkw{font-size:9.5px;padding:2px 5px}
+  .legend{font-size:9px;padding:4px 7px 2px;gap:3px}
+  .dw{font-size:9.5px;padding:2px 5px;min-width:20px}
+  .cell{min-width:46px;padding:5px 3px}
+  .dcell{padding:5px 3px}
+  .dnum{font-size:12.5px}
+  .rem{font-size:10px}
+  .bk{font-size:15px}
+  .plus{font-size:9px;padding:1px 4px}
+  th{padding:6px 4px;font-size:10px}
+  footer{padding:7px 6px;gap:3px}
+  footer button{padding:8px 2px;font-size:10px}
+}
+
+@media(max-width:420px){
+  :root{--wDate:64px;--wDay:23px;--wSum:50px}
+  body{font-size:11px}
+  header{padding:6px 6px 4px}
+  .hlogo{width:21px;height:21px;flex-basis:21px}
+  h1{font-size:13px}
+  .hbtn{font-size:12px;padding:1px 3px}
+  .sub{font-size:9px}
+  .tabs{padding:4px 5px 0;gap:2px}
+  .tab{font-size:10px;padding:5px 3px}
+  .bar{padding:4px 5px;gap:3px}
+  select,input,button{font-size:10px;padding:5px 6px}
+  .pick{font-size:10px;padding:6px 6px}
+  .wk-filters{gap:2px;padding:2px 0}
+  .wkw{font-size:8.5px;padding:2px 4px;min-width:21px}
+  .legend{font-size:8px;padding:3px 5px 1px;gap:2px}
+  .dw{font-size:8.5px;padding:2px 4px;min-width:18px}
+  .sw{width:11px;height:7px}
+  .cell{min-width:38px;padding:4px 2px;margin:1px}
+  .dcell{padding:4px 2px}
+  .dnum{font-size:11.5px}
+  .rem{font-size:9px}
+  .bk{font-size:13px}
+  .plus{font-size:8px;padding:1px 3px}
+  th{padding:5px 3px;font-size:9px}
+  .c-day{font-size:10px}
+  footer{padding:5px 5px;gap:2px}
+  footer button{padding:6px 1px;font-size:9px}
+}
+
+@media(max-width:320px){
+  :root{--wDate:57px;--wDay:20px;--wSum:44px}
+  body{font-size:10px}
+  header{padding:5px 4px 3px}
+  .hlogo{width:19px;height:19px;flex-basis:19px}
+  h1{font-size:11.5px}
+  .hbtn{font-size:11px;padding:1px 2px}
+  .sub{font-size:8px}
+  .tabs{padding:3px 4px 0}
+  .tab{font-size:9px;padding:4px 2px}
+  .bar{padding:3px 4px;gap:2px}
+  select,input,button{font-size:9px;padding:4px 5px}
+  .pick{font-size:9px;padding:5px 5px}
+  .wkw{font-size:8px;padding:1px 3px;min-width:19px}
+  .legend{font-size:7px;padding:2px 4px}
+  .dw{font-size:8px;padding:1px 3px;min-width:17px}
+  .cell{min-width:34px;padding:3px 1px}
+  .dcell{padding:3px 1px}
+  .dnum{font-size:10.5px}
+  .rem{font-size:8px}
+  .bk{font-size:12px}
+  .plus{font-size:7px;padding:1px 2px}
+  th{padding:4px 2px;font-size:8px}
+  footer{padding:4px 3px}
+  footer button{padding:5px 1px;font-size:8px}
+}
+
 .wrap{height:100%;display:flex;flex-direction:column;width:100%;max-width:100%;margin:0;position:relative}
 
 header{padding:9px 12px 7px;backdrop-filter:blur(14px);z-index:20;
@@ -314,17 +410,45 @@ body.light .mb-pill { background: rgba(5,150,105,0.1); color: #059669; }
   if(box){ box.value = curUrl; }
 
   window.ieOpenChromeBrowser = function(){
+    var chromeUri = 'googlechrome://navigate?url=' + encodeURIComponent(curUrl);
+    var fallback = function(){
+      var m = document.getElementById('ieCopyMsg');
+      if(m) m.innerHTML = 'ไม่สามารถสั่งเปิด Chrome อัตโนมัติได้ — กด “คัดลอกลิงก์” แล้วเปิดด้วย Chrome';
+    };
+
+    /* 1) ถ้า IE อนุญาต ActiveX ให้เปิด chrome.exe โดยตรง */
     try {
-      // พยายามสั่งเปิดผ่าน shell / protocol ใน IE
-      var shell = new ActiveXObject("WScript.Shell");
-      shell.Run("chrome \"" + curUrl + "\"");
-    } catch(err) {
-      try {
-        window.open(curUrl, '_blank');
-      } catch(e) {
-        alert('กรุณาคัดลอกลิงก์ด้านล่างไปเปิดใน Google Chrome');
+      var shell = new ActiveXObject('WScript.Shell');
+      var paths = [
+        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+        'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
+      ];
+      for(var i=0;i<paths.length;i++){
+        try {
+          shell.Run('\"' + paths[i] + '\" --app=\"' + curUrl + '\"',0,false);
+          return;
+        } catch(ignore) {}
       }
-    }
+    } catch(e0) {}
+
+    /* 2) IE11 รองรับ msLaunchUri สำหรับเปิด protocol ที่ Windows ลงทะเบียนไว้ */
+    try {
+      if (navigator.msLaunchUri) {
+        navigator.msLaunchUri(chromeUri, function(){}, function(){
+          fallback();
+        });
+        return;
+      }
+    } catch(e1) {}
+
+    /* 3) ลองเรียก custom protocol โดยตรง */
+    try {
+      window.location.href = chromeUri;
+      setTimeout(fallback, 1600);
+      return;
+    } catch(e2) {}
+
+    fallback();
   };
 
   window.ieCopyLink = function(){
@@ -1098,7 +1222,7 @@ function closeM(id){ document.getElementById(id).classList.remove('on'); }
 
 function openHelp(){
   const targetUrl = "https://sawee-hosp.github.io/sawee-hosp/appointment.html";
-  const cmd = `"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" --app="${targetUrl}" --window-size=300,1040 --window-position=0,0`;
+  const cmd = `"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" --app="${targetUrl}"`;
   document.getElementById('cmdBox').value = cmd;
   document.getElementById('mHelp').classList.add('on');
 }
