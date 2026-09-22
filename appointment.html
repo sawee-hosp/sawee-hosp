@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#eef1f7">
 <link rel="manifest" href="manifest.json">
-<!-- SVG Favicon ปฏิทินแบบ Data URI สวยงามและไม่ต้องใช้ไฟล์ภายนอก -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230a84c9'><path d='M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5z'/></svg>" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>ตารางนัด รพ.สวี</title>
@@ -100,7 +99,6 @@ button:hover{border-color:var(--acc)}
 .btn-p{background:linear-gradient(95deg,#2563eb,#7c3aed);border:none;font-weight:600;color:#fff}
 .pick{flex:1;min-width:130px;text-align:left;overflow:hidden;text-overflow:ellipsis;font-weight:600}
 
-/* สไตล์ชิปเลือกสัปดาห์ 1-16 + All โทนชมพูไล่สี */
 .wk-filters{display:flex;gap:3px;width:100%;overflow-x:auto;padding:3px 0 2px;align-items:center}
 .wk-filters::-webkit-scrollbar{display:none;}
 .wkw{font-size:10.5px;font-weight:600;padding:3px 7px;border-radius:6px;cursor:pointer;
@@ -226,7 +224,6 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
 .row label{flex:1;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row input[type=number]{width:82px;text-align:center}
 
-/* Slot Settings Chip UI */
 .slot-chip {
   display: inline-block; padding: 5px 9px; font-size: 11px; font-weight: 600;
   color: var(--dim); background: var(--chip); border: 1px solid var(--line);
@@ -249,16 +246,18 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
 .mfoot{display:flex;gap:8px;margin-top:13px;flex:0 0 auto}
 .mfoot button{flex:1;padding:10px}
 
-/* Popover คำนวณยา */
+/* ===== Popover คำนวณยา — ปรับให้ยืดตามความยาวข้อความ ไม่ล้นบรรทัด ===== */
 #medPop {
   position: fixed; background: var(--head); border: 1px solid var(--line);
   border-radius: 12px; padding: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
   z-index: 100; display: none; flex-direction: column; gap: 6px;
-  min-width: 170px; color: var(--txt); pointer-events: none;
+  width: max-content; max-width: 240px; color: var(--txt); pointer-events: none;
 }
 body.light #medPop { box-shadow: 0 10px 25px rgba(40,60,110,0.25); border-color: rgba(0,0,0,0.08); }
-.med-row { display: flex; justify-content: space-between; font-family: var(--num); font-size: 13px; align-items: center; }
-.med-box { padding: 5px 8px; border-radius: 8px; font-size: 12px; font-weight: 700; flex:1; text-align:center; }
+.med-top{display:flex;gap:6px;margin-bottom:4px;justify-content:center;flex-wrap:nowrap}
+.med-row { display: flex; justify-content: space-between; gap:14px; font-family: var(--num); font-size: 13px; align-items: center; white-space:nowrap; }
+.med-box { padding: 5px 9px; border-radius: 8px; font-weight: 700; text-align:center;
+  white-space:nowrap; flex:0 0 auto; display:inline-flex; align-items:baseline; gap:3px; font-size:11.5px; }
 .mb-day { background: rgba(244,63,94,0.15); color: #f43f5e; border: 1px solid rgba(244,63,94,0.3); }
 .mb-pill { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
 body.light .mb-day { background: rgba(225,29,72,0.1); color: #e11d48; }
@@ -266,6 +265,114 @@ body.light .mb-pill { background: rgba(5,150,105,0.1); color: #059669; }
 </style>
 </head>
 <body>
+
+<!-- ================================================================
+     IE11 GUARD — วางไว้บนสุดของ body ตั้งใจให้เป็นโค้ด ES5 ล้วน
+     (ไม่มี let/const/arrow/template literal) เพื่อให้ IE11 อ่านผ่าน
+     ก่อนที่จะไปเจอ <script> หลักที่ใช้ async/await ซึ่ง IE11 parse ไม่ได้
+================================================================= -->
+<div id="ieBlockOverlay" style="display:none;position:fixed;inset:0;z-index:999999;
+  background:linear-gradient(135deg,#0f172a,#1e1b4b);color:#fff;
+  font-family:'Segoe UI',Tahoma,Arial,sans-serif;align-items:center;justify-content:center;padding:24px;">
+  <div style="max-width:420px;width:100%;background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:28px 22px;
+    text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+    <div style="font-size:46px;margin-bottom:10px;">&#9888;&#65039;</div>
+    <div style="font-size:17px;font-weight:700;margin-bottom:8px;color:#fca5a5;">
+      ไม่สามารถแสดงผลหน้านี้ได้
+    </div>
+    <div style="font-size:13px;line-height:1.75;color:#d1d5db;margin-bottom:18px;">
+      ตรวจพบว่าเปิดด้วย <b>Internet Explorer</b> ซึ่งไมโครซอฟท์ยกเลิกการสนับสนุน<br>
+      ไปแล้วตั้งแต่ปี 2565 และไม่รองรับเทคโนโลยีที่ระบบตารางนัดนี้ใช้งาน<br>
+      กรุณาเปิดด้วย <b style="color:#7fdcff">Google Chrome</b> แทน
+    </div>
+    <button onclick="ieOpenChromeApp()" style="width:100%;padding:13px;margin-bottom:9px;
+      border:none;border-radius:10px;background:linear-gradient(95deg,#2563eb,#7c3aed);
+      color:#fff;font-weight:700;font-size:13.5px;cursor:pointer;">
+      &#128640; ดาวน์โหลดตัวเปิด Chrome (ไม่มีแถบที่อยู่)
+    </button>
+    <button onclick="ieTryProtocol()" style="width:100%;padding:12px;margin-bottom:9px;
+      border:1px solid rgba(255,255,255,0.25);border-radius:10px;background:rgba(255,255,255,0.08);
+      color:#fff;font-weight:600;font-size:12.5px;cursor:pointer;">
+      &#127760; ลองเปิดด้วย Chrome อัตโนมัติ
+    </button>
+    <div style="display:flex;gap:6px;margin-bottom:6px;">
+      <input id="ieUrlBox" readonly style="flex:1;padding:10px;border-radius:8px;
+        border:1px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.25);
+        color:#7fdcff;font-size:10.5px;" value="">
+      <button onclick="ieCopyLink()" style="padding:10px 14px;border:none;border-radius:8px;
+        background:rgba(255,255,255,0.14);color:#fff;font-weight:600;font-size:12px;cursor:pointer;">
+        คัดลอก
+      </button>
+    </div>
+    <div id="ieCopyMsg" style="font-size:11px;color:#4ade80;height:14px;"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var ua = navigator.userAgent || '';
+  var isIE = (ua.indexOf('MSIE ') > -1) || (ua.indexOf('Trident/') > -1);
+  if(!isIE) return;
+
+  var overlay = document.getElementById('ieBlockOverlay');
+  if(overlay){ overlay.style.display = 'flex'; }
+
+  var curUrl = window.location.href.split('#')[0];
+  var box = document.getElementById('ieUrlBox');
+  if(box){ box.value = curUrl; }
+
+  window.ieTryProtocol = function(){
+    try{ window.location.href = 'googlechrome:' + curUrl; }catch(e){}
+  };
+
+  window.ieCopyLink = function(){
+    var msg = document.getElementById('ieCopyMsg');
+    var ok = false;
+    try{
+      box.focus();
+      box.select();
+      if(document.selection){
+        var r = document.body.createTextRange();
+        r.moveToElementText(box);
+        r.select();
+      }
+      ok = document.execCommand('copy');
+    }catch(e){ ok = false; }
+    if(!ok){
+      try{ window.clipboardData.setData('Text', curUrl); ok = true; }catch(e2){}
+    }
+    if(msg){ msg.innerHTML = ok ? '&#10003; คัดลอกลิงก์แล้ว นำไปวางใน Chrome' : 'กรุณาคัดลอกด้วยตนเอง (Ctrl+C)'; }
+  };
+
+  window.ieOpenChromeApp = function(){
+    var bat =
+      '@echo off\r\n' +
+      'chcp 65001>nul\r\n' +
+      'set URL=' + curUrl + '\r\n' +
+      'set CHROME="C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"\r\n' +
+      'if not exist %CHROME% set CHROME="C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"\r\n' +
+      'start "" %CHROME% --app=%URL% --window-size=400,800 --window-position=100,20\r\n';
+    try{
+      var blob = new Blob([bat], {type:'text/plain'});
+      if(window.navigator.msSaveOrOpenBlob){
+        window.navigator.msSaveOrOpenBlob(blob, 'เปิดตารางนัด-รพ-สวี.bat');
+      } else {
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'เปิดตารางนัด-รพ-สวี.bat';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+      var msg = document.getElementById('ieCopyMsg');
+      if(msg){ msg.innerHTML = '&#10003; ดาวน์โหลดแล้ว กรุณาดับเบิลคลิกไฟล์ที่ได้'; }
+    }catch(e){
+      alert('ไม่สามารถดาวน์โหลดไฟล์อัตโนมัติได้ กรุณาคัดลอกลิงก์ไปเปิดใน Chrome แทน');
+    }
+  };
+})();
+</script>
+
 <div id="bg"></div><div id="grid"></div>
 <div id="toast"></div>
 <div id="medPop"></div>
@@ -575,7 +682,7 @@ function jsonp(params,ms){
     window[cb]=d=>{fin();resolve(d);};
     s.onerror=()=>{fin();reject(new Error('เซิร์ฟเวอร์ตอบกลับผิดพลาด'));};
     s.async=true;
-    s.crossOrigin="anonymous"; // หัวใจสำคัญ! ป้องกัน Google Account หลายบัญชีตีกันบน Chrome มือถือ
+    s.crossOrigin="anonymous";
     s.src=API+'?'+new URLSearchParams(Object.assign({},params,{callback:cb,_:Date.now()}));
     (document.head||document.documentElement).appendChild(s);
   });
@@ -740,7 +847,6 @@ function renderTable(){
     if(codes) codes.forEach(c=>{ sum+=row[c]||0; });
     else for(const k in row) sum+=row[k];
 
-    // ซ่อนวันที่ไม่ตรงกับสัปดาห์ที่เลือก (แสดงทั้ง 7 วันในสัปดาห์นั้นๆ)
     if(WK_SEL.size > 0){
       if(diff <= 0) continue;
       const targetWk = Math.ceil(diff / 7);
@@ -907,14 +1013,21 @@ function toast(msg){
   clearTimeout(tmT); tmT=setTimeout(()=>t.classList.remove('on'),2200);
 }
 
+/* ตัวช่วยย่อขนาดตัวเลขตามความยาว เพื่อให้พอดี 1 บรรทัดเสมอ */
+function fitNum(n){
+  const s = String(n);
+  const fs = s.length>=4 ? 12 : (s.length===3 ? 13 : 14.5);
+  return '<span class="num" style="font-size:'+fs+'px">'+s+'</span>';
+}
+
 function showMed(e, diff) {
   if(diff <= 0) return; 
   
   const n = Math.ceil(diff / 10) * 10;
   
-  let h = '<div style="display:flex; gap:6px; margin-bottom:4px; justify-content:center;">'+
-          '<div class="med-box mb-day">นัด <span class="num" style="font-size:14px">'+diff+'</span> วัน</div>'+
-          '<div class="med-box mb-pill">สั่งยา <span class="num" style="font-size:14px">'+n+'</span></div>'+
+  let h = '<div class="med-top">'+
+          '<div class="med-box mb-day">นัด '+fitNum(diff)+' วัน</div>'+
+          '<div class="med-box mb-pill">สั่งยา '+fitNum(n)+'</div>'+
           '</div>';
           
   for(let i=1; i<=6; i++) {
@@ -927,8 +1040,8 @@ function showMed(e, diff) {
   
   let top = e.clientY - 40;
   let left = e.clientX + 30;
-  if(left + 180 > window.innerWidth) left = window.innerWidth - 190;
-  if(top + 240 > window.innerHeight) top = window.innerHeight - 250;
+  if(left + 250 > window.innerWidth) left = window.innerWidth - 260;
+  if(top + 260 > window.innerHeight) top = window.innerHeight - 270;
   if(top < 10) top = 10;
   
   pop.style.top = top + 'px';
