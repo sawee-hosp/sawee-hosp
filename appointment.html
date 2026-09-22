@@ -246,12 +246,12 @@ body.light .modal{background:linear-gradient(160deg,#ffffff,#eef2f9);
 .mfoot{display:flex;gap:8px;margin-top:13px;flex:0 0 auto}
 .mfoot button{flex:1;padding:10px}
 
-/* ===== Popover คำนวณยา — ปรับให้ยืดตามความยาวข้อความ ไม่ล้นบรรทัด ===== */
+/* ===== Popover คำนวณยา — ปรับให้พอดี 1 บรรทัดเสมอ ===== */
 #medPop {
   position: fixed; background: var(--head); border: 1px solid var(--line);
   border-radius: 12px; padding: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
   z-index: 100; display: none; flex-direction: column; gap: 6px;
-  width: max-content; max-width: 240px; color: var(--txt); pointer-events: none;
+  width: max-content; max-width: 260px; color: var(--txt); pointer-events: none;
 }
 body.light #medPop { box-shadow: 0 10px 25px rgba(40,60,110,0.25); border-color: rgba(0,0,0,0.08); }
 .med-top{display:flex;gap:6px;margin-bottom:4px;justify-content:center;flex-wrap:nowrap}
@@ -267,9 +267,7 @@ body.light .mb-pill { background: rgba(5,150,105,0.1); color: #059669; }
 <body>
 
 <!-- ================================================================
-     IE11 GUARD — วางไว้บนสุดของ body ตั้งใจให้เป็นโค้ด ES5 ล้วน
-     (ไม่มี let/const/arrow/template literal) เพื่อให้ IE11 อ่านผ่าน
-     ก่อนที่จะไปเจอ <script> หลักที่ใช้ async/await ซึ่ง IE11 parse ไม่ได้
+     IE11 GUARD — ตรวจจับ IE และบังคับแสดงคำเตือน (เขียนด้วย ES5 ล้วน)
 ================================================================= -->
 <div id="ieBlockOverlay" style="display:none;position:fixed;inset:0;z-index:999999;
   background:linear-gradient(135deg,#0f172a,#1e1b4b);color:#fff;
@@ -282,19 +280,13 @@ body.light .mb-pill { background: rgba(5,150,105,0.1); color: #059669; }
       ไม่สามารถแสดงผลหน้านี้ได้
     </div>
     <div style="font-size:13px;line-height:1.75;color:#d1d5db;margin-bottom:18px;">
-      ตรวจพบว่าเปิดด้วย <b>Internet Explorer</b> ซึ่งไมโครซอฟท์ยกเลิกการสนับสนุน<br>
-      ไปแล้วตั้งแต่ปี 2565 และไม่รองรับเทคโนโลยีที่ระบบตารางนัดนี้ใช้งาน<br>
+      ตรวจพบว่าเปิดด้วย <b>Internet Explorer (IE)</b> ซึ่งตกรุ่นและไม่รองรับเทคโนโลยีของระบบนี้<br>
       กรุณาเปิดด้วย <b style="color:#7fdcff">Google Chrome</b> แทน
     </div>
-    <button onclick="ieOpenChromeApp()" style="width:100%;padding:13px;margin-bottom:9px;
+    <button onclick="ieOpenChromeBrowser()" style="width:100%;padding:13px;margin-bottom:9px;
       border:none;border-radius:10px;background:linear-gradient(95deg,#2563eb,#7c3aed);
       color:#fff;font-weight:700;font-size:13.5px;cursor:pointer;">
-      &#128640; ดาวน์โหลดตัวเปิด Chrome (ไม่มีแถบที่อยู่)
-    </button>
-    <button onclick="ieTryProtocol()" style="width:100%;padding:12px;margin-bottom:9px;
-      border:1px solid rgba(255,255,255,0.25);border-radius:10px;background:rgba(255,255,255,0.08);
-      color:#fff;font-weight:600;font-size:12.5px;cursor:pointer;">
-      &#127760; ลองเปิดด้วย Chrome อัตโนมัติ
+      &#127760; เปิดด้วย Chrome ทันที
     </button>
     <div style="display:flex;gap:6px;margin-bottom:6px;">
       <input id="ieUrlBox" readonly style="flex:1;padding:10px;border-radius:8px;
@@ -302,7 +294,7 @@ body.light .mb-pill { background: rgba(5,150,105,0.1); color: #059669; }
         color:#7fdcff;font-size:10.5px;" value="">
       <button onclick="ieCopyLink()" style="padding:10px 14px;border:none;border-radius:8px;
         background:rgba(255,255,255,0.14);color:#fff;font-weight:600;font-size:12px;cursor:pointer;">
-        คัดลอก
+        คัดลอกลิงก์
       </button>
     </div>
     <div id="ieCopyMsg" style="font-size:11px;color:#4ade80;height:14px;"></div>
@@ -321,8 +313,18 @@ body.light .mb-pill { background: rgba(5,150,105,0.1); color: #059669; }
   var box = document.getElementById('ieUrlBox');
   if(box){ box.value = curUrl; }
 
-  window.ieTryProtocol = function(){
-    try{ window.location.href = 'googlechrome:' + curUrl; }catch(e){}
+  window.ieOpenChromeBrowser = function(){
+    try {
+      // พยายามสั่งเปิดผ่าน shell / protocol ใน IE
+      var shell = new ActiveXObject("WScript.Shell");
+      shell.Run("chrome \"" + curUrl + "\"");
+    } catch(err) {
+      try {
+        window.open(curUrl, '_blank');
+      } catch(e) {
+        alert('กรุณาคัดลอกลิงก์ด้านล่างไปเปิดใน Google Chrome');
+      }
+    }
   };
 
   window.ieCopyLink = function(){
@@ -342,33 +344,6 @@ body.light .mb-pill { background: rgba(5,150,105,0.1); color: #059669; }
       try{ window.clipboardData.setData('Text', curUrl); ok = true; }catch(e2){}
     }
     if(msg){ msg.innerHTML = ok ? '&#10003; คัดลอกลิงก์แล้ว นำไปวางใน Chrome' : 'กรุณาคัดลอกด้วยตนเอง (Ctrl+C)'; }
-  };
-
-  window.ieOpenChromeApp = function(){
-    var bat =
-      '@echo off\r\n' +
-      'chcp 65001>nul\r\n' +
-      'set URL=' + curUrl + '\r\n' +
-      'set CHROME="C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"\r\n' +
-      'if not exist %CHROME% set CHROME="C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"\r\n' +
-      'start "" %CHROME% --app=%URL% --window-size=400,800 --window-position=100,20\r\n';
-    try{
-      var blob = new Blob([bat], {type:'text/plain'});
-      if(window.navigator.msSaveOrOpenBlob){
-        window.navigator.msSaveOrOpenBlob(blob, 'เปิดตารางนัด-รพ-สวี.bat');
-      } else {
-        var a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'เปิดตารางนัด-รพ-สวี.bat';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      }
-      var msg = document.getElementById('ieCopyMsg');
-      if(msg){ msg.innerHTML = '&#10003; ดาวน์โหลดแล้ว กรุณาดับเบิลคลิกไฟล์ที่ได้'; }
-    }catch(e){
-      alert('ไม่สามารถดาวน์โหลดไฟล์อัตโนมัติได้ กรุณาคัดลอกลิงก์ไปเปิดใน Chrome แทน');
-    }
   };
 })();
 </script>
@@ -1013,7 +988,6 @@ function toast(msg){
   clearTimeout(tmT); tmT=setTimeout(()=>t.classList.remove('on'),2200);
 }
 
-/* ตัวช่วยย่อขนาดตัวเลขตามความยาว เพื่อให้พอดี 1 บรรทัดเสมอ */
 function fitNum(n){
   const s = String(n);
   const fs = s.length>=4 ? 12 : (s.length===3 ? 13 : 14.5);
