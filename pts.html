@@ -4,223 +4,168 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>ระบบเอกสาร Sawee Docs</title>
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-/* === TH Sarabun New (for A4 document) === */
 @font-face{font-family:'TH Sarabun New';src:url('https://github.com/sawee-hosp/sawee-vmi/raw/refs/heads/main/font/THSarabunNew.ttf') format('truetype');font-weight:normal;font-style:normal}
 @font-face{font-family:'TH Sarabun New';src:url('https://github.com/sawee-hosp/sawee-vmi/raw/refs/heads/main/font/THSarabunNew%20Bold.ttf') format('truetype');font-weight:bold;font-style:normal}
 
-/* === CSS Variables === */
 :root{
-  --primary:#4f46e5;--primary-light:#818cf8;--primary-dark:#3730a3;
-  --success:#059669;--success-light:#34d399;
-  --warning:#d97706;--warning-light:#fbbf24;
-  --danger:#dc2626;
+  --primary:#4f46e5;--primary-dark:#3730a3;--success:#059669;--warning:#d97706;--danger:#dc2626;
   --bg:#f1f5f9;--card:#fff;--text:#1e293b;--text-light:#64748b;--text-muted:#94a3b8;
-  --border:#e2e8f0;--shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
-  --shadow-lg:0 10px 25px rgba(0,0,0,.1);
-  --radius:12px;
+  --border:#e2e8f0;--shadow:0 1px 3px rgba(0,0,0,.1);--shadow-lg:0 10px 25px rgba(0,0,0,.1);--radius:12px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
 .hidden{display:none!important}
 .text-center{text-align:center}
 
-/* === Buttons === */
 button,.btn{padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-family:'Sarabun';font-size:14px;font-weight:500;color:#fff;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-.btn-primary{background:var(--primary)}.btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px)}
+.btn-primary{background:var(--primary)}.btn-primary:hover{background:var(--primary-dark)}
 .btn-success{background:var(--success)}.btn-success:hover{background:#047857}
 .btn-danger{background:var(--danger);font-size:12px;padding:6px 12px}.btn-danger:hover{background:#b91c1c}
 .btn-outline{background:transparent;border:2px solid var(--primary);color:var(--primary)}.btn-outline:hover{background:var(--primary);color:#fff}
 .btn-block{width:100%}
-.btn-ghost{background:rgba(255,255,255,.15);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.25);color:#fff}
-.btn-ghost:hover{background:rgba(255,255,255,.25)}
-button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+button:disabled{opacity:.5;cursor:not-allowed}
 
-/* === Forms === */
 .form-group{margin-bottom:12px}
-.form-group label{display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:4px;letter-spacing:.3px}
-.form-group input,.form-group select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:'Sarabun';font-size:14px;transition:.2s;background:#fff}
+.form-group label{display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:4px}
+.form-group input,.form-group select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:'Sarabun';font-size:14px;background:#fff}
 .form-group input:focus,.form-group select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.12)}
 .form-row{display:flex;gap:12px}.form-row>.form-group{flex:1}
 .required-mark{color:var(--danger)}
 .radio-group{display:flex;gap:12px;margin-top:4px}
-.radio-group label{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:400;cursor:pointer;padding:6px 14px;border-radius:8px;border:1px solid var(--border);transition:.2s}
+.radio-group label{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:400;cursor:pointer;padding:6px 14px;border-radius:8px;border:1px solid var(--border)}
 .radio-group input[type="radio"]{width:auto;cursor:pointer;accent-color:var(--primary)}
 .radio-group label:has(input:checked){border-color:var(--primary);background:rgba(79,70,229,.05);font-weight:500}
 .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px}
 .card-header{font-size:15px;font-weight:700;color:var(--primary);border-bottom:2px solid var(--primary);padding-bottom:10px;margin-bottom:16px;font-family:'Prompt',sans-serif}
 
-/* === Modals === */
-.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,.6);backdrop-filter:blur(4px);z-index:10000;justify-content:center;align-items:center}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(4px);z-index:10000;justify-content:center;align-items:center}
 .modal-overlay.active{display:flex}
 .modal-box{background:#fff;padding:28px;border-radius:16px;width:90%;max-width:420px;box-shadow:0 25px 50px rgba(0,0,0,.25);text-align:center}
-.modal-box p{font-size:15px;margin-bottom:20px;line-height:1.7;white-space:pre-line;color:var(--text)}
+.modal-box p{font-size:15px;margin-bottom:20px;line-height:1.7;white-space:pre-line}
 
-/* ============================================================
-   LANDING PAGE — Sawee Docs
-   ============================================================ */
-.landing-page{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%)}
+.landing-page,.mode-selector-page{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%)}
 .landing-header{text-align:center;margin-bottom:32px}
-.landing-header h1{font-family:'Prompt',sans-serif;font-size:32px;font-weight:700;color:var(--text);line-height:1.3}
+.landing-header h1{font-family:'Prompt',sans-serif;font-size:32px;font-weight:700;line-height:1.3}
 .landing-header p{font-family:'Prompt',sans-serif;font-size:15px;color:var(--text-light);margin-top:6px;font-weight:300}
-
-/* Submenu cards */
 .submenu-cards{display:flex;gap:20px;max-width:600px;width:100%;justify-content:center;flex-wrap:wrap}
-.submenu-card{background:#fff;border-radius:16px;padding:28px 32px;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);box-shadow:var(--shadow);display:flex;align-items:center;gap:16px;min-width:280px}
+.submenu-card{background:#fff;border-radius:16px;padding:28px 32px;cursor:pointer;transition:all .3s;box-shadow:var(--shadow);display:flex;align-items:center;gap:16px;min-width:280px}
 .submenu-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
 .submenu-card .icon-circle{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .submenu-card .icon-circle svg{width:28px;height:28px}
-.submenu-card .card-text h3{font-family:'Prompt',sans-serif;font-size:17px;font-weight:600;color:var(--text)}
+.submenu-card .card-text h3{font-family:'Prompt',sans-serif;font-size:17px;font-weight:600}
 .submenu-card .card-text p{font-size:13px;color:var(--text-light);margin-top:2px}
 
-/* Mode selector page */
-.mode-selector-page{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%)}
 .mode-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:960px;width:100%}
-.mode-card{position:relative;border-radius:20px;padding:36px 28px;cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1);overflow:hidden;min-height:280px;display:flex;flex-direction:column}
-.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;opacity:0;transition:opacity .35s;border-radius:20px}
+.mode-card{position:relative;border-radius:20px;padding:36px 28px;cursor:pointer;transition:all .35s;overflow:hidden;min-height:280px;display:flex;flex-direction:column}
 .mode-card:hover{transform:translateY(-6px) scale(1.02)}
-.mode-card:hover::before{opacity:1}
 .mode-card .card-bg-svg{position:absolute;right:-10px;bottom:-10px;width:180px;height:180px;opacity:.15;z-index:0;pointer-events:none}
-
-/* Ghost card */
-.mode-card.ghost{background:linear-gradient(135deg,#334155 0%,#0f172a 100%);color:#e2e8f0;box-shadow:0 8px 32px rgba(15,23,42,.3)}
-.mode-card.ghost::before{background:linear-gradient(135deg,#475569 0%,#1e293b 100%)}
-.mode-card.ghost .mode-title{color:#f1f5f9}
-.mode-card.ghost .mode-tagline{color:#94a3b8}
-
-/* Local card */
-.mode-card.local{background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);color:#fff;box-shadow:0 8px 32px rgba(217,119,6,.3)}
-.mode-card.local::before{background:linear-gradient(135deg,#fbbf24 0%,#f59e0b 100%)}
-.mode-card.local .mode-title{color:#fff}
-.mode-card.local .mode-tagline{color:rgba(255,255,255,.9)}
-
-/* Cloud card */
-.mode-card.cloud{background:linear-gradient(135deg,#0ea5e9 0%,#0369a1 100%);color:#fff;box-shadow:0 8px 32px rgba(14,165,233,.3)}
-.mode-card.cloud::before{background:linear-gradient(135deg,#38bdf8 0%,#0ea5e9 100%)}
-.mode-card.cloud .mode-title{color:#fff}
-.mode-card.cloud .mode-tagline{color:rgba(255,255,255,.9)}
-
+.mode-card.ghost{background:linear-gradient(135deg,#334155,#0f172a);color:#e2e8f0;box-shadow:0 8px 32px rgba(15,23,42,.3)}
+.mode-card.local{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;box-shadow:0 8px 32px rgba(217,119,6,.3)}
+.mode-card.cloud{background:linear-gradient(135deg,#0ea5e9,#0369a1);color:#fff;box-shadow:0 8px 32px rgba(14,165,233,.3)}
 .mode-title{font-family:'Prompt',sans-serif;font-size:22px;font-weight:700;margin-top:8px;position:relative;z-index:1}
-.mode-tagline{font-family:'Sarabun',sans-serif;font-size:14px;font-weight:400;margin-top:8px;line-height:1.5;position:relative;z-index:1}
+.mode-tagline{font-size:14px;margin-top:8px;line-height:1.5;position:relative;z-index:1;opacity:.9}
 
-/* === PDPA Page (cloud mode only) === */
 .auth-page{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:24px;background:var(--bg)}
 .auth-card{max-width:460px;width:100%;background:#fff;border-radius:16px;padding:32px;box-shadow:var(--shadow-lg)}
 .auth-card h2{font-family:'Prompt',sans-serif;font-size:20px;color:var(--primary);margin-bottom:4px}
 .auth-card .subtitle{color:var(--text-light);font-size:13px;margin-bottom:20px}
 .pdpa-box{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px;max-height:280px;overflow-y:auto;font-size:13px;line-height:1.8;text-align:left}
 .pdpa-box h3{color:var(--primary);font-family:'Prompt',sans-serif;font-size:14px;margin-bottom:8px}
-.back-link{display:inline-flex;align-items:center;gap:4px;color:var(--text-light);font-size:13px;text-decoration:none;margin-top:16px;transition:.2s}
+.back-link{display:inline-flex;align-items:center;gap:4px;color:var(--text-light);font-size:13px;text-decoration:none;margin-top:16px}
 .back-link:hover{color:var(--primary)}
 
-/* === Dashboard === */
 .app-header{background:#fff;padding:12px 24px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
 .app-header h1{font-family:'Prompt',sans-serif;font-size:17px;color:var(--primary);font-weight:600}
 .user-info{display:flex;align-items:center;gap:10px;font-size:13px}
-.mode-badge{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.3px}
 .profile-selector{background:#fff;padding:10px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.profile-chip{padding:6px 16px;border-radius:20px;font-size:13px;border:1px solid var(--border);cursor:pointer;transition:.2s;background:#fff}
+.profile-chip{padding:6px 16px;border-radius:20px;font-size:13px;border:1px solid var(--border);cursor:pointer;background:#fff}
 .profile-chip:hover{border-color:var(--primary)}
 .profile-chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 .profile-chip.add{border-style:dashed;color:var(--primary)}
-
 .dashboard-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:16px;padding:16px 24px;max-width:1400px;margin:0 auto}
 
-/* Month grid */
 .year-selector{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;background:#f1f5f9;padding:6px 12px;border-radius:8px}
 .year-btn{background:none;color:var(--primary);font-weight:bold;font-size:18px;padding:4px 12px;border:none;cursor:pointer}
-.month-cell{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;font-size:13px;transition:.2s}
+.month-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.month-cell{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;font-size:13px}
 .month-cell:hover{background:#e2e8f0}
 .month-cell.selected{background:var(--primary);color:#fff;border-color:var(--primary)}
 .month-cell.printed{border-color:var(--success);box-shadow:inset 0 0 0 1px var(--success)}
 .month-status{font-size:10px;margin-top:4px}
-.month-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .print-timestamp{font-size:9px;color:var(--success);margin-top:2px;line-height:1.2}
 
-/* Calendar */
 .cal-container{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
 .cal-dow{font-size:11px;font-weight:700;color:var(--text-light);padding:4px 0}
-.cal-day{font-size:13px;padding:7px 2px;border-radius:6px;cursor:pointer;transition:.15s;user-select:none}
+.cal-day{font-size:13px;padding:7px 2px;border-radius:6px;cursor:pointer;user-select:none}
 .cal-day:hover{background:#e0e7ff}
 .cal-day.selected{background:var(--primary);color:#fff;font-weight:700}
-.cal-day.disabled{color:#cbd5e1;pointer-events:none}
 .cal-empty{pointer-events:none}
 .half-day-row{display:flex;align-items:center;gap:12px;margin-top:10px;padding:8px 10px;background:#eef2ff;border-radius:8px;font-size:13px}
 .half-day-row label{cursor:pointer;display:flex;align-items:center;gap:4px}
 .half-day-row select{padding:4px 8px;border-radius:6px;border:1px solid var(--border);font-size:13px;font-family:'Sarabun'}
 .cal-summary{margin-top:8px;font-size:13px;padding:8px;background:#fefce8;border-radius:6px;border:1px solid #fde68a}
-.cal-summary b{color:var(--primary)}
 .data-table{width:100%;border-collapse:collapse;font-size:13px}
 .data-table th,.data-table td{border:1px solid var(--border);padding:8px;text-align:center}
 .data-table th{background:#f8fafc;font-weight:500}
 .hosp-group{border:1px dashed var(--border);padding:12px;border-radius:8px;margin-bottom:12px;background:#fafbfc}
 .hosp-group-label{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:8px}
-
-/* === Action buttons under calendar === */
 .action-buttons{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .action-buttons .btn{font-size:13px;padding:10px 16px}
 .btn-email{background:#8b5cf6}.btn-email:hover{background:#7c3aed}
 .btn-pdf-download{background:#059669}.btn-pdf-download:hover{background:#047857}
 
-/* === Preview === */
-.preview-section{background:#475569;padding:20px;border-radius:var(--radius);margin:16px 24px;max-width:1400px;margin-left:auto;margin-right:auto}
+.preview-section{background:#475569;padding:20px;border-radius:var(--radius);margin:16px auto;max-width:1400px}
 .preview-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
 .preview-toolbar h2{color:#fff;font-size:15px;font-family:'Prompt',sans-serif;font-weight:500}
 .btn-print{background:#f59e0b;font-size:15px;padding:12px 28px;font-weight:700}.btn-print:hover{background:#d97706}
 .preview-container{width:210mm;margin:0 auto}
 
-/* === A4 PAGE (mm-perfect match to reference PDF) === */
+/* ====== A4 DOCUMENT (layout ตาม file1) ====== */
 .page-a4{
-  width:210mm;min-height:297mm;background:#fff;color:#000;
-  padding:20mm 15mm 10mm 25mm;
+  width:210mm;height:297mm;background:#fff;color:#000;
+  padding:23mm 10mm 5.4mm 25mm;
   font-family:'TH Sarabun New','TH SarabunPSK','Sarabun',sans-serif;
-  font-size:16pt;line-height:1.25;font-weight:normal;
-  box-shadow:0 0 12px rgba(0,0,0,.4);position:relative;overflow:hidden;
-  margin-bottom:20px;
+  font-size:16pt;line-height:1.22;font-weight:normal;
+  box-shadow:0 0 12px rgba(0,0,0,.4);position:relative;overflow:hidden;margin-bottom:20px;
 }
 .page-a4 *{font-family:inherit}
-.p-title{text-align:center;font-weight:bold;font-size:18.5pt;line-height:1.35;margin:0}
-.fl{display:flex;align-items:baseline;margin-top:1pt;position:relative;line-height:1.35}
-.fl.mt{margin-top:4pt}
-.fl.right{justify-content:flex-end}
+.p-title{text-align:center;font-weight:bold;font-size:1.18em;line-height:1.3}
+.fl{display:flex;align-items:baseline;line-height:1.28}
+.fl.mt{margin-top:.35em}
 .lb{white-space:nowrap}
-.vl{font-weight:bold;border-bottom:1px dotted #000;white-space:nowrap;padding:0 2px;min-width:8px;text-align:center;display:inline-block}
-.dots{flex:1;border-bottom:1px dotted #000;min-width:4px;align-self:baseline;margin-bottom:1px}
+.vl{font-weight:bold;border-bottom:1px dotted #000;white-space:nowrap;padding:0 3px;min-width:10px;text-align:center;display:inline-block}
+.dots{flex:1;border-bottom:1px dotted #000;min-width:4px;margin-bottom:1px}
 .dots-fixed{border-bottom:1px dotted #000;display:inline-block;margin-bottom:1px}
-.right-block{margin-left:auto;width:50%}
-.right-block .fl{justify-content:flex-start}
-.sign-center{text-align:center;margin-left:35%;margin-top:12pt}
-.sign-center .dots-line{display:inline-block;border-bottom:1px dotted #000;width:200px;text-align:center}
-.bottom-right{margin-left:28%;margin-top:10pt;text-align:center}
-/* Supervisor approval section for ลูกจ้าง */
-.approval-section{margin-left:28%;margin-top:8pt;text-align:center}
-.p2-title{text-align:center;font-weight:bold;font-size:20pt;margin-top:26pt}
-.p2-subtitle{text-align:center;font-weight:bold;font-size:16pt;margin-top:14pt}
-.leave-tbl{width:100%;border-collapse:collapse;margin-top:12pt;border:1px solid #000}
-.leave-tbl th,.leave-tbl td{border:1px solid #000;padding:5px 8px;text-align:center;font-size:16pt;font-weight:normal}
+.right-block{margin-left:auto;width:52%}
+.sign-center{margin-left:33%;margin-top:.9em;text-align:center}
+.bottom-wrap{display:flex;margin-top:.7em}
+.bottom-col{flex:1;text-align:center}
+.p2-title{text-align:center;font-weight:bold;font-size:1.25em;margin-top:2.2em}
+.p2-subtitle{text-align:center;font-weight:bold;margin-top:1.1em}
+.leave-tbl{width:100%;border-collapse:collapse;margin-top:.9em;border:1px solid #000}
+.leave-tbl th,.leave-tbl td{border:1px solid #000;padding:4px 6px;text-align:center;font-size:1em;font-weight:normal}
 .leave-tbl th{font-weight:500}
-.leave-tbl td{min-height:28px;height:30px}
-.p2-sign{text-align:center;margin-top:40pt;font-weight:bold;font-size:16pt}
-.p2-sign-area{margin-left:35%;margin-top:20pt}
-.p2-sign-area .dots-line{display:inline-block;border-bottom:1px dotted #000;width:220px}
+.leave-tbl td{height:30px}
+.p2-sign{text-align:center;margin-top:2.5em;font-weight:bold}
+.p2-sign-area{margin-left:34%;margin-top:1.3em}
+.p2-sign-area .dots-line{display:inline-block;border-bottom:1px dotted #000;width:210px}
 
-/* === html2pdf export mode === */
 .pdf-export-mode .page-a4{box-shadow:none!important;margin:0!important}
 
-/* === Print === */
 @media print{
   body *{visibility:hidden}
   #print-area,#print-area *{visibility:visible}
   #print-area{position:absolute;top:0;left:0;width:100%}
-  .page-a4{box-shadow:none!important;margin:0!important;page-break-after:always;min-height:auto}
+  .page-a4{box-shadow:none!important;margin:0!important;page-break-after:always}
   .page-a4:last-child{page-break-after:auto}
   @page{size:A4;margin:0}
 }
 
-/* === Responsive === */
 @media(max-width:1200px){.dashboard-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:960px){.mode-cards{grid-template-columns:1fr;max-width:380px}}
 @media(max-width:768px){
@@ -228,31 +173,23 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
   .app-header{flex-direction:column;gap:8px}
   .form-row{flex-direction:column;gap:8px}
   .preview-section{margin:12px}
-  .preview-container,.page-a4{width:100%;min-height:auto}
+  .preview-container{width:100%;overflow-x:auto}
   .landing-header h1{font-size:24px}
-  .mode-card{min-height:220px;padding:28px 24px}
-  .mode-title{font-size:18px}
   .submenu-card{min-width:auto;width:100%}
 }
-
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .save-indicator{position:fixed;bottom:20px;right:20px;padding:8px 16px;border-radius:8px;font-size:13px;z-index:9999;transition:opacity .3s;pointer-events:none}
-.watermark{text-align:center;color:#cbd5e1;font-size:10px;margin-top:auto;padding-top:16px;font-weight:bold;letter-spacing:1px}
+.watermark{text-align:center;color:#cbd5e1;font-size:10px;margin-top:16px;font-weight:bold;letter-spacing:1px}
 </style>
 </head>
 <body>
 
-<!-- ============ MODALS ============ -->
 <div id="modal-alert" class="modal-overlay">
-  <div class="modal-box">
-    <p id="alert-msg"></p>
-    <button class="btn-primary" onclick="closeAlert()">ตกลง</button>
-  </div>
+  <div class="modal-box"><p id="alert-msg"></p><button class="btn-primary" onclick="closeAlert()">ตกลง</button></div>
 </div>
 <div id="modal-confirm" class="modal-overlay">
-  <div class="modal-box">
-    <p id="confirm-msg"></p>
+  <div class="modal-box"><p id="confirm-msg"></p>
     <div style="display:flex;gap:10px;justify-content:center">
       <button class="btn-success" id="confirm-yes">ยืนยัน</button>
       <button style="background:#64748b" class="btn" onclick="closeConfirm()">ยกเลิก</button>
@@ -261,142 +198,81 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 </div>
 <div id="save-indicator" class="save-indicator hidden"></div>
 
-<!-- ============================================================
-     LANDING PAGE — ระบบเอกสาร Sawee Docs
-     ============================================================ -->
+<!-- LANDING -->
 <div id="page-landing" class="landing-page">
-  <div class="landing-header">
-    <h1>ระบบเอกสาร Sawee Docs</h1>
-    <p>โรงพยาบาลสวี จังหวัดชุมพร</p>
-  </div>
+  <div class="landing-header"><h1>ระบบเอกสาร Sawee Docs</h1><p>โรงพยาบาลสวี จังหวัดชุมพร</p></div>
   <div class="submenu-cards">
     <div class="submenu-card" onclick="showPage('page-mode-select')">
       <div class="icon-circle" style="background:linear-gradient(135deg,#4f46e5,#7c3aed)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       </div>
-      <div class="card-text">
-        <h3>พิมพ์ พตส.รพ.สวี</h3>
-        <p>ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่าย</p>
-      </div>
+      <div class="card-text"><h3>พิมพ์ พตส.รพ.สวี</h3><p>ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่าย</p></div>
     </div>
   </div>
 </div>
 
-<!-- ============================================================
-     MODE SELECT PAGE — 3 Mode Cards
-     ============================================================ -->
+<!-- MODE SELECT -->
 <div id="page-mode-select" class="mode-selector-page hidden">
-  <div class="landing-header">
-    <h1>พิมพ์ พตส.รพ.สวี</h1>
-    <p>เลือกโหมดการใช้งาน</p>
-  </div>
+  <div class="landing-header"><h1>พิมพ์ พตส.รพ.สวี</h1><p>เลือกโหมดการใช้งาน</p></div>
   <div class="mode-cards">
-    <!-- Card 1: Ghost -->
     <div class="mode-card ghost" onclick="enterGhostMode()">
-      <svg class="card-bg-svg" viewBox="0 0 200 200" fill="currentColor" opacity="0.3">
-        <circle cx="100" cy="60" r="35" fill="currentColor"/>
-        <rect x="60" y="95" width="80" height="70" rx="10" fill="currentColor"/>
-        <rect x="55" y="40" width="90" height="12" rx="6" fill="currentColor"/>
-        <rect x="50" y="30" width="100" height="15" rx="7" fill="currentColor"/>
-        <circle cx="82" cy="58" r="10" fill="none" stroke="currentColor" stroke-width="4"/>
-        <circle cx="118" cy="58" r="10" fill="none" stroke="currentColor" stroke-width="4"/>
-        <line x1="92" y1="58" x2="108" y2="58" stroke="currentColor" stroke-width="3"/>
-        <rect x="50" y="18" width="100" height="18" rx="9" fill="currentColor"/>
-        <rect x="70" y="5" width="60" height="16" rx="8" fill="currentColor"/>
-      </svg>
-      <div class="mode-title" style="position:relative;z-index:1">โหมดล่องหน</div>
-      <div class="mode-tagline" style="position:relative;z-index:1">ไม่บันทึกข้อมูลใดๆ<br>ปริ้นแล้วฉันไปละ</div>
+      <svg class="card-bg-svg" viewBox="0 0 200 200" fill="currentColor"><circle cx="100" cy="60" r="35"/><rect x="60" y="95" width="80" height="70" rx="10"/><rect x="50" y="30" width="100" height="15" rx="7"/></svg>
+      <div class="mode-title">โหมดล่องหน</div>
+      <div class="mode-tagline">ไม่บันทึกข้อมูลใดๆ<br>ปริ้นแล้วฉันไปละ</div>
     </div>
-    <!-- Card 2: Local -->
     <div class="mode-card local" onclick="showPage('page-local-login')">
-      <svg class="card-bg-svg" viewBox="0 0 200 200" fill="currentColor" opacity="0.25">
-        <rect x="30" y="50" width="140" height="120" rx="8" fill="currentColor"/>
-        <rect x="40" y="55" width="120" height="5" rx="2" fill="currentColor" opacity="0.5"/>
-        <rect x="35" y="150" width="30" height="15" rx="3" fill="currentColor" opacity="0.4"/>
-        <rect x="70" y="150" width="30" height="15" rx="3" fill="currentColor" opacity="0.4"/>
-        <circle cx="120" cy="110" r="20" fill="currentColor" opacity="0.6"/>
-        <rect x="100" y="130" width="40" height="30" rx="5" fill="currentColor" opacity="0.6"/>
-        <rect x="45" y="70" width="50" height="35" rx="4" fill="currentColor" opacity="0.3"/>
-        <rect x="45" y="110" width="50" height="5" rx="2" fill="currentColor" opacity="0.3"/>
-        <rect x="45" y="120" width="35" height="5" rx="2" fill="currentColor" opacity="0.3"/>
-      </svg>
-      <div class="mode-title" style="position:relative;z-index:1">โหมดอุ่นใจ</div>
-      <div class="mode-tagline" style="position:relative;z-index:1">บันทึกข้อมูลทั้งหมด<br>ในคอมพิวเตอร์ของคุณ</div>
+      <svg class="card-bg-svg" viewBox="0 0 200 200" fill="currentColor"><rect x="30" y="50" width="140" height="120" rx="8"/><circle cx="120" cy="110" r="20" opacity=".6"/></svg>
+      <div class="mode-title">โหมดอุ่นใจ</div>
+      <div class="mode-tagline">บันทึกข้อมูลทั้งหมด<br>ในคอมพิวเตอร์ของคุณ</div>
     </div>
-    <!-- Card 3: Cloud -->
     <div class="mode-card cloud" onclick="showPage('page-pdpa')">
-      <svg class="card-bg-svg" viewBox="0 0 200 200" fill="currentColor" opacity="0.25">
-        <ellipse cx="100" cy="120" rx="75" ry="35" fill="currentColor"/>
-        <ellipse cx="70" cy="110" rx="40" ry="25" fill="currentColor"/>
-        <ellipse cx="135" cy="108" rx="45" ry="28" fill="currentColor"/>
-        <ellipse cx="100" cy="100" rx="55" ry="30" fill="currentColor"/>
-        <circle cx="100" cy="80" r="18" fill="currentColor" opacity="0.8"/>
-        <rect x="85" y="98" width="30" height="25" rx="5" fill="currentColor" opacity="0.8"/>
-        <line x1="85" y1="123" x2="78" y2="145" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
-        <line x1="115" y1="123" x2="122" y2="145" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
-      </svg>
-      <div class="mode-title" style="position:relative;z-index:1">โหมดไปทุกที่</div>
-      <div class="mode-tagline" style="position:relative;z-index:1">อนุญาตให้เก็บข้อมูลใน cloud<br>เข้าถึงได้จากทุกที่</div>
+      <svg class="card-bg-svg" viewBox="0 0 200 200" fill="currentColor"><ellipse cx="100" cy="120" rx="75" ry="35"/><ellipse cx="100" cy="100" rx="55" ry="30"/><circle cx="100" cy="80" r="18" opacity=".8"/></svg>
+      <div class="mode-title">โหมดไปทุกที่</div>
+      <div class="mode-tagline">เก็บข้อมูลใน cloud<br>เข้าถึงได้จากทุกที่ + ส่งเมล</div>
     </div>
   </div>
-  <div class="text-center" style="margin-top:24px">
-    <a href="#" class="back-link" onclick="showPage('page-landing');return false">← กลับหน้าหลัก</a>
-  </div>
+  <div class="text-center"><a href="#" class="back-link" onclick="showPage('page-landing');return false">← กลับหน้าหลัก</a></div>
 </div>
 
-<!-- ============ LOCAL MODE LOGIN ============ -->
+<!-- LOCAL LOGIN -->
 <div id="page-local-login" class="auth-page hidden">
   <div class="auth-card">
-    <div class="text-center">
-      <h2>โหมดอุ่นใจ</h2>
-      <p class="subtitle">ตั้งชื่อผู้ใช้เพื่อแยกข้อมูลของแต่ละคน</p>
-    </div>
+    <div class="text-center"><h2>โหมดอุ่นใจ</h2><p class="subtitle">ตั้งชื่อผู้ใช้เพื่อแยกข้อมูลของแต่ละคน</p></div>
     <div id="local-users-list" style="margin-bottom:16px"></div>
-    <div class="form-group">
-      <label>ชื่อผู้ใช้</label>
-      <input type="text" id="local-username" placeholder="พิมพ์ชื่อ เช่น สมชาย" onkeydown="if(event.key==='Enter')enterLocalMode()">
-    </div>
-    <button class="btn-primary btn-block" onclick="enterLocalMode()" style="background:var(--warning)">เข้าใช้งาน</button>
+    <div class="form-group"><label>ชื่อผู้ใช้</label><input type="text" id="local-username" placeholder="พิมพ์ชื่อ เช่น สมชาย" onkeydown="if(event.key==='Enter')enterLocalMode()"></div>
+    <button class="btn-block btn" onclick="enterLocalMode()" style="background:var(--warning)">เข้าใช้งาน</button>
     <div class="text-center"><a href="#" class="back-link" onclick="showPage('page-mode-select');return false">← กลับหน้าเลือกโหมด</a></div>
   </div>
 </div>
 
-<!-- ============ PDPA (cloud mode) ============ -->
+<!-- PDPA -->
 <div id="page-pdpa" class="auth-page hidden">
   <div class="auth-card">
-    <div class="text-center">
-      <h2>โหมดไปทุกที่</h2>
-      <p class="subtitle">กรุณาอ่านและยอมรับนโยบายก่อนลงทะเบียน</p>
-    </div>
+    <div class="text-center"><h2>โหมดไปทุกที่</h2><p class="subtitle">กรุณาอ่านและยอมรับนโยบายก่อนลงทะเบียน</p></div>
     <div class="pdpa-box">
       <h3>นโยบายความเป็นส่วนตัว (PDPA)</h3>
       <p>ระบบนี้จัดทำขึ้นเพื่ออำนวยความสะดวกในการพิมพ์ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่ายสำหรับเจ้าหน้าที่ รพ.สวี</p>
       <p><b>ข้อมูลที่เก็บรวบรวม:</b> ชื่อ-นามสกุล, ตำแหน่ง, ประวัติการปฏิบัติงาน, ข้อมูลวันลา, จำนวนเงินค่าตอบแทน</p>
       <p><b>วัตถุประสงค์:</b> เพื่อจัดทำเอกสารใบขอรับเงินค่าตอบแทนเท่านั้น</p>
-      <p><b>การจัดเก็บ:</b> ข้อมูลจัดเก็บใน Google Sheets ที่มีการจำกัดสิทธิ์การเข้าถึง ผู้ใช้สามารถขอลบข้อมูลได้ตลอดเวลา</p>
-      <p><b>ระบบไม่บันทึกเอกสาร PDF ของท่านเลย</b> — เอกสารถูกสร้างในเบราว์เซอร์ของท่านเท่านั้น</p>
-      <p><b>ความปลอดภัย:</b> หากมีผู้อื่นทราบ Email + Username ของท่าน จะสามารถเห็นข้อมูลที่ท่านบันทึกไว้ได้ กรุณาเก็บรักษาข้อมูลเข้าระบบไว้เป็นความลับ</p>
+      <p><b>การจัดเก็บ:</b> ข้อมูลจัดเก็บใน Google Sheets ที่จำกัดสิทธิ์การเข้าถึง ผู้ใช้ขอลบข้อมูลได้ตลอดเวลา</p>
+      <p><b>ระบบไม่บันทึกไฟล์ PDF ของท่าน</b> — เอกสารถูกสร้างในเบราว์เซอร์ของท่านเท่านั้น (ยกเว้นกรณีท่านกดส่งเมลหาตัวเอง)</p>
+      <p><b>ความปลอดภัย:</b> หากผู้อื่นทราบ Email + Username ของท่าน จะเห็นข้อมูลที่บันทึกไว้ได้ กรุณาเก็บเป็นความลับ</p>
     </div>
     <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;margin-bottom:16px">
       <input type="checkbox" id="chk-pdpa" style="width:auto;accent-color:var(--primary)"> ข้าพเจ้ายอมรับนโยบายความเป็นส่วนตัว
     </label>
-    <div style="display:flex;gap:10px">
-      <button class="btn-primary btn-block" id="btn-pdpa-accept" disabled onclick="showPage('page-cloud-login')" style="background:#0ea5e9">เข้าสู่ระบบ / ลงทะเบียน</button>
-    </div>
+    <button class="btn btn-block" id="btn-pdpa-accept" disabled onclick="showPage('page-cloud-login')" style="background:#0ea5e9">เข้าสู่ระบบ / ลงทะเบียน</button>
     <div class="text-center"><a href="#" class="back-link" onclick="showPage('page-mode-select');return false">← กลับหน้าเลือกโหมด</a></div>
   </div>
 </div>
 
-<!-- ============ CLOUD LOGIN ============ -->
+<!-- CLOUD LOGIN -->
 <div id="page-cloud-login" class="auth-page hidden">
   <div class="auth-card">
-    <div class="text-center">
-      <h2 style="color:#0ea5e9">เข้าสู่ระบบ</h2>
-      <p class="subtitle">โหมดไปทุกที่ — กรอก Email และ Username</p>
-    </div>
-    <div class="form-group"><label>Email <span class="required-mark">*</span></label><input type="email" id="login-email" placeholder="example@hospital.go.th"></div>
+    <div class="text-center"><h2 style="color:#0ea5e9">เข้าสู่ระบบ</h2><p class="subtitle">โหมดไปทุกที่ — กรอก Email และ Username</p></div>
+    <div class="form-group"><label>Email <span class="required-mark">*</span></label><input type="email" id="login-email" placeholder="you@example.com"></div>
     <div class="form-group"><label>Username <span class="required-mark">*</span></label><input type="text" id="login-username" placeholder="username ที่ตั้งไว้"></div>
-    <button class="btn-primary btn-block" id="btn-login" onclick="doCloudLogin()" style="background:#0ea5e9">เข้าสู่ระบบ</button>
+    <button class="btn btn-block" id="btn-login" onclick="doCloudLogin()" style="background:#0ea5e9">เข้าสู่ระบบ</button>
     <div style="display:flex;justify-content:center;gap:16px;margin-top:16px;font-size:13px">
       <a href="#" onclick="showForgotUsername();return false" style="color:#0ea5e9">ลืม Username?</a>
       <a href="#" onclick="showPage('page-cloud-register');return false" style="color:var(--success)">ลงทะเบียนใหม่</a>
@@ -405,28 +281,23 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
   </div>
 </div>
 
-<!-- ============ CLOUD REGISTER ============ -->
+<!-- CLOUD REGISTER -->
 <div id="page-cloud-register" class="auth-page hidden">
   <div class="auth-card">
-    <div class="text-center">
-      <h2 style="color:var(--success)">ลงทะเบียนใหม่</h2>
-      <p class="subtitle">สร้างบัญชีเพื่อเข้าถึงข้อมูลจากทุกที่</p>
-    </div>
+    <div class="text-center"><h2 style="color:var(--success)">ลงทะเบียนใหม่</h2><p class="subtitle">สร้างบัญชีเพื่อเข้าถึงข้อมูลจากทุกที่</p></div>
     <div class="form-group"><label>Email <span class="required-mark">*</span></label><input type="email" id="reg-email" placeholder="ใช้สำหรับกู้คืน Username"></div>
     <div class="form-group"><label>ตั้ง Username <span class="required-mark">*</span></label><input type="text" id="reg-username" placeholder="ตั้งเป็นชื่อที่จำง่าย"></div>
-    <button class="btn-success btn-block" onclick="doCloudRegister()">ลงทะเบียน</button>
+    <button class="btn-success btn-block" id="btn-register" onclick="doCloudRegister()">ลงทะเบียน</button>
     <div class="text-center"><a href="#" class="back-link" onclick="showPage('page-cloud-login');return false">← กลับไปหน้าเข้าสู่ระบบ</a></div>
   </div>
 </div>
 
-<!-- ============================================================
-     DASHBOARD
-     ============================================================ -->
+<!-- DASHBOARD -->
 <div id="page-dashboard" class="hidden">
   <div class="app-header">
     <h1>แบบพิมพ์ พตส. รพ.สวี</h1>
     <div class="user-info">
-      <span id="lbl-mode-badge" class="mode-badge"></span>
+      <span id="lbl-mode-badge"></span>
       <span id="lbl-user-info" style="font-size:13px"></span>
       <button class="btn-outline" style="padding:5px 12px;font-size:12px" onclick="doLogout()">ออกจากระบบ</button>
     </div>
@@ -435,17 +306,18 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
     <span style="font-size:13px;font-weight:700;color:var(--text-light)">รายชื่อ:</span>
     <div id="profile-chips" style="display:flex;gap:6px;flex-wrap:wrap"></div>
     <button class="profile-chip add" onclick="addNewProfile()">+ เพิ่มรายชื่อ</button>
+    <button class="btn-danger" style="margin-left:auto" onclick="deleteCurrentProfile()">ลบรายชื่อนี้</button>
   </div>
   <div class="dashboard-grid">
     <!-- COL 1 -->
     <div class="card">
-      <div class="card-header">1. ข้อมูลส่วนตัว & ประวัติ</div>
-      <div id="user-form" oninput="onFormInput()">
+      <div class="card-header">1. ข้อมูลส่วนตัว &amp; ประวัติ</div>
+      <div id="user-form">
         <div class="form-row">
-          <div class="form-group"><label>ชื่อ (พร้อมคำนำหน้า) <span class="required-mark">*</span></label><input type="text" id="fm-name" placeholder="เช่น นายสมชาย"></div>
-          <div class="form-group"><label>นามสกุล <span class="required-mark">*</span></label><input type="text" id="fm-surname"></div>
+          <div class="form-group"><label>ชื่อ (พร้อมคำนำหน้า) <span class="required-mark">*</span></label><input type="text" id="fm-name" placeholder="เช่น นายสมชาย" oninput="onFormInput()"></div>
+          <div class="form-group"><label>นามสกุล <span class="required-mark">*</span></label><input type="text" id="fm-surname" oninput="onFormInput()"></div>
         </div>
-        <div class="form-group"><label>ตำแหน่ง</label><input type="text" id="fm-job" placeholder="เช่น เภสัชกรชำนาญการ"></div>
+        <div class="form-group"><label>ตำแหน่ง</label><input type="text" id="fm-job" placeholder="เช่น เภสัชกรชำนาญการ" oninput="onFormInput()"></div>
         <div class="form-group">
           <label>ประเภท</label>
           <div class="radio-group">
@@ -454,31 +326,39 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
           </div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>วันที่เริ่มรับราชการ (วันแรก)</label><input type="date" id="fm-start-all"></div>
-          <div class="form-group"><label>จำนวนเงิน (บาท)</label><input type="number" id="fm-money" placeholder="เช่น 6500"></div>
+          <div class="form-group"><label>วันที่เริ่มรับราชการ (วันแรก)</label><input type="date" id="fm-start-all" oninput="onFormInput()"></div>
+          <div class="form-group"><label>จำนวนเงิน (บาท)</label><input type="number" id="fm-money" placeholder="เช่น 6500" oninput="onFormInput()"></div>
         </div>
+        <div class="form-group" style="background:#f1f5f9;padding:8px 12px;border-radius:8px;margin-bottom:12px">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin:0;color:var(--primary);font-size:13px">
+            <input type="checkbox" id="fm-show-fraction" onchange="onFormInput()" style="width:auto;accent-color:var(--primary)">
+            แสดงเศษวันในช่อง "วัน" (ไม่ติ๊ก = เว้นว่าง)
+          </label>
+        </div>
+
         <div class="hosp-group">
           <div class="hosp-group-label" style="display:flex;justify-content:space-between;align-items:center">
             <span>รพ. 1 (ข้อ 2) — รพ.ปัจจุบัน</span>
             <label style="font-size:12px;font-weight:600;color:var(--success);cursor:pointer;display:flex;align-items:center;gap:4px">
-              <input type="checkbox" onchange="fillSawee(1,this.checked)" style="width:auto;accent-color:var(--success)"> ✓ รพ.สวี
+              <input type="checkbox" onchange="fillSawee(1,this.checked)" style="width:auto;accent-color:var(--success)"> รพ.สวี
             </label>
           </div>
           <div class="form-row">
             <div class="form-group"><label>ชื่อ รพ.</label><input type="text" id="fm-hosp1" placeholder="เช่น สวี" oninput="onFormInput()"></div>
-            <div class="form-group"><label>จังหวัด</label><input type="text" id="fm-prov1" placeholder="เช่น ชุมพร" oninput="onFormInput()"></div>
-            <div class="form-group"><label>ระดับ/กลุ่ม</label><input type="text" id="fm-level1" placeholder="เช่น พื้นที่ปกติ 2" oninput="onFormInput()"></div>
+            <div class="form-group"><label>จังหวัด</label><input type="text" id="fm-prov1" placeholder="ชุมพร" oninput="onFormInput()"></div>
+            <div class="form-group"><label>ระดับ/กลุ่ม</label><input type="text" id="fm-level1" placeholder="พื้นที่ปกติ 2" oninput="onFormInput()"></div>
           </div>
           <div class="form-row">
             <div class="form-group"><label>เริ่มปฏิบัติงาน รพ.นี้</label><input type="date" id="fm-start1" oninput="onFormInput()"></div>
             <div class="form-group"><label>สิ้นสุด (เว้นว่างถ้ายังอยู่)</label><input type="date" id="fm-end1" oninput="onFormInput()"></div>
           </div>
         </div>
+
         <div class="hosp-group">
           <div class="hosp-group-label" style="display:flex;justify-content:space-between;align-items:center">
             <span>รพ. 2 (ข้อ 3) — ก่อนหน้า</span>
             <label style="font-size:12px;font-weight:600;color:var(--success);cursor:pointer;display:flex;align-items:center;gap:4px">
-              <input type="checkbox" onchange="fillSawee(2,this.checked)" style="width:auto;accent-color:var(--success)"> ✓ รพ.สวี
+              <input type="checkbox" onchange="fillSawee(2,this.checked)" style="width:auto;accent-color:var(--success)"> รพ.สวี
             </label>
           </div>
           <div class="form-row">
@@ -491,11 +371,12 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
             <div class="form-group"><label>สิ้นสุด</label><input type="date" id="fm-end2" oninput="onFormInput()"></div>
           </div>
         </div>
+
         <div class="hosp-group">
           <div class="hosp-group-label" style="display:flex;justify-content:space-between;align-items:center">
             <span>รพ. 3 (ข้อ 4) — ก่อนหน้า</span>
             <label style="font-size:12px;font-weight:600;color:var(--success);cursor:pointer;display:flex;align-items:center;gap:4px">
-              <input type="checkbox" onchange="fillSawee(3,this.checked)" style="width:auto;accent-color:var(--success)"> ✓ รพ.สวี
+              <input type="checkbox" onchange="fillSawee(3,this.checked)" style="width:auto;accent-color:var(--success)"> รพ.สวี
             </label>
           </div>
           <div class="form-row">
@@ -508,31 +389,29 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
             <div class="form-group"><label>สิ้นสุด</label><input type="date" id="fm-end3" oninput="onFormInput()"></div>
           </div>
         </div>
-        <!-- Doctor collapsible section (minority case) -->
+
         <div class="hosp-group" style="border-color:#7c3aed33;background:#faf5ff">
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:700;color:#7c3aed">
-            <input type="checkbox" id="chk-doctor" onchange="toggleDoctorForm()" style="width:auto;accent-color:#7c3aed">
-            กรณีแพทย์
+            <input type="checkbox" id="chk-doctor" onchange="toggleDoctorForm()" style="width:auto;accent-color:#7c3aed"> กรณีแพทย์ (ข้อ 1)
           </label>
           <div id="doctor-form" style="display:none;margin-top:10px">
-            <div style="font-size:12px;font-weight:700;color:#7c3aed;margin-bottom:6px">ฝึกเพิ่มพูนทักษะ (ปีที่ 1) รวมระยะเวลา</div>
             <div class="form-row">
-              <div class="form-group"><label>ปี</label><input type="number" id="fm-train-y" min="0" max="5" placeholder="0" oninput="onFormInput()"></div>
-              <div class="form-group"><label>เดือน</label><input type="number" id="fm-train-m" min="0" max="11" placeholder="0" oninput="onFormInput()"></div>
+              <div class="form-group"><label>ปี</label><input type="number" id="fm-train-y" min="0" max="5" oninput="onFormInput()"></div>
+              <div class="form-group"><label>เดือน</label><input type="number" id="fm-train-m" min="0" max="11" oninput="onFormInput()"></div>
             </div>
-            <div style="font-size:11px;font-weight:700;color:#64748b;margin:6px 0 4px">○ รพศ./รพท.</div>
+            <div style="font-size:11px;font-weight:700;color:#64748b;margin:6px 0 4px">รพศ./รพท.</div>
             <div class="form-row">
-              <div class="form-group"><label>ชื่อ รพ.</label><input type="text" id="fm-train-hosp1" placeholder="ชื่อ" oninput="onFormInput()"></div>
-              <div class="form-group"><label>จังหวัด</label><input type="text" id="fm-train-prov1" placeholder="จ." oninput="onFormInput()"></div>
+              <div class="form-group"><label>ชื่อ รพ.</label><input type="text" id="fm-train-hosp1" oninput="onFormInput()"></div>
+              <div class="form-group"><label>จังหวัด</label><input type="text" id="fm-train-prov1" oninput="onFormInput()"></div>
             </div>
             <div class="form-row">
               <div class="form-group"><label>ตั้งแต่</label><input type="date" id="fm-train-start1" oninput="onFormInput()"></div>
               <div class="form-group"><label>ถึง</label><input type="date" id="fm-train-end1" oninput="onFormInput()"></div>
             </div>
-            <div style="font-size:11px;font-weight:700;color:#64748b;margin:6px 0 4px">○ รพช./</div>
+            <div style="font-size:11px;font-weight:700;color:#64748b;margin:6px 0 4px">รพช.</div>
             <div class="form-row">
-              <div class="form-group"><label>ชื่อ รพ.</label><input type="text" id="fm-train-hosp2" placeholder="ชื่อ" oninput="onFormInput()"></div>
-              <div class="form-group"><label>จังหวัด</label><input type="text" id="fm-train-prov2" placeholder="จ." oninput="onFormInput()"></div>
+              <div class="form-group"><label>ชื่อ รพ.</label><input type="text" id="fm-train-hosp2" oninput="onFormInput()"></div>
+              <div class="form-group"><label>จังหวัด</label><input type="text" id="fm-train-prov2" oninput="onFormInput()"></div>
             </div>
             <div class="form-row">
               <div class="form-group"><label>ตั้งแต่</label><input type="date" id="fm-train-start2" oninput="onFormInput()"></div>
@@ -544,6 +423,7 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
       </div>
       <div class="watermark">By Bm MR Sawee</div>
     </div>
+
     <!-- COL 2 -->
     <div class="card">
       <div class="card-header">2. เลือกเดือน</div>
@@ -556,23 +436,18 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
       <div style="background:#f1f5f9;padding:16px;border-radius:8px;margin-top:12px;text-align:center">
         <h4 style="color:var(--primary);margin-bottom:8px;font-family:'Prompt'" id="lbl-selected-month">ยังไม่ได้เลือกเดือน</h4>
         <div class="action-buttons">
-          <button class="btn btn-email btn-block" onclick="doSendEmail()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            ส่ง email ไปหาฉัน (เฉพาะคนที่ลงทะเบียนเท่านั้น)
-          </button>
-          <button class="btn btn-pdf-download btn-block" onclick="doSavePDF()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            บันทึกไฟล์ PDF
-          </button>
+          <button class="btn btn-email btn-block" onclick="doSendEmail()">ส่ง PDF เข้า email ของฉัน (เฉพาะโหมดไปทุกที่)</button>
+          <button class="btn btn-pdf-download btn-block" onclick="doSavePDF()">บันทึกไฟล์ PDF</button>
         </div>
-        <p style="color:var(--text-muted);font-size:11px;margin-top:8px">เอกสารสร้างในเบราว์เซอร์ ไม่ถูกบันทึก</p>
+        <p style="color:var(--text-muted);font-size:11px;margin-top:8px">เอกสารสร้างในเบราว์เซอร์ ไม่ถูกบันทึกบนเซิร์ฟเวอร์</p>
       </div>
       <div class="watermark">By Bm MR Sawee</div>
     </div>
+
     <!-- COL 3 -->
     <div class="card">
       <div class="card-header">3. ข้อมูลวันลา <span id="lbl-leave-month" style="color:var(--primary)"></span></div>
-      <div class="cal-container" id="cal-container">
+      <div class="cal-container">
         <div class="cal-grid" id="cal-grid"></div>
         <div class="half-day-row">
           <label><input type="checkbox" id="chk-half" onchange="onHalfDayToggle()" style="width:auto;accent-color:var(--primary)"> ครึ่งวัน</label>
@@ -599,14 +474,11 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
       <div class="watermark">By Bm MR Sawee</div>
     </div>
   </div>
-  <!-- PREVIEW with Print button above -->
-  <div class="preview-section" id="preview-section">
+
+  <div class="preview-section">
     <div class="preview-toolbar">
-      <h2>พรีวิวเอกสาร (เหมือนพิมพ์จริง)</h2>
-      <button class="btn btn-print" onclick="doPrint()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        พิมพ์
-      </button>
+      <h2>พรีวิวเอกสาร (ตรงกับไฟล์ PDF ที่ได้)</h2>
+      <button class="btn btn-print" onclick="doPrint()">พิมพ์</button>
     </div>
     <div id="print-area" class="preview-container">
       <div class="page-a4" id="preview-page1"></div>
@@ -617,138 +489,121 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 
 <script>
 // ================================================================
-//  CONFIG
+//  CONFIG  *** วาง URL ของ Web App (GAS) ที่ deploy ใหม่ตรงนี้ ***
 // ================================================================
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbw9LBeXbiQI4prPDou-9EVcCExSqHHgCBqNR9YXkC5C5vYkqtL1aqC1Yp8VV-wqzASngg/exec';
+const GAS_URL = 'https://script.google.com/macros/s/XXXXXXXXXXXXXXXXXXXX/exec';
 
-// ================================================================
-//  CONSTANTS
-// ================================================================
+// ผู้ตรวจสอบ (แก้ที่เดียวได้ทั้งเอกสาร)
+const CHECKER_NAME  = 'นางอทิตา มณีรัตน์';
+const CHECKER_TITLE = 'เจ้าพนักงานธุรการชำนาญงาน';
+
 const THAI_MONTHS=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 const THAI_MONTHS_SHORT=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 
-// ================================================================
-//  STATE
-// ================================================================
 let S = {
-  mode: null,        // 'ghost' | 'local' | 'cloud'
-  username: '',
-  email: '',
-  profiles: [],      // [{id, name, surname, job, ...}]
-  activeProfileId: null,
-  leaves: [],        // [{id, profile_id, month_year, type_of_leave, days:[], half, period}]
-  printHistory: [],   // [{profile_id, month_year, timestamp}]
-  currentMonthYear: '',
-  currentViewYear: new Date().getFullYear() + 543,
-  selectedDays: [],
+  mode:null, username:'', email:'',
+  profiles:[], activeProfileId:null,
+  leaves:[], printHistory:[],
+  currentMonthYear:'', currentViewYear:new Date().getFullYear()+543,
+  selectedDays:[]
 };
-let _saveTimer = null;
+let _saveTimer=null;
 
-// ================================================================
-//  UTILITY: Unique ID
-// ================================================================
-function uid(){ return Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7); }
+function uid(){return Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7);}
 
-// ================================================================
-//  MODALS
-// ================================================================
-function showAlert(msg){document.getElementById('alert-msg').innerText=msg;document.getElementById('modal-alert').classList.add('active');}
+// ---------- modals ----------
+function showAlert(m){document.getElementById('alert-msg').innerText=m;document.getElementById('modal-alert').classList.add('active');}
 function closeAlert(){document.getElementById('modal-alert').classList.remove('active');}
-function showConfirm(msg,cb){document.getElementById('confirm-msg').innerText=msg;document.getElementById('modal-confirm').classList.add('active');document.getElementById('confirm-yes').onclick=()=>{closeConfirm();cb()};}
+function showConfirm(m,cb){document.getElementById('confirm-msg').innerText=m;document.getElementById('modal-confirm').classList.add('active');document.getElementById('confirm-yes').onclick=()=>{closeConfirm();cb();};}
 function closeConfirm(){document.getElementById('modal-confirm').classList.remove('active');}
 
-// ================================================================
-//  NAVIGATION
-// ================================================================
+// ---------- nav ----------
 const PAGES=['page-landing','page-mode-select','page-local-login','page-pdpa','page-cloud-login','page-cloud-register','page-dashboard'];
-function showPage(id){
-  PAGES.forEach(p=>{const el=document.getElementById(p);if(el)el.classList.toggle('hidden',p!==id)});
-  if(id==='page-local-login') renderLocalUsers();
-}
-
-// PDPA checkbox
-document.getElementById('chk-pdpa').addEventListener('change',function(){
-  document.getElementById('btn-pdpa-accept').disabled=!this.checked;
-});
+function showPage(id){PAGES.forEach(p=>{const el=document.getElementById(p);if(el)el.classList.toggle('hidden',p!==id);});if(id==='page-local-login')renderLocalUsers();}
+document.getElementById('chk-pdpa').addEventListener('change',function(){document.getElementById('btn-pdpa-accept').disabled=!this.checked;});
 
 // ================================================================
-//  STORAGE ABSTRACTION
+//  GAS API
 // ================================================================
-function getStorageData(){
-  return {profiles:S.profiles, leaves:S.leaves, printHistory:S.printHistory};
+async function gasCall(action,payload={}){
+  if(!GAS_URL||GAS_URL.indexOf('XXXX')>-1) throw new Error('ยังไม่ได้ตั้งค่า GAS_URL ในโค้ด');
+  const res=await fetch(GAS_URL,{
+    method:'POST',
+    redirect:'follow',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({action,...payload})
+  });
+  const txt=await res.text();
+  try{return JSON.parse(txt);}catch(e){throw new Error('ตอบกลับผิดรูปแบบ: '+txt.slice(0,120));}
 }
+
+// ================================================================
+//  STORAGE
+// ================================================================
+function getStorageData(){return {profiles:S.profiles,leaves:S.leaves,printHistory:S.printHistory};}
 function setStorageData(d){
-  if(!d) return;
-  S.profiles=d.profiles||[];
-  S.leaves=d.leaves||[];
-  S.printHistory=d.printHistory||[];
+  if(!d)return;
+  S.profiles=Array.isArray(d.profiles)?d.profiles:[];
+  S.leaves=(Array.isArray(d.leaves)?d.leaves:[]).map(normalizeLeave);
+  S.printHistory=Array.isArray(d.printHistory)?d.printHistory:[];
 }
+function normalizeLeave(l){
+  let days=l.days;
+  if(typeof days==='string'){try{days=JSON.parse(days);}catch(e){days=[];}}
+  if(!Array.isArray(days))days=[];
+  return {
+    id:l.id||uid(),
+    profile_id:l.profile_id||'',
+    month_year:l.month_year||'',
+    type_of_leave:l.type_of_leave||l.type||'ลาป่วย',
+    days:days.map(Number).filter(n=>!isNaN(n)),
+    half:l.half===true||l.half==='true'||l.half==='TRUE',
+    period:l.period||null
+  };
+}
+function cacheKey(){return (S.mode==='cloud'?'sawee_cloud_':'sawee_local_')+(S.email||'')+'|'+S.username;}
 
 async function loadAllData(){
-  if(S.mode==='ghost') return;
+  if(S.mode==='ghost')return;
   if(S.mode==='local'){
-    try{
-      const raw=localStorage.getItem('ptsd_'+S.username);
-      if(raw) setStorageData(JSON.parse(raw));
-    }catch(e){console.error(e);}
+    try{const raw=localStorage.getItem(cacheKey())||localStorage.getItem('ptsd_'+S.username);if(raw)setStorageData(JSON.parse(raw));}catch(e){console.error(e);}
     return;
   }
   if(S.mode==='cloud'){
     try{
       const res=await gasCall('load',{email:S.email,username:S.username});
-      if(res.ok && res.data) setStorageData(res.data);
-    }catch(e){showAlert('โหลดข้อมูลล้มเหลว: '+e.message);}
+      if(res.ok&&res.data){setStorageData(res.data);localStorage.setItem(cacheKey(),JSON.stringify(getStorageData()));}
+    }catch(e){
+      const raw=localStorage.getItem(cacheKey());
+      if(raw){setStorageData(JSON.parse(raw));flashSave('ออฟไลน์ — ใช้ข้อมูลสำรอง','#d97706');}
+      else showAlert('โหลดข้อมูลล้มเหลว: '+e.message);
+    }
   }
 }
 
 async function saveAllData(){
-  if(S.mode==='ghost') return;
+  if(S.mode==='ghost')return;
   const d=getStorageData();
-  if(S.mode==='local'){
-    try{localStorage.setItem('ptsd_'+S.username,JSON.stringify(d));}catch(e){console.error(e);}
-    flashSave('บันทึกแล้ว','#059669');
-    return;
-  }
+  try{localStorage.setItem(cacheKey(),JSON.stringify(d));}catch(e){}
+  if(S.mode==='local'){flashSave('บันทึกแล้ว','#059669');return;}
   if(S.mode==='cloud'){
     flashSave('กำลังบันทึก...','#0ea5e9');
     try{
       const res=await gasCall('save',{email:S.email,username:S.username,userData:d});
-      if(res.ok) flashSave('บันทึกแล้ว','#059669');
-      else flashSave('บันทึกล้มเหลว','#dc2626');
-    }catch(e){flashSave('บันทึกล้มเหลว','#dc2626');}
+      flashSave(res.ok?'บันทึกขึ้น cloud แล้ว':'บันทึกล้มเหลว',res.ok?'#059669':'#dc2626');
+    }catch(e){flashSave('ออฟไลน์ — เก็บไว้ในเครื่อง','#d97706');}
   }
 }
-
-function scheduleSave(){
-  if(S.mode==='ghost') return;
-  clearTimeout(_saveTimer);
-  _saveTimer=setTimeout(()=>saveAllData(), S.mode==='cloud'?2000:500);
-}
-
-function flashSave(text,color){
+function scheduleSave(){if(S.mode==='ghost')return;clearTimeout(_saveTimer);_saveTimer=setTimeout(saveAllData,S.mode==='cloud'?1500:400);}
+function flashSave(t,c){
   const el=document.getElementById('save-indicator');
-  el.textContent=text;
-  el.style.background=color;
-  el.style.color='#fff';
-  el.classList.remove('hidden');
-  el.style.opacity='1';
-  setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.classList.add('hidden'),300);},1500);
+  el.textContent=t;el.style.background=c;el.style.color='#fff';
+  el.classList.remove('hidden');el.style.opacity='1';
+  setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.classList.add('hidden'),300);},1600);
 }
 
 // ================================================================
-//  GAS API CALL
-// ================================================================
-async function gasCall(action,payload={}){
-  const res=await fetch(GAS_URL,{
-    method:'POST',
-    body:JSON.stringify({action,...payload}),
-    headers:{'Content-Type':'text/plain;charset=utf-8'}
-  });
-  return res.json();
-}
-
-// ================================================================
-//  MODE ENTRY
+//  MODES
 // ================================================================
 function enterGhostMode(){
   S.mode='ghost';S.username='';S.email='';S.profiles=[];S.leaves=[];S.printHistory=[];
@@ -756,116 +611,102 @@ function enterGhostMode(){
   document.getElementById('profile-bar').classList.add('hidden');
   setupDashboard('ล่องหน','background:#334155;color:#e2e8f0','');
 }
-
 function enterLocalMode(){
   const u=document.getElementById('local-username').value.trim();
-  if(!u) return showAlert('กรุณากรอกชื่อผู้ใช้');
-  S.mode='local';S.username=u;S.email='';S.profiles=[];S.leaves=[];S.printHistory=[];
-  S.activeProfileId=null;S.selectedDays=[];
-  try{
-    let users=JSON.parse(localStorage.getItem('ptsd_local_users')||'[]');
-    if(!users.includes(u)){users.push(u);localStorage.setItem('ptsd_local_users',JSON.stringify(users));}
-  }catch(e){}
+  if(!u)return showAlert('กรุณากรอกชื่อผู้ใช้');
+  S.mode='local';S.username=u;S.email='';S.profiles=[];S.leaves=[];S.printHistory=[];S.activeProfileId=null;S.selectedDays=[];
+  try{let us=JSON.parse(localStorage.getItem('ptsd_local_users')||'[]');if(!us.includes(u)){us.push(u);localStorage.setItem('ptsd_local_users',JSON.stringify(us));}}catch(e){}
   loadAllData().then(()=>{
-    if(S.profiles.length>0) S.activeProfileId=S.profiles[0].id;
+    if(S.profiles.length>0)S.activeProfileId=S.profiles[0].id;
     document.getElementById('profile-bar').classList.remove('hidden');
     setupDashboard('อุ่นใจ','background:#d97706;color:#fff',u);
   });
 }
-
 function renderLocalUsers(){
   const el=document.getElementById('local-users-list');
   try{
-    const users=JSON.parse(localStorage.getItem('ptsd_local_users')||'[]');
-    if(users.length===0){el.innerHTML='';return;}
+    const us=JSON.parse(localStorage.getItem('ptsd_local_users')||'[]');
+    if(!us.length){el.innerHTML='';return;}
     el.innerHTML='<div style="font-size:12px;font-weight:700;color:var(--text-light);margin-bottom:6px">ผู้ใช้ที่มีอยู่:</div>'+
-      users.map(u=>`<span class="profile-chip" style="cursor:pointer;margin:2px" onclick="document.getElementById('local-username').value='${u}';enterLocalMode()">${u}</span>`).join('');
+      us.map(u=>'<span class="profile-chip" style="margin:2px" onclick="document.getElementById(\'local-username\').value=\''+u+'\';enterLocalMode()">'+u+'</span>').join('');
   }catch(e){el.innerHTML='';}
 }
-
 async function doCloudLogin(){
-  const email=document.getElementById('login-email').value.trim();
+  const email=document.getElementById('login-email').value.trim().toLowerCase();
   const username=document.getElementById('login-username').value.trim();
-  if(!email||!username) return showAlert('กรุณากรอก Email และ Username');
+  if(!email||!username)return showAlert('กรุณากรอก Email และ Username');
   const btn=document.getElementById('btn-login');
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span> กำลังเข้าสู่ระบบ...';
   try{
     const res=await gasCall('login',{email,username});
-    if(!res.ok) return showAlert(res.error||'เข้าสู่ระบบล้มเหลว');
-    S.mode='cloud';S.username=username;S.email=email;
+    if(!res.ok){showAlert(res.error||'เข้าสู่ระบบล้มเหลว');return;}
+    S.mode='cloud';S.username=username;S.email=email;S.selectedDays=[];
     setStorageData(res.data);
-    if(S.profiles.length>0) S.activeProfileId=S.profiles[0].id;
+    localStorage.setItem(cacheKey(),JSON.stringify(getStorageData()));
+    if(S.profiles.length>0)S.activeProfileId=S.profiles[0].id;
     document.getElementById('profile-bar').classList.remove('hidden');
     setupDashboard('ไปทุกที่','background:#0ea5e9;color:#fff',username+' ('+email+')');
   }catch(e){showAlert('เชื่อมต่อล้มเหลว: '+e.message);}
   finally{btn.disabled=false;btn.innerHTML='เข้าสู่ระบบ';}
 }
-
 async function doCloudRegister(){
-  const email=document.getElementById('reg-email').value.trim();
+  const email=document.getElementById('reg-email').value.trim().toLowerCase();
   const username=document.getElementById('reg-username').value.trim();
-  if(!email||!username) return showAlert('กรุณากรอก Email และ Username');
+  if(!email||!username)return showAlert('กรุณากรอก Email และ Username');
+  const btn=document.getElementById('btn-register');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> กำลังลงทะเบียน...';
   try{
     const res=await gasCall('register',{email,username});
-    if(!res.ok) return showAlert(res.error);
-    showAlert('ลงทะเบียนสำเร็จ!\nUsername: '+username+'\nEmail: '+email+'\n\nกรุณาจดจำข้อมูลนี้ไว้');
+    if(!res.ok){showAlert(res.error);return;}
+    showAlert('ลงทะเบียนสำเร็จ!\nUsername: '+username+'\nEmail: '+email+'\n\nระบบส่งอีเมลยืนยันให้แล้ว');
     document.getElementById('login-email').value=email;
     document.getElementById('login-username').value=username;
     showPage('page-cloud-login');
   }catch(e){showAlert('ลงทะเบียนล้มเหลว: '+e.message);}
+  finally{btn.disabled=false;btn.innerHTML='ลงทะเบียน';}
 }
-
 async function showForgotUsername(){
-  const email=document.getElementById('login-email').value.trim();
-  if(!email) return showAlert('กรุณาพิมพ์ Email ในช่องด้านบนก่อน');
+  const email=document.getElementById('login-email').value.trim().toLowerCase();
+  if(!email)return showAlert('กรุณาพิมพ์ Email ในช่องด้านบนก่อน');
   try{
     const res=await gasCall('forgot',{email});
-    if(!res.ok) return showAlert(res.error);
-    showAlert('Username ของท่านคือ: '+res.username);
+    if(!res.ok)return showAlert(res.error);
+    showAlert('Username ของท่านคือ: '+res.username+'\n(ส่งเข้าอีเมลให้แล้วด้วย)');
   }catch(e){showAlert('เกิดข้อผิดพลาด: '+e.message);}
 }
-
 function setupDashboard(label,badgeStyle,userText){
   showPage('page-dashboard');
-  const badge=document.getElementById('lbl-mode-badge');
-  badge.innerText=label;badge.style.cssText=badgeStyle+';padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.3px';
+  const b=document.getElementById('lbl-mode-badge');
+  b.innerText=label;b.style.cssText=badgeStyle+';padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700';
   document.getElementById('lbl-user-info').innerText=userText;
+  document.getElementById('btn-save-profile').style.display=(S.mode==='ghost')?'none':'flex';
   initDashboard();
 }
-
 function doLogout(){
   S={mode:null,username:'',email:'',profiles:[],activeProfileId:null,leaves:[],printHistory:[],currentMonthYear:'',currentViewYear:new Date().getFullYear()+543,selectedDays:[]};
   clearForm();showPage('page-landing');
 }
 
 // ================================================================
-//  DASHBOARD INIT
+//  DASHBOARD
 // ================================================================
 function initDashboard(){
   const now=new Date();
   S.currentViewYear=now.getFullYear()+543;
   if(S.profiles.length>0){
-    if(!S.activeProfileId) S.activeProfileId=S.profiles[0].id;
+    if(!S.activeProfileId)S.activeProfileId=S.profiles[0].id;
     populateForm(S.profiles.find(p=>p.id===S.activeProfileId));
-    renderProfileChips();
-  } else if(S.mode!=='ghost'){
-    clearForm();renderProfileChips();
-  } else {
-    clearForm();
-  }
+  }else{clearForm();}
+  renderProfileChips();
   selectMonth(THAI_MONTHS[now.getMonth()]+' '+S.currentViewYear);
-  renderMonthGrid();
 }
 
-// ================================================================
-//  PROFILES
-// ================================================================
 function renderProfileChips(){
-  const c=document.getElementById('profile-chips');c.innerHTML='';
+  const c=document.getElementById('profile-chips');if(!c)return;c.innerHTML='';
   S.profiles.forEach(p=>{
     const chip=document.createElement('span');
     chip.className='profile-chip '+(p.id===S.activeProfileId?'active':'');
-    chip.innerText=(p.name||'ไม่ระบุชื่อ')+' '+(p.surname||'');
+    chip.innerText=((p.name||'ไม่ระบุชื่อ')+' '+(p.surname||'')).trim();
     chip.onclick=()=>switchProfile(p.id);
     c.appendChild(chip);
   });
@@ -873,35 +714,49 @@ function renderProfileChips(){
 function switchProfile(id){
   S.activeProfileId=id;
   const p=S.profiles.find(x=>x.id===id);
-  if(p) populateForm(p);
-  renderProfileChips();renderMonthGrid();renderLeaveTable();updatePreview();
+  if(p)populateForm(p);
+  S.selectedDays=[];
+  renderProfileChips();renderMonthGrid();renderCalendar();renderLeaveTable();updatePreview();
 }
-function addNewProfile(){
-  const np={id:uid(),name:'',surname:'',job:'',emp_type:'ข้าราชการ',money:0,start_date:'',
+function blankProfile(){
+  return {id:uid(),name:'',surname:'',job:'',emp_type:'ข้าราชการ',money:0,start_date:'',show_fraction:false,
     hospital1:'',province1:'',level1:'',start_date1:'',end_date1:'',
     hospital2:'',province2:'',level2:'',start_date2:'',end_date2:'',
     hospital3:'',province3:'',level3:'',start_date3:'',end_date3:'',
     doctor_mode:false,train_y:'',train_m:'',
     train_hosp1_name:'',train_hosp1_prov:'',train_hosp1_start:'',train_hosp1_end:'',
     train_hosp2_name:'',train_hosp2_prov:'',train_hosp2_start:'',train_hosp2_end:''};
+}
+function addNewProfile(){
+  const np=blankProfile();
   S.profiles.push(np);S.activeProfileId=np.id;
-  clearForm();renderProfileChips();renderLeaveTable();updatePreview();
-  scheduleSave();
+  clearForm();renderProfileChips();renderMonthGrid();renderLeaveTable();updatePreview();scheduleSave();
+}
+function deleteCurrentProfile(){
+  if(S.mode==='ghost')return showAlert('โหมดล่องหนไม่มีรายชื่อบันทึกไว้');
+  if(!S.activeProfileId)return;
+  showConfirm('ลบรายชื่อนี้พร้อมวันลาและประวัติการพิมพ์ทั้งหมด?',()=>{
+    S.leaves=S.leaves.filter(l=>l.profile_id!==S.activeProfileId);
+    S.printHistory=S.printHistory.filter(h=>h.profile_id!==S.activeProfileId);
+    S.profiles=S.profiles.filter(p=>p.id!==S.activeProfileId);
+    S.activeProfileId=S.profiles.length?S.profiles[0].id:null;
+    if(S.activeProfileId)populateForm(S.profiles[0]);else clearForm();
+    renderProfileChips();renderMonthGrid();renderLeaveTable();updatePreview();saveAllData();
+  });
 }
 
-// ================================================================
-//  FORM
-// ================================================================
+// ---------- form ----------
 function populateForm(p){
-  if(!p) return clearForm();
-  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
+  if(!p)return clearForm();
+  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.value=(v===undefined||v===null)?'':v;};
   s('fm-name',p.name);s('fm-surname',p.surname);s('fm-job',p.job);s('fm-money',p.money||'');s('fm-start-all',p.start_date);
   document.querySelectorAll('input[name="emp-type"]').forEach(r=>{r.checked=r.value===(p.emp_type||'ข้าราชการ');});
-  s('fm-hosp1',p.hospital1);s('fm-prov1',p.province1);s('fm-level1',p.level1);s('fm-start1',p.start_date1);s('fm-end1',p.end_date1);
-  s('fm-hosp2',p.hospital2);s('fm-prov2',p.province2);s('fm-level2',p.level2);s('fm-start2',p.start_date2);s('fm-end2',p.end_date2);
-  s('fm-hosp3',p.hospital3);s('fm-prov3',p.province3);s('fm-level3',p.level3);s('fm-start3',p.start_date3);s('fm-end3',p.end_date3);
-  // Doctor fields
-  const chk=document.getElementById('chk-doctor');if(chk){chk.checked=!!p.doctor_mode;toggleDoctorForm();}
+  document.getElementById('fm-show-fraction').checked=!!p.show_fraction;
+  for(let i=1;i<=3;i++){
+    s('fm-hosp'+i,p['hospital'+i]);s('fm-prov'+i,p['province'+i]);s('fm-level'+i,p['level'+i]);
+    s('fm-start'+i,p['start_date'+i]);s('fm-end'+i,p['end_date'+i]);
+  }
+  const chk=document.getElementById('chk-doctor');if(chk){chk.checked=!!p.doctor_mode;document.getElementById('doctor-form').style.display=chk.checked?'block':'none';}
   s('fm-train-y',p.train_y);s('fm-train-m',p.train_m);
   s('fm-train-hosp1',p.train_hosp1_name);s('fm-train-prov1',p.train_hosp1_prov);s('fm-train-start1',p.train_hosp1_start);s('fm-train-end1',p.train_hosp1_end);
   s('fm-train-hosp2',p.train_hosp2_name);s('fm-train-prov2',p.train_hosp2_prov);s('fm-train-start2',p.train_hosp2_start);s('fm-train-end2',p.train_hosp2_end);
@@ -910,78 +765,65 @@ function populateForm(p){
 function clearForm(){
   document.querySelectorAll('#user-form input[type="text"],#user-form input[type="number"],#user-form input[type="date"]').forEach(i=>i.value='');
   const r=document.querySelector('input[name="emp-type"][value="ข้าราชการ"]');if(r)r.checked=true;
+  document.getElementById('fm-show-fraction').checked=false;
+  const c=document.getElementById('chk-doctor');if(c){c.checked=false;document.getElementById('doctor-form').style.display='none';}
+  updatePreview();
 }
 function getFormData(){
-  const g=id=>(document.getElementById(id)?.value||'').trim();
+  const g=id=>((document.getElementById(id)||{}).value||'').trim();
   return {
     name:g('fm-name'),surname:g('fm-surname'),job:g('fm-job'),
-    emp_type:document.querySelector('input[name="emp-type"]:checked')?.value||'ข้าราชการ',
+    emp_type:(document.querySelector('input[name="emp-type"]:checked')||{}).value||'ข้าราชการ',
     start_date:g('fm-start-all'),money:parseFloat(g('fm-money'))||0,
+    show_fraction:document.getElementById('fm-show-fraction').checked,
     hospital1:g('fm-hosp1'),province1:g('fm-prov1'),level1:g('fm-level1'),start_date1:g('fm-start1'),end_date1:g('fm-end1'),
     hospital2:g('fm-hosp2'),province2:g('fm-prov2'),level2:g('fm-level2'),start_date2:g('fm-start2'),end_date2:g('fm-end2'),
     hospital3:g('fm-hosp3'),province3:g('fm-prov3'),level3:g('fm-level3'),start_date3:g('fm-start3'),end_date3:g('fm-end3'),
-    doctor_mode:document.getElementById('chk-doctor')?.checked||false,
+    doctor_mode:(document.getElementById('chk-doctor')||{}).checked||false,
     train_y:g('fm-train-y'),train_m:g('fm-train-m'),
     train_hosp1_name:g('fm-train-hosp1'),train_hosp1_prov:g('fm-train-prov1'),train_hosp1_start:g('fm-train-start1'),train_hosp1_end:g('fm-train-end1'),
-    train_hosp2_name:g('fm-train-hosp2'),train_hosp2_prov:g('fm-train-prov2'),train_hosp2_start:g('fm-train-start2'),train_hosp2_end:g('fm-train-end2'),
+    train_hosp2_name:g('fm-train-hosp2'),train_hosp2_prov:g('fm-train-prov2'),train_hosp2_start:g('fm-train-start2'),train_hosp2_end:g('fm-train-end2')
   };
 }
 function fillSawee(n,checked){
-  if(checked){
-    document.getElementById('fm-hosp'+n).value='สวี';
-    document.getElementById('fm-prov'+n).value='ชุมพร';
-    document.getElementById('fm-level'+n).value='พื้นที่ปกติ 2';
-  } else {
-    document.getElementById('fm-hosp'+n).value='';
-    document.getElementById('fm-prov'+n).value='';
-    document.getElementById('fm-level'+n).value='';
-  }
+  document.getElementById('fm-hosp'+n).value=checked?'สวี':'';
+  document.getElementById('fm-prov'+n).value=checked?'ชุมพร':'';
+  document.getElementById('fm-level'+n).value=checked?'พื้นที่ปกติ 2':'';
   onFormInput();
 }
 function toggleDoctorForm(){
-  const chk=document.getElementById('chk-doctor');
-  const form=document.getElementById('doctor-form');
-  if(form) form.style.display=chk&&chk.checked?'block':'none';
+  const c=document.getElementById('chk-doctor');
+  document.getElementById('doctor-form').style.display=c.checked?'block':'none';
   onFormInput();
 }
 function onFormInput(){
-  if(S.activeProfileId){
-    const fd=getFormData();
+  if(S.mode!=='ghost'){
+    if(!S.activeProfileId){const np=blankProfile();S.profiles.push(np);S.activeProfileId=np.id;}
     const p=S.profiles.find(x=>x.id===S.activeProfileId);
-    if(p) Object.assign(p,fd);
-    else{ fd.id=S.activeProfileId;S.profiles.push(fd); }
+    if(p)Object.assign(p,getFormData());
+    else{const fd=getFormData();fd.id=S.activeProfileId;S.profiles.push(fd);}
     renderProfileChips();
+    scheduleSave();
   }
   updatePreview();
-  scheduleSave();
 }
 function saveCurrentProfile(){
-  if(S.mode==='ghost') return showAlert('โหมดล่องหนไม่บันทึกข้อมูล');
-  const fd=getFormData();
-  if(!fd.name) return showAlert('กรุณาระบุชื่อ');
-  onFormInput();
-  saveAllData();
+  if(S.mode==='ghost')return showAlert('โหมดล่องหนไม่บันทึกข้อมูล');
+  if(!getFormData().name)return showAlert('กรุณาระบุชื่อ');
+  onFormInput();clearTimeout(_saveTimer);saveAllData();
 }
 
-// ================================================================
-//  MONTH GRID
-// ================================================================
+// ---------- month ----------
 function changeYear(d){S.currentViewYear+=d;renderMonthGrid();}
 function renderMonthGrid(){
   document.getElementById('display-year').innerText='ปี '+S.currentViewYear;
   const g=document.getElementById('month-grid-container');g.innerHTML='';
   THAI_MONTHS.forEach(m=>{
     const mStr=m+' '+S.currentViewYear;
-    const printEntry=S.printHistory.find(h=>h.profile_id===S.activeProfileId && h.month_year===mStr);
-    const printed=!!printEntry;
-    const selected=mStr===S.currentMonthYear;
+    const e=S.printHistory.find(h=>h.profile_id===S.activeProfileId&&h.month_year===mStr);
     const div=document.createElement('div');
-    div.className='month-cell '+(printed?'printed ':'')+( selected?'selected':'');
-    let statusHtml='<div class="month-status">'+(printed?'✓ พิมพ์แล้ว':'ยังไม่พิมพ์')+'</div>';
-    if(printed && printEntry.timestamp){
-      statusHtml+='<div class="print-timestamp">'+printEntry.timestamp+'</div>';
-    }
-    div.innerHTML='<div>'+m+'</div>'+statusHtml;
+    div.className='month-cell '+(e?'printed ':'')+(mStr===S.currentMonthYear?'selected':'');
+    div.innerHTML='<div>'+m+'</div><div class="month-status">'+(e?'✓ พิมพ์แล้ว':'ยังไม่พิมพ์')+'</div>'+(e&&e.timestamp?'<div class="print-timestamp">'+e.timestamp+'</div>':'');
     div.onclick=()=>selectMonth(mStr);
     g.appendChild(div);
   });
@@ -991,50 +833,40 @@ function selectMonth(mStr){
   document.getElementById('lbl-selected-month').innerText='เดือน: '+mStr;
   document.getElementById('lbl-leave-month').innerText='('+mStr+')';
   const yp=parseInt(mStr.split(' ')[1]);
-  if(yp && yp!==S.currentViewYear) S.currentViewYear=yp;
+  if(yp&&yp!==S.currentViewYear)S.currentViewYear=yp;
   S.selectedDays=[];
   renderMonthGrid();renderCalendar();renderLeaveTable();updatePreview();
 }
 
-// ================================================================
-//  CALENDAR
-// ================================================================
+// ---------- calendar ----------
 function getMonthInfo(){
-  if(!S.currentMonthYear) return null;
-  const parts=S.currentMonthYear.split(' ');
-  const mi=THAI_MONTHS.indexOf(parts[0]);
-  const yBE=parseInt(parts[1]);
-  const yCE=yBE-543;
-  const firstDow=new Date(yCE,mi,1).getDay();
-  const dim=new Date(yCE,mi+1,0).getDate();
-  return {mi,yBE,yCE,firstDow,daysInMonth:dim,yearShort:yBE%100,monthAbbr:THAI_MONTHS_SHORT[mi]};
+  if(!S.currentMonthYear)return null;
+  const p=S.currentMonthYear.split(' ');
+  const mi=THAI_MONTHS.indexOf(p[0]),yBE=parseInt(p[1]),yCE=yBE-543;
+  return {mi,yBE,yCE,firstDow:new Date(yCE,mi,1).getDay(),daysInMonth:new Date(yCE,mi+1,0).getDate(),yearShort:yBE%100,monthAbbr:THAI_MONTHS_SHORT[mi]};
 }
 function renderCalendar(){
   const info=getMonthInfo();if(!info)return;
-  const grid=document.getElementById('cal-grid');grid.innerHTML='';
-  ['อา','จ','อ','พ','พฤ','ศ','ส'].forEach(d=>{
-    const el=document.createElement('div');el.className='cal-dow';el.textContent=d;grid.appendChild(el);
-  });
-  for(let i=0;i<info.firstDow;i++){const el=document.createElement('div');el.className='cal-empty';grid.appendChild(el);}
+  const g=document.getElementById('cal-grid');g.innerHTML='';
+  ['อา','จ','อ','พ','พฤ','ศ','ส'].forEach(d=>{const e=document.createElement('div');e.className='cal-dow';e.textContent=d;g.appendChild(e);});
+  for(let i=0;i<info.firstDow;i++){const e=document.createElement('div');e.className='cal-empty';g.appendChild(e);}
   for(let d=1;d<=info.daysInMonth;d++){
-    const el=document.createElement('div');el.className='cal-day';
-    if(S.selectedDays.includes(d)) el.classList.add('selected');
-    el.textContent=d;el.onclick=()=>toggleDay(d);grid.appendChild(el);
+    const e=document.createElement('div');e.className='cal-day'+(S.selectedDays.includes(d)?' selected':'');
+    e.textContent=d;e.onclick=()=>toggleDay(d);g.appendChild(e);
   }
   updateCalSummary();
 }
 function toggleDay(d){
-  const isHalf=document.getElementById('chk-half').checked;
-  if(isHalf){S.selectedDays=S.selectedDays.includes(d)?[]:[d];}
+  const half=document.getElementById('chk-half').checked;
+  if(half)S.selectedDays=S.selectedDays.includes(d)?[]:[d];
   else{const i=S.selectedDays.indexOf(d);if(i>=0)S.selectedDays.splice(i,1);else S.selectedDays.push(d);}
-  S.selectedDays.sort((a,b)=>a-b);
-  renderCalendar();
+  S.selectedDays.sort((a,b)=>a-b);renderCalendar();
 }
 function onHalfDayToggle(){
-  const isHalf=document.getElementById('chk-half').checked;
-  document.getElementById('sel-half-period').disabled=!isHalf;
-  if(isHalf && S.selectedDays.length>1){S.selectedDays=[S.selectedDays[0]];renderCalendar();}
-  updateCalSummary();
+  const half=document.getElementById('chk-half').checked;
+  document.getElementById('sel-half-period').disabled=!half;
+  if(half&&S.selectedDays.length>1){S.selectedDays=[S.selectedDays[0]];}
+  renderCalendar();
 }
 function clearSelectedDays(){
   S.selectedDays=[];
@@ -1042,111 +874,79 @@ function clearSelectedDays(){
   document.getElementById('sel-half-period').disabled=true;
   renderCalendar();
 }
-function formatDaysCompact(days,info){
-  return days.join(', ')+' '+info.monthAbbr+' '+info.yearShort;
-}
 function updateCalSummary(){
   const el=document.getElementById('cal-summary');
-  if(S.selectedDays.length===0){el.innerHTML='เลือกวันที่ในปฏิทิน';return;}
+  if(!S.selectedDays.length){el.innerHTML='เลือกวันที่ในปฏิทิน';return;}
   const info=getMonthInfo();if(!info)return;
-  const isHalf=document.getElementById('chk-half').checked;
+  const half=document.getElementById('chk-half').checked;
   const period=document.getElementById('sel-half-period').value;
-  let text=formatDaysCompact(S.selectedDays,info);
-  if(isHalf) text+=' ('+period+')';
-  const count=isHalf?0.5:S.selectedDays.length;
-  el.innerHTML='<b>'+text+'</b> — '+count+' วัน';
+  let t=S.selectedDays.join(', ')+' '+info.monthAbbr+' '+info.yearShort;
+  if(half)t+=' ('+period+')';
+  el.innerHTML='<b>'+t+'</b> — '+(half?0.5:S.selectedDays.length)+' วัน';
 }
 
-// ================================================================
-//  LEAVE MANAGEMENT — merged by type
-// ================================================================
+// ---------- leaves ----------
 function addLeaveFromCal(){
-  if(S.selectedDays.length===0) return showAlert('กรุณาเลือกวันที่ในปฏิทิน');
+  if(!S.selectedDays.length)return showAlert('กรุณาเลือกวันที่ในปฏิทิน');
   const type=document.getElementById('lv-type').value;
-  const isHalf=document.getElementById('chk-half').checked;
-  const period=isHalf?document.getElementById('sel-half-period').value:null;
-  const monthYear=S.currentMonthYear;
-  const profileId=S.activeProfileId;
-
-  if(isHalf){
-    S.leaves.push({
-      id:uid(),profile_id:profileId,month_year:monthYear,
-      type_of_leave:type,days:[S.selectedDays[0]],half:true,period:period
-    });
-  } else {
-    const existing=S.leaves.find(l=>
-      l.profile_id===profileId && l.month_year===monthYear &&
-      l.type_of_leave===type && !l.half
-    );
-    if(existing){
-      const merged=new Set([...existing.days,...S.selectedDays]);
-      existing.days=[...merged].sort((a,b)=>a-b);
-    } else {
-      S.leaves.push({
-        id:uid(),profile_id:profileId,month_year:monthYear,
-        type_of_leave:type,days:[...S.selectedDays].sort((a,b)=>a-b),half:false,period:null
-      });
-    }
+  const half=document.getElementById('chk-half').checked;
+  const period=half?document.getElementById('sel-half-period').value:null;
+  if(half){
+    S.leaves.push({id:uid(),profile_id:S.activeProfileId,month_year:S.currentMonthYear,type_of_leave:type,days:[S.selectedDays[0]],half:true,period});
+  }else{
+    const ex=S.leaves.find(l=>l.profile_id===S.activeProfileId&&l.month_year===S.currentMonthYear&&l.type_of_leave===type&&!l.half);
+    if(ex)ex.days=[...new Set([...ex.days,...S.selectedDays])].sort((a,b)=>a-b);
+    else S.leaves.push({id:uid(),profile_id:S.activeProfileId,month_year:S.currentMonthYear,type_of_leave:type,days:[...S.selectedDays].sort((a,b)=>a-b),half:false,period:null});
   }
   clearSelectedDays();renderLeaveTable();updatePreview();scheduleSave();
 }
-
-function deleteLeave(leaveId){
+function deleteLeave(id){
   showConfirm('ต้องการลบวันลานี้?',()=>{
-    S.leaves=S.leaves.filter(l=>l.id!==leaveId);
+    S.leaves=S.leaves.filter(l=>l.id!==id);
     renderLeaveTable();updatePreview();scheduleSave();
   });
 }
-
-function getLeaveCount(entry){return entry.half?0.5:entry.days.length;}
-
+function getLeaveCount(e){return e.half?0.5:e.days.length;}
 function renderLeaveTable(){
-  const tbody=document.getElementById('leave-tbody');
-  const cur=S.leaves.filter(l=>l.profile_id===S.activeProfileId && l.month_year===S.currentMonthYear);
-  if(cur.length===0){tbody.innerHTML='<tr><td colspan="4" style="color:#94a3b8">ไม่มีข้อมูลวันลา</td></tr>';return;}
+  const tb=document.getElementById('leave-tbody');
+  const cur=S.leaves.filter(l=>l.profile_id===S.activeProfileId&&l.month_year===S.currentMonthYear);
+  if(!cur.length){tb.innerHTML='<tr><td colspan="4" style="color:#94a3b8">ไม่มีข้อมูลวันลา</td></tr>';return;}
   const info=getMonthInfo();
-  tbody.innerHTML=cur.map(lv=>{
-    let text=lv.days.join(', ');
-    if(info) text+=' '+info.monthAbbr+' '+info.yearShort;
-    if(lv.half && lv.period) text+=' ('+lv.period+')';
-    const cnt=getLeaveCount(lv);
-    return '<tr><td>'+lv.type_of_leave+'</td><td style="text-align:left;padding-left:12px">'+text+'</td><td>'+cnt+'</td><td><button class="btn-danger" onclick="deleteLeave(\''+lv.id+'\')">ลบ</button></td></tr>';
+  tb.innerHTML=cur.map(lv=>{
+    let t=lv.days.join(', ');
+    if(info)t+=' '+info.monthAbbr+' '+info.yearShort;
+    if(lv.half&&lv.period)t+=' ('+lv.period+')';
+    return '<tr><td>'+lv.type_of_leave+'</td><td style="text-align:left;padding-left:12px">'+t+'</td><td>'+getLeaveCount(lv)+'</td><td><button class="btn-danger" onclick="deleteLeave(\''+lv.id+'\')">ลบ</button></td></tr>';
   }).join('');
 }
 
-// ================================================================
-//  DATE UTILITIES
-// ================================================================
+// ---------- date utils ----------
 function parseDate(s){
   if(!s)return null;
-  if(/^\d{4}-\d{2}-\d{2}$/.test(s)){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)){const a=s.split('-').map(Number);return new Date(a[0],a[1]-1,a[2]);}
   const p=s.split('/');if(p.length!==3)return null;
   let y=parseInt(p[2]);if(y>2400)y-=543;
   return new Date(y,parseInt(p[1])-1,parseInt(p[0]));
 }
 function parseThaiMonth(s){
   if(!s)return new Date();
-  const p=s.split(' ');const mi=THAI_MONTHS.indexOf(p[0]);const y=parseInt(p[1])-543;
-  return new Date(y,mi+1,0);
+  const p=s.split(' ');return new Date(parseInt(p[1])-543,THAI_MONTHS.indexOf(p[0])+1,0);
 }
-function formatThaiDate(s){const d=parseDate(s);if(!d||isNaN(d))return'';return fmtDate(d);}
 function fmtDate(d){if(!d||isNaN(d))return'';return d.getDate()+' '+THAI_MONTHS[d.getMonth()]+' '+(d.getFullYear()+543);}
-function calculateDuration(dStart,dEnd){
-  if(!dStart||!dEnd)return{y:'',m:'',d:''};
-  let y=dEnd.getFullYear()-dStart.getFullYear();
-  let m=dEnd.getMonth()-dStart.getMonth();
-  let d=dEnd.getDate()-dStart.getDate();
-  if(d<0){m--;const prev=new Date(dEnd.getFullYear(),dEnd.getMonth(),0);d+=prev.getDate();}
+function formatThaiDate(s){return fmtDate(parseDate(s));}
+function calculateDuration(a,b){
+  if(!a||!b)return{y:'',m:'',d:''};
+  let y=b.getFullYear()-a.getFullYear(),m=b.getMonth()-a.getMonth(),d=b.getDate()-a.getDate();
+  if(d<0){m--;d+=new Date(b.getFullYear(),b.getMonth(),0).getDate();}
   if(m<0){y--;m+=12;}
   return{y,m,d};
 }
 function ThaiBaht(num){
   if(isNaN(num)||num===0)return'';
-  const t=['','สิบ','ร้อย','พัน','หมื่น','แสน','ล้าน'];
-  const n=['','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
+  const t=['','สิบ','ร้อย','พัน','หมื่น','แสน','ล้าน'],n=['','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
   let txt='',str=Math.floor(num).toString();
   for(let i=0;i<str.length;i++){
-    let d=parseInt(str.charAt(i)),pos=str.length-i-1;
+    const d=parseInt(str.charAt(i)),pos=str.length-i-1;
     if(d===0)continue;
     if(d===1&&pos===0&&str.length>1)txt+='เอ็ด';
     else if(d===2&&pos===1)txt+='ยี่';
@@ -1158,394 +958,307 @@ function ThaiBaht(num){
 }
 
 // ================================================================
-//  PREVIEW RENDERING
+//  DOCUMENT RENDER  (layout ตามฟอร์มใน file1)
 // ================================================================
-function V(text,w){const st=w?'min-width:'+w:'';return '<span class="vl" style="'+st+'">'+(text||'&nbsp;')+'</span>';}
-function D(w){return w?'<span class="dots" style="min-width:'+w+'"></span>':'<span class="dots"></span>';}
+function V(text,w){return '<span class="vl" style="'+(w?'min-width:'+w:'')+'">'+(text||'&nbsp;')+'</span>';}
+function D(w){return '<span class="dots" style="'+(w?'min-width:'+w+';flex:0 0 '+w:'')+'"></span>';}
 
 function updatePreview(){
   const data=getFormData();
   const endDate=parseThaiMonth(S.currentMonthYear);
   const totalDur=calculateDuration(parseDate(data.start_date),endDate);
-  let workStart=data.start_date;
-  if(!workStart){for(let i=1;i<=3;i++){if(data['hospital'+i]&&data['start_date'+i])workStart=data['start_date'+i];}}
-  const workDur=workStart?calculateDuration(parseDate(workStart),endDate):{y:'',m:''};
+
+  // ระยะเวลาที่ รพ.ปัจจุบัน (หา รพ.ที่ไม่มีวันสิ้นสุด หรือช่องที่ 1)
+  let curStart=data.start_date1;
+  for(let i=1;i<=3;i++){if(data['hospital'+i]&&data['start_date'+i]&&!data['end_date'+i])curStart=data['start_date'+i];}
+  const workDur=curStart?calculateDuration(parseDate(curStart),endDate):{y:'',m:''};
+
   const hospitals=[];
   for(let i=1;i<=3;i++){
     if(data['hospital'+i]){
       const s=data['start_date'+i],e=data['end_date'+i];
       const eDate=e?parseDate(e):(s?endDate:null);
-      const dur=s&&eDate?calculateDuration(parseDate(s),eDate):{y:'',m:'',d:''};
+      const dur=(s&&eDate)?calculateDuration(parseDate(s),eDate):{y:'',m:'',d:''};
       hospitals.push({name:data['hospital'+i],prov:data['province'+i],level:data['level'+i],
         start:formatThaiDate(s),end:e?formatThaiDate(e):(s?fmtDate(eDate):''),y:dur.y,m:dur.m,d:dur.d});
     }
   }
   const moneyFmt=data.money?data.money.toLocaleString('en-US'):'';
-  const moneyTxt=ThaiBaht(data.money);
-  document.getElementById('preview-page1').innerHTML=renderPage1(data,workDur,totalDur,hospitals,moneyFmt,moneyTxt);
+  document.getElementById('preview-page1').innerHTML=renderPage1(data,workDur,totalDur,hospitals,moneyFmt,ThaiBaht(data.money));
   document.getElementById('preview-page2').innerHTML=renderPage2(data);
+  requestAnimationFrame(()=>{autoFit(document.getElementById('preview-page1'));autoFit(document.getElementById('preview-page2'));});
+}
+
+// ย่อฟอนต์อัตโนมัติถ้าเนื้อหาล้นหน้า A4
+function autoFit(el){
+  let size=16;el.style.fontSize=size+'pt';
+  let guard=0;
+  while(el.scrollHeight>el.clientHeight+2&&size>11.5&&guard++<24){size-=0.5;el.style.fontSize=size+'pt';}
 }
 
 function renderPage1(data,workDur,totalDur,hospitals,moneyFmt,moneyTxt){
-  const curHosp=data.hospital1?'โรงพยาบาล'+data.hospital1:'โรงพยาบาลสวี';
-  const curProv=data.province1||'ชุมพร';
-  const curLevel=data.level1||'';
-  const fullName=(data.name||'')+' '+(data.surname||'');
+  const curHosp=data.hospital1?'โรงพยาบาล'+data.hospital1:'';
+  const fullName=((data.name||'')+'  '+(data.surname||'')).trim();
   const isLookjang=data.emp_type==='ลูกจ้าง';
+  const showFrac=!!data.show_fraction;
+  const dm=data.doctor_mode;
 
+  // ข้อ 2 - 6 (5 ช่องตามฟอร์มต้นฉบับ)
   let hospHtml='';
-  for(let i=0;i<4;i++){
+  for(let i=0;i<5;i++){
     const h=hospitals[i]||{};
-    const num=i+2;
-    const yV=h.y!==undefined&&h.y!==''?String(h.y):'';
-    const mV=h.m!==undefined&&h.m!==''?String(h.m):'';
-    const dV=h.d?String(h.d):'';
-    hospHtml+=`
-    <div class="fl" style="margin-top:1pt">
-      <span class="lb">${num}. ปฏิบัติงานที่โรงพยาบาล</span>${D('4px')}${V(h.name||'','40px')}${D()}
-      <span class="lb">จังหวัด</span>${D('4px')}${V(h.prov||'','35px')}${D('4px')}
-      <span class="lb">จัดระดับ</span>${D('2px')}${V(h.level||'','40px')}${D('2px')}
-    </div>
-    <div class="fl" style="margin-top:0;padding-left:6mm">
-      <span class="lb">ตั้งแต่วันที่</span>${D('2px')}${V(h.start||'','68px')}${D('2px')}
-      <span class="lb">ถึงวันที่</span>${D('2px')}${V(h.end||'','68px')}${D('2px')}
-      <span class="lb">รวม</span>${D('2px')}${V(yV,'16px')}${D('2px')}
-      <span class="lb">ปี</span>${D('2px')}${V(mV,'16px')}${D('2px')}
-      <span class="lb">เดือน</span>${D('2px')}${V(dV,'16px')}${D('2px')}
-      <span class="lb">วัน</span>
-    </div>`;
+    const has=!!h.name;
+    hospHtml+=
+    '<div class="fl mt">'+
+      '<span class="lb">'+(i+2)+'. ปฏิบัติงานที่โรงพยาบาล</span>'+D('3px')+V(h.name||'','30px')+D()+
+      '<span class="lb">จังหวัด</span>'+D('3px')+V(h.prov||'','30px')+D()+
+      '<span class="lb">จัดระดับ</span>'+D('3px')+V(h.level||'','30px')+D('3px')+
+    '</div>'+
+    '<div class="fl" style="padding-left:8mm">'+
+      '<span class="lb">ตั้งแต่วันที่</span>'+D('3px')+V(h.start||'','60px')+D('3px')+
+      '<span class="lb">ถึงวันที่</span>'+D('3px')+V(h.end||'','60px')+D('3px')+
+      '<span class="lb">รวม</span>'+D('3px')+V(has?String(h.y):'','16px')+D('3px')+
+      '<span class="lb">ปี</span>'+D('3px')+V(has?String(h.m):'','16px')+D('3px')+
+      '<span class="lb">เดือน</span>'+D('3px')+V(has&&showFrac?String(h.d):'','16px')+D('3px')+
+      '<span class="lb">วัน</span>'+
+    '</div>';
   }
 
-  const wY=workDur.y!==''?String(workDur.y):'';
-  const wM=workDur.m!==''?String(workDur.m):'';
-  const tY=totalDur.y!==''?String(totalDur.y):'';
-  const tM=totalDur.m!==''?String(totalDur.m):'';
-  const tD=totalDur.d?String(totalDur.d):'';
+  const bottomRight=
+    '<div style="text-align:center">เรียน&nbsp; ผู้อำนวยการโรงพยาบาลสวี</div>'+
+    '<div style="margin-top:.2em">ได้ตรวจสอบ / วันปฏิบัติงานแล้ว</div>'+
+    '<div style="margin-top:.1em;white-space:nowrap">(&nbsp;&nbsp;&nbsp;) ครบ 15 วันทำการ&nbsp;&nbsp;(&nbsp;&nbsp;&nbsp;) ไม่ครบ 15 วันทำการ</div>'+
+    '<div style="margin-top:.8em">(ลงชื่อ)<span class="dots-fixed" style="width:160px"></span></div>'+
+    '<div style="margin-top:.25em">( <b>'+CHECKER_NAME+'</b> )</div>'+
+    '<div style="margin-top:.15em">ตำแหน่ง <b>'+CHECKER_TITLE+'</b></div>';
 
-  // Bottom section: two-column for ลูกจ้าง (left=supervisor, right=ผอ.), right-only for ข้าราชการ
-  const approvalSection = '';
+  const bottomLeft=isLookjang?
+    ('<div>ตรวจสอบแล้วถูกต้อง</div>'+
+     '<div style="margin-top:.8em">(ลงชื่อ)<span class="dots-fixed" style="width:140px"></span></div>'+
+     '<div style="margin-top:.25em">(<span class="dots-fixed" style="width:130px"></span>)</div>'+
+     '<div style="margin-top:.15em">ตำแหน่ง<span class="dots-fixed" style="width:120px"></span></div>'+
+     '<div style="margin-top:.15em">หัวหน้าฝ่าย / หัวหน้างาน</div>')
+    :'';
 
-  return `
-  <div class="p-title">ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่ายสำหรับเจ้าหน้าที่</div>
-  <div class="p-title">ที่ปฏิบัติงานในหน่วยบริการสังกัดกระทรวงสาธารณสุข</div>
+  return ''+
+  '<div class="p-title">ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่ายสำหรับเจ้าหน้าที่</div>'+
+  '<div class="p-title">ที่ปฏิบัติงานในหน่วยบริการสังกัดกระทรวงสาธารณสุข</div>'+
 
-  <div class="right-block" style="margin-top:6pt">
-    <div class="fl"><span class="lb">หน่วยบริการ</span>${D('4px')}${V(curHosp)}${D()}</div>
-    <div class="fl" style="margin-top:0"><span class="lb">ประจำเดือน</span>${D('4px')}${V(S.currentMonthYear)}${D()}</div>
-  </div>
+  '<div class="right-block" style="margin-top:.7em">'+
+    '<div class="fl"><span class="lb">หน่วยบริการ</span>'+D('4px')+V(curHosp||'โรงพยาบาลสวี')+D()+'</div>'+
+    '<div class="fl"><span class="lb">ประจำเดือน</span>'+D('4px')+V(S.currentMonthYear)+D()+'</div>'+
+  '</div>'+
 
-  <div class="fl" style="margin-top:4pt">
-    <span class="lb">ข้าพเจ้า ชื่อ</span>${D('2px')}${V(data.name)}${D()}
-    <span class="lb">นามสกุล</span>${D('2px')}${V(data.surname)}${D()}
-    <span class="lb">ตำแหน่ง</span>${D('2px')}${V(data.job)}${D('2px')}
-  </div>
+  '<div class="fl mt">'+
+    '<span class="lb">ข้าพเจ้า ชื่อ</span>'+D('3px')+V(data.name)+D()+
+    '<span class="lb">นามสกุล</span>'+D('3px')+V(data.surname)+D()+
+    '<span class="lb">ตำแหน่ง</span>'+D('3px')+V(data.job)+D('3px')+
+  '</div>'+
+  '<div class="fl">'+
+    '<span class="lb">ปัจจุบันปฏิบัติงานที่</span>'+D('3px')+V(curHosp||'โรงพยาบาลสวี')+D()+
+    '<span class="lb">จังหวัด</span>'+D('3px')+V(data.province1||'ชุมพร')+D()+
+    '<span class="lb">ระดับ/กลุ่ม</span>'+D('3px')+V(data.level1)+D('3px')+
+  '</div>'+
+  '<div class="fl">'+
+    '<span class="lb">ปฏิบัติงานในหน่วยบริการ</span>'+D('3px')+V(workDur.y!==''?String(workDur.y):'','24px')+D('3px')+
+    '<span class="lb">ปี</span>'+D('3px')+V(workDur.m!==''?String(workDur.m):'','24px')+D('3px')+
+    '<span class="lb">เดือน (นับถึงสิ้นเดือนที่เบิกจ่าย)</span>'+
+  '</div>'+
 
-  <div class="fl" style="margin-top:0">
-    <span class="lb">ปัจจุบันปฏิบัติงานที่</span>${D('2px')}${V(curHosp)}${D()}
-    <span class="lb">จังหวัด</span>${D('2px')}${V(curProv)}${D()}
-    <span class="lb">ระดับ/กลุ่ม</span>${D('2px')}${V(curLevel)}${D('2px')}
-  </div>
+  '<div class="fl mt"><span class="lb">โดยมีรายละเอียดการปฏิบัติงาน ดังนี้ ( เฉพาะสายแพทย์ตอบข้อ 1 ด้วย )</span></div>'+
 
-  <div class="fl" style="margin-top:0">
-    <span class="lb">ปฏิบัติงานในหน่วยบริการ</span>${D('2px')}${V(wY,'20px')}${D('2px')}
-    <span class="lb">ปี</span>${D('2px')}${V(wM,'20px')}${D('2px')}
-    <span class="lb">เดือน (นับถึงสิ้นเดือนที่เบิกจ่าย)</span>
-  </div>
+  '<div class="fl mt">'+
+    '<span class="lb">1. ฝึกเพิ่มพูนทักษะ (ปีที่ 1) รวมระยะเวลาการปฏิบัติงาน</span>'+D('3px')+V(dm?data.train_y:'','24px')+D('3px')+
+    '<span class="lb">ปี</span>'+D('3px')+V(dm?data.train_m:'','24px')+D('3px')+
+    '<span class="lb">เดือน ดังนี้</span>'+
+  '</div>'+
+  '<div class="fl" style="padding-left:8mm">'+
+    '<span class="lb">รพศ./รพท.</span>'+D('3px')+V(dm?data.train_hosp1_name:'','40px')+D()+
+    '<span class="lb">จังหวัด</span>'+D('3px')+V(dm?data.train_hosp1_prov:'','36px')+D()+
+    '<span class="lb">ตั้งแต่</span>'+D('3px')+V(dm?formatThaiDate(data.train_hosp1_start):'','50px')+D()+
+    '<span class="lb">ถึง</span>'+D('3px')+V(dm?formatThaiDate(data.train_hosp1_end):'','50px')+D('3px')+
+  '</div>'+
+  '<div class="fl" style="padding-left:8mm">'+
+    '<span class="lb">รพช./</span>'+D('3px')+V(dm?data.train_hosp2_name:'','40px')+D()+
+    '<span class="lb">จังหวัด</span>'+D('3px')+V(dm?data.train_hosp2_prov:'','36px')+D()+
+    '<span class="lb">ตั้งแต่</span>'+D('3px')+V(dm?formatThaiDate(data.train_hosp2_start):'','50px')+D()+
+    '<span class="lb">ถึง</span>'+D('3px')+V(dm?formatThaiDate(data.train_hosp2_end):'','50px')+D('3px')+
+  '</div>'+
 
-  <div class="fl" style="margin-top:3pt">
-    <span class="lb">โดยมีรายละเอียดการปฏิบัติงาน ดังนี้ ( เฉพาะสายแพทย์ตอบข้อ 1 ด้วย )</span>
-  </div>
+  hospHtml+
 
-  <div class="fl" style="margin-top:2pt">
-    <span class="lb">1. ฝึกเพิ่มพูนทักษะ (ปีที่ 1) รวมระยะเวลาการปฏิบัติงาน</span>${D()}${data.doctor_mode&&data.train_y?V(data.train_y,'18px'):D('4px')}
-    <span class="lb">ปี</span>${D('4px')}${data.doctor_mode&&data.train_m?V(data.train_m,'18px'):''}
-    <span class="lb">เดือนดังนี้</span>
-  </div>
-  <div class="fl" style="padding-left:5mm;margin-top:0">
-    <span class="lb">&#9675; รพศ./รพท.</span>${D()}${data.doctor_mode&&data.train_hosp1_name?V(data.train_hosp1_name):''}${D()}<span class="lb">จังหวัด</span>${D()}${data.doctor_mode&&data.train_hosp1_prov?V(data.train_hosp1_prov):''}${D()}<span class="lb">ตั้งแต่</span>${D()}${data.doctor_mode&&data.train_hosp1_start?V(formatThaiDate(data.train_hosp1_start)):''}${D()}<span class="lb">ถึง</span>${D()}${data.doctor_mode&&data.train_hosp1_end?V(formatThaiDate(data.train_hosp1_end)):''}${D()}
-  </div>
-  <div class="fl" style="padding-left:5mm;margin-top:0">
-    <span class="lb">&#9675; รพช./</span>${D()}${data.doctor_mode&&data.train_hosp2_name?V(data.train_hosp2_name):''}${D()}<span class="lb">จังหวัด</span>${D()}${data.doctor_mode&&data.train_hosp2_prov?V(data.train_hosp2_prov):''}${D()}<span class="lb">ตั้งแต่</span>${D()}${data.doctor_mode&&data.train_hosp2_start?V(formatThaiDate(data.train_hosp2_start)):''}${D()}<span class="lb">ถึง</span>${D()}${data.doctor_mode&&data.train_hosp2_end?V(formatThaiDate(data.train_hosp2_end)):''}${D()}
-  </div>
+  '<div class="fl mt" style="padding-left:12mm">'+
+    '<span class="lb"><b>รวมทั้งสิ้น</b></span>'+D('4px')+V(totalDur.y!==''?String(totalDur.y):'','26px')+D('4px')+
+    '<span class="lb"><b>ปี</b></span>'+D('4px')+V(totalDur.m!==''?String(totalDur.m):'','26px')+D('4px')+
+    '<span class="lb"><b>เดือน</b></span>'+D('4px')+V(showFrac&&totalDur.d!==''?String(totalDur.d):'-','26px')+D('4px')+
+    '<span class="lb"><b>วัน</b></span>'+
+  '</div>'+
+  '<div class="fl" style="padding-left:12mm">'+
+    '<span class="lb"><b>ได้รับเงินจำนวน</b></span>'+D('4px')+V(moneyFmt,'50px')+D('4px')+
+    '<span class="lb"><b>บาท&nbsp;(</b></span>'+D('4px')+V(moneyTxt,'90px')+D('4px')+
+    '<span class="lb"><b>)</b></span>'+
+  '</div>'+
 
-  ${hospHtml}
+  '<div style="margin-top:.6em;text-indent:2.5cm;line-height:1.35">ข้าพเจ้าขอรับรองว่า ข้อมูลดังกล่าวเป็นความจริงทุกประการ และหากมีการเรียกเงินคืน ข้าพเจ้า</div>'+
+  '<div style="line-height:1.35">ขอรับผิดชอบคืนเงินแต่เพียงผู้เดียว</div>'+
 
-  <div class="fl" style="margin-top:5pt;padding-left:10mm">
-    <span class="lb"><b>รวมทั้งสิ้น</b></span>${D()}${V(tY,'20px')}${D('2px')}
-    <span class="lb"><b>ปี</b></span>${D('2px')}${V(tM,'20px')}${D('2px')}
-    <span class="lb"><b>เดือน</b></span>${D()}${V(tD,'20px')}${D('2px')}
-    <span class="lb"><b>วัน</b></span>
-  </div>
+  '<div class="sign-center">'+
+    '<div>(ลงชื่อ)<span class="dots-fixed" style="width:170px"></span></div>'+
+    '<div style="margin-top:.3em">( <span class="vl" style="min-width:150px">'+(fullName||'&nbsp;')+'</span> )</div>'+
+    '<div style="margin-top:.2em">ตำแหน่ง <span class="vl" style="min-width:140px">'+(data.job||'&nbsp;')+'</span></div>'+
+  '</div>'+
 
-  <div class="fl" style="margin-top:1pt;padding-left:10mm">
-    <span class="lb"><b>ได้รับเงินจำนวน</b></span>${D('2px')}${V(moneyFmt,'40px')}${D('2px')}
-    <span class="lb"><b>บาท (</b></span>${D('2px')}${V(moneyTxt,'80px')}${D('2px')}
-    <span class="lb"><b>)</b></span>
-  </div>
-
-  <div style="margin-top:4pt;line-height:1.35">
-    <span style="display:inline-block;width:2.5cm"></span>ข้าพเจ้าขอรับรองว่า ข้อมูลดังกล่าวเป็นความจริงทุกประการ และหากมีการเรียกเงินคืน ข้าพเจ้า
-  </div>
-  <div style="line-height:1.35">ขอรับผิดชอบคืนเงินแต่เพียงผู้เดียว</div>
-
-  <div class="sign-center" style="margin-top:14pt">
-    <div style="display:inline-block">
-      <span>(</span>${D('2px')}${V(fullName,'140px')}${D('2px')}<span>)</span>
-    </div>
-    <div class="fl" style="justify-content:center;margin-top:2pt">
-      <span class="lb">ตำแหน่ง</span>${D('4px')}${V(data.job,'100px')}${D()}
-    </div>
-  </div>
-
-  ${isLookjang ? `
-  <div style="display:flex;margin-top:10pt">
-    <div style="flex:1;text-align:center;padding-right:8pt">
-      <div style="text-align:center;font-size:14pt">รับรองความถูกต้อง</div>
-      <div style="margin-top:8pt">
-        <div style="text-align:center">(ลงชื่อ)<span class="dots-fixed" style="width:140px"><b>&nbsp;นางอทิตา มณีรัตน์&nbsp;</b></span></div>
-        <div style="margin-top:3pt;text-align:center">(<span class="dots-fixed" style="width:120px"><b>&nbsp;นางอทิตา มณีรัตน์&nbsp;</b></span>)</div>
-        <div style="margin-top:2pt;text-align:center">ตำแหน่ง<span class="dots-fixed" style="width:130px"><b>&nbsp;เจ้าพนักงานธุรการชำนาญงาน&nbsp;</b></span></div>
-        <div style="margin-top:2pt;text-align:center">หัวหน้างาน</div>
-      </div>
-    </div>
-    <div style="flex:1;text-align:center;border-left:1px dotted #aaa;padding-left:8pt">
-      <div style="text-align:center">เรียน&nbsp; ผู้อำนวยการโรงพยาบาลสวี</div>
-      <div style="text-align:center;margin-top:3pt">ได้ตรวจสอบ / วันปฏิบัติงานแล้ว</div>
-      <div style="text-align:center;margin-top:2pt;white-space:nowrap">
-        (&nbsp;&nbsp;&nbsp;) ครบ 15 วันทำการ&nbsp;&nbsp;(&nbsp;&nbsp;&nbsp;) ไม่ครบ 15 วันทำการ
-      </div>
-      <div style="text-align:center;margin-top:8pt">
-        <div>(ลงชื่อ)<span class="dots-fixed" style="width:130px"></span></div>
-        <div style="margin-top:3pt">(<span class="dots-fixed" style="width:120px"></span>)</div>
-        <div style="margin-top:2pt">ตำแหน่ง<span class="dots-fixed" style="width:130px"></span></div>
-      </div>
-    </div>
-  </div>` : `
-  <div class="bottom-right" style="margin-top:10pt">
-    <div style="text-align:center">เรียน&nbsp; ผู้อำนวยการโรงพยาบาลสวี</div>
-    <div style="text-align:center;margin-top:3pt">ได้ตรวจสอบ / วันปฏิบัติงานแล้ว</div>
-    <div style="text-align:center;margin-top:2pt;white-space:nowrap">
-      (&nbsp;&nbsp;&nbsp;) ครบ 15 วันทำการ&nbsp;&nbsp;(&nbsp;&nbsp;&nbsp;) ไม่ครบ 15 วันทำการ
-    </div>
-    <div style="text-align:center;margin-top:8pt">
-      <div>(ลงชื่อ)<span class="dots-fixed" style="width:170px"></span></div>
-      <div style="margin-top:3pt">(<span class="dots-fixed" style="width:150px"></span>)</div>
-      <div style="margin-top:2pt">ตำแหน่ง<span class="dots-fixed" style="width:160px"></span></div>
-    </div>
-  </div>`}
-`;
+  '<div class="bottom-wrap">'+
+    '<div class="bottom-col">'+bottomLeft+'</div>'+
+    '<div class="bottom-col">'+bottomRight+'</div>'+
+  '</div>';
 }
 
 function renderPage2(data){
-  const curLeaves=S.leaves.filter(l=>l.profile_id===S.activeProfileId && l.month_year===S.currentMonthYear);
+  const cur=S.leaves.filter(l=>l.profile_id===S.activeProfileId&&l.month_year===S.currentMonthYear);
   const info=getMonthInfo();
-
   function consolidate(type){
-    const entries=curLeaves.filter(l=>l.type_of_leave===type);
-    if(entries.length===0) return {text:'-',count:0};
-    let total=0;
-    // Collect all day tokens: full days as number, half days as "day(period)"
-    const dayTokens=[];
-    const fullDays=[];
-    entries.filter(e=>!e.half).forEach(e=>{fullDays.push(...e.days);});
-    const uniqueFull=[...new Set(fullDays)].sort((a,b)=>a-b);
-    uniqueFull.forEach(d=>dayTokens.push({n:d,sort:d,label:String(d)}));
-    total+=uniqueFull.length;
-    entries.filter(e=>e.half).forEach(e=>{
+    const es=cur.filter(l=>l.type_of_leave===type);
+    if(!es.length)return{text:'-',count:0};
+    let total=0;const tokens=[];
+    const full=[];es.filter(e=>!e.half).forEach(e=>full.push(...e.days));
+    const uf=[...new Set(full)].sort((a,b)=>a-b);
+    uf.forEach(d=>tokens.push({sort:d,label:String(d)}));
+    total+=uf.length;
+    es.filter(e=>e.half).forEach(e=>{
       const d=e.days[0];
-      const label=e.period?d+'('+e.period+')':String(d);
-      dayTokens.push({n:d,sort:d+0.5,label});
+      tokens.push({sort:d+0.5,label:e.period?d+'('+e.period+')':String(d)});
       total+=0.5;
     });
-    if(dayTokens.length===0) return {text:'-',count:0};
-    dayTokens.sort((a,b)=>a.sort-b.sort);
-    const joined=dayTokens.map(t=>t.label).join(', ');
-    const text=info?joined+' '+info.monthAbbr+' '+info.yearShort:joined;
-    return {text,count:total};
+    if(!tokens.length)return{text:'-',count:0};
+    tokens.sort((a,b)=>a.sort-b.sort);
+    const joined=tokens.map(t=>t.label).join(', ');
+    return{text:info?joined+' '+info.monthAbbr+' '+info.yearShort:joined,count:total};
   }
+  const sick=consolidate('ลาป่วย'),per=consolidate('ลากิจ'),vac=consolidate('ลาพักผ่อน');
+  const none=sick.text==='-'&&per.text==='-'&&vac.text==='-';
+  const total=sick.count+per.count+vac.count;
+  const totalStr=none?'-':((total%1!==0?total.toFixed(1):total)+' วัน');
 
-  const sick=consolidate('ลาป่วย');
-  const per=consolidate('ลากิจ');
-  const vac=consolidate('ลาพักผ่อน');
-  const allNone=sick.text==='-'&&per.text==='-'&&vac.text==='-';
-  const totalCount=sick.count+per.count+vac.count;
-  const totalStr=allNone?'-':(totalCount%1!==0?totalCount.toFixed(1)+' วัน':totalCount+' วัน');
+  let rows='<tr><td>'+(S.currentMonthYear||'')+'</td>'+
+    '<td style="font-weight:bold">'+sick.text+'</td>'+
+    '<td style="font-weight:bold">'+per.text+'</td>'+
+    '<td style="font-weight:bold">'+vac.text+'</td>'+
+    '<td style="font-weight:bold">'+totalStr+'</td></tr>';
+  for(let i=0;i<6;i++)rows+='<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>';
 
-  let rows=`<tr>
-    <td>${S.currentMonthYear||''}</td>
-    <td style="font-weight:bold">${sick.text}</td>
-    <td style="font-weight:bold">${per.text}</td>
-    <td style="font-weight:bold">${vac.text}</td>
-    <td style="font-weight:bold">${totalStr}</td>
-  </tr>`;
-  for(let i=0;i<6;i++) rows+='<tr><td style="height:30px">&nbsp;</td><td></td><td></td><td></td><td></td></tr>';
-
-  const fullName=(data.name||'')+' '+(data.surname||'');
-
-  return `
-  <div class="p2-title">สรุปวันลา</div>
-  <div class="p2-subtitle">ชื่อ - สกุล&nbsp;&nbsp;${fullName}</div>
-  <table class="leave-tbl">
-    <thead><tr>
-      <th style="width:18%">ประจำเดือน</th>
-      <th style="width:21%">วัน/เดือน/ปี<br>ลาป่วย</th>
-      <th style="width:21%">วัน/เดือน/ปี<br>ลากิจ</th>
-      <th style="width:21%">วัน/เดือน/ปี<br>ลาพักผ่อน</th>
-      <th style="width:19%">รวม</th>
-    </tr></thead>
-    <tbody>${rows}</tbody>
-  </table>
-  <div class="p2-sign">ตรวจสอบแล้วถูกต้อง</div>
-  <div class="p2-sign-area">
-    <div>(ลงชื่อ)<span class="dots-line"></span></div>
-    <div style="margin-top:4pt;padding-left:28px">(<span class="dots-fixed" style="width:155px"></span>)</div>
-    <div style="margin-top:2pt">ตำแหน่ง<span class="dots-line"></span></div>
-  </div>`;
+  const fullName=((data.name||'')+' '+(data.surname||'')).trim();
+  return ''+
+  '<div class="p2-title">สรุปวันลา</div>'+
+  '<div class="p2-subtitle">ชื่อ - สกุล&nbsp;&nbsp;<span class="vl" style="min-width:240px">'+(fullName||'&nbsp;')+'</span></div>'+
+  '<table class="leave-tbl"><thead><tr>'+
+    '<th style="width:18%">ประจำเดือน</th>'+
+    '<th style="width:21%">วัน/เดือน/ปี<br>ลาป่วย</th>'+
+    '<th style="width:21%">วัน/เดือน/ปี<br>ลากิจ</th>'+
+    '<th style="width:21%">วัน/เดือน/ปี<br>ลาพักผ่อน</th>'+
+    '<th style="width:19%">รวม</th>'+
+  '</tr></thead><tbody>'+rows+'</tbody></table>'+
+  '<div class="p2-sign">ตรวจสอบแล้วถูกต้อง</div>'+
+  '<div class="p2-sign-area">'+
+    '<div>(ลงชื่อ)<span class="dots-line"></span></div>'+
+    '<div style="margin-top:.3em;padding-left:30px">( <b>'+CHECKER_NAME+'</b> )</div>'+
+    '<div style="margin-top:.15em;padding-left:18px">ตำแหน่ง <b>'+CHECKER_TITLE+'</b></div>'+
+  '</div>';
 }
 
 // ================================================================
-//  PRINT — Only this button marks month as printed with timestamp
+//  PRINT
 // ================================================================
-function doPrint(){
-  if(S.activeProfileId && S.currentMonthYear){
-    const now=new Date();
-    const ts=now.getDate()+'/'+(now.getMonth()+1)+'/'+(now.getFullYear()+543)+' '+
-             now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-    const existing=S.printHistory.find(h=>h.profile_id===S.activeProfileId && h.month_year===S.currentMonthYear);
-    if(existing){
-      existing.timestamp=ts;
-    } else {
-      S.printHistory.push({profile_id:S.activeProfileId,month_year:S.currentMonthYear,timestamp:ts});
+function markPrinted(){
+  if(!S.activeProfileId||!S.currentMonthYear)return;
+  const n=new Date();
+  const ts=n.getDate()+'/'+(n.getMonth()+1)+'/'+(n.getFullYear()+543)+' '+
+    String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  const ex=S.printHistory.find(h=>h.profile_id===S.activeProfileId&&h.month_year===S.currentMonthYear);
+  if(ex)ex.timestamp=ts;else S.printHistory.push({profile_id:S.activeProfileId,month_year:S.currentMonthYear,timestamp:ts});
+  renderMonthGrid();
+  if(S.mode!=='ghost')scheduleSave();
+  return ts;
+}
+function doPrint(){markPrinted();window.print();}
+
+// ================================================================
+//  PDF — เรนเดอร์ทีละหน้า แล้ววางเต็ม A4 (คมชัด ไม่ตัดกลางบรรทัด)
+// ================================================================
+async function renderPdf(quality){
+  await preloadTHFont();
+  await document.fonts.ready;
+  const area=document.getElementById('print-area');
+  area.classList.add('pdf-export-mode');
+  try{
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({unit:'mm',format:'a4',orientation:'portrait',compress:true});
+    const pages=[document.getElementById('preview-page1'),document.getElementById('preview-page2')];
+    for(let i=0;i<pages.length;i++){
+      const el=pages[i];
+      const canvas=await html2canvas(el,{
+        scale:3,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',
+        logging:false,width:el.offsetWidth,height:el.offsetHeight,
+        windowWidth:el.offsetWidth,windowHeight:el.offsetHeight
+      });
+      const img=canvas.toDataURL('image/jpeg',quality||0.94);
+      if(i>0)pdf.addPage();
+      pdf.addImage(img,'JPEG',0,0,210,297,undefined,'FAST');
     }
-    renderMonthGrid();
-    if(S.mode!=='ghost') scheduleSave();
-  }
-  window.print();
-}
-
-// ================================================================
-//  PDF GENERATION (html2pdf.js)
-// ================================================================
-async function generatePDFBlob(){
-  await preloadTHFont();        // ensure font blob URL is ready
-  await document.fonts.ready;  // wait for all fonts to paint
-  return new Promise((resolve,reject)=>{
-    const area=document.getElementById('print-area');
-    area.classList.add('pdf-export-mode');
-    const opt={
-      margin: 0,
-      filename: 'พตส_'+(S.currentMonthYear||'').replace(/ /g,'_')+'.pdf',
-      image: {type:'jpeg',quality:0.98},
-      html2canvas: {scale:2,useCORS:true,letterRendering:true},
-      jsPDF: {unit:'mm',format:'a4',orientation:'portrait'},
-      pagebreak: {mode:['css','legacy'],before:'.page-a4'}
-    };
-    html2pdf().set(opt).from(area).outputPdf('blob').then(blob=>{
-      area.classList.remove('pdf-export-mode');
-      resolve(blob);
-    }).catch(err=>{
-      area.classList.remove('pdf-export-mode');
-      reject(err);
-    });
-  });
+    return pdf;
+  }finally{area.classList.remove('pdf-export-mode');}
 }
 
 async function doSavePDF(){
   try{
-    const blob=await generatePDFBlob();
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download='พตส_'+(S.currentMonthYear||'').replace(/ /g,'_')+'.pdf';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }catch(e){
-    showAlert('สร้าง PDF ล้มเหลว: '+e.message);
-  }
+    flashSave('กำลังสร้าง PDF...','#059669');
+    const pdf=await renderPdf(0.96);
+    markPrinted();
+    pdf.save('พตส_'+(S.currentMonthYear||'').replace(/ /g,'_')+'.pdf');
+    flashSave('ดาวน์โหลดแล้ว','#059669');
+  }catch(e){showAlert('สร้าง PDF ล้มเหลว: '+e.message);}
 }
 
-// ================================================================
-//  SEND EMAIL (cloud mode only — via GAS confirmPrint)
-// ================================================================
 async function doSendEmail(){
-  if(S.mode!=='cloud'){
-    return showAlert('ฟีเจอร์นี้สำหรับผู้ที่ลงทะเบียน (โหมดไปทุกที่) เท่านั้น');
-  }
-  showConfirm('ส่ง PDF ไปที่ '+S.email+' ?',async ()=>{
+  if(S.mode!=='cloud')return showAlert('ฟีเจอร์นี้สำหรับผู้ที่ลงทะเบียน (โหมดไปทุกที่) เท่านั้น');
+  showConfirm('ส่ง PDF ไปที่ '+S.email+' ?',async()=>{
     try{
       flashSave('กำลังสร้าง PDF...','#8b5cf6');
-      await preloadTHFont();
-      await document.fonts.ready;
-      const area=document.getElementById('print-area');
-      area.classList.add('pdf-export-mode');
-      const opt={
-        margin:0,
-        image:{type:'jpeg',quality:0.95},
-        html2canvas:{scale:2,useCORS:true,letterRendering:true},
-        jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
-        pagebreak:{mode:['css','legacy'],before:'.page-a4'}
-      };
-      const base64=await html2pdf().set(opt).from(area).outputPdf('datauristring');
-      area.classList.remove('pdf-export-mode');
-      // Strip data URI prefix to get raw base64
-      const pdfBase64=base64.split(',')[1]||base64;
+      const pdf=await renderPdf(0.85);
+      const b64=pdf.output('datauristring').split(',')[1];
       flashSave('กำลังส่ง email...','#8b5cf6');
-      const data=getFormData();
+      const d=getFormData();
       const res=await gasCall('confirmPrint',{
-        email:S.email,
-        username:S.username,
-        month_year:S.currentMonthYear,
-        name:(data.name||'')+' '+(data.surname||''),
-        pdf_base64:pdfBase64
+        email:S.email,username:S.username,profile_id:S.activeProfileId,
+        month_year:S.currentMonthYear,name:(d.name||'')+' '+(d.surname||''),pdf_base64:b64
       });
-      if(res.ok){
-        flashSave('ส่ง email สำเร็จ!','#059669');
-      } else {
-        showAlert('ส่ง email ล้มเหลว: '+(res.error||''));
-      }
-    }catch(e){
-      showAlert('เกิดข้อผิดพลาด: '+e.message);
-    }
+      if(res.ok){markPrinted();flashSave('ส่ง email สำเร็จ!','#059669');}
+      else showAlert('ส่ง email ล้มเหลว: '+(res.error||''));
+    }catch(e){showAlert('เกิดข้อผิดพลาด: '+e.message);}
   });
 }
 
 // ================================================================
-//  FONT PRELOAD — blob URL ให้ html2canvas ใช้ได้ (ไม่ติด CORS)
+//  FONT PRELOAD (blob URL เพื่อให้ html2canvas ใช้ได้ ไม่ติด CORS)
 // ================================================================
-const FONT_BASE = 'https://github.com/sawee-hosp/sawee-vmi/raw/refs/heads/main/font/';
-let _fontsReady = false;
-
-async function preloadTHFont() {
-  if (_fontsReady) return;
-  try {
-    const [rBlob, bBlob] = await Promise.all([
-      fetch(FONT_BASE + 'THSarabunNew.ttf').then(r => r.ok ? r.blob() : null).catch(() => null),
-      fetch(FONT_BASE + 'THSarabunNew%20Bold.ttf').then(r => r.ok ? r.blob() : null).catch(() => null)
+const FONT_BASE='https://raw.githubusercontent.com/sawee-hosp/sawee-vmi/main/font/';
+let _fontsReady=false;
+async function preloadTHFont(){
+  if(_fontsReady)return;
+  try{
+    const [r,b]=await Promise.all([
+      fetch(FONT_BASE+'THSarabunNew.ttf').then(x=>x.ok?x.blob():null).catch(()=>null),
+      fetch(FONT_BASE+'THSarabunNew%20Bold.ttf').then(x=>x.ok?x.blob():null).catch(()=>null)
     ]);
-    const rules = [];
-    if (rBlob) rules.push(`@font-face{font-family:'TH Sarabun New';src:url('${URL.createObjectURL(rBlob)}') format('truetype');font-weight:normal;font-style:normal}`);
-    if (bBlob) rules.push(`@font-face{font-family:'TH Sarabun New';src:url('${URL.createObjectURL(bBlob)}') format('truetype');font-weight:bold;font-style:normal}`);
-    if (rules.length > 0) {
-      const s = document.createElement('style');
-      s.textContent = rules.join('\n');
-      document.head.appendChild(s);
-      await document.fonts.ready;
-    }
-    _fontsReady = true;
-  } catch(e) {
-    console.warn('TH Sarabun New preload:', e);
-    _fontsReady = true; // continue anyway
-  }
+    const rules=[];
+    if(r)rules.push("@font-face{font-family:'TH Sarabun New';src:url('"+URL.createObjectURL(r)+"') format('truetype');font-weight:normal}");
+    if(b)rules.push("@font-face{font-family:'TH Sarabun New';src:url('"+URL.createObjectURL(b)+"') format('truetype');font-weight:bold}");
+    if(rules.length){const s=document.createElement('style');s.textContent=rules.join('\n');document.head.appendChild(s);await document.fonts.ready;}
+  }catch(e){console.warn('font preload',e);}
+  _fontsReady=true;
 }
 
-// ================================================================
-//  INIT
-// ================================================================
-window.addEventListener('DOMContentLoaded', () => {
-  preloadTHFont(); // start preloading immediately
-});
+window.addEventListener('DOMContentLoaded',()=>{preloadTHFont();});
 </script>
 </body>
 </html>
