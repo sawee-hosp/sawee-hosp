@@ -8,8 +8,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-@font-face{font-family:'TH Sarabun New';src:url('https://github.com/sawee-hosp/sawee-vmi/raw/refs/heads/main/font/THSarabunNew.ttf') format('truetype');font-weight:normal;font-style:normal}
-@font-face{font-family:'TH Sarabun New';src:url('https://github.com/sawee-hosp/sawee-vmi/raw/refs/heads/main/font/THSarabunNew%20Bold.ttf') format('truetype');font-weight:bold;font-style:normal}
+@font-face{font-family:'TH Sarabun New';src:url('https://raw.githubusercontent.com/sawee-hosp/sawee-vmi/main/font/THSarabunNew.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:block}
+@font-face{font-family:'TH Sarabun New';src:url('https://raw.githubusercontent.com/sawee-hosp/sawee-vmi/main/font/THSarabunNew%20Bold.ttf') format('truetype');font-weight:bold;font-style:normal;font-display:block}
 
 :root{
   --primary:#4f46e5;--primary-dark:#3730a3;--success:#059669;--warning:#d97706;--danger:#dc2626;
@@ -123,44 +123,59 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .preview-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
 .preview-toolbar h2{color:#fff;font-size:15px;font-family:'Prompt',sans-serif;font-weight:500}
 .btn-print{background:#f59e0b;font-size:15px;padding:12px 28px;font-weight:700}.btn-print:hover{background:#d97706}
-.preview-container{width:210mm;margin:0 auto}
+.preview-wrap{width:100%;overflow-x:auto}
+.preview-container{width:793.7px;margin:0 auto}
 
-/* ====== A4 DOCUMENT (layout ตาม file1) ====== */
+/* ============================================================
+   A4 DOCUMENT — ระยะทุกค่าเป็น px ตรงตามต้นแบบ ฉ 11
+   A4 = 793.7 x 1122.5 px | ขอบ บน 86.93 / ขวา 37.80 / ล่าง 20.41 / ซ้าย 94.49
+   ============================================================ */
 .page-a4{
-  width:210mm;height:297mm;background:#fff;color:#000;
-  padding:23mm 10mm 5.4mm 25mm;
-  font-family:'TH Sarabun New','TH SarabunPSK','Sarabun',sans-serif;
-  font-size:16pt;line-height:1.22;font-weight:normal;
-  box-shadow:0 0 12px rgba(0,0,0,.4);position:relative;overflow:hidden;margin-bottom:20px;
+  width:793.7px;height:1122.5px;
+  padding:86.93px 37.8px 20.41px 94.49px;
+  background:#fff;color:#000;
+  font-size:21.333px;            /* 16 pt */
+  line-height:1.15;
+  font-weight:normal;
+  box-shadow:0 0 12px rgba(0,0,0,.4);
+  position:relative;overflow:hidden;margin-bottom:20px;
 }
-.page-a4 *{font-family:inherit}
-.p-title{text-align:center;font-weight:bold;font-size:1.18em;line-height:1.3}
-.fl{display:flex;align-items:baseline;line-height:1.28}
-.fl.mt{margin-top:.35em}
-.lb{white-space:nowrap}
-.vl{font-weight:bold;border-bottom:1px dotted #000;white-space:nowrap;padding:0 3px;min-width:10px;text-align:center;display:inline-block}
-.dots{flex:1;border-bottom:1px dotted #000;min-width:4px;margin-bottom:1px}
-.dots-fixed{border-bottom:1px dotted #000;display:inline-block;margin-bottom:1px}
-.right-block{margin-left:auto;width:52%}
-.sign-center{margin-left:33%;margin-top:.9em;text-align:center}
-.bottom-wrap{display:flex;margin-top:.7em}
-.bottom-col{flex:1;text-align:center}
-.p2-title{text-align:center;font-weight:bold;font-size:1.25em;margin-top:2.2em}
-.p2-subtitle{text-align:center;font-weight:bold;margin-top:1.1em}
-.leave-tbl{width:100%;border-collapse:collapse;margin-top:.9em;border:1px solid #000}
-.leave-tbl th,.leave-tbl td{border:1px solid #000;padding:4px 6px;text-align:center;font-size:1em;font-weight:normal}
-.leave-tbl th{font-weight:500}
-.leave-tbl td{height:30px}
-.p2-sign{text-align:center;margin-top:2.5em;font-weight:bold}
-.p2-sign-area{margin-left:34%;margin-top:1.3em}
-.p2-sign-area .dots-line{display:inline-block;border-bottom:1px dotted #000;width:210px}
+.page-a4,.page-a4 *{
+  font-family:'TH Sarabun New','TH SarabunPSK',serif!important;
+  -webkit-font-smoothing:antialiased;
+}
+.page-a4 .ttl{text-align:center;font-weight:bold;font-size:25.333px;line-height:1.25} /* 19 pt */
+.page-a4 .rw{display:flex;align-items:baseline;white-space:nowrap}
+.page-a4 .seg{display:flex;align-items:baseline;min-width:0}
+.page-a4 .lb{white-space:nowrap;flex:0 0 auto}
+.page-a4 .fld{
+  flex:1 1 0;min-width:0;
+  border-bottom:1px dotted #000;
+  text-align:center;font-weight:bold;
+  padding:0 4px;margin:0 2px;
+  white-space:nowrap;overflow:hidden;
+  line-height:1.05;
+}
+.page-a4 .fldw{
+  display:inline-block;border-bottom:1px dotted #000;
+  text-align:center;font-weight:bold;padding:0 4px;line-height:1.05;
+}
+.page-a4 .plain{white-space:pre}
+.page-a4 .lvtbl{width:661.42px;border-collapse:collapse;border:1px solid #000}
+.page-a4 .lvtbl th,.page-a4 .lvtbl td{
+  border:1px solid #000;padding:3px 5px;text-align:center;
+  font-size:21.333px;font-weight:normal;line-height:1.15;
+}
+.page-a4 .lvtbl th{font-weight:500}
+.page-a4 .lvtbl td{height:40px}
 
 .pdf-export-mode .page-a4{box-shadow:none!important;margin:0!important}
 
 @media print{
   body *{visibility:hidden}
   #print-area,#print-area *{visibility:visible}
-  #print-area{position:absolute;top:0;left:0;width:100%}
+  #print-area{position:absolute;top:0;left:0}
+  .preview-container{width:793.7px}
   .page-a4{box-shadow:none!important;margin:0!important;page-break-after:always}
   .page-a4:last-child{page-break-after:auto}
   @page{size:A4;margin:0}
@@ -173,7 +188,6 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .app-header{flex-direction:column;gap:8px}
   .form-row{flex-direction:column;gap:8px}
   .preview-section{margin:12px}
-  .preview-container{width:100%;overflow-x:auto}
   .landing-header h1{font-size:24px}
   .submenu-card{min-width:auto;width:100%}
 }
@@ -314,7 +328,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
       <div class="card-header">1. ข้อมูลส่วนตัว &amp; ประวัติ</div>
       <div id="user-form">
         <div class="form-row">
-          <div class="form-group"><label>ชื่อ (พร้อมคำนำหน้า) <span class="required-mark">*</span></label><input type="text" id="fm-name" placeholder="เช่น นายสมชาย" oninput="onFormInput()"></div>
+          <div class="form-group"><label>ชื่อ (พร้อมคำนำหน้า) <span class="required-mark">*</span></label><input type="text" id="fm-name" placeholder="เช่น นายเทิดพงษ์" oninput="onFormInput()"></div>
           <div class="form-group"><label>นามสกุล <span class="required-mark">*</span></label><input type="text" id="fm-surname" oninput="onFormInput()"></div>
         </div>
         <div class="form-group"><label>ตำแหน่ง</label><input type="text" id="fm-job" placeholder="เช่น เภสัชกรชำนาญการ" oninput="onFormInput()"></div>
@@ -332,7 +346,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
         <div class="form-group" style="background:#f1f5f9;padding:8px 12px;border-radius:8px;margin-bottom:12px">
           <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin:0;color:var(--primary);font-size:13px">
             <input type="checkbox" id="fm-show-fraction" onchange="onFormInput()" style="width:auto;accent-color:var(--primary)">
-            แสดงเศษวันในช่อง "วัน" (ไม่ติ๊ก = เว้นว่าง)
+            แสดงเศษวันในช่อง "วัน" (ต้นแบบ ฉ 11 เว้นว่าง)
           </label>
         </div>
 
@@ -477,28 +491,62 @@ button:disabled{opacity:.5;cursor:not-allowed}
 
   <div class="preview-section">
     <div class="preview-toolbar">
-      <h2>พรีวิวเอกสาร (ตรงกับไฟล์ PDF ที่ได้)</h2>
+      <h2>พรีวิวเอกสาร — ตรงตามต้นแบบ ฉ 11 (A4 793.7×1122.5 px)</h2>
       <button class="btn btn-print" onclick="doPrint()">พิมพ์</button>
     </div>
-    <div id="print-area" class="preview-container">
-      <div class="page-a4" id="preview-page1"></div>
-      <div class="page-a4" id="preview-page2"></div>
+    <div class="preview-wrap">
+      <div id="print-area" class="preview-container">
+        <div class="page-a4" id="preview-page1"></div>
+        <div class="page-a4" id="preview-page2"></div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
 // ================================================================
-//  CONFIG  *** วาง URL ของ Web App (GAS) ที่ deploy ใหม่ตรงนี้ ***
+//  CONFIG  *** วาง URL ของ Web App (GAS) ตรงนี้ ***
 // ================================================================
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbw9LBeXbiQI4prPDou-9EVcCExSqHHgCBqNR9YXkC5C5vYkqtL1aqC1Yp8VV-wqzASngg/exec';
+const GAS_URL = 'https://script.google.com/macros/s/XXXXXXXXXXXXXXXXXXXX/exec';
 
-// ผู้ตรวจสอบ (แก้ที่เดียวได้ทั้งเอกสาร)
+// ต้นแบบ ฉ 11 เว้นช่องลงนามผู้ตรวจสอบไว้ว่าง — ถ้าต้องการพิมพ์ชื่อ ให้ตั้งเป็น true
+const FILL_CHECKER  = false;
 const CHECKER_NAME  = 'นางอทิตา มณีรัตน์';
 const CHECKER_TITLE = 'เจ้าพนักงานธุรการชำนาญงาน';
 
 const THAI_MONTHS=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 const THAI_MONTHS_SHORT=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+
+// ---- ตำแหน่ง tab stop จากต้นแบบ (หน่วย px @96dpi) ----
+const W      = 661.42;  // ความกว้างพื้นที่เนื้อหา = 175 mm
+const T = {
+  rightBlk : 406.30,  // 10.75 cm  (หน่วยบริการ / ประจำเดือน)
+  n1       : 207.90,  //  5.50 cm
+  n2       : 368.50,  //  9.75 cm
+  h1       : 321.30,  //  8.50 cm  (ชื่อ รพ.)
+  h2       : 481.90,  // 12.75 cm  (จังหวัด)
+  dIndent  :  22.68,  //  0.60 cm
+  d1       : 236.20,  //  6.25 cm  (ตั้งแต่วันที่)
+  d2       : 434.60,  // 11.50 cm  (ถึงวันที่)
+  d3       : 500.80,  // 13.25 cm  (รวม ... ปี)
+  d4       : 548.00,  // 14.50 cm  (เดือน)
+  d5       : 614.20,  // 16.25 cm  (วัน)
+  s0       :  56.70,  //  1.50 cm  (รวมทั้งสิ้น / ได้รับเงิน)
+  s1       : 255.10,  //  6.75 cm
+  s2       : 378.00,  // 10.00 cm
+  s3       : 453.50,  // 12.00 cm
+  m1       : 283.50,  //  7.50 cm
+  m2       : 529.10,  // 14.00 cm
+  sigName  : 292.90,  //  7.75 cm
+  sigTitle : 245.70,  //  6.50 cm
+  sigEnd   : 510.20,  // 13.50 cm
+  tab1     :  48.00,  //  1.27 cm (tab มาตรฐาน)
+  botBlk   : 310.00,  // บล็อก "เรียน ผู้อำนวยการฯ"
+  botIn    : 342.00,
+  ti       :  94.49   //  2.50 cm text-indent
+};
+// ---- ระยะห่างก่อนย่อหน้า (twips ÷ 20 × 4/3 = px) ----
+const SP = { p120:8, p240:16, p480:32, p720:48, p960:64 };
 
 let S = {
   mode:null, username:'', email:'',
@@ -508,16 +556,13 @@ let S = {
   selectedDays:[]
 };
 let _saveTimer=null;
-
 function uid(){return Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7);}
 
-// ---------- modals ----------
 function showAlert(m){document.getElementById('alert-msg').innerText=m;document.getElementById('modal-alert').classList.add('active');}
 function closeAlert(){document.getElementById('modal-alert').classList.remove('active');}
 function showConfirm(m,cb){document.getElementById('confirm-msg').innerText=m;document.getElementById('modal-confirm').classList.add('active');document.getElementById('confirm-yes').onclick=()=>{closeConfirm();cb();};}
 function closeConfirm(){document.getElementById('modal-confirm').classList.remove('active');}
 
-// ---------- nav ----------
 const PAGES=['page-landing','page-mode-select','page-local-login','page-pdpa','page-cloud-login','page-cloud-register','page-dashboard'];
 function showPage(id){PAGES.forEach(p=>{const el=document.getElementById(p);if(el)el.classList.toggle('hidden',p!==id);});if(id==='page-local-login')renderLocalUsers();}
 document.getElementById('chk-pdpa').addEventListener('change',function(){document.getElementById('btn-pdpa-accept').disabled=!this.checked;});
@@ -527,12 +572,7 @@ document.getElementById('chk-pdpa').addEventListener('change',function(){documen
 // ================================================================
 async function gasCall(action,payload={}){
   if(!GAS_URL||GAS_URL.indexOf('XXXX')>-1) throw new Error('ยังไม่ได้ตั้งค่า GAS_URL ในโค้ด');
-  const res=await fetch(GAS_URL,{
-    method:'POST',
-    redirect:'follow',
-    headers:{'Content-Type':'text/plain;charset=utf-8'},
-    body:JSON.stringify({action,...payload})
-  });
+  const res=await fetch(GAS_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...payload})});
   const txt=await res.text();
   try{return JSON.parse(txt);}catch(e){throw new Error('ตอบกลับผิดรูปแบบ: '+txt.slice(0,120));}
 }
@@ -551,22 +591,18 @@ function normalizeLeave(l){
   let days=l.days;
   if(typeof days==='string'){try{days=JSON.parse(days);}catch(e){days=[];}}
   if(!Array.isArray(days))days=[];
-  return {
-    id:l.id||uid(),
-    profile_id:l.profile_id||'',
-    month_year:l.month_year||'',
+  return {id:l.id||uid(),profile_id:l.profile_id||'',month_year:l.month_year||'',
     type_of_leave:l.type_of_leave||l.type||'ลาป่วย',
     days:days.map(Number).filter(n=>!isNaN(n)),
     half:l.half===true||l.half==='true'||l.half==='TRUE',
-    period:l.period||null
-  };
+    period:l.period||null};
 }
 function cacheKey(){return (S.mode==='cloud'?'sawee_cloud_':'sawee_local_')+(S.email||'')+'|'+S.username;}
 
 async function loadAllData(){
   if(S.mode==='ghost')return;
   if(S.mode==='local'){
-    try{const raw=localStorage.getItem(cacheKey())||localStorage.getItem('ptsd_'+S.username);if(raw)setStorageData(JSON.parse(raw));}catch(e){console.error(e);}
+    try{const raw=localStorage.getItem(cacheKey())||localStorage.getItem('ptsd_'+S.username);if(raw)setStorageData(JSON.parse(raw));}catch(e){}
     return;
   }
   if(S.mode==='cloud'){
@@ -580,7 +616,6 @@ async function loadAllData(){
     }
   }
 }
-
 async function saveAllData(){
   if(S.mode==='ghost')return;
   const d=getStorageData();
@@ -588,8 +623,7 @@ async function saveAllData(){
   if(S.mode==='local'){flashSave('บันทึกแล้ว','#059669');return;}
   if(S.mode==='cloud'){
     flashSave('กำลังบันทึก...','#0ea5e9');
-    try{
-      const res=await gasCall('save',{email:S.email,username:S.username,userData:d});
+    try{const res=await gasCall('save',{email:S.email,username:S.username,userData:d});
       flashSave(res.ok?'บันทึกขึ้น cloud แล้ว':'บันทึกล้มเหลว',res.ok?'#059669':'#dc2626');
     }catch(e){flashSave('ออฟไลน์ — เก็บไว้ในเครื่อง','#d97706');}
   }
@@ -603,7 +637,7 @@ function flashSave(t,c){
 }
 
 // ================================================================
-//  MODES
+//  MODES / AUTH
 // ================================================================
 function enterGhostMode(){
   S.mode='ghost';S.username='';S.email='';S.profiles=[];S.leaves=[];S.printHistory=[];
@@ -658,7 +692,7 @@ async function doCloudRegister(){
   try{
     const res=await gasCall('register',{email,username});
     if(!res.ok){showAlert(res.error);return;}
-    showAlert('ลงทะเบียนสำเร็จ!\nUsername: '+username+'\nEmail: '+email+'\n\nระบบส่งอีเมลยืนยันให้แล้ว');
+    showAlert('ลงทะเบียนสำเร็จ!\nUsername: '+username+'\nEmail: '+email);
     document.getElementById('login-email').value=email;
     document.getElementById('login-username').value=username;
     showPage('page-cloud-login');
@@ -671,7 +705,7 @@ async function showForgotUsername(){
   try{
     const res=await gasCall('forgot',{email});
     if(!res.ok)return showAlert(res.error);
-    showAlert('Username ของท่านคือ: '+res.username+'\n(ส่งเข้าอีเมลให้แล้วด้วย)');
+    showAlert('Username ของท่านคือ: '+res.username);
   }catch(e){showAlert('เกิดข้อผิดพลาด: '+e.message);}
 }
 function setupDashboard(label,badgeStyle,userText){
@@ -688,7 +722,7 @@ function doLogout(){
 }
 
 // ================================================================
-//  DASHBOARD
+//  DASHBOARD / PROFILE / FORM
 // ================================================================
 function initDashboard(){
   const now=new Date();
@@ -696,11 +730,10 @@ function initDashboard(){
   if(S.profiles.length>0){
     if(!S.activeProfileId)S.activeProfileId=S.profiles[0].id;
     populateForm(S.profiles.find(p=>p.id===S.activeProfileId));
-  }else{clearForm();}
+  }else clearForm();
   renderProfileChips();
   selectMonth(THAI_MONTHS[now.getMonth()]+' '+S.currentViewYear);
 }
-
 function renderProfileChips(){
   const c=document.getElementById('profile-chips');if(!c)return;c.innerHTML='';
   S.profiles.forEach(p=>{
@@ -713,8 +746,7 @@ function renderProfileChips(){
 }
 function switchProfile(id){
   S.activeProfileId=id;
-  const p=S.profiles.find(x=>x.id===id);
-  if(p)populateForm(p);
+  const p=S.profiles.find(x=>x.id===id);if(p)populateForm(p);
   S.selectedDays=[];
   renderProfileChips();renderMonthGrid();renderCalendar();renderLeaveTable();updatePreview();
 }
@@ -728,8 +760,7 @@ function blankProfile(){
     train_hosp2_name:'',train_hosp2_prov:'',train_hosp2_start:'',train_hosp2_end:''};
 }
 function addNewProfile(){
-  const np=blankProfile();
-  S.profiles.push(np);S.activeProfileId=np.id;
+  const np=blankProfile();S.profiles.push(np);S.activeProfileId=np.id;
   clearForm();renderProfileChips();renderMonthGrid();renderLeaveTable();updatePreview();scheduleSave();
 }
 function deleteCurrentProfile(){
@@ -744,8 +775,6 @@ function deleteCurrentProfile(){
     renderProfileChips();renderMonthGrid();renderLeaveTable();updatePreview();saveAllData();
   });
 }
-
-// ---------- form ----------
 function populateForm(p){
   if(!p)return clearForm();
   const s=(id,v)=>{const el=document.getElementById(id);if(el)el.value=(v===undefined||v===null)?'':v;};
@@ -756,7 +785,8 @@ function populateForm(p){
     s('fm-hosp'+i,p['hospital'+i]);s('fm-prov'+i,p['province'+i]);s('fm-level'+i,p['level'+i]);
     s('fm-start'+i,p['start_date'+i]);s('fm-end'+i,p['end_date'+i]);
   }
-  const chk=document.getElementById('chk-doctor');if(chk){chk.checked=!!p.doctor_mode;document.getElementById('doctor-form').style.display=chk.checked?'block':'none';}
+  const chk=document.getElementById('chk-doctor');
+  if(chk){chk.checked=!!p.doctor_mode;document.getElementById('doctor-form').style.display=chk.checked?'block':'none';}
   s('fm-train-y',p.train_y);s('fm-train-m',p.train_m);
   s('fm-train-hosp1',p.train_hosp1_name);s('fm-train-prov1',p.train_hosp1_prov);s('fm-train-start1',p.train_hosp1_start);s('fm-train-end1',p.train_hosp1_end);
   s('fm-train-hosp2',p.train_hosp2_name);s('fm-train-prov2',p.train_hosp2_prov);s('fm-train-start2',p.train_hosp2_start);s('fm-train-end2',p.train_hosp2_end);
@@ -785,15 +815,14 @@ function getFormData(){
     train_hosp2_name:g('fm-train-hosp2'),train_hosp2_prov:g('fm-train-prov2'),train_hosp2_start:g('fm-train-start2'),train_hosp2_end:g('fm-train-end2')
   };
 }
-function fillSawee(n,checked){
-  document.getElementById('fm-hosp'+n).value=checked?'สวี':'';
-  document.getElementById('fm-prov'+n).value=checked?'ชุมพร':'';
-  document.getElementById('fm-level'+n).value=checked?'พื้นที่ปกติ 2':'';
+function fillSawee(n,c){
+  document.getElementById('fm-hosp'+n).value=c?'สวี':'';
+  document.getElementById('fm-prov'+n).value=c?'ชุมพร':'';
+  document.getElementById('fm-level'+n).value=c?'พื้นที่ปกติ 2':'';
   onFormInput();
 }
 function toggleDoctorForm(){
-  const c=document.getElementById('chk-doctor');
-  document.getElementById('doctor-form').style.display=c.checked?'block':'none';
+  document.getElementById('doctor-form').style.display=document.getElementById('chk-doctor').checked?'block':'none';
   onFormInput();
 }
 function onFormInput(){
@@ -802,8 +831,7 @@ function onFormInput(){
     const p=S.profiles.find(x=>x.id===S.activeProfileId);
     if(p)Object.assign(p,getFormData());
     else{const fd=getFormData();fd.id=S.activeProfileId;S.profiles.push(fd);}
-    renderProfileChips();
-    scheduleSave();
+    renderProfileChips();scheduleSave();
   }
   updatePreview();
 }
@@ -813,7 +841,7 @@ function saveCurrentProfile(){
   onFormInput();clearTimeout(_saveTimer);saveAllData();
 }
 
-// ---------- month ----------
+// ---------- month / calendar / leaves ----------
 function changeYear(d){S.currentViewYear+=d;renderMonthGrid();}
 function renderMonthGrid(){
   document.getElementById('display-year').innerText='ปี '+S.currentViewYear;
@@ -837,8 +865,6 @@ function selectMonth(mStr){
   S.selectedDays=[];
   renderMonthGrid();renderCalendar();renderLeaveTable();updatePreview();
 }
-
-// ---------- calendar ----------
 function getMonthInfo(){
   if(!S.currentMonthYear)return null;
   const p=S.currentMonthYear.split(' ');
@@ -865,7 +891,7 @@ function toggleDay(d){
 function onHalfDayToggle(){
   const half=document.getElementById('chk-half').checked;
   document.getElementById('sel-half-period').disabled=!half;
-  if(half&&S.selectedDays.length>1){S.selectedDays=[S.selectedDays[0]];}
+  if(half&&S.selectedDays.length>1)S.selectedDays=[S.selectedDays[0]];
   renderCalendar();
 }
 function clearSelectedDays(){
@@ -884,8 +910,6 @@ function updateCalSummary(){
   if(half)t+=' ('+period+')';
   el.innerHTML='<b>'+t+'</b> — '+(half?0.5:S.selectedDays.length)+' วัน';
 }
-
-// ---------- leaves ----------
 function addLeaveFromCal(){
   if(!S.selectedDays.length)return showAlert('กรุณาเลือกวันที่ในปฏิทิน');
   const type=document.getElementById('lv-type').value;
@@ -901,10 +925,7 @@ function addLeaveFromCal(){
   clearSelectedDays();renderLeaveTable();updatePreview();scheduleSave();
 }
 function deleteLeave(id){
-  showConfirm('ต้องการลบวันลานี้?',()=>{
-    S.leaves=S.leaves.filter(l=>l.id!==id);
-    renderLeaveTable();updatePreview();scheduleSave();
-  });
+  showConfirm('ต้องการลบวันลานี้?',()=>{S.leaves=S.leaves.filter(l=>l.id!==id);renderLeaveTable();updatePreview();scheduleSave();});
 }
 function getLeaveCount(e){return e.half?0.5:e.days.length;}
 function renderLeaveTable(){
@@ -958,17 +979,28 @@ function ThaiBaht(num){
 }
 
 // ================================================================
-//  DOCUMENT RENDER  (layout ตามฟอร์มใน file1)
+//  ===== DOCUMENT RENDERER — ตรงตามต้นแบบ ฉ 11 =====
 // ================================================================
-function V(text,w){return '<span class="vl" style="'+(w?'min-width:'+w:'')+'">'+(text||'&nbsp;')+'</span>';}
-function D(w){return '<span class="dots" style="'+(w?'min-width:'+w+';flex:0 0 '+w:'')+'"></span>';}
+function esc(v){return (v===null||v===undefined||v==='')?'&nbsp;':String(v);}
+
+/* segment = ป้ายกำกับ + ช่องจุดไข่ปลา กว้างคงที่ (px) */
+function SEG(label,value,width,boldLabel){
+  const flex = (width==null) ? 'flex:1 1 0' : 'flex:0 0 '+width+'px;width:'+width+'px';
+  const lb   = label ? '<span class="lb"'+(boldLabel?' style="font-weight:bold"':'')+'>'+label+'</span>' : '';
+  return '<span class="seg" style="'+flex+'">'+lb+'<span class="fld">'+esc(value)+'</span></span>';
+}
+/* แถว: mt = margin-top (px), pl = padding-left (px) */
+function ROW(inner,mt,pl){
+  return '<div class="rw" style="margin-top:'+(mt||0)+'px;padding-left:'+(pl||0)+'px">'+inner+'</div>';
+}
+function TXT(t,bold){return '<span class="lb"'+(bold?' style="font-weight:bold"':'')+'>'+t+'</span>';}
+function FIXW(v,w){return '<span class="fldw" style="min-width:'+w+'px">'+esc(v)+'</span>';}
 
 function updatePreview(){
   const data=getFormData();
   const endDate=parseThaiMonth(S.currentMonthYear);
   const totalDur=calculateDuration(parseDate(data.start_date),endDate);
 
-  // ระยะเวลาที่ รพ.ปัจจุบัน (หา รพ.ที่ไม่มีวันสิ้นสุด หรือช่องที่ 1)
   let curStart=data.start_date1;
   for(let i=1;i<=3;i++){if(data['hospital'+i]&&data['start_date'+i]&&!data['end_date'+i])curStart=data['start_date'+i];}
   const workDur=curStart?calculateDuration(parseDate(curStart),endDate):{y:'',m:''};
@@ -983,135 +1015,141 @@ function updatePreview(){
         start:formatThaiDate(s),end:e?formatThaiDate(e):(s?fmtDate(eDate):''),y:dur.y,m:dur.m,d:dur.d});
     }
   }
-  const moneyFmt=data.money?data.money.toLocaleString('en-US'):'';
-  document.getElementById('preview-page1').innerHTML=renderPage1(data,workDur,totalDur,hospitals,moneyFmt,ThaiBaht(data.money));
+  document.getElementById('preview-page1').innerHTML=
+    renderPage1(data,workDur,totalDur,hospitals,data.money?data.money.toLocaleString('en-US'):'',ThaiBaht(data.money));
   document.getElementById('preview-page2').innerHTML=renderPage2(data);
-  requestAnimationFrame(()=>{autoFit(document.getElementById('preview-page1'));autoFit(document.getElementById('preview-page2'));});
-}
-
-// ย่อฟอนต์อัตโนมัติถ้าเนื้อหาล้นหน้า A4
-function autoFit(el){
-  let size=16;el.style.fontSize=size+'pt';
-  let guard=0;
-  while(el.scrollHeight>el.clientHeight+2&&size>11.5&&guard++<24){size-=0.5;el.style.fontSize=size+'pt';}
 }
 
 function renderPage1(data,workDur,totalDur,hospitals,moneyFmt,moneyTxt){
-  const curHosp=data.hospital1?'โรงพยาบาล'+data.hospital1:'';
-  const fullName=((data.name||'')+'  '+(data.surname||'')).trim();
-  const isLookjang=data.emp_type==='ลูกจ้าง';
-  const showFrac=!!data.show_fraction;
-  const dm=data.doctor_mode;
+  const curHosp = data.hospital1 ? 'โรงพยาบาล'+data.hospital1 : 'โรงพยาบาลสวี';
+  const fullName= ((data.name||'')+'  '+(data.surname||'')).trim();
+  const isLJ    = data.emp_type==='ลูกจ้าง';
+  const frac    = !!data.show_fraction;
+  const dm      = !!data.doctor_mode;
+  let H='';
 
-  // ข้อ 2 - 6 (5 ช่องตามฟอร์มต้นฉบับ)
-  let hospHtml='';
-  for(let i=0;i<5;i++){
-    const h=hospitals[i]||{};
-    const has=!!h.name;
-    hospHtml+=
-    '<div class="fl mt">'+
-      '<span class="lb">'+(i+2)+'. ปฏิบัติงานที่โรงพยาบาล</span>'+D('3px')+V(h.name||'','30px')+D()+
-      '<span class="lb">จังหวัด</span>'+D('3px')+V(h.prov||'','30px')+D()+
-      '<span class="lb">จัดระดับ</span>'+D('3px')+V(h.level||'','30px')+D('3px')+
-    '</div>'+
-    '<div class="fl" style="padding-left:8mm">'+
-      '<span class="lb">ตั้งแต่วันที่</span>'+D('3px')+V(h.start||'','60px')+D('3px')+
-      '<span class="lb">ถึงวันที่</span>'+D('3px')+V(h.end||'','60px')+D('3px')+
-      '<span class="lb">รวม</span>'+D('3px')+V(has?String(h.y):'','16px')+D('3px')+
-      '<span class="lb">ปี</span>'+D('3px')+V(has?String(h.m):'','16px')+D('3px')+
-      '<span class="lb">เดือน</span>'+D('3px')+V(has&&showFrac?String(h.d):'','16px')+D('3px')+
-      '<span class="lb">วัน</span>'+
-    '</div>';
+  /* ---- หัวเรื่อง 2 บรรทัด 19 pt ---- */
+  H+='<div class="ttl">ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่ายสำหรับเจ้าหน้าที่</div>';
+  H+='<div class="ttl">ที่ปฏิบัติงานในหน่วยบริการสังกัดกระทรวงสาธารณสุข</div>';
+
+  /* ---- หน่วยบริการ / ประจำเดือน (tab 10.75 cm) ---- */
+  H+=ROW(SEG('หน่วยบริการ',curHosp,null),SP.p240,T.rightBlk);
+  H+=ROW(SEG('ประจำเดือน',S.currentMonthYear,null),SP.p120,T.rightBlk);
+
+  /* ---- ข้าพเจ้า ชื่อ / นามสกุล / ตำแหน่ง (tab 5.5 , 9.75 cm) ---- */
+  H+=ROW(
+      SEG('ข้าพเจ้า ชื่อ',data.name,T.n1)+
+      SEG('นามสกุล',data.surname,T.n2-T.n1)+
+      SEG('ตำแหน่ง',data.job,null)
+    ,SP.p120,0);
+
+  /* ---- ปัจจุบันปฏิบัติงานที่ ---- */
+  H+=ROW(
+      SEG('ปัจจุบันปฏิบัติงานที่',curHosp,T.n1)+
+      SEG('จังหวัด',data.province1||'ชุมพร',T.n2-T.n1)+
+      SEG('ระดับ/กลุ่ม',data.level1,null)
+    ,0,0);
+
+  /* ---- ปฏิบัติงานในหน่วยบริการ ... ปี ... เดือน (นับถึงสิ้นเดือนที่เบิกจ่าย) ---- */
+  H+=ROW(
+      SEG('ปฏิบัติงานในหน่วยบริการ',workDur.y!==''?workDur.y:'',T.s1)+
+      SEG('ปี',workDur.m!==''?workDur.m:'',T.s2-T.s1)+
+      TXT('เดือน  (นับถึงสิ้นเดือนที่เบิกจ่าย)')
+    ,0,0);
+
+  /* ---- โดยมีรายละเอียด ---- */
+  H+=ROW(TXT('โดยมีรายละเอียดการปฏิบัติงาน ดังนี้ ( เฉพาะสายแพทย์ตอบข้อ 1 ด้วย )'),SP.p120,0);
+
+  /* ---- ข้อ 1 ฝึกเพิ่มพูนทักษะ (จุดไข่ปลาจำนวนเท่าต้นแบบ) ---- */
+  if(!dm){
+    H+=ROW(TXT('1. ฝึกเพิ่มพูนทักษะ (ปีที่ 1) รวมระยะเวลาการปฏิบัติงาน.........................ปี.........................เดือนดังนี้'),SP.p120,0);
+    H+=ROW(TXT('รพศ./รพท...........................................จังหวัด...........................ตั้งแต่..............................ถึง..........................'),0,T.tab1);
+    H+=ROW(TXT('รพช./..................................................จังหวัด...........................ตั้งแต่...............................ถึง..........................'),0,T.tab1);
+  }else{
+    H+=ROW(TXT('1. ฝึกเพิ่มพูนทักษะ (ปีที่ 1) รวมระยะเวลาการปฏิบัติงาน')+
+           '<span class="fld" style="flex:1 1 0">'+esc(data.train_y)+'</span>'+TXT('ปี')+
+           '<span class="fld" style="flex:1 1 0">'+esc(data.train_m)+'</span>'+TXT('เดือนดังนี้'),SP.p120,0);
+    H+=ROW('<span class="seg" style="flex:35 1 0">'+TXT('รพศ./รพท.')+'<span class="fld">'+esc(data.train_hosp1_name)+'</span></span>'+
+           '<span class="seg" style="flex:27 1 0">'+TXT('จังหวัด')+'<span class="fld">'+esc(data.train_hosp1_prov)+'</span></span>'+
+           '<span class="seg" style="flex:30 1 0">'+TXT('ตั้งแต่')+'<span class="fld">'+esc(formatThaiDate(data.train_hosp1_start))+'</span></span>'+
+           '<span class="seg" style="flex:26 1 0">'+TXT('ถึง')+'<span class="fld">'+esc(formatThaiDate(data.train_hosp1_end))+'</span></span>',0,T.tab1);
+    H+=ROW('<span class="seg" style="flex:35 1 0">'+TXT('รพช./')+'<span class="fld">'+esc(data.train_hosp2_name)+'</span></span>'+
+           '<span class="seg" style="flex:27 1 0">'+TXT('จังหวัด')+'<span class="fld">'+esc(data.train_hosp2_prov)+'</span></span>'+
+           '<span class="seg" style="flex:30 1 0">'+TXT('ตั้งแต่')+'<span class="fld">'+esc(formatThaiDate(data.train_hosp2_start))+'</span></span>'+
+           '<span class="seg" style="flex:26 1 0">'+TXT('ถึง')+'<span class="fld">'+esc(formatThaiDate(data.train_hosp2_end))+'</span></span>',0,T.tab1);
   }
 
-  const bottomRight=
-    '<div style="text-align:center">เรียน&nbsp; ผู้อำนวยการโรงพยาบาลสวี</div>'+
-    '<div style="margin-top:.2em">ได้ตรวจสอบ / วันปฏิบัติงานแล้ว</div>'+
-    '<div style="margin-top:.1em;white-space:nowrap">(&nbsp;&nbsp;&nbsp;) ครบ 15 วันทำการ&nbsp;&nbsp;(&nbsp;&nbsp;&nbsp;) ไม่ครบ 15 วันทำการ</div>'+
-    '<div style="margin-top:.8em">(ลงชื่อ)<span class="dots-fixed" style="width:160px"></span></div>'+
-    '<div style="margin-top:.25em">( <b>'+CHECKER_NAME+'</b> )</div>'+
-    '<div style="margin-top:.15em">ตำแหน่ง <b>'+CHECKER_TITLE+'</b></div>';
+  /* ---- ข้อ 2 - 5 : 4 ช่องตามต้นแบบ ---- */
+  for(let i=0;i<4;i++){
+    const h=hospitals[i]||{};
+    const has=!!h.name;
+    H+=ROW(
+        SEG((i+2)+'. ปฏิบัติงานที่โรงพยาบาล',h.name,T.h1)+
+        SEG('จังหวัด',h.prov,T.h2-T.h1)+
+        SEG('จัดระดับ',h.level,null)
+      ,(i===0?SP.p120:4),0);
+    H+=ROW(
+        SEG('ตั้งแต่วันที่',h.start,T.d1-T.dIndent)+
+        SEG('ถึงวันที่',h.end,T.d2-T.d1)+
+        SEG('รวม',has?h.y:'',T.d3-T.d2)+
+        SEG('ปี',has?h.m:'',T.d4-T.d3)+
+        SEG('เดือน',(has&&frac)?h.d:'',T.d5-T.d4)+
+        TXT('วัน')
+      ,0,T.dIndent);
+  }
 
-  const bottomLeft=isLookjang?
-    ('<div>ตรวจสอบแล้วถูกต้อง</div>'+
-     '<div style="margin-top:.8em">(ลงชื่อ)<span class="dots-fixed" style="width:140px"></span></div>'+
-     '<div style="margin-top:.25em">(<span class="dots-fixed" style="width:130px"></span>)</div>'+
-     '<div style="margin-top:.15em">ตำแหน่ง<span class="dots-fixed" style="width:120px"></span></div>'+
-     '<div style="margin-top:.15em">หัวหน้าฝ่าย / หัวหน้างาน</div>')
-    :'';
+  /* ---- รวมทั้งสิ้น (ตัวหนาทั้งบรรทัด) ---- */
+  H+=ROW(
+      SEG('รวมทั้งสิ้น',totalDur.y!==''?totalDur.y:'',T.s1-T.s0,true)+
+      SEG('ปี',totalDur.m!==''?totalDur.m:'',T.s2-T.s1,true)+
+      SEG('เดือน',frac?totalDur.d:'',T.s3-T.s2,true)+
+      TXT('วัน',true)
+    ,SP.p240,T.s0);
 
-  return ''+
-  '<div class="p-title">ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่ายสำหรับเจ้าหน้าที่</div>'+
-  '<div class="p-title">ที่ปฏิบัติงานในหน่วยบริการสังกัดกระทรวงสาธารณสุข</div>'+
+  /* ---- ได้รับเงินจำนวน ---- */
+  H+=ROW(
+      SEG('ได้รับเงินจำนวน',moneyFmt,T.m1-T.s0,true)+
+      SEG('บาท (',moneyTxt,T.m2-T.m1,true)+
+      TXT(')',true)
+    ,SP.p120,T.s0);
 
-  '<div class="right-block" style="margin-top:.7em">'+
-    '<div class="fl"><span class="lb">หน่วยบริการ</span>'+D('4px')+V(curHosp||'โรงพยาบาลสวี')+D()+'</div>'+
-    '<div class="fl"><span class="lb">ประจำเดือน</span>'+D('4px')+V(S.currentMonthYear)+D()+'</div>'+
-  '</div>'+
+  /* ---- คำรับรอง (ย่อหน้า 2.5 cm) ---- */
+  H+='<div style="margin-top:'+SP.p240+'px;text-indent:'+T.ti+'px;line-height:1.28">'+
+     'ข้าพเจ้าขอรับรองว่า ข้อมูลดังกล่าวเป็นความจริงทุกประการ และหากมีการเรียกเงินคืน  ข้าพเจ้า</div>';
+  H+='<div style="line-height:1.28">ขอรับผิดชอบคืนเงินแต่เพียงผู้เดียว</div>';
 
-  '<div class="fl mt">'+
-    '<span class="lb">ข้าพเจ้า ชื่อ</span>'+D('3px')+V(data.name)+D()+
-    '<span class="lb">นามสกุล</span>'+D('3px')+V(data.surname)+D()+
-    '<span class="lb">ตำแหน่ง</span>'+D('3px')+V(data.job)+D('3px')+
-  '</div>'+
-  '<div class="fl">'+
-    '<span class="lb">ปัจจุบันปฏิบัติงานที่</span>'+D('3px')+V(curHosp||'โรงพยาบาลสวี')+D()+
-    '<span class="lb">จังหวัด</span>'+D('3px')+V(data.province1||'ชุมพร')+D()+
-    '<span class="lb">ระดับ/กลุ่ม</span>'+D('3px')+V(data.level1)+D('3px')+
-  '</div>'+
-  '<div class="fl">'+
-    '<span class="lb">ปฏิบัติงานในหน่วยบริการ</span>'+D('3px')+V(workDur.y!==''?String(workDur.y):'','24px')+D('3px')+
-    '<span class="lb">ปี</span>'+D('3px')+V(workDur.m!==''?String(workDur.m):'','24px')+D('3px')+
-    '<span class="lb">เดือน (นับถึงสิ้นเดือนที่เบิกจ่าย)</span>'+
-  '</div>'+
+  /* ---- ลายเซ็นผู้ขอ (tab 7.75 cm) ---- */
+  H+='<div style="height:'+(SP.p240+26)+'px"></div>';
+  H+=ROW(TXT('(  ')+FIXW(fullName,170)+TXT('  )'),0,T.sigName);
+  H+=ROW(SEG('ตำแหน่ง',data.job,T.sigEnd-T.sigTitle),4,T.sigTitle);
 
-  '<div class="fl mt"><span class="lb">โดยมีรายละเอียดการปฏิบัติงาน ดังนี้ ( เฉพาะสายแพทย์ตอบข้อ 1 ด้วย )</span></div>'+
+  /* ---- ท้ายกระดาษ ---- */
+  let bot='';
+  bot+=ROW(TXT('เรียน  ผู้อำนวยการโรงพยาบาลสวี'),SP.p240,T.botBlk);
+  bot+=ROW(TXT('ได้ตรวจสอบ / วันปฏิบัติงานแล้ว'),SP.p120,T.botIn);
+  bot+=ROW(TXT('(   ) ครบ 15 วันทำการ  (   ) ไม่ครบ 15 วันทำการ'),0,T.botBlk);
+  bot+=ROW(TXT('(ลงชื่อ).....................................................'),SP.p240,T.botIn);
+  bot+=ROW(TXT('(')+(FILL_CHECKER?FIXW(CHECKER_NAME,150):TXT('                                    '))+TXT(')'),SP.p120,T.botIn+34);
+  bot+=ROW(TXT('ตำแหน่ง '+(FILL_CHECKER?'':'………………………………………….')),SP.p120,T.botIn)+
+       (FILL_CHECKER?ROW(FIXW(CHECKER_TITLE,200),0,T.botIn+52):'');
 
-  '<div class="fl mt">'+
-    '<span class="lb">1. ฝึกเพิ่มพูนทักษะ (ปีที่ 1) รวมระยะเวลาการปฏิบัติงาน</span>'+D('3px')+V(dm?data.train_y:'','24px')+D('3px')+
-    '<span class="lb">ปี</span>'+D('3px')+V(dm?data.train_m:'','24px')+D('3px')+
-    '<span class="lb">เดือน ดังนี้</span>'+
-  '</div>'+
-  '<div class="fl" style="padding-left:8mm">'+
-    '<span class="lb">รพศ./รพท.</span>'+D('3px')+V(dm?data.train_hosp1_name:'','40px')+D()+
-    '<span class="lb">จังหวัด</span>'+D('3px')+V(dm?data.train_hosp1_prov:'','36px')+D()+
-    '<span class="lb">ตั้งแต่</span>'+D('3px')+V(dm?formatThaiDate(data.train_hosp1_start):'','50px')+D()+
-    '<span class="lb">ถึง</span>'+D('3px')+V(dm?formatThaiDate(data.train_hosp1_end):'','50px')+D('3px')+
-  '</div>'+
-  '<div class="fl" style="padding-left:8mm">'+
-    '<span class="lb">รพช./</span>'+D('3px')+V(dm?data.train_hosp2_name:'','40px')+D()+
-    '<span class="lb">จังหวัด</span>'+D('3px')+V(dm?data.train_hosp2_prov:'','36px')+D()+
-    '<span class="lb">ตั้งแต่</span>'+D('3px')+V(dm?formatThaiDate(data.train_hosp2_start):'','50px')+D()+
-    '<span class="lb">ถึง</span>'+D('3px')+V(dm?formatThaiDate(data.train_hosp2_end):'','50px')+D('3px')+
-  '</div>'+
-
-  hospHtml+
-
-  '<div class="fl mt" style="padding-left:12mm">'+
-    '<span class="lb"><b>รวมทั้งสิ้น</b></span>'+D('4px')+V(totalDur.y!==''?String(totalDur.y):'','26px')+D('4px')+
-    '<span class="lb"><b>ปี</b></span>'+D('4px')+V(totalDur.m!==''?String(totalDur.m):'','26px')+D('4px')+
-    '<span class="lb"><b>เดือน</b></span>'+D('4px')+V(showFrac&&totalDur.d!==''?String(totalDur.d):'-','26px')+D('4px')+
-    '<span class="lb"><b>วัน</b></span>'+
-  '</div>'+
-  '<div class="fl" style="padding-left:12mm">'+
-    '<span class="lb"><b>ได้รับเงินจำนวน</b></span>'+D('4px')+V(moneyFmt,'50px')+D('4px')+
-    '<span class="lb"><b>บาท&nbsp;(</b></span>'+D('4px')+V(moneyTxt,'90px')+D('4px')+
-    '<span class="lb"><b>)</b></span>'+
-  '</div>'+
-
-  '<div style="margin-top:.6em;text-indent:2.5cm;line-height:1.35">ข้าพเจ้าขอรับรองว่า ข้อมูลดังกล่าวเป็นความจริงทุกประการ และหากมีการเรียกเงินคืน ข้าพเจ้า</div>'+
-  '<div style="line-height:1.35">ขอรับผิดชอบคืนเงินแต่เพียงผู้เดียว</div>'+
-
-  '<div class="sign-center">'+
-    '<div>(ลงชื่อ)<span class="dots-fixed" style="width:170px"></span></div>'+
-    '<div style="margin-top:.3em">( <span class="vl" style="min-width:150px">'+(fullName||'&nbsp;')+'</span> )</div>'+
-    '<div style="margin-top:.2em">ตำแหน่ง <span class="vl" style="min-width:140px">'+(data.job||'&nbsp;')+'</span></div>'+
-  '</div>'+
-
-  '<div class="bottom-wrap">'+
-    '<div class="bottom-col">'+bottomLeft+'</div>'+
-    '<div class="bottom-col">'+bottomRight+'</div>'+
-  '</div>';
+  if(isLJ){
+    /* ลูกจ้าง : เพิ่มบล็อกหัวหน้างานด้านซ้าย */
+    let left='';
+    left+=ROW(TXT('ตรวจสอบแล้วถูกต้อง'),SP.p240,0);
+    left+=ROW(TXT('(ลงชื่อ)...................................'),SP.p240,0);
+    left+=ROW(TXT('(..............................)'),SP.p120,18);
+    left+=ROW(TXT('ตำแหน่ง .................................'),SP.p120,0);
+    left+=ROW(TXT('หัวหน้าฝ่าย / หัวหน้างาน'),SP.p120,34);
+    H+='<div style="display:flex"><div style="flex:0 0 '+T.botBlk+'px">'+left+'</div><div style="flex:1 1 0">'+
+       bot.replace(new RegExp('padding-left:'+T.botBlk+'px','g'),'padding-left:0px')
+          .replace(new RegExp('padding-left:'+T.botIn+'px','g'),'padding-left:32px')
+          .replace(new RegExp('padding-left:'+(T.botIn+34)+'px','g'),'padding-left:66px')+
+       '</div></div>';
+  }else{
+    H+=bot;
+  }
+  return H;
 }
 
 function renderPage2(data){
@@ -1120,54 +1158,47 @@ function renderPage2(data){
   function consolidate(type){
     const es=cur.filter(l=>l.type_of_leave===type);
     if(!es.length)return{text:'-',count:0};
-    let total=0;const tokens=[];
+    let total=0;const tk=[];
     const full=[];es.filter(e=>!e.half).forEach(e=>full.push(...e.days));
     const uf=[...new Set(full)].sort((a,b)=>a-b);
-    uf.forEach(d=>tokens.push({sort:d,label:String(d)}));
-    total+=uf.length;
-    es.filter(e=>e.half).forEach(e=>{
-      const d=e.days[0];
-      tokens.push({sort:d+0.5,label:e.period?d+'('+e.period+')':String(d)});
-      total+=0.5;
-    });
-    if(!tokens.length)return{text:'-',count:0};
-    tokens.sort((a,b)=>a.sort-b.sort);
-    const joined=tokens.map(t=>t.label).join(', ');
-    return{text:info?joined+' '+info.monthAbbr+' '+info.yearShort:joined,count:total};
+    uf.forEach(d=>tk.push({s:d,l:String(d)}));total+=uf.length;
+    es.filter(e=>e.half).forEach(e=>{const d=e.days[0];tk.push({s:d+0.5,l:e.period?d+' ('+e.period+')':String(d)});total+=0.5;});
+    if(!tk.length)return{text:'-',count:0};
+    tk.sort((a,b)=>a.s-b.s);
+    const j=tk.map(x=>x.l).join(', ');
+    return{text:info?j+' '+info.monthAbbr+' '+info.yearShort:j,count:total};
   }
   const sick=consolidate('ลาป่วย'),per=consolidate('ลากิจ'),vac=consolidate('ลาพักผ่อน');
   const none=sick.text==='-'&&per.text==='-'&&vac.text==='-';
-  const total=sick.count+per.count+vac.count;
-  const totalStr=none?'-':((total%1!==0?total.toFixed(1):total)+' วัน');
+  const tot=sick.count+per.count+vac.count;
+  const totStr=none?'-':((tot%1!==0?tot.toFixed(1):tot)+' วัน');
 
   let rows='<tr><td>'+(S.currentMonthYear||'')+'</td>'+
     '<td style="font-weight:bold">'+sick.text+'</td>'+
     '<td style="font-weight:bold">'+per.text+'</td>'+
     '<td style="font-weight:bold">'+vac.text+'</td>'+
-    '<td style="font-weight:bold">'+totalStr+'</td></tr>';
-  for(let i=0;i<6;i++)rows+='<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>';
+    '<td style="font-weight:bold">'+totStr+'</td></tr>';
+  for(let i=0;i<5;i++)rows+='<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>';
 
-  const fullName=((data.name||'')+' '+(data.surname||'')).trim();
-  return ''+
-  '<div class="p2-title">สรุปวันลา</div>'+
-  '<div class="p2-subtitle">ชื่อ - สกุล&nbsp;&nbsp;<span class="vl" style="min-width:240px">'+(fullName||'&nbsp;')+'</span></div>'+
-  '<table class="leave-tbl"><thead><tr>'+
-    '<th style="width:18%">ประจำเดือน</th>'+
-    '<th style="width:21%">วัน/เดือน/ปี<br>ลาป่วย</th>'+
-    '<th style="width:21%">วัน/เดือน/ปี<br>ลากิจ</th>'+
-    '<th style="width:21%">วัน/เดือน/ปี<br>ลาพักผ่อน</th>'+
-    '<th style="width:19%">รวม</th>'+
-  '</tr></thead><tbody>'+rows+'</tbody></table>'+
-  '<div class="p2-sign">ตรวจสอบแล้วถูกต้อง</div>'+
-  '<div class="p2-sign-area">'+
-    '<div>(ลงชื่อ)<span class="dots-line"></span></div>'+
-    '<div style="margin-top:.3em;padding-left:30px">( <b>'+CHECKER_NAME+'</b> )</div>'+
-    '<div style="margin-top:.15em;padding-left:18px">ตำแหน่ง <b>'+CHECKER_TITLE+'</b></div>'+
-  '</div>';
+  const fullName=((data.name||'')+'  '+(data.surname||'')).trim();
+  let H='';
+  H+='<div style="margin-top:'+SP.p720+'px;text-align:center;font-weight:bold;font-size:26.667px;line-height:1.2">สรุปวันลา</div>';
+  H+='<div style="margin-top:'+SP.p480+'px;text-align:center;font-weight:bold">ชื่อ - สกุล&nbsp;&nbsp;'+esc(fullName)+'</div>';
+  H+='<table class="lvtbl" style="margin-top:'+SP.p240+'px"><thead><tr>'+
+     '<th style="width:20%">ประจำเดือน</th>'+
+     '<th style="width:20%">วัน/เดือน/ปี<br>ลาป่วย</th>'+
+     '<th style="width:20%">วัน/เดือน/ปี<br>ลากิจ</th>'+
+     '<th style="width:20%">วัน/เดือน/ปี<br>ลาพักผ่อน</th>'+
+     '<th style="width:20%">รวม</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  H+='<div style="margin-top:'+SP.p960+'px;text-align:center;font-weight:bold">ตรวจสอบแล้วถูกต้อง</div>';
+  H+=ROW(TXT('(ลงชื่อ)......................................................'),SP.p240,384);
+  H+=ROW(FILL_CHECKER?(TXT('( ')+FIXW(CHECKER_NAME,160)+TXT(' )')):TXT('(................................................)'),SP.p120,412);
+  H+=ROW(FILL_CHECKER?(TXT('ตำแหน่ง ')+FIXW(CHECKER_TITLE,200)):TXT('ตำแหน่ง....................................................'),SP.p120,384);
+  return H;
 }
 
 // ================================================================
-//  PRINT
+//  PRINT / PDF
 // ================================================================
 function markPrinted(){
   if(!S.activeProfileId||!S.currentMonthYear)return;
@@ -1178,13 +1209,9 @@ function markPrinted(){
   if(ex)ex.timestamp=ts;else S.printHistory.push({profile_id:S.activeProfileId,month_year:S.currentMonthYear,timestamp:ts});
   renderMonthGrid();
   if(S.mode!=='ghost')scheduleSave();
-  return ts;
 }
 function doPrint(){markPrinted();window.print();}
 
-// ================================================================
-//  PDF — เรนเดอร์ทีละหน้า แล้ววางเต็ม A4 (คมชัด ไม่ตัดกลางบรรทัด)
-// ================================================================
 async function renderPdf(quality){
   await preloadTHFont();
   await document.fonts.ready;
@@ -1197,18 +1224,16 @@ async function renderPdf(quality){
     for(let i=0;i<pages.length;i++){
       const el=pages[i];
       const canvas=await html2canvas(el,{
-        scale:3,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',
-        logging:false,width:el.offsetWidth,height:el.offsetHeight,
+        scale:3,useCORS:true,backgroundColor:'#ffffff',logging:false,
+        width:el.offsetWidth,height:el.offsetHeight,
         windowWidth:el.offsetWidth,windowHeight:el.offsetHeight
       });
-      const img=canvas.toDataURL('image/jpeg',quality||0.94);
       if(i>0)pdf.addPage();
-      pdf.addImage(img,'JPEG',0,0,210,297,undefined,'FAST');
+      pdf.addImage(canvas.toDataURL('image/jpeg',quality||0.94),'JPEG',0,0,210,297,undefined,'FAST');
     }
     return pdf;
   }finally{area.classList.remove('pdf-export-mode');}
 }
-
 async function doSavePDF(){
   try{
     flashSave('กำลังสร้าง PDF...','#059669');
@@ -1218,7 +1243,6 @@ async function doSavePDF(){
     flashSave('ดาวน์โหลดแล้ว','#059669');
   }catch(e){showAlert('สร้าง PDF ล้มเหลว: '+e.message);}
 }
-
 async function doSendEmail(){
   if(S.mode!=='cloud')return showAlert('ฟีเจอร์นี้สำหรับผู้ที่ลงทะเบียน (โหมดไปทุกที่) เท่านั้น');
   showConfirm('ส่ง PDF ไปที่ '+S.email+' ?',async()=>{
@@ -1239,7 +1263,7 @@ async function doSendEmail(){
 }
 
 // ================================================================
-//  FONT PRELOAD (blob URL เพื่อให้ html2canvas ใช้ได้ ไม่ติด CORS)
+//  FONT PRELOAD — TH Sarabun New (blob URL กัน CORS ตอน html2canvas)
 // ================================================================
 const FONT_BASE='https://raw.githubusercontent.com/sawee-hosp/sawee-vmi/main/font/';
 let _fontsReady=false;
@@ -1257,7 +1281,6 @@ async function preloadTHFont(){
   }catch(e){console.warn('font preload',e);}
   _fontsReady=true;
 }
-
 window.addEventListener('DOMContentLoaded',()=>{preloadTHFont();});
 </script>
 </body>
