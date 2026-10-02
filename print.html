@@ -15,7 +15,7 @@
       src: url("https://raw.githubusercontent.com/sawee-hosp/sawee-hosp/refs/heads/main/fonts/THSarabunNew.ttf") format("truetype");
       font-style: normal;
       font-weight: 400;
-      font-display: block;
+      font-display: swap;
     }
 
     @font-face {
@@ -23,17 +23,12 @@
       src: url("https://raw.githubusercontent.com/sawee-hosp/sawee-hosp/refs/heads/main/fonts/THSarabunNew-Bold.ttf") format("truetype");
       font-style: normal;
       font-weight: 700;
-      font-display: block;
-    }
-
-    @page {
-      size: A4 portrait;
-      margin: 0;
+      font-display: swap;
     }
 
     :root {
-      --toolbar-height: 56px;
-      --sidebar-width: 320px;
+      --toolbar-height: 58px;
+      --sidebar-width: 340px;
       --background: #4c5056;
       --panel: #20242a;
       --panel-secondary: #2b3037;
@@ -41,6 +36,7 @@
       --primary: #1976d2;
       --danger: #c62828;
       --success: #2e7d32;
+      --warning: #f9a825;
       --field: #ff1744;
       --selection: #00a8ff;
     }
@@ -50,32 +46,21 @@
     }
 
     html,
-    body,
-    button,
-    input,
-    select,
-    textarea {
-      font-family: "THSarabunNew";
-    }
-
-    html,
     body {
       min-width: 100%;
       min-height: 100%;
       margin: 0;
       background: var(--background);
       color: #fff;
+      font-family: "THSarabunNew", sans-serif;
       font-size: 18px;
-    }
-
-    body.font-loading .app {
-      visibility: hidden;
     }
 
     button,
     input,
     select,
     textarea {
+      font: inherit;
       font-size: 17px;
     }
 
@@ -89,8 +74,13 @@
       cursor: pointer;
     }
 
-    button:hover {
+    button:hover:not(:disabled) {
       filter: brightness(0.94);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
     }
 
     button.primary {
@@ -109,6 +99,12 @@
       border-color: var(--success);
       background: var(--success);
       color: #fff;
+    }
+
+    button.warning {
+      border-color: var(--warning);
+      background: var(--warning);
+      color: #111;
     }
 
     button.active {
@@ -142,24 +138,8 @@
       display: none;
     }
 
-    .fatal-error {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 999999;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
-      background: #fff;
-      color: #a00000;
-      font-family: "THSarabunNew";
-      font-size: 28px;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    .fatal-error.show {
-      display: flex;
+    textarea {
+      resize: vertical;
     }
 
     .toolbar {
@@ -180,6 +160,7 @@
     }
 
     .toolbar-separator {
+      flex: 0 0 1px;
       width: 1px;
       height: 32px;
       margin: 0 3px;
@@ -190,8 +171,9 @@
       color: #ddd;
     }
 
-    .zoom-select {
-      width: 92px;
+    .zoom-select,
+    .draw-type-select {
+      width: 105px;
     }
 
     .status {
@@ -262,10 +244,18 @@
       flex: 1;
     }
 
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #ddd;
+    }
+
     .coordinate-output {
+      max-height: 330px;
       margin: 0;
       padding: 8px;
-      overflow-x: auto;
+      overflow: auto;
       border: 1px solid #555d67;
       border-radius: 3px;
       background: #111419;
@@ -279,18 +269,18 @@
     .hint {
       color: #b9c2cc;
       font-size: 15px;
-      line-height: 1.3;
+      line-height: 1.35;
     }
 
     .workspace {
       min-height: 100vh;
       margin-left: var(--sidebar-width);
-      padding: calc(var(--toolbar-height) + 22px) 24px 50px;
+      padding: calc(var(--toolbar-height) + 26px) 24px 50px;
       overflow: auto;
     }
 
     .empty-state {
-      max-width: 620px;
+      max-width: 650px;
       margin: 100px auto;
       padding: 35px;
       border-radius: 7px;
@@ -304,7 +294,7 @@
     .page-container {
       position: relative;
       width: max-content;
-      margin: 0 auto 28px;
+      margin: 0 auto 34px;
       background: #fff;
       box-shadow: 0 5px 22px rgb(0 0 0 / 50%);
       user-select: none;
@@ -312,10 +302,11 @@
 
     .page-header {
       position: absolute;
-      top: -22px;
+      top: -24px;
       left: 0;
       color: #fff;
       font-size: 15px;
+      white-space: nowrap;
     }
 
     .pdf-canvas {
@@ -330,12 +321,8 @@
       position: absolute;
       inset: 0;
       z-index: 2;
-      cursor: crosshair;
       overflow: hidden;
-    }
-
-    .overlay-layer.locked {
-      cursor: default;
+      cursor: crosshair;
     }
 
     .measurement-box {
@@ -348,36 +335,45 @@
       cursor: move;
     }
 
-    .measurement-box:hover {
-      background: rgb(255 23 68 / 11%);
-    }
-
     .measurement-box.selected {
-      z-index: 10;
-      border: 2px solid var(--selection);
-      background: rgb(0 168 255 / 10%);
+      z-index: 20;
+      border: 2px solid var(--selection) !important;
       box-shadow: 0 0 0 1px #fff;
     }
 
-    .measurement-box.hide-frame {
-      border-color: transparent;
-      background: transparent;
-      box-shadow: none;
+    .measurement-box.type-text {
+      border-color: #ff1744;
+      background: rgb(255 23 68 / 6%);
     }
 
-    .measurement-box .field-label {
+    .measurement-box.type-redaction {
+      border-color: #111;
+      background: #000;
+    }
+
+    .measurement-box.type-highlight {
+      border-color: #f9a825;
+      background: rgb(255 235 59 / 42%);
+    }
+
+    .measurement-box.type-measurement {
+      border: 2px dashed #00bcd4;
+      background: rgb(0 229 255 / 8%);
+    }
+
+    .field-label {
       position: absolute;
-      top: -18px;
+      top: -19px;
       left: -1px;
-      max-width: 200px;
-      padding: 0 4px;
+      z-index: 5;
+      max-width: 260px;
+      padding: 0 5px;
       overflow: hidden;
       border-radius: 2px 2px 0 0;
       background: var(--field);
       color: #fff;
-      font-family: "THSarabunNew";
       font-size: 13px;
-      line-height: 17px;
+      line-height: 18px;
       text-overflow: ellipsis;
       white-space: nowrap;
       pointer-events: none;
@@ -385,10 +381,6 @@
 
     .measurement-box.selected .field-label {
       background: var(--selection);
-    }
-
-    .measurement-box.hide-frame .field-label {
-      display: none;
     }
 
     .field-content {
@@ -405,9 +397,7 @@
       outline: 0;
       background: transparent;
       color: #000;
-      font-family: "THSarabunNew";
-      font-size: 16pt;
-      font-weight: 400;
+      font-family: "THSarabunNew", sans-serif;
       line-height: 1;
       white-space: pre-wrap;
       user-select: text;
@@ -429,23 +419,45 @@
     }
 
     .field-content[contenteditable="true"]:focus {
-      background: rgb(255 255 180 / 45%);
+      background: rgb(255 255 180 / 55%);
+    }
+
+    .type-redaction .field-content,
+    .type-highlight .field-content,
+    .type-measurement .field-content {
+      display: none;
+    }
+
+    .measurement-caption {
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      z-index: 3;
+      display: none;
+      color: #006064;
+      font-family: monospace;
+      font-size: 11px;
+      line-height: 1.25;
+      pointer-events: none;
+    }
+
+    .type-measurement .measurement-caption {
+      display: block;
     }
 
     .resize-handle {
       position: absolute;
-      right: -5px;
-      bottom: -5px;
-      z-index: 20;
-      width: 10px;
-      height: 10px;
+      right: -6px;
+      bottom: -6px;
+      z-index: 30;
+      width: 12px;
+      height: 12px;
       border: 1px solid #fff;
       background: var(--selection);
       cursor: nwse-resize;
     }
 
-    .measurement-box:not(.selected) .resize-handle,
-    .measurement-box.hide-frame .resize-handle {
+    .measurement-box:not(.selected) .resize-handle {
       display: none;
     }
 
@@ -483,6 +495,14 @@
       display: block;
     }
 
+    .inspect-marker {
+      position: absolute;
+      z-index: 150;
+      border: 2px solid #00c853;
+      background: rgb(0 200 83 / 15%);
+      pointer-events: none;
+    }
+
     body.hide-all-frames .measurement-box {
       border-color: transparent !important;
       background: transparent !important;
@@ -491,13 +511,18 @@
 
     body.hide-all-frames .field-label,
     body.hide-all-frames .resize-handle,
+    body.hide-all-frames .measurement-caption,
     body.hide-all-frames .crosshair-x,
     body.hide-all-frames .crosshair-y {
       display: none !important;
     }
 
-    body.overlay-locked .measurement-box {
-      cursor: default;
+    body.hide-all-frames .type-redaction {
+      background: #000 !important;
+    }
+
+    body.hide-all-frames .type-highlight {
+      background: rgb(255 235 59 / 42%) !important;
     }
 
     .drop-active::after {
@@ -515,326 +540,273 @@
       font-weight: 700;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 960px) {
       :root {
-        --sidebar-width: 270px;
+        --sidebar-width: 285px;
       }
 
       .status {
         display: none;
       }
-    }
 
-    @media print {
-      html,
-      body {
-        margin: 0 !important;
-        padding: 0 !important;
-        background: #fff !important;
-      }
-
-      .toolbar,
-      .sidebar,
-      .empty-state,
-      .page-header,
-      .fatal-error {
-        display: none !important;
-      }
-
-      .workspace {
-        width: auto !important;
-        min-height: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow: visible !important;
-      }
-
-      .page-container {
-        margin: 0 !important;
-        box-shadow: none !important;
-        break-after: page;
-        page-break-after: always;
-      }
-
-      .page-container:last-child {
-        break-after: auto;
-        page-break-after: auto;
-      }
-
-      .measurement-box {
-        border-color: transparent !important;
-        background: transparent !important;
-        box-shadow: none !important;
-      }
-
-      .field-label,
-      .resize-handle,
-      .crosshair-x,
-      .crosshair-y {
-        display: none !important;
-      }
-
-      .field-content {
-        caret-color: transparent;
+      .control-row-4 {
+        grid-template-columns: 1fr 1fr;
       }
     }
   </style>
 </head>
 
-<body class="font-loading">
-  <div id="fatalError" class="fatal-error"></div>
+<body>
+  <header class="toolbar">
+    <button id="selectPdfButton" type="button">
+      เลือกไฟล์ PDF
+    </button>
 
-  <div class="app">
-    <header class="toolbar">
-      <label for="pdfFileInput">
-        <span class="button-like">
-          <button id="selectPdfButton" type="button">เลือกไฟล์ PDF</button>
-        </span>
-      </label>
+    <input
+      id="pdfFileInput"
+      type="file"
+      accept="application/pdf,.pdf"
+    >
 
-      <input
-        id="pdfFileInput"
-        type="file"
-        accept="application/pdf,.pdf"
-      >
+    <button id="loadDefaultButton" type="button">
+      โหลด original.pdf
+    </button>
 
-      <button id="loadDefaultButton" type="button">
-        โหลด original.pdf
-      </button>
+    <span class="toolbar-separator"></span>
 
-      <span class="toolbar-separator"></span>
+    <select id="drawTypeSelect" class="draw-type-select">
+      <option value="text">ข้อความ</option>
+      <option value="redaction">คลุมดำ</option>
+      <option value="highlight">ไฮไลต์</option>
+      <option value="measurement">วัดตำแหน่ง</option>
+    </select>
 
-      <button id="drawModeButton" class="primary active" type="button">
-        โหมดวาดกรอบ
-      </button>
+    <button id="drawModeButton" class="primary active" type="button">
+      วาดกรอบ
+    </button>
 
-      <button id="selectModeButton" type="button">
-        โหมดเลือก
-      </button>
+    <button id="selectModeButton" type="button">
+      เลือก/ย้าย
+    </button>
 
-      <button id="toggleFramesButton" type="button">
-        ซ่อนกรอบ
-      </button>
+    <button id="inspectModeButton" type="button">
+      ตรวจข้อความ
+    </button>
 
-      <button id="lockButton" type="button">
-        ล็อก Overlay
-      </button>
+    <button id="toggleFramesButton" type="button">
+      ซ่อนกรอบ
+    </button>
 
-      <span class="toolbar-separator"></span>
+    <button id="lockButton" type="button">
+      ล็อก Overlay
+    </button>
 
-      <span class="toolbar-label">Zoom</span>
+    <span class="toolbar-separator"></span>
 
-      <select id="zoomSelect" class="zoom-select">
-        <option value="0.75">75%</option>
-        <option value="1">100%</option>
-        <option value="1.25">125%</option>
-        <option value="1.5" selected>150%</option>
-        <option value="2">200%</option>
-        <option value="2.5">250%</option>
-      </select>
+    <span class="toolbar-label">Zoom</span>
 
-      <button id="printButton" type="button">
-        พิมพ์
-      </button>
+    <select id="zoomSelect" class="zoom-select">
+      <option value="0.75">75%</option>
+      <option value="1">100%</option>
+      <option value="1.25">125%</option>
+      <option value="1.5" selected>150%</option>
+      <option value="2">200%</option>
+      <option value="2.5">250%</option>
+    </select>
 
-      <span id="status" class="status">
-        กำลังโหลดระบบ
-      </span>
-    </header>
+    <button id="exportPdfButton" class="success" type="button">
+      Export PDF
+    </button>
 
-    <aside class="sidebar">
-      <section class="panel">
-        <h2 class="panel-title">ฟิลด์ที่เลือก</h2>
+    <span id="status" class="status">
+      กำลังโหลดระบบ
+    </span>
+  </header>
 
-        <div class="control">
-          <label for="fieldName">ชื่อฟิลด์</label>
-          <input
-            id="fieldName"
-            type="text"
-            placeholder="เช่น employeeName"
-            disabled
-          >
-        </div>
+  <aside class="sidebar">
+    <section class="panel">
+      <h2 class="panel-title">ฟิลด์ที่เลือก</h2>
 
-        <div class="control">
-          <label for="fieldText">ข้อความ</label>
-          <textarea
-            id="fieldText"
-            rows="2"
-            placeholder="ข้อความที่แสดงทับ PDF"
-            disabled
-          ></textarea>
-        </div>
-
-        <div class="control-row">
-          <div class="control">
-            <label for="fontSize">ขนาดตัวอักษร</label>
-            <input
-              id="fontSize"
-              type="number"
-              min="6"
-              max="96"
-              step="0.5"
-              value="16"
-              disabled
-            >
-          </div>
-
-          <div class="control">
-            <label for="fontWeight">น้ำหนัก</label>
-            <select id="fontWeight" disabled>
-              <option value="400">ปกติ</option>
-              <option value="700">ตัวหนา</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="control-row">
-          <div class="control">
-            <label for="textAlign">จัดข้อความ</label>
-            <select id="textAlign" disabled>
-              <option value="left">ซ้าย</option>
-              <option value="center">กลาง</option>
-              <option value="right">ขวา</option>
-            </select>
-          </div>
-
-          <div class="control">
-            <label for="textColor">สีข้อความ</label>
-            <input
-              id="textColor"
-              type="color"
-              value="#000000"
-              disabled
-            >
-          </div>
-        </div>
-      </section>
-
-      <section class="panel">
-        <h2 class="panel-title">ตำแหน่ง PDF Point</h2>
-
-        <div class="control-row-4">
-          <div class="control">
-            <label for="fieldX">X</label>
-            <input
-              id="fieldX"
-              type="number"
-              step="0.1"
-              disabled
-            >
-          </div>
-
-          <div class="control">
-            <label for="fieldY">Y บน</label>
-            <input
-              id="fieldY"
-              type="number"
-              step="0.1"
-              disabled
-            >
-          </div>
-
-          <div class="control">
-            <label for="fieldW">กว้าง</label>
-            <input
-              id="fieldW"
-              type="number"
-              step="0.1"
-              disabled
-            >
-          </div>
-
-          <div class="control">
-            <label for="fieldH">สูง</label>
-            <input
-              id="fieldH"
-              type="number"
-              step="0.1"
-              disabled
-            >
-          </div>
-        </div>
-
-        <div class="button-row">
-          <button id="applyGeometryButton" type="button" disabled>
-            ใช้ค่าพิกัด
-          </button>
-
-          <button
-            id="deleteFieldButton"
-            class="danger"
-            type="button"
-            disabled
-          >
-            ลบฟิลด์
-          </button>
-        </div>
-      </section>
-
-      <section class="panel">
-        <h2 class="panel-title">ผลการวัด</h2>
-        <pre id="coordinateOutput" class="coordinate-output">ยังไม่ได้เลือกฟิลด์</pre>
-      </section>
-
-      <section class="panel">
-        <h2 class="panel-title">นำเข้า/ส่งออก</h2>
-
-        <div class="button-row">
-          <button id="exportJsonButton" class="success" type="button">
-            Export JSON
-          </button>
-
-          <button id="copyJsonButton" type="button">
-            Copy JSON
-          </button>
-        </div>
-
-        <div class="button-row" style="margin-top: 6px;">
-          <button id="importJsonButton" type="button">
-            Import JSON
-          </button>
-
-          <button id="clearFieldsButton" class="danger" type="button">
-            ล้างทุกฟิลด์
-          </button>
-        </div>
-
-        <input
-          id="jsonFileInput"
-          type="file"
-          accept="application/json,.json"
-        >
-      </section>
-
-      <section class="panel">
-        <h2 class="panel-title">วิธีใช้งาน</h2>
-
-        <div class="hint">
-          1. เปิด PDF หรือกดโหลด original.pdf<br>
-          2. เลือกโหมดวาดกรอบ<br>
-          3. ลากเมาส์ครอบช่องใน PDF<br>
-          4. ตั้งชื่อและพิมพ์ข้อความ<br>
-          5. ใช้ปุ่มลูกศรเลื่อนกรอบครั้งละ 1 px<br>
-          6. กด Shift พร้อมลูกศรเพื่อเลื่อน 10 px<br>
-          7. Export JSON เมื่อวัดครบทุกช่อง
-        </div>
-      </section>
-    </aside>
-
-    <main id="workspace" class="workspace">
-      <div id="emptyState" class="empty-state">
-        กำลังโหลด <strong>original.pdf</strong><br>
-        หากโหลดไม่ได้ ให้กด “เลือกไฟล์ PDF”
+      <div class="control">
+        <label for="fieldType">ประเภท</label>
+        <select id="fieldType" disabled>
+          <option value="text">ข้อความ</option>
+          <option value="redaction">คลุมดำ</option>
+          <option value="highlight">ไฮไลต์</option>
+          <option value="measurement">วัดตำแหน่ง</option>
+        </select>
       </div>
 
-      <div id="pages"></div>
-    </main>
-  </div>
+      <div class="control">
+        <label for="fieldName">ชื่อฟิลด์</label>
+        <input id="fieldName" type="text" disabled>
+      </div>
+
+      <div class="control">
+        <label for="fieldText">ข้อความ Overlay</label>
+        <textarea id="fieldText" rows="2" disabled></textarea>
+      </div>
+
+      <div class="control-row">
+        <div class="control">
+          <label for="fontSize">ขนาดตัวอักษร (pt)</label>
+          <input
+            id="fontSize"
+            type="number"
+            min="6"
+            max="96"
+            step="0.5"
+            value="16"
+            disabled
+          >
+        </div>
+
+        <div class="control">
+          <label for="fontWeight">น้ำหนัก</label>
+          <select id="fontWeight" disabled>
+            <option value="400">ปกติ</option>
+            <option value="700">ตัวหนา</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="control-row">
+        <div class="control">
+          <label for="textAlign">จัดข้อความ</label>
+          <select id="textAlign" disabled>
+            <option value="left">ซ้าย</option>
+            <option value="center">กลาง</option>
+            <option value="right">ขวา</option>
+          </select>
+        </div>
+
+        <div class="control">
+          <label for="textColor">สีข้อความ</label>
+          <input
+            id="textColor"
+            type="color"
+            value="#000000"
+            disabled
+          >
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">ตำแหน่ง PDF Point</h2>
+
+      <div class="control-row-4">
+        <div class="control">
+          <label for="fieldX">X</label>
+          <input id="fieldX" type="number" step="0.1" disabled>
+        </div>
+
+        <div class="control">
+          <label for="fieldY">Y บน</label>
+          <input id="fieldY" type="number" step="0.1" disabled>
+        </div>
+
+        <div class="control">
+          <label for="fieldW">กว้าง</label>
+          <input id="fieldW" type="number" step="0.1" disabled>
+        </div>
+
+        <div class="control">
+          <label for="fieldH">สูง</label>
+          <input id="fieldH" type="number" step="0.1" disabled>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button id="applyGeometryButton" type="button" disabled>
+          ใช้ค่าพิกัด
+        </button>
+
+        <button
+          id="deleteFieldButton"
+          class="danger"
+          type="button"
+          disabled
+        >
+          ลบฟิลด์
+        </button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">ผลการวัด/ข้อความ PDF</h2>
+      <pre id="coordinateOutput" class="coordinate-output">ยังไม่ได้เลือกฟิลด์</pre>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">นำเข้า/ส่งออก</h2>
+
+      <div class="control">
+        <label class="check-row">
+          <input id="exportMeasurements" type="checkbox" checked>
+          วาดกรอบวัดตำแหน่งลงใน PDF
+        </label>
+      </div>
+
+      <div class="button-row">
+        <button id="exportJsonButton" class="success" type="button">
+          Export JSON
+        </button>
+
+        <button id="copyJsonButton" type="button">
+          Copy JSON
+        </button>
+      </div>
+
+      <div class="button-row" style="margin-top: 6px;">
+        <button id="importJsonButton" type="button">
+          Import JSON
+        </button>
+
+        <button id="clearFieldsButton" class="danger" type="button">
+          ล้างทุกฟิลด์
+        </button>
+      </div>
+
+      <input
+        id="jsonFileInput"
+        type="file"
+        accept="application/json,.json"
+      >
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">วิธีใช้งาน</h2>
+
+      <div class="hint">
+        1. เปิด PDF หรือโหลด original.pdf<br>
+        2. เลือกประเภทข้อความ/คลุมดำ/ไฮไลต์<br>
+        3. ใช้โหมดวาดกรอบแล้วลากบน PDF<br>
+        4. ระบบตรวจบรรทัดที่กรอบครอบให้อัตโนมัติ<br>
+        5. ใช้โหมดตรวจข้อความแล้วคลิกข้อความใน PDF<br>
+        6. ใช้โหมดเลือกเพื่อย้ายหรือปรับขนาดกรอบ<br>
+        7. ลูกศรเลื่อน 1 CSS px และ Shift+ลูกศรเลื่อน 10 px<br>
+        8. Export PDF จะสร้างเอกสารแบบ Flatten
+      </div>
+    </section>
+  </aside>
+
+  <main id="workspace" class="workspace">
+    <div id="emptyState" class="empty-state">
+      กำลังโหลด <strong>original.pdf</strong><br>
+      หากโหลดไม่ได้ ให้กด “เลือกไฟล์ PDF”
+    </div>
+
+    <div id="pages"></div>
+  </main>
 
   <script type="module">
     import * as pdfjsLib from
       "https://cdn.jsdelivr.net/npm/pdfjs-dist@6.3.289/build/pdf.mjs";
+
+    import {
+      PDFDocument
+    } from "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/+esm";
 
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       "https://cdn.jsdelivr.net/npm/pdfjs-dist@6.3.289/build/pdf.worker.mjs";
@@ -842,128 +814,86 @@
     const DEFAULT_PDF_URL = "./original.pdf";
     const MINIMUM_BOX_SIZE = 3;
 
+    const TYPES = [
+      "text",
+      "redaction",
+      "highlight",
+      "measurement"
+    ];
+
     const state = {
       pdf: null,
-      pdfSource: null,
       zoom: 1.5,
       pages: new Map(),
       fields: [],
       selectedId: null,
       mode: "draw",
+      drawType: "text",
       framesVisible: true,
       locked: false,
       drawing: null,
       moving: null,
-      resizing: null
+      resizing: null,
+      inspectedText: null
     };
+
+    const $ = (id) => document.getElementById(id);
 
     const elements = {
       body: document.body,
-      fatalError: document.getElementById("fatalError"),
-      workspace: document.getElementById("workspace"),
-      pages: document.getElementById("pages"),
-      emptyState: document.getElementById("emptyState"),
-      pdfFileInput: document.getElementById("pdfFileInput"),
-      selectPdfButton: document.getElementById("selectPdfButton"),
-      loadDefaultButton: document.getElementById("loadDefaultButton"),
-      drawModeButton: document.getElementById("drawModeButton"),
-      selectModeButton: document.getElementById("selectModeButton"),
-      toggleFramesButton: document.getElementById("toggleFramesButton"),
-      lockButton: document.getElementById("lockButton"),
-      zoomSelect: document.getElementById("zoomSelect"),
-      printButton: document.getElementById("printButton"),
-      status: document.getElementById("status"),
-      fieldName: document.getElementById("fieldName"),
-      fieldText: document.getElementById("fieldText"),
-      fontSize: document.getElementById("fontSize"),
-      fontWeight: document.getElementById("fontWeight"),
-      textAlign: document.getElementById("textAlign"),
-      textColor: document.getElementById("textColor"),
-      fieldX: document.getElementById("fieldX"),
-      fieldY: document.getElementById("fieldY"),
-      fieldW: document.getElementById("fieldW"),
-      fieldH: document.getElementById("fieldH"),
-      applyGeometryButton:
-        document.getElementById("applyGeometryButton"),
-      deleteFieldButton:
-        document.getElementById("deleteFieldButton"),
-      coordinateOutput:
-        document.getElementById("coordinateOutput"),
-      exportJsonButton:
-        document.getElementById("exportJsonButton"),
-      copyJsonButton:
-        document.getElementById("copyJsonButton"),
-      importJsonButton:
-        document.getElementById("importJsonButton"),
-      jsonFileInput:
-        document.getElementById("jsonFileInput"),
-      clearFieldsButton:
-        document.getElementById("clearFieldsButton")
+      workspace: $("workspace"),
+      pages: $("pages"),
+      emptyState: $("emptyState"),
+      pdfFileInput: $("pdfFileInput"),
+      selectPdfButton: $("selectPdfButton"),
+      loadDefaultButton: $("loadDefaultButton"),
+      drawTypeSelect: $("drawTypeSelect"),
+      drawModeButton: $("drawModeButton"),
+      selectModeButton: $("selectModeButton"),
+      inspectModeButton: $("inspectModeButton"),
+      toggleFramesButton: $("toggleFramesButton"),
+      lockButton: $("lockButton"),
+      zoomSelect: $("zoomSelect"),
+      exportPdfButton: $("exportPdfButton"),
+      status: $("status"),
+      fieldType: $("fieldType"),
+      fieldName: $("fieldName"),
+      fieldText: $("fieldText"),
+      fontSize: $("fontSize"),
+      fontWeight: $("fontWeight"),
+      textAlign: $("textAlign"),
+      textColor: $("textColor"),
+      fieldX: $("fieldX"),
+      fieldY: $("fieldY"),
+      fieldW: $("fieldW"),
+      fieldH: $("fieldH"),
+      applyGeometryButton: $("applyGeometryButton"),
+      deleteFieldButton: $("deleteFieldButton"),
+      coordinateOutput: $("coordinateOutput"),
+      exportMeasurements: $("exportMeasurements"),
+      exportJsonButton: $("exportJsonButton"),
+      copyJsonButton: $("copyJsonButton"),
+      importJsonButton: $("importJsonButton"),
+      jsonFileInput: $("jsonFileInput"),
+      clearFieldsButton: $("clearFieldsButton")
     };
 
     function setStatus(message) {
       elements.status.textContent = message;
     }
 
-    function showFatalError(message) {
-      elements.fatalError.innerHTML = message;
-      elements.fatalError.classList.add("show");
-    }
-
-    async function verifyRequiredFont() {
-      try {
-        await document.fonts.load(
-          '400 24px "THSarabunNew"',
-          "ทดสอบฟอนต์ภาษาไทย"
-        );
-
-        await document.fonts.load(
-          '700 24px "THSarabunNew"',
-          "ทดสอบฟอนต์ภาษาไทย"
-        );
-
-        await document.fonts.ready;
-
-        const normalReady = document.fonts.check(
-          '400 24px "THSarabunNew"',
-          "ทดสอบฟอนต์ภาษาไทย"
-        );
-
-        const boldReady = document.fonts.check(
-          '700 24px "THSarabunNew"',
-          "ทดสอบฟอนต์ภาษาไทย"
-        );
-
-        if (!normalReady || !boldReady) {
-          throw new Error("THSarabunNew unavailable");
-        }
-
-        elements.body.classList.remove("font-loading");
-      } catch (error) {
-        console.error(error);
-
-        showFatalError(
-          "ไม่สามารถโหลดฟอนต์ THSarabunNew ได้จาก GitHub<br>" +
-          "กรุณาตรวจสอบลิงก์ raw ของฟอนต์ทั้งสองไฟล์"
-        );
-
-        throw error;
-      }
-    }
-
     function createId() {
-      if (crypto.randomUUID) {
-        return crypto.randomUUID();
-      }
-
-      return `field-${Date.now()}-${Math.random()
-        .toString(16)
-        .slice(2)}`;
+      return crypto.randomUUID?.() ||
+        `field-${Date.now()}-${Math.random().toString(16).slice(2)}`;
     }
 
     function round(value, decimals = 2) {
+      if (!Number.isFinite(Number(value))) {
+        return null;
+      }
+
       const factor = 10 ** decimals;
-      return Math.round(value * factor) / factor;
+      return Math.round(Number(value) * factor) / factor;
     }
 
     function clamp(value, minimum, maximum) {
@@ -982,8 +912,18 @@
       return state.pages.get(Number(pageNumber)) || null;
     }
 
+    function rectanglesOverlap(a, b) {
+      return (
+        a.x < b.x + b.width &&
+        a.x + a.width > b.x &&
+        a.y < b.y + b.height &&
+        a.y + a.height > b.y
+      );
+    }
+
     function disableEditor(disabled) {
       [
+        elements.fieldType,
         elements.fieldName,
         elements.fieldText,
         elements.fontSize,
@@ -1001,11 +941,27 @@
       });
     }
 
+    async function verifyFont() {
+      try {
+        await document.fonts.load(
+          '400 24px "THSarabunNew"',
+          "ทดสอบภาษาไทย"
+        );
+
+        await document.fonts.load(
+          '700 24px "THSarabunNew"',
+          "ทดสอบภาษาไทย"
+        );
+
+        await document.fonts.ready;
+      } catch (error) {
+        console.warn("โหลด THSarabunNew ไม่สำเร็จ", error);
+      }
+    }
+
     async function openPdf(source, sourceLabel = "PDF") {
       try {
         setStatus(`กำลังโหลด ${sourceLabel}`);
-
-        state.pdfSource = source;
 
         const loadingTask = pdfjsLib.getDocument({
           url: typeof source === "string" ? source : undefined,
@@ -1015,10 +971,12 @@
           cMapPacked: true,
           standardFontDataUrl:
             "https://cdn.jsdelivr.net/npm/pdfjs-dist@6.3.289/standard_fonts/",
-          useSystemFonts: false
+          useSystemFonts: true
         });
 
         state.pdf = await loadingTask.promise;
+        state.selectedId = null;
+        state.inspectedText = null;
 
         elements.emptyState.style.display = "none";
 
@@ -1034,8 +992,8 @@
         elements.emptyState.style.display = "block";
         elements.emptyState.innerHTML =
           "โหลด PDF ไม่สำเร็จ<br>" +
-          "ให้กด <strong>เลือกไฟล์ PDF</strong> " +
-          "หรือตรวจสอบว่ามีไฟล์ original.pdf ใน Repository หรือไม่";
+          "กรุณากด <strong>เลือกไฟล์ PDF</strong> " +
+          "หรือตรวจสอบไฟล์ original.pdf";
 
         setStatus("โหลด PDF ไม่สำเร็จ");
       }
@@ -1058,11 +1016,13 @@
       }
 
       renderAllFields();
+      updateEditorFromSelected();
     }
 
     async function renderPage(pageNumber) {
       const page = await state.pdf.getPage(pageNumber);
       const viewport = page.getViewport({ scale: state.zoom });
+      const baseViewport = page.getViewport({ scale: 1 });
 
       const outputScale = Math.max(
         window.devicePixelRatio || 1,
@@ -1079,6 +1039,8 @@
       pageHeader.className = "page-header";
       pageHeader.textContent =
         `หน้า ${pageNumber} — ` +
+        `${round(baseViewport.width)} × ` +
+        `${round(baseViewport.height)} PDF pt — ` +
         `${round(viewport.width)} × ${round(viewport.height)} CSS px`;
 
       const canvas = document.createElement("canvas");
@@ -1121,21 +1083,149 @@
         ]
       }).promise;
 
-      const baseViewport = page.getViewport({ scale: 1 });
-
-      state.pages.set(pageNumber, {
+      const pageInfo = {
         pageNumber,
         page,
         viewport,
         baseViewport,
+        outputScale,
         pageContainer,
         canvas,
         overlay,
         crosshairX,
-        crosshairY
-      });
+        crosshairY,
+        textItems: [],
+        lines: []
+      };
 
+      state.pages.set(pageNumber, pageInfo);
+
+      await extractPageText(pageInfo);
       bindOverlayEvents(overlay);
+    }
+
+    async function extractPageText(pageInfo) {
+      try {
+        const textContent = await pageInfo.page.getTextContent();
+        const items = [];
+
+        textContent.items.forEach((item, sourceIndex) => {
+          if (!item.str || !item.str.trim()) {
+            return;
+          }
+
+          const transform = pdfjsLib.Util.transform(
+            pageInfo.baseViewport.transform,
+            item.transform
+          );
+
+          const fontSize = Math.max(
+            1,
+            Math.hypot(transform[2], transform[3])
+          );
+
+          const x = transform[4];
+          const baselineY = transform[5];
+          const width = Math.max(
+            1,
+            Math.abs(Number(item.width) || 1)
+          );
+
+          items.push({
+            sourceIndex,
+            text: item.str,
+            x,
+            y: baselineY - fontSize,
+            width,
+            height: fontSize,
+            baselineY,
+            fontSize,
+            fontName: item.fontName || "",
+            hasEOL: Boolean(item.hasEOL)
+          });
+        });
+
+        items.sort((a, b) => {
+          if (Math.abs(a.baselineY - b.baselineY) > 2) {
+            return a.baselineY - b.baselineY;
+          }
+
+          return a.x - b.x;
+        });
+
+        const lines = [];
+
+        items.forEach((item) => {
+          let line = lines.find((candidate) => {
+            const tolerance = Math.max(
+              2,
+              Math.min(candidate.fontSize, item.fontSize) * 0.4
+            );
+
+            return Math.abs(
+              candidate.baselineY - item.baselineY
+            ) <= tolerance;
+          });
+
+          if (!line) {
+            line = {
+              lineNumber: 0,
+              baselineY: item.baselineY,
+              fontSize: item.fontSize,
+              items: []
+            };
+
+            lines.push(line);
+          }
+
+          line.items.push(item);
+          line.fontSize = Math.max(line.fontSize, item.fontSize);
+        });
+
+        lines.sort((a, b) => a.baselineY - b.baselineY);
+
+        lines.forEach((line, index) => {
+          line.items.sort((a, b) => a.x - b.x);
+          line.lineNumber = index + 1;
+
+          const left = Math.min(
+            ...line.items.map((item) => item.x)
+          );
+
+          const top = Math.min(
+            ...line.items.map((item) => item.y)
+          );
+
+          const right = Math.max(
+            ...line.items.map((item) => item.x + item.width)
+          );
+
+          const bottom = Math.max(
+            ...line.items.map((item) => item.y + item.height)
+          );
+
+          line.x = left;
+          line.y = top;
+          line.width = right - left;
+          line.height = bottom - top;
+          line.text = line.items
+            .map((item) => item.text)
+            .join("")
+            .trim();
+
+          line.items.forEach((item) => {
+            item.lineNumber = line.lineNumber;
+          });
+        });
+
+        pageInfo.textItems = items;
+        pageInfo.lines = lines;
+      } catch (error) {
+        console.warn(
+          `อ่าน Text Content หน้า ${pageInfo.pageNumber} ไม่สำเร็จ`,
+          error
+        );
+      }
     }
 
     function getPointerPosition(event, overlay) {
@@ -1177,10 +1267,18 @@
       });
 
       overlay.addEventListener("pointerdown", (event) => {
+        if (event.target !== overlay) {
+          return;
+        }
+
+        if (state.mode === "inspect") {
+          inspectAtPointer(event, overlay);
+          return;
+        }
+
         if (
           state.locked ||
-          state.mode !== "draw" ||
-          event.target !== overlay
+          state.mode !== "draw"
         ) {
           return;
         }
@@ -1188,11 +1286,21 @@
         beginDrawing(event, overlay);
       });
 
-      overlay.addEventListener("pointerup", finishPointerAction);
-      overlay.addEventListener("pointercancel", finishPointerAction);
+      overlay.addEventListener(
+        "pointerup",
+        finishPointerAction
+      );
+
+      overlay.addEventListener(
+        "pointercancel",
+        finishPointerAction
+      );
 
       overlay.addEventListener("click", (event) => {
-        if (event.target === overlay && state.mode === "select") {
+        if (
+          event.target === overlay &&
+          state.mode === "select"
+        ) {
           selectField(null);
         }
       });
@@ -1229,11 +1337,18 @@
     function updateDrawing(event) {
       const drawing = state.drawing;
 
-      if (!drawing || event.pointerId !== drawing.pointerId) {
+      if (
+        !drawing ||
+        event.pointerId !== drawing.pointerId
+      ) {
         return;
       }
 
-      const point = getPointerPosition(event, drawing.overlay);
+      const point = getPointerPosition(
+        event,
+        drawing.overlay
+      );
+
       drawing.currentX = point.x;
       drawing.currentY = point.y;
 
@@ -1260,14 +1375,24 @@
         state.moving &&
         event.pointerId === state.moving.pointerId
       ) {
+        refreshFieldTextMetadata(
+          getField(state.moving.fieldId)
+        );
+
         state.moving = null;
+        updateEditorFromSelected();
       }
 
       if (
         state.resizing &&
         event.pointerId === state.resizing.pointerId
       ) {
+        refreshFieldTextMetadata(
+          getField(state.resizing.fieldId)
+        );
+
         state.resizing = null;
+        updateEditorFromSelected();
       }
     }
 
@@ -1307,11 +1432,12 @@
         return;
       }
 
-      const fieldIndex = state.fields.length + 1;
+      const index = state.fields.length + 1;
 
       const field = {
         id: createId(),
-        name: `field_${fieldIndex}`,
+        name: `${state.drawType}_${index}`,
+        type: state.drawType,
         page: drawing.pageNumber,
         x: left / state.zoom,
         y: top / state.zoom,
@@ -1322,8 +1448,14 @@
         fontSize: 16,
         fontWeight: "400",
         textAlign: "left",
-        color: "#000000"
+        color: "#000000",
+        startLine: null,
+        endLine: null,
+        detectedText: "",
+        detectedFontSizes: []
       };
+
+      refreshFieldTextMetadata(field);
 
       state.fields.push(field);
       renderField(field);
@@ -1332,6 +1464,48 @@
       setStatus(
         `สร้าง ${field.name} — หน้า ${field.page}`
       );
+    }
+
+    function refreshFieldTextMetadata(field) {
+      if (!field) {
+        return;
+      }
+
+      const pageInfo = getPageInfo(field.page);
+
+      if (!pageInfo) {
+        return;
+      }
+
+      const overlappingLines = pageInfo.lines.filter((line) =>
+        rectanglesOverlap(field, line)
+      );
+
+      const overlappingItems = pageInfo.textItems.filter((item) =>
+        rectanglesOverlap(field, item)
+      );
+
+      field.startLine = overlappingLines.length
+        ? Math.min(
+            ...overlappingLines.map((line) => line.lineNumber)
+          )
+        : null;
+
+      field.endLine = overlappingLines.length
+        ? Math.max(
+            ...overlappingLines.map((line) => line.lineNumber)
+          )
+        : null;
+
+      field.detectedText = overlappingLines
+        .map((line) => line.text)
+        .join("\n");
+
+      field.detectedFontSizes = [
+        ...new Set(
+          overlappingItems.map((item) => round(item.fontSize, 2))
+        )
+      ].sort((a, b) => a - b);
     }
 
     function renderAllFields() {
@@ -1364,14 +1538,15 @@
 
         const content = document.createElement("div");
         content.className = "field-content";
-        content.contentEditable =
-          state.locked ? "false" : "true";
         content.spellcheck = false;
+
+        const caption = document.createElement("div");
+        caption.className = "measurement-caption";
 
         const resizeHandle = document.createElement("div");
         resizeHandle.className = "resize-handle";
 
-        box.append(label, content, resizeHandle);
+        box.append(label, content, caption, resizeHandle);
         pageInfo.overlay.append(box);
 
         box.addEventListener("pointerdown", (event) => {
@@ -1379,6 +1554,11 @@
             event.target === resizeHandle ||
             event.target === content
           ) {
+            return;
+          }
+
+          if (state.mode === "inspect") {
+            inspectField(field.id);
             return;
           }
 
@@ -1396,14 +1576,14 @@
         });
 
         content.addEventListener("input", () => {
-          const currentField = getField(field.id);
+          const current = getField(field.id);
 
-          if (!currentField) {
+          if (!current) {
             return;
           }
 
-          currentField.text = content.innerText;
-          elements.fieldText.value = currentField.text;
+          current.text = content.innerText;
+          elements.fieldText.value = current.text;
         });
 
         resizeHandle.addEventListener(
@@ -1443,10 +1623,35 @@
         field.id === state.selectedId
       );
 
+      TYPES.forEach((type) => {
+        element.classList.remove(`type-${type}`);
+      });
+
+      element.classList.add(
+        `type-${TYPES.includes(field.type) ? field.type : "text"}`
+      );
+
       const label = element.querySelector(".field-label");
       const content = element.querySelector(".field-content");
+      const caption = element.querySelector(
+        ".measurement-caption"
+      );
 
-      label.textContent = field.name;
+      const lineLabel =
+        field.startLine !== null
+          ? ` | บรรทัด ${field.startLine}` +
+            (
+              field.endLine !== field.startLine
+                ? `-${field.endLine}`
+                : ""
+            )
+          : "";
+
+      label.textContent = `${field.name}${lineLabel}`;
+
+      caption.textContent =
+        `x:${round(field.x, 1)} y:${round(field.y, 1)}\n` +
+        `w:${round(field.width, 1)} h:${round(field.height, 1)}`;
 
       if (
         document.activeElement !== content &&
@@ -1455,9 +1660,12 @@
         content.innerText = field.text;
       }
 
-      content.style.fontFamily = '"THSarabunNew"';
+      content.style.fontFamily =
+        '"THSarabunNew", sans-serif';
+
       content.style.fontSize =
         `${field.fontSize * state.zoom}px`;
+
       content.style.fontWeight = field.fontWeight;
       content.style.color = field.color;
 
@@ -1467,10 +1675,15 @@
         "align-right"
       );
 
-      content.classList.add(`align-${field.textAlign}`);
+      content.classList.add(
+        `align-${field.textAlign}`
+      );
 
       content.contentEditable =
-        state.locked ? "false" : "true";
+        !state.locked &&
+        field.type === "text"
+          ? "true"
+          : "false";
     }
 
     function beginMoving(event, fieldId) {
@@ -1484,6 +1697,7 @@
 
       const field = getField(fieldId);
       const pageInfo = getPageInfo(field.page);
+
       const point = getPointerPosition(
         event,
         pageInfo.overlay
@@ -1507,12 +1721,16 @@
     function updateMoving(event) {
       const moving = state.moving;
 
-      if (!moving || event.pointerId !== moving.pointerId) {
+      if (
+        !moving ||
+        event.pointerId !== moving.pointerId
+      ) {
         return;
       }
 
       const field = getField(moving.fieldId);
       const pageInfo = getPageInfo(moving.pageNumber);
+
       const point = getPointerPosition(
         event,
         pageInfo.overlay
@@ -1537,7 +1755,7 @@
       );
 
       updateFieldElement(field);
-      updateEditorFromSelected();
+      updateEditorFromSelected(false);
     }
 
     function beginResizing(event, fieldId) {
@@ -1550,6 +1768,7 @@
 
       const field = getField(fieldId);
       const pageInfo = getPageInfo(field.page);
+
       const point = getPointerPosition(
         event,
         pageInfo.overlay
@@ -1582,6 +1801,7 @@
 
       const field = getField(resizing.fieldId);
       const pageInfo = getPageInfo(resizing.pageNumber);
+
       const point = getPointerPosition(
         event,
         pageInfo.overlay
@@ -1606,7 +1826,7 @@
       );
 
       updateFieldElement(field);
-      updateEditorFromSelected();
+      updateEditorFromSelected(false);
     }
 
     function selectField(fieldId) {
@@ -1624,26 +1844,34 @@
       updateEditorFromSelected();
     }
 
-    function updateEditorFromSelected() {
+    function updateEditorFromSelected(
+      updateFormValues = true
+    ) {
       const field = getSelectedField();
 
       if (!field) {
         disableEditor(true);
 
-        elements.coordinateOutput.textContent =
-          "ยังไม่ได้เลือกฟิลด์";
+        if (!state.inspectedText) {
+          elements.coordinateOutput.textContent =
+            "ยังไม่ได้เลือกฟิลด์";
+        }
 
         return;
       }
 
       disableEditor(false);
 
-      elements.fieldName.value = field.name;
-      elements.fieldText.value = field.text;
-      elements.fontSize.value = field.fontSize;
-      elements.fontWeight.value = field.fontWeight;
-      elements.textAlign.value = field.textAlign;
-      elements.textColor.value = field.color;
+      if (updateFormValues) {
+        elements.fieldType.value = field.type;
+        elements.fieldName.value = field.name;
+        elements.fieldText.value = field.text;
+        elements.fontSize.value = field.fontSize;
+        elements.fontWeight.value = field.fontWeight;
+        elements.textAlign.value = field.textAlign;
+        elements.textColor.value = field.color;
+      }
+
       elements.fieldX.value = round(field.x, 2);
       elements.fieldY.value = round(field.y, 2);
       elements.fieldW.value = round(field.width, 2);
@@ -1659,11 +1887,6 @@
         return;
       }
 
-      const cssX = field.x * state.zoom;
-      const cssY = field.y * state.zoom;
-      const cssWidth = field.width * state.zoom;
-      const cssHeight = field.height * state.zoom;
-
       const pdfBottomY =
         pageInfo.baseViewport.height -
         field.y -
@@ -1671,13 +1894,28 @@
 
       const output = {
         name: field.name,
+        type: field.type,
         page: field.page,
+        lineRange: {
+          startLine: field.startLine,
+          endLine: field.endLine
+        },
+        detectedText: field.detectedText || "",
+        detectedFontSizesPoint:
+          field.detectedFontSizes || [],
+        overlayFont: {
+          family: field.fontFamily,
+          sizePoint: field.fontSize,
+          weight: field.fontWeight,
+          align: field.textAlign,
+          color: field.color
+        },
         cssPixelAtCurrentZoom: {
           zoom: `${round(state.zoom * 100)}%`,
-          x: round(cssX),
-          yTop: round(cssY),
-          width: round(cssWidth),
-          height: round(cssHeight)
+          x: round(field.x * state.zoom),
+          yTop: round(field.y * state.zoom),
+          width: round(field.width * state.zoom),
+          height: round(field.height * state.zoom)
         },
         pdfPointTopLeft: {
           x: round(field.x),
@@ -1708,17 +1946,37 @@
         return;
       }
 
+      field.type = TYPES.includes(elements.fieldType.value)
+        ? elements.fieldType.value
+        : "text";
+
       field.name =
         elements.fieldName.value.trim() || field.name;
 
       field.text = elements.fieldText.value;
-      field.fontSize =
-        Number(elements.fontSize.value) || 16;
 
-      field.fontWeight = elements.fontWeight.value;
-      field.textAlign = elements.textAlign.value;
+      field.fontSize = clamp(
+        Number(elements.fontSize.value) || 16,
+        6,
+        96
+      );
+
+      field.fontWeight =
+        elements.fontWeight.value === "700"
+          ? "700"
+          : "400";
+
+      field.textAlign = [
+        "left",
+        "center",
+        "right"
+      ].includes(elements.textAlign.value)
+        ? elements.textAlign.value
+        : "left";
+
       field.color = elements.textColor.value;
 
+      refreshFieldTextMetadata(field);
       updateFieldElement(field);
       updateCoordinateOutput(field);
     }
@@ -1738,39 +1996,48 @@
       const proposedHeight = Number(elements.fieldH.value);
 
       field.width = clamp(
-        proposedWidth,
+        Number.isFinite(proposedWidth)
+          ? proposedWidth
+          : field.width,
         1,
         pageInfo.baseViewport.width
       );
 
       field.height = clamp(
-        proposedHeight,
+        Number.isFinite(proposedHeight)
+          ? proposedHeight
+          : field.height,
         1,
         pageInfo.baseViewport.height
       );
 
       field.x = clamp(
-        proposedX,
+        Number.isFinite(proposedX)
+          ? proposedX
+          : field.x,
         0,
         pageInfo.baseViewport.width - field.width
       );
 
       field.y = clamp(
-        proposedY,
+        Number.isFinite(proposedY)
+          ? proposedY
+          : field.y,
         0,
         pageInfo.baseViewport.height - field.height
       );
 
+      refreshFieldTextMetadata(field);
       updateFieldElement(field);
       updateEditorFromSelected();
     }
 
     function deleteSelectedField() {
-      if (!state.selectedId) {
+      const field = getSelectedField();
+
+      if (!field) {
         return;
       }
-
-      const field = getSelectedField();
 
       if (
         !window.confirm(
@@ -1781,19 +2048,125 @@
       }
 
       state.fields = state.fields.filter(
-        (item) => item.id !== state.selectedId
+        (item) => item.id !== field.id
       );
 
       document
-        .querySelector(
-          `[data-field-id="${state.selectedId}"]`
-        )
+        .querySelector(`[data-field-id="${field.id}"]`)
         ?.remove();
 
       state.selectedId = null;
       updateEditorFromSelected();
 
       setStatus(`เหลือ ${state.fields.length} ฟิลด์`);
+    }
+
+    function clearInspectMarkers() {
+      document
+        .querySelectorAll(".inspect-marker")
+        .forEach((element) => element.remove());
+    }
+
+    function inspectAtPointer(event, overlay) {
+      const pageInfo = getPageInfo(overlay.dataset.page);
+      const point = getPointerPosition(event, overlay);
+
+      const basePoint = {
+        x: point.x / state.zoom,
+        y: point.y / state.zoom
+      };
+
+      let matched = pageInfo.textItems.find((item) =>
+        basePoint.x >= item.x &&
+        basePoint.x <= item.x + item.width &&
+        basePoint.y >= item.y &&
+        basePoint.y <= item.y + item.height
+      );
+
+      if (!matched) {
+        matched = [...pageInfo.textItems]
+          .map((item) => {
+            const centerX = item.x + item.width / 2;
+            const centerY = item.y + item.height / 2;
+
+            return {
+              item,
+              distance: Math.hypot(
+                centerX - basePoint.x,
+                centerY - basePoint.y
+              )
+            };
+          })
+          .sort((a, b) => a.distance - b.distance)[0]?.item;
+      }
+
+      if (!matched) {
+        setStatus("ไม่พบข้อความในหน้านี้");
+        return;
+      }
+
+      showInspectedText(pageInfo, matched);
+    }
+
+    function inspectField(fieldId) {
+      const field = getField(fieldId);
+
+      if (!field) {
+        return;
+      }
+
+      selectField(fieldId);
+      refreshFieldTextMetadata(field);
+      updateFieldElement(field);
+      updateCoordinateOutput(field);
+    }
+
+    function showInspectedText(pageInfo, item) {
+      clearInspectMarkers();
+
+      const marker = document.createElement("div");
+      marker.className = "inspect-marker";
+      marker.style.left = `${item.x * state.zoom}px`;
+      marker.style.top = `${item.y * state.zoom}px`;
+      marker.style.width = `${item.width * state.zoom}px`;
+      marker.style.height = `${item.height * state.zoom}px`;
+
+      pageInfo.overlay.append(marker);
+
+      const line = pageInfo.lines.find(
+        (candidate) =>
+          candidate.lineNumber === item.lineNumber
+      );
+
+      state.inspectedText = {
+        page: pageInfo.pageNumber,
+        text: item.text,
+        lineNumber: item.lineNumber,
+        lineText: line?.text || item.text,
+        estimatedFontSizePoint: round(item.fontSize, 2),
+        fontName: item.fontName,
+        pdfPointTopLeft: {
+          x: round(item.x, 2),
+          y: round(item.y, 2),
+          width: round(item.width, 2),
+          height: round(item.height, 2)
+        },
+        cssPixelAtCurrentZoom: {
+          x: round(item.x * state.zoom, 2),
+          y: round(item.y * state.zoom, 2),
+          width: round(item.width * state.zoom, 2),
+          height: round(item.height * state.zoom, 2)
+        }
+      };
+
+      elements.coordinateOutput.textContent =
+        JSON.stringify(state.inspectedText, null, 2);
+
+      setStatus(
+        `หน้า ${pageInfo.pageNumber} — ` +
+        `บรรทัด ${item.lineNumber} — ` +
+        `ขนาดประมาณ ${round(item.fontSize, 1)} pt`
+      );
     }
 
     function setMode(mode) {
@@ -1809,17 +2182,28 @@
         mode === "select"
       );
 
+      elements.inspectModeButton.classList.toggle(
+        "active",
+        mode === "inspect"
+      );
+
       document
         .querySelectorAll(".overlay-layer")
         .forEach((overlay) => {
           overlay.style.cursor =
-            mode === "draw" ? "crosshair" : "default";
+            mode === "draw"
+              ? "crosshair"
+              : mode === "inspect"
+                ? "help"
+                : "default";
         });
 
       setStatus(
         mode === "draw"
-          ? "โหมดวาดกรอบ"
-          : "โหมดเลือกและเลื่อน"
+          ? `โหมดวาด ${state.drawType}`
+          : mode === "select"
+            ? "โหมดเลือกและเลื่อน"
+            : "โหมดตรวจข้อความและขนาดตัวอักษร"
       );
     }
 
@@ -1838,20 +2222,23 @@
     function toggleLock() {
       state.locked = !state.locked;
 
-      document.body.classList.toggle(
-        "overlay-locked",
-        state.locked
-      );
-
       document
         .querySelectorAll(".field-content")
         .forEach((content) => {
+          const field = getField(
+            content.parentElement.dataset.fieldId
+          );
+
           content.contentEditable =
-            state.locked ? "false" : "true";
+            !state.locked && field?.type === "text"
+              ? "true"
+              : "false";
         });
 
       elements.lockButton.textContent =
-        state.locked ? "ปลดล็อก Overlay" : "ล็อก Overlay";
+        state.locked
+          ? "ปลดล็อก Overlay"
+          : "ล็อก Overlay";
 
       setStatus(
         state.locked
@@ -1863,12 +2250,12 @@
     function createExportData() {
       return {
         format: "pdf-pixel-overlay",
-        version: 1,
+        version: 2,
         fontFamily: "THSarabunNew",
         zoomUsedForDisplay: state.zoom,
         pageCount: state.pdf?.numPages || 0,
         coordinateSystem:
-          "PDF points, origin at top-left unless specified",
+          "PDF viewport points, origin at top-left",
         fields: state.fields.map((field) => {
           const pageInfo = getPageInfo(field.page);
 
@@ -1895,6 +2282,19 @@
       };
     }
 
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+
+      anchor.href = url;
+      anchor.download = filename;
+      document.body.append(anchor);
+      anchor.click();
+      anchor.remove();
+
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
     function downloadJson() {
       const data = JSON.stringify(
         createExportData(),
@@ -1902,18 +2302,12 @@
         2
       );
 
-      const blob = new Blob([data], {
-        type: "application/json;charset=utf-8"
-      });
-
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-
-      anchor.href = url;
-      anchor.download = "pdf-overlay-fields.json";
-      anchor.click();
-
-      URL.revokeObjectURL(url);
+      downloadBlob(
+        new Blob([data], {
+          type: "application/json;charset=utf-8"
+        }),
+        "pdf-overlay-fields.json"
+      );
     }
 
     async function copyJson() {
@@ -1940,6 +2334,9 @@
       state.fields = data.fields.map((field, index) => ({
         id: field.id || createId(),
         name: field.name || `field_${index + 1}`,
+        type: TYPES.includes(field.type)
+          ? field.type
+          : "text",
         page: Number(field.page) || 1,
         x: Number(field.x) || 0,
         y: Number(field.y) || 0,
@@ -1952,15 +2349,23 @@
           String(field.fontWeight) === "700"
             ? "700"
             : "400",
-        textAlign: ["left", "center", "right"].includes(
-          field.textAlign
-        )
+        textAlign: [
+          "left",
+          "center",
+          "right"
+        ].includes(field.textAlign)
           ? field.textAlign
           : "left",
-        color: field.color || "#000000"
+        color: field.color || "#000000",
+        startLine: null,
+        endLine: null,
+        detectedText: "",
+        detectedFontSizes: []
       }));
 
+      state.fields.forEach(refreshFieldTextMetadata);
       state.selectedId = null;
+
       renderAllFields();
 
       setStatus(`Import แล้ว ${state.fields.length} ฟิลด์`);
@@ -1985,23 +2390,325 @@
       setStatus("ล้างทุกฟิลด์แล้ว");
     }
 
+    function hexToRgb(hex) {
+      const normalized = String(hex || "#000000")
+        .replace("#", "")
+        .padEnd(6, "0")
+        .slice(0, 6);
+
+      return {
+        r: parseInt(normalized.slice(0, 2), 16),
+        g: parseInt(normalized.slice(2, 4), 16),
+        b: parseInt(normalized.slice(4, 6), 16)
+      };
+    }
+
+    function wrapCanvasText(context, text, maximumWidth) {
+      const paragraphs = String(text || "").split(/\r?\n/);
+      const lines = [];
+
+      paragraphs.forEach((paragraph) => {
+        if (!paragraph) {
+          lines.push("");
+          return;
+        }
+
+        const characters = Array.from(paragraph);
+        let currentLine = "";
+
+        characters.forEach((character) => {
+          const testLine = currentLine + character;
+
+          if (
+            currentLine &&
+            context.measureText(testLine).width > maximumWidth
+          ) {
+            lines.push(currentLine);
+            currentLine = character;
+          } else {
+            currentLine = testLine;
+          }
+        });
+
+        lines.push(currentLine);
+      });
+
+      return lines;
+    }
+
+    function drawFieldOnCanvas(
+      context,
+      field,
+      scaleX,
+      scaleY
+    ) {
+      const x = field.x * scaleX;
+      const y = field.y * scaleY;
+      const width = field.width * scaleX;
+      const height = field.height * scaleY;
+
+      context.save();
+
+      if (field.type === "redaction") {
+        context.fillStyle = "#000";
+        context.fillRect(x, y, width, height);
+        context.restore();
+        return;
+      }
+
+      if (field.type === "highlight") {
+        context.fillStyle = "rgba(255,235,59,0.42)";
+        context.fillRect(x, y, width, height);
+        context.restore();
+        return;
+      }
+
+      if (field.type === "measurement") {
+        if (elements.exportMeasurements.checked) {
+          context.strokeStyle = "#00acc1";
+          context.lineWidth = Math.max(1, scaleX);
+          context.setLineDash([
+            5 * scaleX,
+            3 * scaleX
+          ]);
+
+          context.strokeRect(x, y, width, height);
+          context.setLineDash([]);
+
+          const caption =
+            `x:${round(field.x, 1)} ` +
+            `y:${round(field.y, 1)} ` +
+            `w:${round(field.width, 1)} ` +
+            `h:${round(field.height, 1)}`;
+
+          context.font =
+            `${Math.max(9, 9 * scaleY)}px monospace`;
+
+          context.textBaseline = "top";
+
+          const textWidth =
+            context.measureText(caption).width + 8 * scaleX;
+
+          context.fillStyle = "rgba(255,255,255,0.9)";
+          context.fillRect(
+            x,
+            y,
+            Math.min(textWidth, width),
+            15 * scaleY
+          );
+
+          context.fillStyle = "#006064";
+          context.fillText(
+            caption,
+            x + 3 * scaleX,
+            y + 2 * scaleY,
+            Math.max(1, width - 6 * scaleX)
+          );
+        }
+
+        context.restore();
+        return;
+      }
+
+      const color = hexToRgb(field.color);
+
+      context.beginPath();
+      context.rect(x, y, width, height);
+      context.clip();
+
+      context.fillStyle =
+        `rgb(${color.r},${color.g},${color.b})`;
+
+      const canvasFontSize = field.fontSize * scaleY;
+      const weight = field.fontWeight === "700"
+        ? "700"
+        : "400";
+
+      context.font =
+        `${weight} ${canvasFontSize}px "THSarabunNew", sans-serif`;
+
+      context.textBaseline = "top";
+      context.textAlign = field.textAlign;
+
+      const padding = 2 * scaleX;
+      const availableWidth = Math.max(
+        1,
+        width - padding * 2
+      );
+
+      const lines = wrapCanvasText(
+        context,
+        field.text,
+        availableWidth
+      );
+
+      const lineHeight = canvasFontSize * 1.05;
+
+      let textX = x + padding;
+
+      if (field.textAlign === "center") {
+        textX = x + width / 2;
+      }
+
+      if (field.textAlign === "right") {
+        textX = x + width - padding;
+      }
+
+      lines.forEach((line, index) => {
+        const textY = y + index * lineHeight;
+
+        if (textY + lineHeight <= y + height + lineHeight) {
+          context.fillText(
+            line,
+            textX,
+            textY,
+            availableWidth
+          );
+        }
+      });
+
+      context.restore();
+    }
+
+    async function exportFlattenedPdf() {
+      if (!state.pdf || state.pages.size === 0) {
+        window.alert("กรุณาเปิดไฟล์ PDF ก่อน");
+        return;
+      }
+
+      try {
+        elements.exportPdfButton.disabled = true;
+        setStatus("กำลังสร้าง PDF");
+
+        await document.fonts.ready;
+
+        const outputPdf = await PDFDocument.create();
+
+        for (
+          let pageNumber = 1;
+          pageNumber <= state.pdf.numPages;
+          pageNumber += 1
+        ) {
+          setStatus(
+            `กำลังสร้าง PDF หน้า ${pageNumber}/` +
+            `${state.pdf.numPages}`
+          );
+
+          const pageInfo = getPageInfo(pageNumber);
+          const sourceCanvas = pageInfo.canvas;
+
+          const flattenedCanvas =
+            document.createElement("canvas");
+
+          flattenedCanvas.width = sourceCanvas.width;
+          flattenedCanvas.height = sourceCanvas.height;
+
+          const context = flattenedCanvas.getContext(
+            "2d",
+            {
+              alpha: false
+            }
+          );
+
+          context.fillStyle = "#fff";
+          context.fillRect(
+            0,
+            0,
+            flattenedCanvas.width,
+            flattenedCanvas.height
+          );
+
+          context.drawImage(sourceCanvas, 0, 0);
+
+          const scaleX =
+            flattenedCanvas.width /
+            pageInfo.baseViewport.width;
+
+          const scaleY =
+            flattenedCanvas.height /
+            pageInfo.baseViewport.height;
+
+          state.fields
+            .filter((field) => field.page === pageNumber)
+            .forEach((field) => {
+              drawFieldOnCanvas(
+                context,
+                field,
+                scaleX,
+                scaleY
+              );
+            });
+
+          const pngDataUrl =
+            flattenedCanvas.toDataURL("image/png");
+
+          const pngBytes = await fetch(
+            pngDataUrl
+          ).then((response) => response.arrayBuffer());
+
+          const image = await outputPdf.embedPng(pngBytes);
+
+          const page = outputPdf.addPage([
+            pageInfo.baseViewport.width,
+            pageInfo.baseViewport.height
+          ]);
+
+          page.drawImage(image, {
+            x: 0,
+            y: 0,
+            width: pageInfo.baseViewport.width,
+            height: pageInfo.baseViewport.height
+          });
+        }
+
+        const bytes = await outputPdf.save({
+          useObjectStreams: true
+        });
+
+        downloadBlob(
+          new Blob([bytes], {
+            type: "application/pdf"
+          }),
+          "pdf-overlay-flattened.pdf"
+        );
+
+        setStatus("Export PDF สำเร็จ");
+      } catch (error) {
+        console.error(error);
+
+        window.alert(
+          "Export PDF ไม่สำเร็จ กรุณาเปิด Developer Console " +
+          "เพื่อตรวจสอบรายละเอียด"
+        );
+
+        setStatus("Export PDF ไม่สำเร็จ");
+      } finally {
+        elements.exportPdfButton.disabled = false;
+      }
+    }
+
     function nudgeSelectedField(event) {
       const field = getSelectedField();
 
       if (
         !field ||
         state.locked ||
-        !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"]
-          .includes(event.key)
+        ![
+          "ArrowLeft",
+          "ArrowRight",
+          "ArrowUp",
+          "ArrowDown"
+        ].includes(event.key)
       ) {
         return;
       }
 
-      const activeTag = document.activeElement?.tagName;
+      const activeElement = document.activeElement;
+      const activeTag = activeElement?.tagName;
 
       if (
         ["INPUT", "TEXTAREA", "SELECT"].includes(activeTag) ||
-        document.activeElement?.isContentEditable
+        activeElement?.isContentEditable
       ) {
         return;
       }
@@ -2040,13 +2747,15 @@
         pageInfo.baseViewport.height - field.height
       );
 
+      refreshFieldTextMetadata(field);
       updateFieldElement(field);
       updateEditorFromSelected();
     }
 
-    elements.selectPdfButton.addEventListener("click", () => {
-      elements.pdfFileInput.click();
-    });
+    elements.selectPdfButton.addEventListener(
+      "click",
+      () => elements.pdfFileInput.click()
+    );
 
     elements.pdfFileInput.addEventListener(
       "change",
@@ -2062,12 +2771,21 @@
         );
 
         await openPdf(data, file.name);
+        event.target.value = "";
       }
     );
 
     elements.loadDefaultButton.addEventListener(
       "click",
       () => openPdf(DEFAULT_PDF_URL, "original.pdf")
+    );
+
+    elements.drawTypeSelect.addEventListener(
+      "change",
+      () => {
+        state.drawType = elements.drawTypeSelect.value;
+        setMode("draw");
+      }
     );
 
     elements.drawModeButton.addEventListener(
@@ -2078,6 +2796,11 @@
     elements.selectModeButton.addEventListener(
       "click",
       () => setMode("select")
+    );
+
+    elements.inspectModeButton.addEventListener(
+      "click",
+      () => setMode("inspect")
     );
 
     elements.toggleFramesButton.addEventListener(
@@ -2094,20 +2817,18 @@
       "change",
       async () => {
         state.zoom = Number(elements.zoomSelect.value);
+        clearInspectMarkers();
         await renderDocument();
-        updateEditorFromSelected();
       }
     );
 
-    elements.printButton.addEventListener(
+    elements.exportPdfButton.addEventListener(
       "click",
-      async () => {
-        await document.fonts.ready;
-        window.print();
-      }
+      exportFlattenedPdf
     );
 
     [
+      elements.fieldType,
       elements.fieldName,
       elements.fieldText,
       elements.fontSize,
@@ -2161,8 +2882,9 @@
         }
 
         try {
-          const data = JSON.parse(await file.text());
-          importJson(data);
+          importJson(
+            JSON.parse(await file.text())
+          );
         } catch (error) {
           console.error(error);
           window.alert(
@@ -2180,14 +2902,23 @@
     );
 
     window.addEventListener("keydown", (event) => {
+      const activeElement = document.activeElement;
+
       if (
         event.key === "Delete" &&
-        !document.activeElement?.isContentEditable &&
+        !activeElement?.isContentEditable &&
         !["INPUT", "TEXTAREA"].includes(
-          document.activeElement?.tagName
+          activeElement?.tagName
         )
       ) {
         deleteSelectedField();
+        return;
+      }
+
+      if (event.key === "Escape") {
+        selectField(null);
+        clearInspectMarkers();
+        state.inspectedText = null;
         return;
       }
 
@@ -2216,21 +2947,21 @@
       );
 
       if (!file) {
+        window.alert("กรุณาวางไฟล์ PDF");
         return;
       }
 
-      const data = new Uint8Array(await file.arrayBuffer());
+      const data = new Uint8Array(
+        await file.arrayBuffer()
+      );
+
       await openPdf(data, file.name);
     });
 
     async function initialize() {
-      try {
-        await verifyRequiredFont();
-        setMode("draw");
-        await openPdf(DEFAULT_PDF_URL, "original.pdf");
-      } catch (error) {
-        console.error(error);
-      }
+      await verifyFont();
+      setMode("draw");
+      await openPdf(DEFAULT_PDF_URL, "original.pdf");
     }
 
     initialize();
