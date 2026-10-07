@@ -105,11 +105,13 @@ html,body{height:100%;font-family:'Noto Sans Thai',system-ui,sans-serif;backgrou
 <div id="tools" class="glass">
   <h3>แผนที่ฐาน (Base map)</h3>
   <div class="bmrow">
-    <div class="bm on" data-b="sat">ดาวเทียม</div><div class="bm" data-b="road">ถนน</div>
-    <div class="bm" data-b="dark">มืด</div><div class="bm" data-b="topo">ภูมิประเทศ</div>
+    <div class="bm on" data-b="gsat">Google ดาวเทียม</div>
+    <div class="bm" data-b="gmap">Google ถนน</div>
+    <div class="bm" data-b="osm">OpenStreetMap</div>
+    <div class="bm" data-b="dark">Carto มืด</div>
   </div>
-  <label>ความสว่างภาพฐาน: <b id="dimv">75</b>%</label>
-  <input id="dimr" type="range" min="0" max="100" value="75">
+  <label>ความสว่างภาพฐาน: <b id="dimv">80</b>%</label>
+  <input id="dimr" type="range" min="0" max="100" value="80">
   <hr style="margin:13px 0;border:0;border-top:1px solid rgba(255,255,255,.1)">
   <h3>พิกัดจริง &amp; การวางผัง</h3>
   <label>ศูนย์กลาง (lat, lng) — วางจาก Google Maps</label>
@@ -129,16 +131,10 @@ html,body{height:100%;font-family:'Noto Sans Thai',system-ui,sans-serif;backgrou
 
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
-/* ==========================================================================
-   1) CONFIG  —  *** แก้พิกัดจริงตรงนี้ หรือกรอกในหน้าเว็บผ่านปุ่ม ⚙ ***
-   ========================================================================== */
-const DEF = { center:[99.0940, 10.2850], rotation:0, scale:1 };   // [lng, lat] (ค่าประมาณ)
+const DEF = { center:[99.0940, 10.2850], rotation:0, scale:1 };
 const CFG = Object.assign({}, DEF, JSON.parse(localStorage.getItem('swi-cfg')||'{}'));
 const saveCfg = ()=>localStorage.setItem('swi-cfg',JSON.stringify(CFG));
 
-/* ==========================================================================
-   2) หมวดหมู่
-   ========================================================================== */
 const CAT = {
   info:{n:'ประชาสัมพันธ์',c:'#38bdf8'}, opd:{n:'ตรวจโรค',c:'#22d3ee'},
   emergency:{n:'ฉุกเฉิน',c:'#fb7185'}, ipd:{n:'ผู้ป่วยใน',c:'#a78bfa'},
@@ -146,13 +142,7 @@ const CAT = {
   support:{n:'สนับสนุน',c:'#94a3b8'},  circ:{n:'ทางเดิน/ลิฟต์',c:'#475569'}
 };
 
-/* ==========================================================================
-   3) ผังห้อง — x,y,w,h = เมตร นับจากศูนย์กลาง (x=ตะวันออก, y=เหนือ)
-      no = หมายเลขห้อง | c=หมวด | l=ชั้น | grp = กลุ่มลิฟต์
-      *** ตัวอย่างสมมติ แก้ให้ตรงผังจริงได้เลย ***
-   ========================================================================== */
 const ROOMS = [
-/* ---- อาคาร A : ผู้ป่วยนอก ชั้น 1 ---- */
 {no:'A101',n:'ประชาสัมพันธ์ / คัดกรอง',c:'info',l:1,x:-62,y:-34,w:12,h:11,b:'อาคาร A ผู้ป่วยนอก',t:'08:00-16:00',tel:'101'},
 {no:'A102',n:'เวชระเบียน',c:'info',l:1,x:-50,y:-34,w:12,h:11,b:'อาคาร A ผู้ป่วยนอก',t:'07:00-16:00',tel:'102'},
 {no:'A103',n:'การเงิน / สิทธิบัตร',c:'pharm',l:1,x:-38,y:-34,w:12,h:11,b:'อาคาร A ผู้ป่วยนอก',t:'08:00-16:00',tel:'103'},
@@ -167,7 +157,6 @@ const ROOMS = [
 {no:'A115',n:'แพทย์แผนไทย',c:'opd',l:1,x:-8,y:-16,w:12,h:12,b:'อาคาร A ผู้ป่วยนอก',t:'08:00-16:00',tel:'115'},
 {no:'A116',n:'ห้องน้ำ',c:'support',l:1,x:4,y:-16,w:5,h:12,b:'อาคาร A ผู้ป่วยนอก',t:'-',tel:'-'},
 {no:'A117',n:'ลิฟต์ / บันได A',c:'circ',l:1,x:9,y:-16,w:6,h:12,b:'อาคาร A ผู้ป่วยนอก',t:'-',tel:'-',grp:'A'},
-/* ---- อาคาร A ชั้น 2 ---- */
 {no:'A201',n:'ห้องประชุมใหญ่',c:'support',l:2,x:-62,y:-34,w:26,h:11,b:'อาคาร A ผู้ป่วยนอก',t:'จองล่วงหน้า',tel:'201'},
 {no:'A202',n:'ฝ่ายบริหาร / ธุรการ',c:'support',l:2,x:-36,y:-34,w:24,h:11,b:'อาคาร A ผู้ป่วยนอก',t:'08:00-16:00',tel:'202'},
 {no:'A203',n:'ห้องผู้อำนวยการ',c:'support',l:2,x:-12,y:-34,w:14,h:11,b:'อาคาร A ผู้ป่วยนอก',t:'08:00-16:00',tel:'203'},
@@ -177,13 +166,11 @@ const ROOMS = [
 {no:'A212',n:'คลินิกสุขภาพจิต',c:'opd',l:2,x:-40,y:-16,w:16,h:12,b:'อาคาร A ผู้ป่วยนอก',t:'อังคาร 09:00-15:00',tel:'212'},
 {no:'A213',n:'ห้องสมุด / อบรม',c:'support',l:2,x:-24,y:-16,w:16,h:12,b:'อาคาร A ผู้ป่วยนอก',t:'08:00-16:00',tel:'213'},
 {no:'A217',n:'ลิฟต์ / บันได A',c:'circ',l:2,x:9,y:-16,w:6,h:12,b:'อาคาร A ผู้ป่วยนอก',t:'-',tel:'-',grp:'A'},
-/* ---- อาคาร B : อุบัติเหตุ-ฉุกเฉิน ---- */
 {no:'B101',n:'ห้องฉุกเฉิน (ER)',c:'emergency',l:1,x:26,y:-34,w:20,h:15,b:'อาคาร B ฉุกเฉิน',t:'ตลอด 24 ชม.',tel:'191'},
 {no:'B102',n:'ห้องสังเกตอาการ',c:'emergency',l:1,x:46,y:-34,w:14,h:15,b:'อาคาร B ฉุกเฉิน',t:'ตลอด 24 ชม.',tel:'192'},
 {no:'B110',n:'ทางเดินอาคาร B',c:'circ',l:1,x:24,y:-19,w:38,h:6,b:'อาคาร B ฉุกเฉิน',t:'-',tel:'-'},
 {no:'B103',n:'ห้องผ่าตัด (OR)',c:'ipd',l:1,x:26,y:-13,w:18,h:12,b:'อาคาร B ฉุกเฉิน',t:'ตลอด 24 ชม.',tel:'193'},
 {no:'B104',n:'ห้องคลอด (LR)',c:'ipd',l:1,x:44,y:-13,w:16,h:12,b:'อาคาร B ฉุกเฉิน',t:'ตลอด 24 ชม.',tel:'194'},
-/* ---- อาคาร C : ผู้ป่วยใน ---- */
 {no:'C101',n:'หอผู้ป่วยหนัก (ICU)',c:'ipd',l:1,x:-40,y:6,w:20,h:15,b:'อาคาร C ผู้ป่วยใน',t:'เยี่ยม 18:00-20:00',tel:'301'},
 {no:'C102',n:'หอผู้ป่วยชาย',c:'ipd',l:1,x:-20,y:6,w:28,h:15,b:'อาคาร C ผู้ป่วยใน',t:'เยี่ยม 18:00-20:00',tel:'302'},
 {no:'C117',n:'ลิฟต์ / บันได B',c:'circ',l:1,x:8,y:6,w:12,h:15,b:'อาคาร C ผู้ป่วยใน',t:'-',tel:'-',grp:'B'},
@@ -192,22 +179,15 @@ const ROOMS = [
 {no:'C202',n:'หอผู้ป่วยเด็ก',c:'ipd',l:2,x:-16,y:6,w:24,h:15,b:'อาคาร C ผู้ป่วยใน',t:'เยี่ยม 18:00-20:00',tel:'312'},
 {no:'C217',n:'ลิฟต์ / บันได B',c:'circ',l:2,x:8,y:6,w:12,h:15,b:'อาคาร C ผู้ป่วยใน',t:'-',tel:'-',grp:'B'},
 {no:'C210',n:'โถงทางเดินชั้น 2 IPD',c:'circ',l:2,x:-42,y:21,w:64,h:6,b:'อาคาร C ผู้ป่วยใน',t:'-',tel:'-'},
-/* ---- อาคาร D : สนับสนุน + ลานจอด ---- */
 {no:'D101',n:'โรงอาหาร / ร้านค้า',c:'support',l:1,x:-62,y:32,w:24,h:14,b:'อาคาร D สนับสนุน',t:'06:00-18:00',tel:'401'},
 {no:'D102',n:'ซักฟอก / จ่ายกลาง',c:'support',l:1,x:-38,y:32,w:20,h:14,b:'อาคาร D สนับสนุน',t:'07:00-17:00',tel:'402'},
 {no:'D103',n:'คลังพัสดุ',c:'support',l:1,x:-18,y:32,w:18,h:14,b:'อาคาร D สนับสนุน',t:'08:00-16:00',tel:'403'},
 {no:'P001',n:'ลานจอดรถ',c:'circ',l:1,x:26,y:8,w:38,h:32,b:'ภายนอก',t:'ตลอด 24 ชม.',tel:'-'}
 ];
 
-/* ขอบเขตอาคารของชั้นบน (ชั้น 2 เดินนอกอาคารไม่ได้) */
 const FOOT = { 2:[{x:-65,y:-36,w:82,h:34},{x:-43,y:4,w:66,h:25}] };
-
-/* จุดเริ่มต้นเริ่มแรก = หน้าอาคารผู้ป่วยนอก */
 const ENTRANCE = {l:1,x:-70,y:-20,name:'ทางเข้าหลัก (หน้าอาคาร A)'};
 
-/* ==========================================================================
-   4) เรขาคณิต เมตร <-> ละติจูด/ลองจิจูด
-   ========================================================================== */
 const D2R=Math.PI/180;
 function mo(dx,dy){
   const s=CFG.scale, r=CFG.rotation*D2R, X=dx*s*Math.cos(r)-dy*s*Math.sin(r), Y=dx*s*Math.sin(r)+dy*s*Math.cos(r);
@@ -234,9 +214,6 @@ function build(){
   return {type:'FeatureCollection',features:f};
 }
 
-/* ==========================================================================
-   5) กริดเดิน + A* (ลูกศร zigzag ตามทางเดิน)
-   ========================================================================== */
 const G={minX:-95,minY:-65,maxX:95,maxY:65,cell:1};
 G.W=(G.maxX-G.minX)/G.cell; G.H=(G.maxY-G.minY)/G.cell;
 const ci=(x,y)=>{const ix=Math.floor((x-G.minX)/G.cell), iy=Math.floor((y-G.minY)/G.cell);
@@ -283,9 +260,22 @@ class Heap{
   pop(){const K=this.k,V=this.v,top=V[0],lk=K.pop(),lv=V.pop();
     if(K.length){K[0]=lk;V[0]=lv;let i=0;for(;;){const l=2*i+1,r=l+1;let m=i;
       if(l<K.length&&K[l]<K[m])m=l; if(r<K.length&&K[r]<K[m])m=r; if(m===i)break;
-      [K[m],K[i]]=[K[i],K[m]];[V[m],V[i]]=[V[i],V[m]];i=m;}}
+      [K[m],K[i]]=[K[i],K[m]];[V[m],V[i]]=[V[i],V[p]||V[i]];i=m;}}
     return top;}
 }
+// Quick fix for Heap pop swap
+Heap.prototype.pop = function(){
+  const K=this.k, V=this.v, top=V[0], lk=K.pop(), lv=V.pop();
+  if(K.length){K[0]=lk; V[0]=lv; let i=0; for(;;){
+    const l=2*i+1, r=l+1; let m=i;
+    if(l<K.length && K[l]<K[m]) m=l;
+    if(r<K.length && K[r]<K[m]) m=r;
+    if(m===i) break;
+    [K[m],K[i]]=[K[i],K[m]]; [V[m],V[i]]=[V[i],V[m]]; i=m;
+  }}
+  return top;
+};
+
 function astar(b,start,goal){
   if(start<0||goal<0) return null;
   const N=G.W*G.H, TURN=3, DX=[1,-1,0,0], DY=[0,0,1,-1];
@@ -325,35 +315,38 @@ function pickElev(lv,pt){
   return e.sort((a,b)=>Math.hypot(a.x-pt.x,a.y-pt.y)-Math.hypot(b.x-pt.x,b.y-pt.y))[0];
 }
 
-/* ==========================================================================
-   6) MAP
-   ========================================================================== */
+/* แผนที่ฐาน Google Maps และตัวเลือกอื่น ๆ */
 const BASES={
- sat :{t:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],a:'Imagery © Esri, Maxar'},
- road:{t:['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png','https://b.tile.openstreetmap.org/{z}/{x}/{y}.png','https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'],a:'© OpenStreetMap contributors'},
- dark:{t:['https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png','https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png','https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'],a:'© CARTO © OSM'},
- topo:{t:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],a:'© Esri'}
+ gsat:{t:[
+   'https://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+   'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+   'https://mt2.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+   'https://mt3.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+ ],a:'Imagery ©2026 Google'},
+ gmap:{t:[
+   'https://mt0.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+   'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+   'https://mt2.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+   'https://mt3.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'
+ ],a:'Map data ©2026 Google'},
+ osm:{t:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],a:'© OpenStreetMap'},
+ dark:{t:['https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'],a:'© CARTO'}
 };
+
 const map=new maplibregl.Map({
   container:'map',
   style:{version:8,
-    sources:{base:{type:'raster',tiles:BASES.sat.t,tileSize:256,maxzoom:19,attribution:BASES.sat.a+' | Map © โรงพยาบาลสวี'}},
+    sources:{base:{type:'raster',tiles:BASES.gsat.t,tileSize:256,maxzoom:20,attribution:BASES.gsat.a+' | Map © โรงพยาบาลสวี'}},
     layers:[{id:'bg',type:'background',paint:{'background-color':'#0a1220'}},
-            {id:'base',type:'raster',source:'base',paint:{'raster-opacity':0.75}}]},
+            {id:'base',type:'raster',source:'base',paint:{'raster-opacity':0.8}}]
+  },
   center:CFG.center, zoom:18, pitch:58, bearing:-18, maxPitch:80, antialias:true
 });
 map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'bottom-right');
-const geo=new maplibregl.GeolocateControl({positionOptions:{enableHighAccuracy:true},trackUserLocation:true});
-map.addControl(geo,'bottom-right');
+map.addControl(new maplibregl.GeolocateControl({trackUserLocation:true}),'bottom-right');
 map.addControl(new maplibregl.ScaleControl({unit:'metric'}),'bottom-left');
 
 let LV=1,FILT=null,SEL=null,labels=[],arrows=[],pins=[],ROUTE=null,START={...ENTRANCE},DRAW=false,SETSTART=false,pts=[];
-
-let tileErr=0;
-map.on('error',e=>{ const m=(e&&e.error&&e.error.message)||''; 
-  if(/tile|Failed to fetch|NetworkError/i.test(m) && ++tileErr===4)
-    say('โหลดภาพแผนที่ฐานไม่สำเร็จ — หน้าพรีวิวอาจบล็อกการเชื่อมต่อภายนอก ลองอัปโหลดขึ้นโฮสต์จริง หรือสลับเป็น "ถนน" ในเมนู ⚙',7000);
-});
 
 map.on('load',()=>{
   map.addSource('rooms',{type:'geojson',data:build()});
@@ -383,10 +376,9 @@ map.on('load',()=>{
   map.on('mouseenter','r3d',()=>map.getCanvas().style.cursor='pointer');
   map.on('mouseleave','r3d',()=>map.getCanvas().style.cursor='');
   map.on('zoom',drawLabels);
-  say('แตะห้องเพื่อดูรายละเอียด แล้วกด "นำทางไปห้องนี้"',4200);
+  say('เลือกห้องเพื่อดูข้อมูลและระบบนำทาง',4000);
 });
 
-/* ---- ant-march ให้เส้นไหลไปข้างหน้า ---- */
 const DASHES=[[0,4,3],[0.5,4,2.5],[1,4,2],[1.5,4,1.5],[2,4,1],[2.5,4,.5],[3,4,0],[0,.5,3,3.5],[0,1,3,3],[0,1.5,3,2.5],[0,2,3,2],[0,2.5,3,1.5],[0,3,3,1],[0,3.5,3,.5]];
 function antMarch(){let i=0;setInterval(()=>{ if(map.getLayer('rt-line'))
   map.setPaintProperty('rt-line','line-dasharray',DASHES[i=(i+1)%DASHES.length]); },70);}
@@ -411,9 +403,6 @@ function drawLabels(){
   });
 }
 
-/* ==========================================================================
-   7) นำทาง
-   ========================================================================== */
 function centerOf(r){ return {l:r.l,x:r.x+r.w/2,y:r.y+r.h/2}; }
 function bearingOf(dx,dy){ return (Math.atan2(dx,dy)*180/Math.PI+CFG.rotation+360)%360; }
 function segLen(p){ let s=0; for(let i=1;i<p.length;i++) s+=Math.hypot(p[i][0]-p[i-1][0],p[i][1]-p[i-1][1]); return s*CFG.scale; }
@@ -433,7 +422,7 @@ function turnSteps(p){
   return out;
 }
 function navigateTo(idx){
-  const r=allRooms()[idx]; if(!r||r.ring){say('ห้องที่วาดเองยังไม่รองรับการนำทาง');return;}
+  const r=allRooms()[idx]; if(!r||r.ring){say('ห้องนี้ยังไม่รองรับการนำทาง');return;}
   const dest=centerOf(r), segs=[], steps=[];
   try{
     if(START.l===dest.l){
@@ -451,7 +440,7 @@ function navigateTo(idx){
       steps.push({t:'lift',g:eD.grp,from:START.l,to:dest.l,no:eS.no});
       segs.push({l:dest.l,p:p2}); steps.push({t:'walk',l:dest.l,s:turnSteps(p2),d:segLen(p2)});
     }
-  }catch(e){ say('หาเส้นทางไม่ได้ — ลองตั้งจุดเริ่มต้นใหม่ให้อยู่บนทางเดิน'); return; }
+  }catch(e){ say('หาเส้นทางไม่พบ ลองเลือกจุดเริ่มต้นใหม่'); return; }
 
   ROUTE={segs,steps,dest:r};
   map.getSource('route').setData({type:'FeatureCollection',features:segs.map(s=>({
@@ -490,9 +479,6 @@ function drawArrows(){
 function clearRoute(){ ROUTE=null; map.getSource('route').setData({type:'FeatureCollection',features:[]});
   arrows.forEach(m=>m.remove()); arrows=[]; pins.forEach(m=>m.remove()); pins=[]; sheet.classList.remove('on'); }
 
-/* ==========================================================================
-   8) แผงรายละเอียด / เส้นทาง
-   ========================================================================== */
 const sheet=document.getElementById('sheet');
 function select(idx){
   const f=build().features.find(x=>x.properties.idx==idx); if(!f) return;
@@ -522,7 +508,7 @@ function showRoute(){
     <span class="rno" style="background:#22d3ee33;color:#22d3ee">นำทาง</span>
     <h2>ไป ${R.dest.no} · ${R.dest.n}</h2>
     <div class="tag">รวม ~${total} เมตร · เดินประมาณ ${Math.max(1,Math.round(total/70))} นาที</div>
-    <div style="font-size:12px;color:#8da4bf;margin-top:8px">เริ่มจาก: ${START.name||'จุดที่เลือก'} (ชั้น ${START.l})</div>
+    <div style="font-size:12px;color:#8da4bf;margin-top:8px">เริ่มจาก: ${START.name} (ชั้น ${START.l})</div>
     <div id="steps">`;
   R.steps.forEach(st=>{
     if(st.t==='lift'){ html+=`<div class="s"><div class="ic">⇅</div><div><b>ขึ้นลิฟต์ ${st.g} (${st.no})</b> จากชั้น ${st.from} → ชั้น ${st.to}</div></div>`; return; }
@@ -537,20 +523,17 @@ function showRoute(){
   sheet.querySelector('#close').onclick=()=>sheet.classList.remove('on');
 }
 function setStartRoom(idx){ const r=allRooms()[idx]; if(!r) return;
-  const d=cxy(doorOf(r)); START={l:r.l,x:d[0],y:d[1],name:`หน้าห้อง ${r.no} ${r.n}`};
+  const d=cxy(doorOf(r)); START={l:r.l,x:d[0],y:d[1],name:`ห้อง ${r.no} ${r.n}`};
   say('ตั้งจุดเริ่มต้นที่ '+START.name); }
 function gmap(s){const[a,b]=s.split(',');open(`https://www.google.com/maps/dir/?api=1&destination=${b},${a}`,'_blank');}
 function setLevel(l){ LV=l; [...document.getElementById('levels').children].forEach(b=>b.classList.toggle('on',+b.textContent===l)); refresh(); }
 
-/* ==========================================================================
-   9) UI
-   ========================================================================== */
 function buildUI(){
   const lvBox=document.getElementById('levels');
   [2,1].forEach(l=>{const b=document.createElement('button');b.textContent=l;b.className=l===LV?'on':'';
     b.onclick=()=>setLevel(l);lvBox.appendChild(b);});
-  const sb=document.createElement('button'); sb.textContent='◎'; sb.title='ตั้งจุดเริ่มต้นโดยแตะแผนที่';
-  sb.onclick=()=>{SETSTART=true;say('แตะบนแผนที่เพื่อกำหนด "คุณอยู่ที่นี่"');}; lvBox.appendChild(sb);
+  const sb=document.createElement('button'); sb.textContent='◎'; sb.title='แตะแผนที่เพื่อตั้งจุดเริ่มต้น';
+  sb.onclick=()=>{SETSTART=true;say('แตะบนแผนที่เพื่อกำหนดจุดเริ่มต้น');}; lvBox.appendChild(sb);
 
   const cBox=document.getElementById('cats');
   const all=document.createElement('div'); all.className='chip on'; all.textContent='ทั้งหมด';
@@ -583,7 +566,6 @@ const hint=document.getElementById('hint');
 function say(t,ms){hint.textContent=t;hint.classList.add('on');clearTimeout(say.t);
   say.t=setTimeout(()=>hint.classList.remove('on'),ms||3200);}
 
-/* ---- tools ---- */
 const tools=document.getElementById('tools');
 document.getElementById('gear').onclick=()=>tools.classList.toggle('on');
 document.getElementById('ctr').value=`${CFG.center[1]}, ${CFG.center[0]}`;
@@ -603,15 +585,14 @@ document.getElementById('apply').onclick=()=>{
 };
 document.querySelectorAll('.bm').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.bm').forEach(x=>x.classList.remove('on')); b.classList.add('on');
-  tileErr=0; map.getSource('base').setTiles(BASES[b.dataset.b].t);
+  map.getSource('base').setTiles(BASES[b.dataset.b].t);
 });
 
-/* ---- draw / set-start ---- */
-document.getElementById('draw').onclick=()=>{DRAW=true;pts=[];say('คลิกตามมุมห้องบนภาพดาวเทียม แล้วกด "ปิดรูป"');};
+document.getElementById('draw').onclick=()=>{DRAW=true;pts=[];say('คลิกตามมุมห้อง แล้วกด "ปิดรูป"');};
 document.getElementById('undo').onclick=()=>{pts.pop();paint();};
 map.on('click',e=>{
   if(SETSTART){ const p=toLocal(e.lngLat.lng,e.lngLat.lat);
-    START={l:LV,x:p[0],y:p[1],name:'จุดที่คุณแตะบนแผนที่'}; SETSTART=false; say('ตั้งจุดเริ่มต้นแล้ว (ชั้น '+LV+')'); return; }
+    START={l:LV,x:p[0],y:p[1],name:'จุดที่เลือกบนแผนที่'}; SETSTART=false; say('ตั้งจุดเริ่มต้นเรียบร้อย'); return; }
   if(DRAW){ pts.push([e.lngLat.lng,e.lngLat.lat]); paint(); }
 });
 function paint(){ const f=[];
@@ -628,7 +609,7 @@ document.getElementById('fin').onclick=()=>{
   CUSTOM.push({no,n,c:CAT[c]?c:'opd',l,b:'วาดเอง',t:'-',tel:'-',ring:[...pts,pts[0]],
     x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys)});
   pts=[];DRAW=false;paint();for(const k in BLK)delete BLK[k];
-  map.getSource('rooms').setData(build());refresh();say('เพิ่ม '+no+' แล้ว — อย่าลืมส่งออก GeoJSON');
+  map.getSource('rooms').setData(build());refresh();say('เพิ่มห้องสำเร็จ');
 };
 document.getElementById('exp').onclick=()=>{
   const blob=new Blob([JSON.stringify(build(),null,2)],{type:'application/json'});
