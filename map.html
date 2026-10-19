@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;800&display=swap" rel="stylesheet">
 <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
 <style>
-:root{--bg:#070b14;--glass:rgba(14,22,38,.74);--line:rgba(125,211,252,.18);
+:root{--bg:#070b14;--glass:rgba(14,22,38,.78);--line:rgba(125,211,252,.18);
   --cy:#22d3ee;--rose:#fb7185;--txt:#e8f3ff;--dim:#8da4bf}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;font-family:'Noto Sans Thai',system-ui,sans-serif;background:var(--bg);color:var(--txt);overflow:hidden}
@@ -19,7 +19,7 @@ html,body{height:100%;font-family:'Noto Sans Thai',system-ui,sans-serif;backgrou
 #dot{width:10px;height:10px;border-radius:50%;background:var(--cy);box-shadow:0 0 14px var(--cy);animation:p 2s infinite}
 @keyframes p{50%{opacity:.3}}
 #brand b{font-size:15px;font-weight:800}
-#brand span{display:block;font-size:10.5px;color:var(--dim);font-weight:400}
+#brand span{display:block;font-size:10.5px;color:var(--dim)}
 #searchbox{flex:1 1 240px;min-width:200px;position:relative}
 #q{width:100%;padding:13px 15px;font:15px 'Noto Sans Thai';color:var(--txt);background:var(--glass);
   backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:18px;outline:none}
@@ -29,7 +29,7 @@ html,body{height:100%;font-family:'Noto Sans Thai',system-ui,sans-serif;backgrou
 #res div{padding:10px 12px;border-radius:11px;cursor:pointer;font-size:14.5px;display:flex;gap:8px;align-items:center}
 #res div:hover{background:rgba(34,211,238,.14)}
 #res small{color:var(--dim);font-size:11.5px;margin-left:auto}
-.rno{font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;background:rgba(255,255,255,.1);letter-spacing:.4px}
+.rno{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;background:rgba(255,255,255,.1);letter-spacing:.4px}
 #levels{position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:5;display:flex;flex-direction:column;gap:5px;padding:6px}
 #levels button{width:48px;height:48px;border:0;border-radius:13px;background:transparent;color:var(--dim);
   font:700 15px 'Noto Sans Thai';cursor:pointer;transition:.22s}
@@ -39,36 +39,69 @@ html,body{height:100%;font-family:'Noto Sans Thai',system-ui,sans-serif;backgrou
 .chip{padding:8px 13px;border-radius:999px;font-size:12.5px;cursor:pointer;user-select:none;
   background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(14px);transition:.2s}
 .chip.on{background:rgba(34,211,238,.2);border-color:var(--cy);color:#fff}
-#sheet{position:absolute;left:12px;bottom:-620px;width:min(390px,calc(100vw - 24px));max-height:78vh;overflow:auto;
+#sheet{position:absolute;left:12px;bottom:-700px;width:min(390px,calc(100vw - 24px));max-height:80vh;overflow:auto;
   z-index:6;padding:18px;transition:bottom .42s cubic-bezier(.22,1,.36,1)}
 #sheet.on{bottom:14px}
-#sheet h2{font-size:20px;font-weight:800;margin:2px 0 3px}
+#sheet h2{font-size:20px;font-weight:800;margin:4px 0 3px}
 .tag{display:inline-block;font-size:11px;padding:4px 11px;border-radius:999px;background:rgba(34,211,238,.16);color:var(--cy)}
 #sheet table{width:100%;font-size:13.5px;border-collapse:collapse;margin-top:10px}
 #sheet td{padding:6px 0;border-bottom:1px solid rgba(255,255,255,.07);vertical-align:top}
 #sheet td:first-child{color:var(--dim);width:88px}
+.lb{display:block;font-size:12px;color:var(--dim);margin:12px 0 6px}
 #close{position:absolute;top:13px;right:15px;cursor:pointer;color:var(--dim);font-size:21px;line-height:1}
 .btn{width:100%;margin-top:8px;padding:11px;border:0;border-radius:11px;cursor:pointer;
   font:700 13.5px 'Noto Sans Thai';background:rgba(255,255,255,.09);color:var(--txt);transition:.2s}
 .btn:hover{background:rgba(255,255,255,.17)}
 .btn.pri{background:linear-gradient(135deg,var(--cy),#0ea5e9);color:#04121a}
-.btn.half{width:calc(50% - 4px);display:inline-block}
+.btn.red{background:linear-gradient(135deg,#fb7185,#e11d48);color:#fff}
+.btn.sm{width:auto;margin:0;padding:7px 11px;font-size:12px}
+.row2{display:flex;gap:7px}.row2 .btn{flex:1}
 #steps{margin-top:12px;font-size:13px}
 #steps .s{display:flex;gap:9px;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,.08)}
 #steps .ic{width:22px;text-align:center;color:var(--cy);font-size:15px}
-#tools{position:absolute;right:12px;top:68px;z-index:7;width:292px;max-height:80vh;overflow:auto;padding:16px;display:none}
-#tools.on{display:block}
-#tools h3{font-size:13.5px;margin-bottom:9px;color:var(--cy);font-weight:800}
-#tools label{display:block;font-size:11.5px;color:var(--dim);margin:9px 0 4px}
-#tools input[type=text]{width:100%;padding:9px 11px;border-radius:10px;border:1px solid var(--line);
-  background:rgba(0,0,0,.35);color:var(--txt);font:13.5px 'Noto Sans Thai';outline:none}
-#tools input[type=range]{width:100%;accent-color:var(--cy)}
+.fab{position:absolute;right:12px;z-index:8;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;cursor:pointer;font-size:18px}
+#gear{top:12px}#edit{top:66px}
+.fab.on{border-color:var(--cy);box-shadow:0 0 18px rgba(34,211,238,.45)}
+.panel{position:absolute;right:66px;top:12px;z-index:8;width:330px;max-height:calc(100vh - 24px);overflow:auto;padding:16px;display:none}
+.panel.on{display:block}
+.panel h3{font-size:13.5px;margin:16px 0 8px;color:var(--cy);font-weight:800}
+.panel h3:first-child{margin-top:0}
+.panel label{display:block;font-size:11.5px;color:var(--dim);margin:8px 0 4px}
+.panel hr{margin:14px 0;border:0;border-top:1px solid rgba(255,255,255,.1)}
+.inp{width:100%;padding:9px 11px;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.35);
+  color:var(--txt);font:13.5px 'Noto Sans Thai';outline:none}
+.inp:focus{border-color:var(--cy)}
+select.inp option{background:#0e1626}
+input[type=range]{width:100%;accent-color:var(--cy)}
 .bmrow{display:flex;gap:5px;flex-wrap:wrap}
 .bm{flex:1 1 46%;padding:9px;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.3);
-  font:600 12px 'Noto Sans Thai';color:var(--dim);cursor:pointer}
+  font:600 12px 'Noto Sans Thai';color:var(--dim);cursor:pointer;text-align:center}
 .bm.on{background:rgba(34,211,238,.2);border-color:var(--cy);color:#fff}
-#gear{position:absolute;right:12px;top:12px;z-index:8;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;cursor:pointer;font-size:18px}
-#hint{position:absolute;left:50%;transform:translateX(-50%);top:78px;z-index:9;padding:11px 20px;border-radius:999px;font-size:13px;display:none;max-width:88vw;text-align:center}
+#list,#catcol{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+#list{max-height:34vh;overflow:auto}
+.li{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+.li .nm{flex:1;min-width:0;font-size:13px;line-height:1.3;overflow:hidden;text-overflow:ellipsis}
+.li .nm small{display:block;color:var(--dim);font-size:11px}
+.li button{width:30px;height:30px;border:0;border-radius:9px;background:rgba(255,255,255,.08);color:#fff;cursor:pointer;font-size:13px;flex:0 0 30px}
+.li button:hover{background:rgba(255,255,255,.2)}
+.li button.del:hover{background:#e11d48}
+input[type=color]{width:30px;height:30px;border:0;border-radius:8px;background:none;cursor:pointer;padding:0;flex:0 0 30px}
+input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+input[type=color]::-webkit-color-swatch{border:2px solid rgba(255,255,255,.35);border-radius:8px}
+input[type=color]::-moz-color-swatch{border:2px solid rgba(255,255,255,.35);border-radius:8px}
+.sw{display:flex;flex-wrap:wrap;gap:6px}
+.sw i{width:26px;height:26px;border-radius:8px;cursor:pointer;border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(0,0,0,.35);transition:.15s}
+.sw i:hover{transform:scale(1.12)}
+.sw i.on{border-color:#fff;box-shadow:0 0 12px rgba(255,255,255,.65)}
+.tg{display:flex!important;align-items:center;gap:8px;font-size:12.5px!important;color:var(--txt)!important;cursor:pointer}
+.empty{font-size:12.5px;color:var(--dim);padding:12px;text-align:center;border:1px dashed rgba(255,255,255,.12);border-radius:12px}
+#modal{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.55);display:none;place-items:center;padding:12px}
+#modal.on{display:grid}
+#modal .box{width:min(430px,100%);max-height:92vh;overflow:auto;padding:18px}
+#modal h3{font-size:17px;font-weight:800;margin-bottom:6px}
+#modal label{display:block;font-size:12px;color:var(--dim);margin:9px 0 4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#hint{position:absolute;left:50%;transform:translateX(-50%);top:78px;z-index:25;padding:11px 20px;border-radius:999px;font-size:13px;display:none;max-width:88vw;text-align:center}
 #hint.on{display:block}
 .lbl{text-align:center;pointer-events:none;line-height:1.15}
 .lbl .n{font-size:10px;font-weight:800;color:#0b1220;background:rgba(226,245,255,.92);padding:1px 5px;border-radius:5px;letter-spacing:.3px}
@@ -76,18 +109,19 @@ html,body{height:100%;font-family:'Noto Sans Thai',system-ui,sans-serif;backgrou
 .arw{width:28px;height:28px;display:grid;place-items:center;pointer-events:none}
 .arw span{font-size:19px;color:#22d3ee;text-shadow:0 0 12px rgba(34,211,238,.95),0 1px 3px #000;animation:flow 1.5s infinite}
 @keyframes flow{0%{opacity:.2;transform:scale(.75)}38%{opacity:1;transform:scale(1.18)}100%{opacity:.2;transform:scale(.75)}}
-.pin{width:30px;height:30px;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);display:grid;place-items:center;
-  box-shadow:0 6px 18px rgba(0,0,0,.6);font-size:13px}
+.pin{width:30px;height:30px;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.6);font-size:13px}
 .pin i{transform:rotate(45deg);font-style:normal}
 .pin.go{background:linear-gradient(135deg,#fb7185,#e11d48)}
 .pin.st{background:linear-gradient(135deg,#4ade80,#16a34a)}
 .maplibregl-ctrl-attrib{font-size:10px}
-@media(max-width:620px){#brand span{display:none}#cats{max-width:calc(100vw - 80px)}
-  #levels button{width:42px;height:42px}#tools{width:calc(100vw - 24px)}}
+@media(max-width:640px){#brand span{display:none}#cats{max-width:calc(100vw - 80px)}
+  #levels button{width:42px;height:42px}
+  .panel{left:12px;right:12px;width:auto;top:120px;max-height:calc(100vh - 134px)}}
 </style>
 </head>
 <body>
 <div id="map"></div>
+
 <div id="top">
   <div id="brand" class="glass"><div id="dot"></div>
     <div><b>โรงพยาบาลสวี</b><span>Interactive 3D Map · Chumphon</span></div></div>
@@ -98,51 +132,120 @@ html,body{height:100%;font-family:'Noto Sans Thai',system-ui,sans-serif;backgrou
 </div>
 <div id="levels" class="glass"></div>
 <div id="cats"></div>
-<div id="gear" class="glass" title="ตั้งค่า">⚙</div>
+<div id="gear" class="glass fab" title="ตั้งค่า">⚙</div>
+<div id="edit" class="glass fab" title="วาด / จัดการห้อง">✎</div>
 <div id="hint" class="glass"></div>
 <div id="sheet" class="glass"></div>
 
-<div id="tools" class="glass">
-  <h3>แผนที่ฐาน (Base map)</h3>
+<!-- ============ แผงตั้งค่า ============ -->
+<div id="tools" class="glass panel">
+  <h3>แผนที่ฐาน</h3>
   <div class="bmrow">
     <div class="bm on" data-b="gsat">Google ดาวเทียม</div>
+    <div class="bm" data-b="ghyb">Google ดาวเทียม+ชื่อ</div>
     <div class="bm" data-b="gmap">Google ถนน</div>
     <div class="bm" data-b="osm">OpenStreetMap</div>
     <div class="bm" data-b="dark">Carto มืด</div>
   </div>
-  <label>ความสว่างภาพฐาน: <b id="dimv">80</b>%</label>
-  <input id="dimr" type="range" min="0" max="100" value="80">
-  <hr style="margin:13px 0;border:0;border-top:1px solid rgba(255,255,255,.1)">
-  <h3>พิกัดจริง &amp; การวางผัง</h3>
-  <label>ศูนย์กลาง (lat, lng) — วางจาก Google Maps</label>
-  <input id="ctr" type="text">
-  <label>หมุนผังให้ตรงอาคารจริง: <b id="rotv">0</b>°</label>
+  <label>ความสว่างภาพฐาน: <b id="dimv">85</b>%</label>
+  <input id="dimr" type="range" min="0" max="100" value="85">
+  <hr>
+  <h3>พิกัดจริงของโรงพยาบาล</h3>
+  <label>วาง lat, lng หรือวางลิงก์ Google Maps ทั้งลิงก์ก็ได้</label>
+  <input id="ctr" class="inp" type="text" placeholder="10.xxxxxx, 99.xxxxxx">
+  <label>หมุนผังตัวอย่าง: <b id="rotv">0</b>°</label>
   <input id="rot" type="range" min="0" max="359" value="0">
-  <label>ขยาย/ย่อผังทั้งชุด: <b id="sclv">1.00</b>×</label>
+  <label>ขยาย/ย่อผังตัวอย่าง: <b id="sclv">1.00</b>×</label>
   <input id="scl" type="range" min="50" max="200" value="100">
   <button class="btn pri" id="apply">ใช้ค่านี้ &amp; บันทึก</button>
-  <hr style="margin:13px 0;border:0;border-top:1px solid rgba(255,255,255,.1)">
-  <h3>วาดห้องเพิ่มจากภาพดาวเทียม</h3>
-  <button class="btn" id="draw">▶ เริ่มวาด (คลิกตามมุมห้อง)</button>
-  <button class="btn" id="undo">↶ ถอยหนึ่งจุด</button>
-  <button class="btn" id="fin">■ ปิดรูป + ตั้งชื่อ</button>
-  <button class="btn pri" id="exp">⬇ ส่งออก GeoJSON</button>
+  <hr>
+  <h3>สีตามหมวดหมู่</h3>
+  <div id="catcol"></div>
+  <button class="btn" id="catreset">คืนค่าสีหมวดเริ่มต้น</button>
 </div>
+
+<!-- ============ แผงวาด / จัดการห้อง ============ -->
+<div id="mgr" class="glass panel">
+  <h3>วาดห้องจากภาพดาวเทียม</h3>
+  <div class="row2"><button class="btn pri" id="draw">▶ วาดห้องใหม่</button><button class="btn" id="undo">↶ ถอยจุด</button></div>
+  <div class="row2"><button class="btn" id="fin">✓ ปิดรูป</button><button class="btn" id="cancel">✕ เลิกวาด</button></div>
+  <div style="font-size:11.5px;color:var(--dim);margin-top:8px;line-height:1.5">คลิกตามมุมห้องทีละจุด → คลิกจุดแรกซ้ำ หรือกด "ปิดรูป" เพื่อจบ</div>
+
+  <h3>ห้องที่วาดไว้ <span id="cnt" style="color:var(--dim);font-weight:400"></span></h3>
+  <input id="mf" class="inp" type="text" placeholder="กรองรายการ...">
+  <div id="list"></div>
+  <button class="btn" id="restore" style="display:none">↺ กู้คืนที่ลบล่าสุด</button>
+  <div class="row2"><button class="btn" id="clrLv">ล้างเฉพาะชั้นนี้</button><button class="btn red" id="clrAll">🗑 ล้างทั้งหมด</button></div>
+
+  <h3>ผังตัวอย่าง</h3>
+  <label class="tg"><input type="checkbox" id="smp"> แสดงผังตัวอย่าง (ปิดเพื่อวาดผังจริงเอง)</label>
+
+  <h3>สำรอง / ย้ายข้อมูล</h3>
+  <div class="row2"><button class="btn" id="exp">⬇ ส่งออก GeoJSON</button><button class="btn" id="imp">⬆ นำเข้า</button></div>
+  <input type="file" id="impf" accept=".geojson,.json" hidden>
+</div>
+
+<!-- ============ ฟอร์มข้อมูลห้อง ============ -->
+<div id="modal"><div class="glass box">
+  <h3 id="mt">ห้องใหม่</h3>
+  <div class="g2">
+    <div><label>หมายเลขห้อง</label><input id="f_no" class="inp" placeholder="เช่น A101"></div>
+    <div><label>ชั้น</label><input id="f_l" class="inp" type="number" min="1" max="9" value="1"></div>
+  </div>
+  <label>ชื่อห้อง *</label><input id="f_n" class="inp" placeholder="เช่น ห้องจ่ายยา">
+  <label>หมวด</label><select id="f_c" class="inp"></select>
+  <label>สีของห้อง</label>
+  <div id="f_sw" class="sw"></div>
+  <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+    <input type="color" id="f_col"><span style="font-size:12px;color:var(--dim)">เลือกสีเอง</span>
+    <label class="tg" style="margin:0 0 0 auto"><input type="checkbox" id="f_auto"> ใช้สีตามหมวด</label>
+  </div>
+  <div class="g2">
+    <div><label>อาคาร</label><input id="f_b" class="inp"></div>
+    <div><label>เบอร์ภายใน</label><input id="f_tel" class="inp"></div>
+  </div>
+  <label>เวลาทำการ</label><input id="f_t" class="inp" placeholder="เช่น 08:00-16:00">
+  <label>กลุ่มลิฟต์/บันได (เช่น A — ใส่ชื่อเดียวกันทุกชั้น, เว้นว่างถ้าไม่ใช่)</label><input id="f_g" class="inp">
+  <div class="row2" style="margin-top:6px"><button class="btn" id="f_cancel">ยกเลิก</button><button class="btn pri" id="f_ok">บันทึก</button></div>
+</div></div>
 
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
-const DEF = { center:[99.0940, 10.2850], rotation:0, scale:1 };
-const CFG = Object.assign({}, DEF, JSON.parse(localStorage.getItem('swi-cfg')||'{}'));
-const saveCfg = ()=>localStorage.setItem('swi-cfg',JSON.stringify(CFG));
+/* ======================================================================
+   0) CONFIG — แก้พิกัดจริงตรงนี้ [lng, lat] หรือกรอกผ่าน ⚙ ในหน้าเว็บ
+   ====================================================================== */
+const DEF={center:[99.0940,10.2850],rotation:0,scale:1};
+const CFG=Object.assign({},DEF,JSON.parse(localStorage.getItem('swi-cfg')||'{}'));
+const UP=new URLSearchParams(location.search);
+if(UP.get('lat')&&UP.get('lng')) CFG.center=[+UP.get('lng'),+UP.get('lat')];
+const saveCfg=()=>localStorage.setItem('swi-cfg',JSON.stringify(CFG));
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-const CAT = {
+/* ======================================================================
+   1) หมวด + ชุดสี
+   ====================================================================== */
+const CAT={
   info:{n:'ประชาสัมพันธ์',c:'#38bdf8'}, opd:{n:'ตรวจโรค',c:'#22d3ee'},
   emergency:{n:'ฉุกเฉิน',c:'#fb7185'}, ipd:{n:'ผู้ป่วยใน',c:'#a78bfa'},
   lab:{n:'ตรวจพิเศษ',c:'#facc15'},     pharm:{n:'เภสัช/การเงิน',c:'#4ade80'},
   support:{n:'สนับสนุน',c:'#94a3b8'},  circ:{n:'ทางเดิน/ลิฟต์',c:'#475569'}
 };
+const PALETTE=['#22d3ee','#38bdf8','#6366f1','#a78bfa','#f472b6','#fb7185',
+               '#f97316','#facc15','#4ade80','#14b8a6','#94a3b8','#f1f5f9'];
 
-const ROOMS = [
+/* ======================================================================
+   2) ข้อมูลที่บันทึกในเครื่อง (ห้องที่วาด, สีที่กำหนด, การแสดงผังตัวอย่าง)
+   ====================================================================== */
+const DB=Object.assign({custom:[],ovr:{},catc:{},sample:true},JSON.parse(localStorage.getItem('swi-data')||'{}'));
+const save=()=>localStorage.setItem('swi-data',JSON.stringify(DB));
+const catColor=c=>DB.catc[c]||CAT[c].c;
+let TRASH=null;
+
+/* ======================================================================
+   3) ผังตัวอย่าง (เมตรจากศูนย์กลาง: x=ตะวันออก, y=เหนือ) — ปิดได้ในแผง ✎
+   ====================================================================== */
+const SAMPLE=[
 {no:'A101',n:'ประชาสัมพันธ์ / คัดกรอง',c:'info',l:1,x:-62,y:-34,w:12,h:11,b:'อาคาร A ผู้ป่วยนอก',t:'08:00-16:00',tel:'101'},
 {no:'A102',n:'เวชระเบียน',c:'info',l:1,x:-50,y:-34,w:12,h:11,b:'อาคาร A ผู้ป่วยนอก',t:'07:00-16:00',tel:'102'},
 {no:'A103',n:'การเงิน / สิทธิบัตร',c:'pharm',l:1,x:-38,y:-34,w:12,h:11,b:'อาคาร A ผู้ป่วยนอก',t:'08:00-16:00',tel:'103'},
@@ -184,73 +287,86 @@ const ROOMS = [
 {no:'D103',n:'คลังพัสดุ',c:'support',l:1,x:-18,y:32,w:18,h:14,b:'อาคาร D สนับสนุน',t:'08:00-16:00',tel:'403'},
 {no:'P001',n:'ลานจอดรถ',c:'circ',l:1,x:26,y:8,w:38,h:32,b:'ภายนอก',t:'ตลอด 24 ชม.',tel:'-'}
 ];
+const FOOT={2:[{x:-65,y:-36,w:82,h:34},{x:-43,y:4,w:66,h:25}]};
+const ENTRANCE={l:1,x:-70,y:-20,name:'ทางเข้าหลัก (หน้าอาคาร A)'};
 
-const FOOT = { 2:[{x:-65,y:-36,w:82,h:34},{x:-43,y:4,w:66,h:25}] };
-const ENTRANCE = {l:1,x:-70,y:-20,name:'ทางเข้าหลัก (หน้าอาคาร A)'};
-
+/* ======================================================================
+   4) เรขาคณิต
+   ====================================================================== */
 const D2R=Math.PI/180;
 function mo(dx,dy){
-  const s=CFG.scale, r=CFG.rotation*D2R, X=dx*s*Math.cos(r)-dy*s*Math.sin(r), Y=dx*s*Math.sin(r)+dy*s*Math.cos(r);
-  return [CFG.center[0]+X/(111320*Math.cos(CFG.center[1]*D2R)), CFG.center[1]+Y/110540];
+  const s=CFG.scale,r=CFG.rotation*D2R,X=dx*s*Math.cos(r)-dy*s*Math.sin(r),Y=dx*s*Math.sin(r)+dy*s*Math.cos(r);
+  return [CFG.center[0]+X/(111320*Math.cos(CFG.center[1]*D2R)),CFG.center[1]+Y/110540];
 }
 function toLocal(lng,lat){
-  const X=(lng-CFG.center[0])*111320*Math.cos(CFG.center[1]*D2R), Y=(lat-CFG.center[1])*110540;
-  const r=-CFG.rotation*D2R;
-  return [(X*Math.cos(r)-Y*Math.sin(r))/CFG.scale, (X*Math.sin(r)+Y*Math.cos(r))/CFG.scale];
+  const X=(lng-CFG.center[0])*111320*Math.cos(CFG.center[1]*D2R),Y=(lat-CFG.center[1])*110540,r=-CFG.rotation*D2R;
+  return [(X*Math.cos(r)-Y*Math.sin(r))/CFG.scale,(X*Math.sin(r)+Y*Math.cos(r))/CFG.scale];
 }
-const rect=(x,y,w,h)=>[[mo(x,y),mo(x+w,y),mo(x+w,y+h),mo(x,y+h),mo(x,y)]];
-const H={1:[0,4.2],2:[4.6,8.8]};
-let CUSTOM=[];
+function centroid(p){let x=0,y=0;p.forEach(q=>{x+=q[0];y+=q[1];});return [x/p.length,y/p.length];}
 
-function allRooms(){ return ROOMS.concat(CUSTOM); }
-function build(){
-  const f=[];
-  allRooms().forEach((r,i)=>{
-    const geo = r.ring ? [r.ring] : rect(r.x,r.y,r.w,r.h);
-    const ctr = r.ring ? r.ring[0] : mo(r.x+r.w/2, r.y+r.h/2);
-    f.push({type:'Feature',id:i+1,geometry:{type:'Polygon',coordinates:geo},
-      properties:{...r,idx:i,color:CAT[r.c].c,base:H[r.l][0],top:H[r.l][1],ctr:JSON.stringify(ctr)}});
-  });
-  return {type:'FeatureCollection',features:f};
+let R=[];
+function rooms(){
+  const out=[];
+  if(DB.sample) SAMPLE.forEach(r=>out.push({...r,key:'S:'+r.no,src:'s',color:DB.ovr['S:'+r.no]||null,
+    poly:[[r.x,r.y],[r.x+r.w,r.y],[r.x+r.w,r.y+r.h],[r.x,r.y+r.h]]}));
+  DB.custom.forEach(r=>out.push({...r,key:r.id,src:'c',poly:r.ring.slice(0,-1).map(p=>toLocal(p[0],p[1]))}));
+  out.forEach(r=>{r.col=r.color||catColor(r.c);const c=centroid(r.poly);r.cx=c[0];r.cy=c[1];});
+  return out;
+}
+function fc(){
+  return {type:'FeatureCollection',features:R.map((r,i)=>({type:'Feature',id:i+1,
+    geometry:{type:'Polygon',coordinates:[r.src==='c'?r.ring:[...r.poly,r.poly[0]].map(p=>mo(p[0],p[1]))]},
+    properties:{key:r.key,l:r.l,c:r.c,color:r.col,top:r.c==='circ'?0.3:4.2}}))};
 }
 
-const G={minX:-95,minY:-65,maxX:95,maxY:65,cell:1};
-G.W=(G.maxX-G.minX)/G.cell; G.H=(G.maxY-G.minY)/G.cell;
-const ci=(x,y)=>{const ix=Math.floor((x-G.minX)/G.cell), iy=Math.floor((y-G.minY)/G.cell);
-  return (ix<0||iy<0||ix>=G.W||iy>=G.H)?-1:iy*G.W+ix;};
-const cxy=i=>[G.minX+(i%G.W+.5)*G.cell, G.minY+(((i/G.W)|0)+.5)*G.cell];
-
-function rectCells(r,cb){
-  for(let y=Math.max(G.minY,r.y); y<Math.min(G.maxY,r.y+r.h); y+=G.cell)
-    for(let x=Math.max(G.minX,r.x); x<Math.min(G.maxX,r.x+r.w); x+=G.cell){
-      const i=ci(x,y); if(i>=0) cb(i);
-    }
+/* ======================================================================
+   5) กริดเดิน + A*
+   ====================================================================== */
+let G=null;const BLK={},CIRC={};
+function resetGrid(){
+  let x0=-60,y0=-60,x1=60,y1=60;
+  R.forEach(r=>r.poly.forEach(([x,y])=>{x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);}));
+  x0=Math.floor(x0-25);y0=Math.floor(y0-25);x1=Math.ceil(x1+25);y1=Math.ceil(y1+25);
+  G={minX:x0,minY:y0,W:Math.min(700,x1-x0),H:Math.min(700,y1-y0)};
+  for(const k in BLK)delete BLK[k];for(const k in CIRC)delete CIRC[k];
 }
-const BLK={};
-function blockOf(lv){
-  if(BLK[lv]) return BLK[lv];
-  const b=new Uint8Array(G.W*G.H);
-  if(FOOT[lv]){ b.fill(1); FOOT[lv].forEach(f=>rectCells(f,i=>b[i]=0)); }
-  allRooms().forEach(r=>{ if(r.l===lv && r.c!=='circ' && !r.ring) rectCells(r,i=>b[i]=1); });
-  return BLK[lv]=b;
+const ci=(x,y)=>{const ix=Math.floor(x-G.minX),iy=Math.floor(y-G.minY);return(ix<0||iy<0||ix>=G.W||iy>=G.H)?-1:iy*G.W+ix;};
+const cxy=i=>[G.minX+i%G.W+.5,G.minY+((i/G.W)|0)+.5];
+function pip(x,y,p){let ins=false;for(let i=0,j=p.length-1;i<p.length;j=i++){const[xi,yi]=p[i],[xj,yj]=p[j];
+  if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))ins=!ins;}return ins;}
+function polyCells(p,cb){
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;p.forEach(([x,y])=>{x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);});
+  for(let y=Math.floor(y0);y<=Math.ceil(y1);y++)for(let x=Math.floor(x0);x<=Math.ceil(x1);x++){
+    if(pip(x+.5,y+.5,p)){const i=ci(x+.5,y+.5);if(i>=0)cb(i);}}
 }
-const inCirc=(x,y,lv)=>allRooms().some(r=>r.c==='circ'&&r.l===lv&&!r.ring&&x>=r.x&&x<=r.x+r.w&&y>=r.y&&y<=r.y+r.h);
-
-function doorOf(r){
-  const b=blockOf(r.l);
-  if(r.c==='circ') return nearFree(b,r.x+r.w/2,r.y+r.h/2);
-  const cand=[[r.x+r.w/2,r.y-1.2],[r.x+r.w/2,r.y+r.h+1.2],[r.x-1.2,r.y+r.h/2],[r.x+r.w+1.2,r.y+r.h/2]];
-  for(const p of cand){const i=ci(p[0],p[1]); if(i>=0&&!b[i]&&inCirc(p[0],p[1],r.l)) return i;}
-  for(const p of cand){const i=ci(p[0],p[1]); if(i>=0&&!b[i]) return i;}
-  return nearFree(b,r.x+r.w/2,r.y+r.h/2);
+function gridOf(lv){
+  if(BLK[lv])return BLK[lv];
+  const N=G.W*G.H,b=new Uint8Array(N),cm=new Uint8Array(N);
+  const circ=R.filter(r=>r.l===lv&&r.c==='circ');
+  if(lv>1){
+    const areas=[...(DB.sample&&FOOT[lv]?FOOT[lv].map(f=>[[f.x,f.y],[f.x+f.w,f.y],[f.x+f.w,f.y+f.h],[f.x,f.y+f.h]]):[]),...circ.map(r=>r.poly)];
+    if(areas.length){b.fill(1);areas.forEach(p=>polyCells(p,i=>b[i]=0));}
+  }
+  circ.forEach(r=>polyCells(r.poly,i=>cm[i]=1));
+  R.forEach(r=>{if(r.l===lv&&r.c!=='circ')polyCells(r.poly,i=>{b[i]=1;cm[i]=0;});});
+  CIRC[lv]=cm;return BLK[lv]=b;
 }
 function nearFree(b,x,y){
-  const s=ci(x,y); if(s>=0&&!b[s]) return s;
-  for(let rad=1;rad<60;rad++) for(let dy=-rad;dy<=rad;dy++) for(let dx=-rad;dx<=rad;dx++){
-    if(Math.abs(dx)!==rad&&Math.abs(dy)!==rad) continue;
-    const i=ci(x+dx,y+dy); if(i>=0&&!b[i]) return i;
-  }
+  const s=ci(x,y);if(s>=0&&!b[s])return s;
+  for(let rad=1;rad<80;rad++)for(let dy=-rad;dy<=rad;dy++)for(let dx=-rad;dx<=rad;dx++){
+    if(Math.abs(dx)!==rad&&Math.abs(dy)!==rad)continue;const i=ci(x+dx,y+dy);if(i>=0&&!b[i])return i;}
   return -1;
+}
+function doorOf(r){
+  const b=gridOf(r.l),cm=CIRC[r.l];
+  if(r.c==='circ')return nearFree(b,r.cx,r.cy);
+  const inside=new Set();polyCells(r.poly,i=>inside.add(i));
+  let best=-1,bs=1e9;
+  inside.forEach(i=>{const x=i%G.W,y=(i/G.W)|0;
+    [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy])=>{const nx=x+dx,ny=y+dy;
+      if(nx<0||ny<0||nx>=G.W||ny>=G.H)return;const n=ny*G.W+nx;if(b[n]||inside.has(n))return;
+      const p=cxy(n),s=Math.hypot(p[0]-r.cx,p[1]-r.cy)-(cm[n]?1000:0);if(s<bs){bs=s;best=n;}});});
+  return best>=0?best:nearFree(b,r.cx,r.cy);
 }
 class Heap{
   constructor(){this.k=[];this.v=[];}
@@ -259,363 +375,482 @@ class Heap{
     while(i>0){const p=(i-1)>>1;if(K[p]<=K[i])break;[K[p],K[i]]=[K[i],K[p]];[V[p],V[i]]=[V[i],V[p]];i=p;}}
   pop(){const K=this.k,V=this.v,top=V[0],lk=K.pop(),lv=V.pop();
     if(K.length){K[0]=lk;V[0]=lv;let i=0;for(;;){const l=2*i+1,r=l+1;let m=i;
-      if(l<K.length&&K[l]<K[m])m=l; if(r<K.length&&K[r]<K[m])m=r; if(m===i)break;
-      [K[m],K[i]]=[K[i],K[m]];[V[m],V[i]]=[V[i],V[p]||V[i]];i=m;}}
+      if(l<K.length&&K[l]<K[m])m=l;if(r<K.length&&K[r]<K[m])m=r;if(m===i)break;
+      [K[m],K[i]]=[K[i],K[m]];[V[m],V[i]]=[V[i],V[m]];i=m;}}
     return top;}
 }
-// Quick fix for Heap pop swap
-Heap.prototype.pop = function(){
-  const K=this.k, V=this.v, top=V[0], lk=K.pop(), lv=V.pop();
-  if(K.length){K[0]=lk; V[0]=lv; let i=0; for(;;){
-    const l=2*i+1, r=l+1; let m=i;
-    if(l<K.length && K[l]<K[m]) m=l;
-    if(r<K.length && K[r]<K[m]) m=r;
-    if(m===i) break;
-    [K[m],K[i]]=[K[i],K[m]]; [V[m],V[i]]=[V[i],V[m]]; i=m;
-  }}
-  return top;
-};
-
 function astar(b,start,goal){
-  if(start<0||goal<0) return null;
-  const N=G.W*G.H, TURN=3, DX=[1,-1,0,0], DY=[0,0,1,-1];
-  const g=new Float32Array(N*5).fill(Infinity), from=new Int32Array(N*5).fill(-1);
-  const gx=goal%G.W, gy=(goal/G.W)|0;
-  const h=i=>Math.abs(i%G.W-gx)+Math.abs(((i/G.W)|0)-gy);
-  const hp=new Heap(); g[start*5+4]=0; hp.push(h(start),start*5+4);
+  if(start<0||goal<0)return null;
+  const N=G.W*G.H,TURN=3,DX=[1,-1,0,0],DY=[0,0,1,-1];
+  const g=new Float32Array(N*5).fill(Infinity),from=new Int32Array(N*5).fill(-1);
+  const gx=goal%G.W,gy=(goal/G.W)|0,h=i=>Math.abs(i%G.W-gx)+Math.abs(((i/G.W)|0)-gy);
+  const hp=new Heap();g[start*5+4]=0;hp.push(h(start),start*5+4);
   while(hp.size){
-    const cur=hp.pop(), c=(cur/5)|0, cd=cur%5;
-    if(c===goal){ const out=[]; let s=cur; while(s>=0){out.push((s/5)|0); s=from[s];} return out.reverse(); }
+    const cur=hp.pop(),c=(cur/5)|0,cd=cur%5;
+    if(c===goal){const out=[];let s=cur;while(s>=0){out.push((s/5)|0);s=from[s];}return out.reverse();}
     const cg=g[cur];
     for(let d=0;d<4;d++){
-      const nx=c%G.W+DX[d], ny=((c/G.W)|0)+DY[d];
-      if(nx<0||ny<0||nx>=G.W||ny>=G.H) continue;
-      const ni=ny*G.W+nx; if(b[ni]) continue;
-      const ns=ni*5+d, cost=1+((cd!==4&&cd!==d)?TURN:0);
-      if(cg+cost<g[ns]){ g[ns]=cg+cost; from[ns]=cur; hp.push(g[ns]+h(ni),ns); }
+      const nx=c%G.W+DX[d],ny=((c/G.W)|0)+DY[d];
+      if(nx<0||ny<0||nx>=G.W||ny>=G.H)continue;
+      const ni=ny*G.W+nx;if(b[ni])continue;
+      const ns=ni*5+d,cost=1+((cd!==4&&cd!==d)?TURN:0);
+      if(cg+cost<g[ns]){g[ns]=cg+cost;from[ns]=cur;hp.push(g[ns]+h(ni),ns);}
     }
   }
   return null;
 }
 function simplify(cells){
-  const p=cells.map(cxy), out=[p[0]];
-  for(let i=1;i<p.length-1;i++){
-    const a=out[out.length-1], b=p[i], c=p[i+1];
-    if(Math.abs((b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]))>1e-6) out.push(b);
-  }
-  out.push(p[p.length-1]); return out;
+  const p=cells.map(cxy),out=[p[0]];
+  for(let i=1;i<p.length-1;i++){const a=out[out.length-1],b=p[i],c=p[i+1];
+    if(Math.abs((b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]))>1e-6)out.push(b);}
+  out.push(p[p.length-1]);return out;
 }
-function pathLocal(lv,fromCell,toCell){
-  const r=astar(blockOf(lv),fromCell,toCell);
-  return r?simplify(r):null;
-}
-const elevs=lv=>allRooms().filter(r=>r.l===lv&&r.grp);
+function pathLocal(lv,a,b){if(a<0||b<0)return null;const r=astar(gridOf(lv),a,b);return r?simplify(r):null;}
 function pickElev(lv,pt){
-  const e=elevs(lv); if(!e.length) return null;
-  return e.sort((a,b)=>Math.hypot(a.x-pt.x,a.y-pt.y)-Math.hypot(b.x-pt.x,b.y-pt.y))[0];
+  const px=pt.cx??pt.x,py=pt.cy??pt.y,e=R.filter(r=>r.l===lv&&r.grp);
+  if(!e.length)return null;
+  return e.sort((a,b)=>Math.hypot(a.cx-px,a.cy-py)-Math.hypot(b.cx-px,b.cy-py))[0];
 }
 
-/* แผนที่ฐาน Google Maps และตัวเลือกอื่น ๆ */
+/* ======================================================================
+   6) แผนที่ + แผนที่ฐาน Google
+   ====================================================================== */
+const gt=l=>[0,1,2,3].map(n=>`https://mt${n}.google.com/vt/lyrs=${l}&x={x}&y={y}&z={z}`);
 const BASES={
- gsat:{t:[
-   'https://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
-   'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
-   'https://mt2.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
-   'https://mt3.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
- ],a:'Imagery ©2026 Google'},
- gmap:{t:[
-   'https://mt0.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
-   'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
-   'https://mt2.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
-   'https://mt3.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'
- ],a:'Map data ©2026 Google'},
- osm:{t:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],a:'© OpenStreetMap'},
- dark:{t:['https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'],a:'© CARTO'}
+  gsat:{t:gt('s'),a:'Imagery © Google'}, ghyb:{t:gt('y'),a:'Imagery © Google'},
+  gmap:{t:gt('m'),a:'Map data © Google'},
+  osm:{t:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],a:'© OpenStreetMap'},
+  dark:{t:['https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'],a:'© CARTO © OSM'}
 };
-
 const map=new maplibregl.Map({
   container:'map',
   style:{version:8,
-    sources:{base:{type:'raster',tiles:BASES.gsat.t,tileSize:256,maxzoom:20,attribution:BASES.gsat.a+' | Map © โรงพยาบาลสวี'}},
+    sources:{base:{type:'raster',tiles:BASES.gsat.t,tileSize:256,maxzoom:20,attribution:BASES.gsat.a+' | ผัง © โรงพยาบาลสวี'}},
     layers:[{id:'bg',type:'background',paint:{'background-color':'#0a1220'}},
-            {id:'base',type:'raster',source:'base',paint:{'raster-opacity':0.8}}]
-  },
-  center:CFG.center, zoom:18, pitch:58, bearing:-18, maxPitch:80, antialias:true
+            {id:'base',type:'raster',source:'base',paint:{'raster-opacity':.85}}]},
+  center:CFG.center,zoom:18,pitch:58,bearing:-18,maxZoom:22,maxPitch:80,antialias:true
 });
 map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'bottom-right');
-map.addControl(new maplibregl.GeolocateControl({trackUserLocation:true}),'bottom-right');
+map.addControl(new maplibregl.GeolocateControl({positionOptions:{enableHighAccuracy:true},trackUserLocation:true}),'bottom-right');
 map.addControl(new maplibregl.ScaleControl({unit:'metric'}),'bottom-left');
 
-let LV=1,FILT=null,SEL=null,labels=[],arrows=[],pins=[],ROUTE=null,START={...ENTRANCE},DRAW=false,SETSTART=false,pts=[];
+const defaultStart=()=>DB.sample?{...ENTRANCE}:{l:1,x:0,y:0,name:'ศูนย์กลางผัง'};
+let LV=1,FILT=null,SEL=null,labels=[],arrows=[],pins=[],ROUTE=null,START=defaultStart(),
+    DRAW=false,SETSTART=false,pts=[],EDIT=null,PENDING=null,FCOL=null;
 
 map.on('load',()=>{
-  map.addSource('rooms',{type:'geojson',data:build()});
+  R=rooms();resetGrid();
+  map.addSource('rooms',{type:'geojson',data:fc()});
   map.addSource('route',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
   map.addSource('draft',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
-
   map.addLayer({id:'ghost',type:'fill',source:'rooms',paint:{'fill-color':'#7dd3fc','fill-opacity':.07}});
   map.addLayer({id:'r3d',type:'fill-extrusion',source:'rooms',
-    paint:{'fill-extrusion-color':['get','color'],'fill-extrusion-height':['get','top'],
-           'fill-extrusion-base':['get','base'],'fill-extrusion-opacity':.9,'fill-extrusion-vertical-gradient':true}});
-  map.addLayer({id:'edge',type:'line',source:'rooms',paint:{'line-color':'#fff','line-width':1,'line-opacity':.33}});
-  map.addLayer({id:'hl',type:'fill-extrusion',source:'rooms',filter:['==',['get','idx'],-1],
-    paint:{'fill-extrusion-color':'#fff','fill-extrusion-height':['+',['get','top'],1.8],
-           'fill-extrusion-base':['get','base'],'fill-extrusion-opacity':.5}});
-  map.addLayer({id:'rt-glow',type:'line',source:'route',
-    layout:{'line-cap':'round','line-join':'round'},
+    paint:{'fill-extrusion-color':['get','color'],'fill-extrusion-height':['get','top'],'fill-extrusion-base':0,
+           'fill-extrusion-opacity':.9,'fill-extrusion-vertical-gradient':true}});
+  map.addLayer({id:'edge',type:'line',source:'rooms',paint:{'line-color':'#fff','line-width':1,'line-opacity':.35}});
+  map.addLayer({id:'hl',type:'fill-extrusion',source:'rooms',filter:['==',['get','key'],'~'],
+    paint:{'fill-extrusion-color':'#fff','fill-extrusion-height':['+',['get','top'],1.8],'fill-extrusion-opacity':.5}});
+  map.addLayer({id:'rt-glow',type:'line',source:'route',layout:{'line-cap':'round','line-join':'round'},
     paint:{'line-color':'#22d3ee','line-width':14,'line-opacity':.22,'line-blur':8}});
-  map.addLayer({id:'rt-line',type:'line',source:'route',
-    layout:{'line-cap':'round','line-join':'round'},
+  map.addLayer({id:'rt-line',type:'line',source:'route',layout:{'line-cap':'round','line-join':'round'},
     paint:{'line-color':'#67e8f9','line-width':4.5,'line-opacity':.95,'line-dasharray':[0,4,3]}});
-  map.addLayer({id:'dpoly',type:'fill',source:'draft',paint:{'fill-color':'#22d3ee','fill-opacity':.28}});
-  map.addLayer({id:'dline',type:'line',source:'draft',paint:{'line-color':'#22d3ee','line-width':2.5,'line-dasharray':[2,1.5]}});
+  map.addLayer({id:'dpoly',type:'fill',source:'draft',filter:['==',['geometry-type'],'Polygon'],
+    paint:{'fill-color':'#22d3ee','fill-opacity':.28}});
+  map.addLayer({id:'dline',type:'line',source:'draft',filter:['==',['geometry-type'],'LineString'],
+    paint:{'line-color':'#22d3ee','line-width':2.5,'line-dasharray':[2,1.5]}});
+  map.addLayer({id:'dpt',type:'circle',source:'draft',filter:['==',['geometry-type'],'Point'],
+    paint:{'circle-radius':['case',['get','first'],7,5],'circle-color':['case',['get','first'],'#facc15','#fff'],
+           'circle-stroke-color':'#0e7490','circle-stroke-width':2}});
 
-  refresh(); buildUI(); antMarch();
+  buildLevels();buildCats();buildCatColors();renderList();refresh();antMarch();
+  $('smp').checked=DB.sample;
 
-  map.on('click','r3d',e=>{ if(DRAW||SETSTART) return; select(e.features[0].properties.idx); });
-  map.on('mouseenter','r3d',()=>map.getCanvas().style.cursor='pointer');
-  map.on('mouseleave','r3d',()=>map.getCanvas().style.cursor='');
+  map.on('click','r3d',e=>{if(DRAW||SETSTART)return;select(e.features[0].properties.key);});
+  map.on('mouseenter','r3d',()=>{if(!DRAW)map.getCanvas().style.cursor='pointer';});
+  map.on('mouseleave','r3d',()=>{map.getCanvas().style.cursor=DRAW?'crosshair':'';});
   map.on('zoom',drawLabels);
-  say('เลือกห้องเพื่อดูข้อมูลและระบบนำทาง',4000);
+  say('แตะห้องเพื่อดูรายละเอียด · กด ✎ เพื่อวาดห้อง',4000);
 });
 
+function rebuild(){
+  R=rooms();resetGrid();
+  if(map.getSource('rooms'))map.getSource('rooms').setData(fc());
+  buildLevels();buildCats();renderList();refresh();
+  map.setFilter('hl',['==',['get','key'],SEL||'~']);
+}
+
 const DASHES=[[0,4,3],[0.5,4,2.5],[1,4,2],[1.5,4,1.5],[2,4,1],[2.5,4,.5],[3,4,0],[0,.5,3,3.5],[0,1,3,3],[0,1.5,3,2.5],[0,2,3,2],[0,2.5,3,1.5],[0,3,3,1],[0,3.5,3,.5]];
-function antMarch(){let i=0;setInterval(()=>{ if(map.getLayer('rt-line'))
-  map.setPaintProperty('rt-line','line-dasharray',DASHES[i=(i+1)%DASHES.length]); },70);}
+function antMarch(){let i=0;setInterval(()=>{if(map.getLayer('rt-line'))
+  map.setPaintProperty('rt-line','line-dasharray',DASHES[i=(i+1)%DASHES.length]);},70);}
 
 function refresh(){
-  const lv=['==',['get','l'],LV], cat=FILT?['==',['get','c'],FILT]:true;
-  map.setFilter('r3d',['all',lv,cat]); map.setFilter('edge',['all',lv,cat]);
+  if(!map.getLayer('r3d'))return;
+  const lv=['==',['get','l'],LV],cat=FILT?['==',['get','c'],FILT]:true;
+  map.setFilter('r3d',['all',lv,cat]);map.setFilter('edge',['all',lv,cat]);
   map.setFilter('ghost',['!=',['get','l'],LV]);
-  map.setFilter('rt-glow',['==',['get','l'],LV]); map.setFilter('rt-line',['==',['get','l'],LV]);
-  drawLabels(); drawArrows();
+  map.setFilter('rt-glow',['==',['get','l'],LV]);map.setFilter('rt-line',['==',['get','l'],LV]);
+  drawLabels();drawArrows();
 }
 function drawLabels(){
-  labels.forEach(m=>m.remove()); labels=[];
-  if(map.getZoom()<17.1) return;
-  build().features.forEach(f=>{
-    const p=f.properties;
-    if(p.l!==LV||(FILT&&p.c!==FILT)) return;
-    if(p.c==='circ'&&map.getZoom()<18.3) return;
-    const el=document.createElement('div'); el.className='lbl';
-    el.innerHTML=`<span class="n">${p.no||''}</span><span class="t">${p.n}</span>`;
-    labels.push(new maplibregl.Marker({element:el}).setLngLat(JSON.parse(p.ctr)).addTo(map));
+  labels.forEach(m=>m.remove());labels=[];
+  if(map.getZoom()<17.1)return;
+  R.forEach(r=>{
+    if(r.l!==LV||(FILT&&r.c!==FILT))return;
+    if(r.c==='circ'&&map.getZoom()<18.3)return;
+    const el=document.createElement('div');el.className='lbl';
+    el.innerHTML=(r.no?`<span class="n">${esc(r.no)}</span>`:'')+`<span class="t">${esc(r.n)}</span>`;
+    labels.push(new maplibregl.Marker({element:el}).setLngLat(mo(r.cx,r.cy)).addTo(map));
   });
 }
 
-function centerOf(r){ return {l:r.l,x:r.x+r.w/2,y:r.y+r.h/2}; }
-function bearingOf(dx,dy){ return (Math.atan2(dx,dy)*180/Math.PI+CFG.rotation+360)%360; }
-function segLen(p){ let s=0; for(let i=1;i<p.length;i++) s+=Math.hypot(p[i][0]-p[i-1][0],p[i][1]-p[i-1][1]); return s*CFG.scale; }
-
+/* ======================================================================
+   7) นำทาง
+   ====================================================================== */
+const bearingOf=(dx,dy)=>(Math.atan2(dx,dy)*180/Math.PI+CFG.rotation+360)%360;
+function segLen(p){let s=0;for(let i=1;i<p.length;i++)s+=Math.hypot(p[i][0]-p[i-1][0],p[i][1]-p[i-1][1]);return s*CFG.scale;}
 function turnSteps(p){
   const out=[];
   for(let i=1;i<p.length;i++){
-    const d=Math.hypot(p[i][0]-p[i-1][0],p[i][1]-p[i-1][1])*CFG.scale;
-    let turn='';
-    if(i>1){
-      const v1=[p[i-1][0]-p[i-2][0],p[i-1][1]-p[i-2][1]], v2=[p[i][0]-p[i-1][0],p[i][1]-p[i-1][1]];
-      const cr=v1[0]*v2[1]-v1[1]*v2[0];
-      turn = cr>0?'เลี้ยวซ้าย':(cr<0?'เลี้ยวขวา':'');
-    }
-    out.push({turn, d:Math.round(d)});
+    const d=Math.hypot(p[i][0]-p[i-1][0],p[i][1]-p[i-1][1])*CFG.scale;let turn='';
+    if(i>1){const v1=[p[i-1][0]-p[i-2][0],p[i-1][1]-p[i-2][1]],v2=[p[i][0]-p[i-1][0],p[i][1]-p[i-1][1]];
+      const cr=v1[0]*v2[1]-v1[1]*v2[0];turn=cr>0?'เลี้ยวซ้าย':(cr<0?'เลี้ยวขวา':'');}
+    out.push({turn,d:Math.round(d)});
   }
   return out;
 }
-function navigateTo(idx){
-  const r=allRooms()[idx]; if(!r||r.ring){say('ห้องนี้ยังไม่รองรับการนำทาง');return;}
-  const dest=centerOf(r), segs=[], steps=[];
-  try{
-    if(START.l===dest.l){
-      const p=pathLocal(dest.l, nearFree(blockOf(START.l),START.x,START.y), doorOf(r));
-      if(!p) throw 0;
-      segs.push({l:dest.l,p}); steps.push({t:'walk',l:dest.l,s:turnSteps(p),d:segLen(p)});
-    }else{
-      const eD=pickElev(dest.l,dest);
-      const eS=elevs(START.l).find(x=>x.grp===(eD&&eD.grp)) || pickElev(START.l,START);
-      if(!eS||!eD) throw 0;
-      const p1=pathLocal(START.l, nearFree(blockOf(START.l),START.x,START.y), doorOf(eS));
-      const p2=pathLocal(dest.l, doorOf(eD), doorOf(r));
-      if(!p1||!p2) throw 0;
-      segs.push({l:START.l,p:p1}); steps.push({t:'walk',l:START.l,s:turnSteps(p1),d:segLen(p1)});
-      steps.push({t:'lift',g:eD.grp,from:START.l,to:dest.l,no:eS.no});
-      segs.push({l:dest.l,p:p2}); steps.push({t:'walk',l:dest.l,s:turnSteps(p2),d:segLen(p2)});
-    }
-  }catch(e){ say('หาเส้นทางไม่พบ ลองเลือกจุดเริ่มต้นใหม่'); return; }
-
+function navigateTo(key){
+  const r=R.find(x=>x.key===key);if(!r)return;
+  const segs=[],steps=[],fail=m=>say(m||'หาเส้นทางไม่พบ — ลองตั้งจุดเริ่มต้นใหม่ด้วยปุ่ม ◎',4500);
+  const s0=nearFree(gridOf(START.l),START.x,START.y);
+  if(START.l===r.l){
+    const p=pathLocal(r.l,s0,doorOf(r));if(!p)return fail();
+    segs.push({l:r.l,p});steps.push({t:'walk',l:r.l,s:turnSteps(p),d:segLen(p)});
+  }else{
+    const eD=pickElev(r.l,r),eS=(eD&&R.find(x=>x.l===START.l&&x.grp===eD.grp))||pickElev(START.l,START);
+    if(!eS||!eD)return fail('ยังไม่มีลิฟต์/บันไดเชื่อมชั้น — ใส่ "กลุ่มลิฟต์" ชื่อเดียวกันให้ห้องลิฟต์ทุกชั้น');
+    const p1=pathLocal(START.l,s0,doorOf(eS)),p2=pathLocal(r.l,doorOf(eD),doorOf(r));
+    if(!p1||!p2)return fail();
+    segs.push({l:START.l,p:p1});steps.push({t:'walk',l:START.l,s:turnSteps(p1),d:segLen(p1)});
+    steps.push({t:'lift',g:eD.grp,from:START.l,to:r.l,no:eS.no});
+    segs.push({l:r.l,p:p2});steps.push({t:'walk',l:r.l,s:turnSteps(p2),d:segLen(p2)});
+  }
   ROUTE={segs,steps,dest:r};
-  map.getSource('route').setData({type:'FeatureCollection',features:segs.map(s=>({
-    type:'Feature',properties:{l:s.l},geometry:{type:'LineString',coordinates:s.p.map(q=>mo(q[0],q[1]))}}))});
-  if(LV!==START.l) setLevel(START.l);
-  refresh(); showRoute();
-  const b=new maplibregl.LngLatBounds();
-  segs.forEach(s=>s.p.forEach(q=>b.extend(mo(q[0],q[1]))));
-  map.fitBounds(b,{padding:{top:120,bottom:260,left:60,right:90},pitch:55,duration:1300});
+  map.getSource('route').setData({type:'FeatureCollection',features:segs.map(s=>({type:'Feature',properties:{l:s.l},
+    geometry:{type:'LineString',coordinates:s.p.map(q=>mo(q[0],q[1]))}}))});
+  setLevel(START.l);showRoute();
+  const b=new maplibregl.LngLatBounds();segs.forEach(s=>s.p.forEach(q=>b.extend(mo(q[0],q[1]))));
+  map.fitBounds(b,{padding:{top:120,bottom:260,left:60,right:90},pitch:55,duration:1300,maxZoom:19.5});
 }
 function drawArrows(){
-  arrows.forEach(m=>m.remove()); arrows=[]; pins.forEach(m=>m.remove()); pins=[];
-  if(!ROUTE) return;
-  const seg=ROUTE.segs.find(s=>s.l===LV); if(!seg) return;
-  let since=0, k=0;
-  const STEP=6.5/CFG.scale;
+  arrows.forEach(m=>m.remove());arrows=[];pins.forEach(m=>m.remove());pins=[];
+  if(!ROUTE)return;
+  const seg=ROUTE.segs.find(s=>s.l===LV);if(!seg)return;
+  let since=0,k=0;const STEP=6.5/CFG.scale;
   for(let i=1;i<seg.p.length;i++){
-    const a=seg.p[i-1], b=seg.p[i], dx=b[0]-a[0], dy=b[1]-a[1], len=Math.hypot(dx,dy);
-    if(len<.01) continue;
-    const br=bearingOf(dx,dy); let pos=0;
+    const a=seg.p[i-1],b=seg.p[i],dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy);if(len<.01)continue;
+    const br=bearingOf(dx,dy);let pos=0;
     while(since+(len-pos)>=STEP){
-      pos+=STEP-since; since=0;
-      const el=document.createElement('div'); el.className='arw';
-      const sp=document.createElement('span'); sp.textContent='▲'; sp.style.animationDelay=((k++%9)*0.13)+'s';
-      el.appendChild(sp);
+      pos+=STEP-since;since=0;
+      const el=document.createElement('div');el.className='arw';
+      const sp=document.createElement('span');sp.textContent='▲';sp.style.animationDelay=((k++%9)*0.13)+'s';el.appendChild(sp);
       arrows.push(new maplibregl.Marker({element:el,rotation:br,rotationAlignment:'map',pitchAlignment:'map'})
-        .setLngLat(mo(a[0]+dx*pos/len, a[1]+dy*pos/len)).addTo(map));
+        .setLngLat(mo(a[0]+dx*pos/len,a[1]+dy*pos/len)).addTo(map));
     }
     since+=len-pos;
   }
   const mk=(p,cls,ic)=>{const d=document.createElement('div');d.className='pin '+cls;d.innerHTML='<i>'+ic+'</i>';
     pins.push(new maplibregl.Marker({element:d}).setLngLat(mo(p[0],p[1])).addTo(map));};
-  if(seg===ROUTE.segs[0]) mk(seg.p[0],'st','●');
-  if(seg===ROUTE.segs[ROUTE.segs.length-1]) mk(seg.p[seg.p.length-1],'go','◆');
+  if(seg===ROUTE.segs[0])mk(seg.p[0],'st','●');
+  if(seg===ROUTE.segs[ROUTE.segs.length-1])mk(seg.p[seg.p.length-1],'go','◆');
 }
-function clearRoute(){ ROUTE=null; map.getSource('route').setData({type:'FeatureCollection',features:[]});
-  arrows.forEach(m=>m.remove()); arrows=[]; pins.forEach(m=>m.remove()); pins=[]; sheet.classList.remove('on'); }
-
-const sheet=document.getElementById('sheet');
-function select(idx){
-  const f=build().features.find(x=>x.properties.idx==idx); if(!f) return;
-  const p=f.properties; SEL=idx;
-  map.setFilter('hl',['==',['get','idx'],+idx]);
-  map.flyTo({center:JSON.parse(p.ctr),zoom:19,pitch:62,duration:1100,essential:true});
-  const c=JSON.parse(p.ctr);
-  sheet.innerHTML=`<div id="close">×</div>
-    <span class="rno" style="background:${p.color}33;color:${p.color}">ห้อง ${p.no||'-'}</span>
-    <h2>${p.n}</h2><div class="tag">${CAT[p.c].n}</div>
-    <table>
-      <tr><td>อาคาร</td><td>${p.b||'-'}</td></tr>
-      <tr><td>ชั้น</td><td>${p.l}</td></tr>
-      <tr><td>เวลาทำการ</td><td>${p.t||'-'}</td></tr>
-      <tr><td>เบอร์ภายใน</td><td>${p.tel||'-'}</td></tr>
-      <tr><td>พิกัด</td><td style="font-size:12px">${c[1].toFixed(6)}, ${c[0].toFixed(6)}</td></tr>
-    </table>
-    <button class="btn pri" onclick="navigateTo(${idx})">➤ นำทางไปห้องนี้</button>
-    <button class="btn half" onclick="setStartRoom(${idx})">ตั้งเป็นจุดเริ่ม</button>
-    <button class="btn half" style="float:right" onclick="gmap('${c.join(',')}')">Google Maps</button>`;
-  sheet.classList.add('on');
-  sheet.querySelector('#close').onclick=()=>{sheet.classList.remove('on');map.setFilter('hl',['==',['get','idx'],-1]);};
+function clearRoute(){
+  ROUTE=null;if(map.getSource('route'))map.getSource('route').setData({type:'FeatureCollection',features:[]});
+  arrows.forEach(m=>m.remove());arrows=[];pins.forEach(m=>m.remove());pins=[];
 }
 function showRoute(){
-  const R=ROUTE, total=Math.round(R.steps.filter(s=>s.t==='walk').reduce((a,s)=>a+s.d,0));
-  let html=`<div id="close">×</div>
-    <span class="rno" style="background:#22d3ee33;color:#22d3ee">นำทาง</span>
-    <h2>ไป ${R.dest.no} · ${R.dest.n}</h2>
+  const Rt=ROUTE,total=Math.round(Rt.steps.filter(s=>s.t==='walk').reduce((a,s)=>a+s.d,0));
+  let html=`<div id="close">×</div><span class="rno" style="background:#22d3ee33;color:#22d3ee">นำทาง</span>
+    <h2>ไป ${esc(Rt.dest.no)} · ${esc(Rt.dest.n)}</h2>
     <div class="tag">รวม ~${total} เมตร · เดินประมาณ ${Math.max(1,Math.round(total/70))} นาที</div>
-    <div style="font-size:12px;color:#8da4bf;margin-top:8px">เริ่มจาก: ${START.name} (ชั้น ${START.l})</div>
-    <div id="steps">`;
-  R.steps.forEach(st=>{
-    if(st.t==='lift'){ html+=`<div class="s"><div class="ic">⇅</div><div><b>ขึ้นลิฟต์ ${st.g} (${st.no})</b> จากชั้น ${st.from} → ชั้น ${st.to}</div></div>`; return; }
-    st.s.forEach((x,i)=>{ if(x.d<2&&x.turn==='') return;
-      const ic = x.turn==='เลี้ยวซ้าย'?'↰':x.turn==='เลี้ยวขวา'?'↱':'↑';
-      html+=`<div class="s"><div class="ic">${ic}</div><div>${x.turn?x.turn+' แล้ว':''}เดินตรงไป <b>${x.d} ม.</b> <span style="color:#8da4bf;font-size:11px">(ชั้น ${st.l})</span></div></div>`; });
+    <div style="font-size:12px;color:#8da4bf;margin-top:8px">เริ่มจาก: ${esc(START.name)} (ชั้น ${START.l})</div><div id="steps">`;
+  Rt.steps.forEach(st=>{
+    if(st.t==='lift'){html+=`<div class="s"><div class="ic">⇅</div><div><b>ใช้ลิฟต์/บันได ${esc(st.g)}</b> จากชั้น ${st.from} → ชั้น ${st.to}</div></div>`;return;}
+    st.s.forEach(x=>{if(x.d<2&&!x.turn)return;
+      const ic=x.turn==='เลี้ยวซ้าย'?'↰':x.turn==='เลี้ยวขวา'?'↱':'↑';
+      html+=`<div class="s"><div class="ic">${ic}</div><div>${x.turn?x.turn+' แล้ว':''}เดินตรงไป <b>${x.d} ม.</b> <span style="color:#8da4bf;font-size:11px">(ชั้น ${st.l})</span></div></div>`;});
   });
-  html+=`</div>
-    <button class="btn" onclick="setLevel(${R.steps.length>1&&R.segs.length>1?R.segs[1].l:R.segs[0].l})">ดูเส้นทางชั้น ${R.segs[R.segs.length-1].l}</button>
-    <button class="btn" onclick="clearRoute()">ยกเลิกเส้นทาง</button>`;
-  sheet.innerHTML=html; sheet.classList.add('on');
-  sheet.querySelector('#close').onclick=()=>sheet.classList.remove('on');
+  const last=Rt.segs[Rt.segs.length-1].l;
+  html+=`</div>${Rt.segs.length>1?`<button class="btn" onclick="setLevel(${last})">ดูเส้นทางชั้น ${last}</button>`:''}
+    <button class="btn" onclick="clearRoute();closeSheet()">ยกเลิกเส้นทาง</button>`;
+  sheet.innerHTML=html;sheet.classList.add('on');$('close').onclick=closeSheet;
 }
-function setStartRoom(idx){ const r=allRooms()[idx]; if(!r) return;
-  const d=cxy(doorOf(r)); START={l:r.l,x:d[0],y:d[1],name:`ห้อง ${r.no} ${r.n}`};
-  say('ตั้งจุดเริ่มต้นที่ '+START.name); }
-function gmap(s){const[a,b]=s.split(',');open(`https://www.google.com/maps/dir/?api=1&destination=${b},${a}`,'_blank');}
-function setLevel(l){ LV=l; [...document.getElementById('levels').children].forEach(b=>b.classList.toggle('on',+b.textContent===l)); refresh(); }
 
-function buildUI(){
-  const lvBox=document.getElementById('levels');
-  [2,1].forEach(l=>{const b=document.createElement('button');b.textContent=l;b.className=l===LV?'on':'';
-    b.onclick=()=>setLevel(l);lvBox.appendChild(b);});
-  const sb=document.createElement('button'); sb.textContent='◎'; sb.title='แตะแผนที่เพื่อตั้งจุดเริ่มต้น';
-  sb.onclick=()=>{SETSTART=true;say('แตะบนแผนที่เพื่อกำหนดจุดเริ่มต้น');}; lvBox.appendChild(sb);
-
-  const cBox=document.getElementById('cats');
-  const all=document.createElement('div'); all.className='chip on'; all.textContent='ทั้งหมด';
-  all.onclick=()=>{FILT=null;[...cBox.children].forEach(c=>c.classList.remove('on'));all.classList.add('on');refresh();};
-  cBox.appendChild(all);
-  Object.entries(CAT).forEach(([k,v])=>{ if(k==='circ') return;
-    const d=document.createElement('div'); d.className='chip';
-    d.innerHTML=`<span style="color:${v.c}">●</span> ${v.n}`;
-    d.onclick=()=>{FILT=k;[...cBox.children].forEach(c=>c.classList.remove('on'));d.classList.add('on');refresh();};
-    cBox.appendChild(d);});
+/* ======================================================================
+   8) การ์ดห้อง + สีรายห้อง + ลบ
+   ====================================================================== */
+const sheet=$('sheet');
+const swatches=cur=>PALETTE.map(c=>`<i data-c="${c}" style="background:${c}" class="${c===String(cur||'').toLowerCase()?'on':''}"></i>`).join('');
+function closeSheet(){sheet.classList.remove('on');SEL=null;if(map.getLayer('hl'))map.setFilter('hl',['==',['get','key'],'~']);}
+function select(key,noFly){
+  const r=R.find(x=>x.key===key);if(!r)return;SEL=key;
+  if(r.l!==LV)setLevel(r.l);
+  map.setFilter('hl',['==',['get','key'],key]);
+  const c=mo(r.cx,r.cy);
+  if(!noFly)map.flyTo({center:c,zoom:19,pitch:60,duration:1100,essential:true});
+  const isC=r.src==='c';
+  sheet.innerHTML=`<div id="close">×</div>
+    <span class="rno" style="background:${r.col}33;color:${r.col}">ห้อง ${esc(r.no||'-')}</span>
+    ${isC?'<span class="rno" style="margin-left:4px">วาดเอง</span>':''}
+    <h2>${esc(r.n)}</h2><div class="tag">${CAT[r.c].n}</div>
+    <table>
+      <tr><td>อาคาร</td><td>${esc(r.b||'-')}</td></tr>
+      <tr><td>ชั้น</td><td>${r.l}</td></tr>
+      <tr><td>เวลาทำการ</td><td>${esc(r.t||'-')}</td></tr>
+      <tr><td>เบอร์ภายใน</td><td>${esc(r.tel||'-')}</td></tr>
+      <tr><td>พิกัด</td><td style="font-size:12px">${c[1].toFixed(6)}, ${c[0].toFixed(6)}</td></tr>
+    </table>
+    <span class="lb">สีของห้องนี้</span>
+    <div class="sw" id="ssw">${swatches(r.color)}</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+      <input type="color" id="scol" value="${r.col}"><span style="font-size:12px;color:var(--dim)">เลือกเอง</span>
+      <button class="btn sm" style="margin-left:auto" id="sauto">ใช้สีตามหมวด</button></div>
+    <button class="btn pri" onclick="navigateTo('${key}')">➤ นำทางไปห้องนี้</button>
+    <div class="row2"><button class="btn" onclick="setStartRoom('${key}')">ตั้งเป็นจุดเริ่ม</button>
+      <button class="btn" onclick="gmap(${c[1]},${c[0]})">Google Maps</button></div>
+    ${isC?`<div class="row2"><button class="btn" onclick="editRoom('${key}')">✎ แก้ไข</button>
+      <button class="btn red" onclick="delRoom('${key}')">🗑 ลบห้องนี้</button></div>`:''}`;
+  sheet.classList.add('on');
+  $('close').onclick=closeSheet;
+  sheet.querySelectorAll('#ssw i').forEach(i=>i.onclick=()=>setRoomColor(key,i.dataset.c));
+  $('scol').onchange=e=>setRoomColor(key,e.target.value);
+  $('sauto').onclick=()=>setRoomColor(key,null);
 }
-const q=document.getElementById('q'), res=document.getElementById('res');
+function setRoomColor(key,col){
+  const r=R.find(x=>x.key===key);if(!r)return;
+  if(r.src==='c')DB.custom.find(x=>x.id===key).color=col;
+  else{if(col)DB.ovr[key]=col;else delete DB.ovr[key];}
+  save();rebuild();if(SEL===key)select(key,true);
+}
+function setStartRoom(key){const r=R.find(x=>x.key===key);if(!r)return;
+  const d=cxy(doorOf(r));START={l:r.l,x:d[0],y:d[1],name:`หน้าห้อง ${r.no||''} ${r.n}`};say('ตั้งจุดเริ่มต้นที่ '+START.name);}
+function gmap(la,ln){open(`https://www.google.com/maps/dir/?api=1&destination=${la},${ln}`,'_blank');}
+function setLevel(l){LV=l;[...$('levels').children].forEach(b=>b.classList.toggle('on',+b.dataset.l===l));refresh();}
+
+function afterDel(msg){save();clearRoute();closeSheet();rebuild();say(msg+' — กู้คืนได้ในแผง ✎',4000);}
+function delRoom(key){
+  const o=DB.custom.find(x=>x.id===key);if(!o)return;
+  if(!confirm(`ลบห้อง ${o.no||''} ${o.n} ?`))return;
+  TRASH=[o];DB.custom=DB.custom.filter(x=>x.id!==key);afterDel(`ลบ "${o.n}" แล้ว`);
+}
+function clearAll(){
+  if(!DB.custom.length){say('ยังไม่มีห้องที่วาดไว้');return;}
+  if(!confirm(`ลบห้องที่วาดไว้ทั้งหมด ${DB.custom.length} ห้อง?`))return;
+  TRASH=DB.custom.slice();DB.custom=[];afterDel('ล้างทั้งหมดแล้ว');
+}
+function clearLevel(){
+  const t=DB.custom.filter(x=>x.l===LV);if(!t.length){say(`ชั้น ${LV} ไม่มีห้องที่วาดไว้`);return;}
+  if(!confirm(`ลบห้องที่วาดไว้บนชั้น ${LV} ทั้งหมด ${t.length} ห้อง?`))return;
+  TRASH=t;DB.custom=DB.custom.filter(x=>x.l!==LV);afterDel(`ล้างชั้น ${LV} แล้ว`);
+}
+function restore(){if(!TRASH)return;DB.custom.push(...TRASH);TRASH=null;save();rebuild();say('กู้คืนแล้ว');}
+
+/* ======================================================================
+   9) แผงจัดการห้อง
+   ====================================================================== */
+function renderList(){
+  const f=$('mf').value.trim().toLowerCase();
+  const items=DB.custom.filter(r=>!f||(r.n+' '+(r.no||'')).toLowerCase().includes(f))
+    .sort((a,b)=>a.l-b.l||String(a.no).localeCompare(String(b.no)));
+  $('cnt').textContent=`(${DB.custom.length})`;
+  $('list').innerHTML=items.length?items.map(r=>`<div class="li">
+      <input type="color" data-k="${r.id}" value="${r.color||catColor(r.c)}" title="เปลี่ยนสี">
+      <div class="nm"><b>${esc(r.no||'—')}</b> ${esc(r.n)}<small>ชั้น ${r.l} · ${CAT[r.c].n}${r.grp?' · ลิฟต์ '+esc(r.grp):''}</small></div>
+      <button data-go="${r.id}" title="ไปที่ห้อง">◎</button>
+      <button data-ed="${r.id}" title="แก้ไข">✎</button>
+      <button class="del" data-del="${r.id}" title="ลบ">🗑</button></div>`).join('')
+    :`<div class="empty">${DB.custom.length?'ไม่พบตามคำค้น':'ยังไม่มีห้องที่วาด — กด "▶ วาดห้องใหม่"'}</div>`;
+  $('list').querySelectorAll('input[type=color]').forEach(i=>i.onchange=e=>setRoomColor(i.dataset.k,e.target.value));
+  $('list').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>select(b.dataset.go));
+  $('list').querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>editRoom(b.dataset.ed));
+  $('list').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>delRoom(b.dataset.del));
+  $('restore').style.display=TRASH?'block':'none';
+  if(TRASH)$('restore').textContent=`↺ กู้คืนที่ลบล่าสุด (${TRASH.length} ห้อง)`;
+}
+$('mf').oninput=renderList;
+$('restore').onclick=restore;$('clrAll').onclick=clearAll;$('clrLv').onclick=clearLevel;
+$('smp').onchange=e=>{DB.sample=e.target.checked;save();START=defaultStart();clearRoute();closeSheet();rebuild();
+  say(DB.sample?'แสดงผังตัวอย่าง':'ซ่อนผังตัวอย่างแล้ว — เริ่มวาดผังจริงได้เลย');};
+
+/* ---------- วาด ---------- */
+function paint(){
+  const f=pts.map((p,i)=>({type:'Feature',properties:{first:i===0},geometry:{type:'Point',coordinates:p}}));
+  if(pts.length>1)f.push({type:'Feature',properties:{},geometry:{type:'LineString',coordinates:pts}});
+  if(pts.length>2)f.push({type:'Feature',properties:{},geometry:{type:'Polygon',coordinates:[[...pts,pts[0]]]}});
+  map.getSource('draft').setData({type:'FeatureCollection',features:f});
+}
+function startDraw(){
+  DRAW=true;pts=[];paint();closeSheet();map.doubleClickZoom.disable();
+  map.getCanvas().style.cursor='crosshair';
+  map.easeTo({pitch:0,bearing:0,duration:700});
+  map.setPaintProperty('r3d','fill-extrusion-opacity',.35);
+  say('คลิกตามมุมห้องบนภาพดาวเทียม → คลิกจุดแรก (สีเหลือง) ซ้ำเพื่อปิดรูป',5000);
+}
+function stopDraw(){
+  DRAW=false;pts=[];paint();map.doubleClickZoom.enable();map.getCanvas().style.cursor='';
+  map.setPaintProperty('r3d','fill-extrusion-opacity',.9);
+}
+function finishDraw(){if(pts.length<3){say('ต้องคลิกอย่างน้อย 3 มุม');return;}openForm(null,[...pts,pts[0]]);}
+$('draw').onclick=startDraw;
+$('undo').onclick=()=>{pts.pop();paint();};
+$('fin').onclick=finishDraw;
+$('cancel').onclick=()=>{stopDraw();say('ยกเลิกการวาดแล้ว');};
+
+map.on('click',e=>{
+  if(SETSTART){const p=toLocal(e.lngLat.lng,e.lngLat.lat);
+    START={l:LV,x:p[0],y:p[1],name:'จุดที่เลือกบนแผนที่'};SETSTART=false;say(`ตั้งจุดเริ่มต้นแล้ว (ชั้น ${LV})`);return;}
+  if(!DRAW)return;
+  if(pts.length>=3){const a=map.project(pts[0]);
+    if(Math.hypot(a.x-e.point.x,a.y-e.point.y)<14){finishDraw();return;}}
+  pts.push([e.lngLat.lng,e.lngLat.lat]);paint();
+});
+
+/* ---------- ฟอร์มห้อง ---------- */
+$('f_c').innerHTML=Object.entries(CAT).map(([k,v])=>`<option value="${k}">${v.n}</option>`).join('');
+function paintFormColor(){
+  const auto=!FCOL,col=FCOL||catColor($('f_c').value);
+  $('f_auto').checked=auto;$('f_col').value=col;$('f_sw').innerHTML=swatches(auto?'':col);
+  $('f_sw').querySelectorAll('i').forEach(i=>i.onclick=()=>{FCOL=i.dataset.c;paintFormColor();});
+}
+function openForm(room,ring){
+  EDIT=room;PENDING=ring;
+  $('mt').textContent=room?'แก้ไขห้อง':'ห้องใหม่';
+  $('f_no').value=room?room.no||'':'';$('f_n').value=room?room.n:'';
+  $('f_c').value=room?room.c:'opd';$('f_l').value=room?room.l:LV;
+  $('f_b').value=room?room.b||'':'';$('f_tel').value=room?room.tel||'':'';
+  $('f_t').value=room?room.t||'':'';$('f_g').value=room?room.grp||'':'';
+  FCOL=room?room.color||null:null;paintFormColor();
+  $('modal').classList.add('on');setTimeout(()=>$('f_n').focus(),50);
+}
+function editRoom(id){const o=DB.custom.find(x=>x.id===id);if(o)openForm(o,null);}
+$('f_c').onchange=paintFormColor;
+$('f_col').oninput=e=>{FCOL=e.target.value;$('f_auto').checked=false;$('f_sw').innerHTML=swatches(FCOL);
+  $('f_sw').querySelectorAll('i').forEach(i=>i.onclick=()=>{FCOL=i.dataset.c;paintFormColor();});};
+$('f_auto').onchange=e=>{FCOL=e.target.checked?null:$('f_col').value;paintFormColor();};
+$('f_cancel').onclick=()=>$('modal').classList.remove('on');
+$('f_ok').onclick=()=>{
+  const n=$('f_n').value.trim();if(!n){say('กรุณาใส่ชื่อห้อง');$('f_n').focus();return;}
+  const o={no:$('f_no').value.trim(),n,c:$('f_c').value,l:Math.max(1,Math.min(9,+$('f_l').value||1)),color:FCOL,
+    b:$('f_b').value.trim(),t:$('f_t').value.trim(),tel:$('f_tel').value.trim(),grp:$('f_g').value.trim()||undefined};
+  let id;
+  if(EDIT){Object.assign(EDIT,o);id=EDIT.id;}
+  else{id='c'+Date.now().toString(36);DB.custom.push({id,...o,ring:PENDING});stopDraw();}
+  save();clearRoute();$('modal').classList.remove('on');
+  if(o.l!==LV)LV=o.l;
+  rebuild();setLevel(o.l);select(id,true);
+  say(EDIT?'บันทึกการแก้ไขแล้ว':`เพิ่มห้อง "${n}" แล้ว`);EDIT=null;
+};
+
+/* ---------- ส่งออก / นำเข้า ---------- */
+$('exp').onclick=()=>{
+  const gj={type:'FeatureCollection',features:DB.custom.map(r=>({type:'Feature',
+    geometry:{type:'Polygon',coordinates:[r.ring]},
+    properties:{no:r.no,n:r.n,c:r.c,l:r.l,color:r.color||null,b:r.b,t:r.t,tel:r.tel,grp:r.grp||null}}))};
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(gj,null,2)],{type:'application/json'}));
+  a.download='sawi-hospital-rooms.geojson';a.click();
+};
+$('imp').onclick=()=>$('impf').click();
+$('impf').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  f.text().then(t=>{
+    let n=0;
+    (JSON.parse(t).features||[]).forEach(ft=>{
+      if(!ft.geometry||ft.geometry.type!=='Polygon')return;const p=ft.properties||{};
+      DB.custom.push({id:'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+        no:p.no||'',n:p.n||p.name||'ไม่มีชื่อ',c:CAT[p.c]?p.c:'opd',l:+p.l||1,color:p.color||null,
+        b:p.b||'',t:p.t||'',tel:p.tel||'',grp:p.grp||undefined,ring:ft.geometry.coordinates[0]});n++;});
+    save();rebuild();say(`นำเข้า ${n} ห้องแล้ว`);
+  }).catch(()=>say('ไฟล์ไม่ถูกต้อง'));
+  e.target.value='';
+};
+
+/* ======================================================================
+   10) UI ทั่วไป
+   ====================================================================== */
+function buildLevels(){
+  const lvs=[...new Set([1,...R.map(r=>r.l)])].sort((a,b)=>b-a);
+  if(!lvs.includes(LV))LV=1;
+  const box=$('levels');box.innerHTML='';
+  lvs.forEach(l=>{const b=document.createElement('button');b.textContent=l;b.dataset.l=l;
+    b.className=l===LV?'on':'';b.onclick=()=>setLevel(l);box.appendChild(b);});
+  const sb=document.createElement('button');sb.textContent='◎';sb.title='แตะแผนที่เพื่อตั้งจุดเริ่มต้น';
+  sb.onclick=()=>{SETSTART=true;say('แตะบนแผนที่เพื่อกำหนด "คุณอยู่ที่นี่"');};box.appendChild(sb);
+}
+function buildCats(){
+  const box=$('cats');box.innerHTML='';
+  const all=document.createElement('div');all.className='chip'+(FILT?'':' on');all.textContent='ทั้งหมด';
+  all.onclick=()=>{FILT=null;buildCats();refresh();};box.appendChild(all);
+  Object.entries(CAT).forEach(([k,v])=>{if(k==='circ')return;
+    const d=document.createElement('div');d.className='chip'+(FILT===k?' on':'');
+    d.innerHTML=`<span style="color:${catColor(k)}">●</span> ${v.n}`;
+    d.onclick=()=>{FILT=k;buildCats();refresh();};box.appendChild(d);});
+}
+function buildCatColors(){
+  $('catcol').innerHTML=Object.entries(CAT).map(([k,v])=>
+    `<div class="li"><input type="color" data-k="${k}" value="${catColor(k)}"><div class="nm">${v.n}</div></div>`).join('');
+  $('catcol').querySelectorAll('input').forEach(i=>i.oninput=e=>{DB.catc[i.dataset.k]=e.target.value;save();rebuild();});
+}
+$('catreset').onclick=()=>{DB.catc={};save();rebuild();buildCatColors();say('คืนค่าสีหมวดแล้ว');};
+
+const q=$('q'),res=$('res');
 q.oninput=()=>{
-  const s=q.value.trim().toLowerCase(); if(!s){res.classList.remove('on');return;}
-  const hits=build().features.filter(f=>{const p=f.properties;
-    return (p.no||'').toLowerCase().includes(s)||p.n.toLowerCase().includes(s)||
-           (p.b||'').toLowerCase().includes(s)||CAT[p.c].n.includes(s)||(p.tel||'').includes(s);}).slice(0,9);
-  res.innerHTML=hits.length?hits.map(f=>`<div data-i="${f.properties.idx}">
-      <span class="rno" style="background:${f.properties.color}33;color:${f.properties.color}">${f.properties.no||'—'}</span>
-      ${f.properties.n}<small>ชั้น ${f.properties.l}</small></div>`).join('')
+  const s=q.value.trim().toLowerCase();if(!s){res.classList.remove('on');return;}
+  const hits=R.filter(r=>(r.no||'').toLowerCase().includes(s)||r.n.toLowerCase().includes(s)||
+    (r.b||'').toLowerCase().includes(s)||CAT[r.c].n.includes(s)||(r.tel||'').includes(s)).slice(0,10);
+  res.innerHTML=hits.length?hits.map(r=>`<div data-k="${r.key}">
+      <span class="rno" style="background:${r.col}33;color:${r.col}">${esc(r.no||'—')}</span>
+      ${esc(r.n)}<small>ชั้น ${r.l}</small></div>`).join('')
     :'<div style="color:#8da4bf">ไม่พบห้องที่ค้นหา</div>';
   res.classList.add('on');
-  res.querySelectorAll('[data-i]').forEach(d=>d.onclick=()=>{
-    const f=build().features.find(x=>x.properties.idx==d.dataset.i);
-    setLevel(f.properties.l); select(d.dataset.i); res.classList.remove('on'); q.value='';});
+  res.querySelectorAll('[data-k]').forEach(d=>d.onclick=()=>{select(d.dataset.k);res.classList.remove('on');q.value='';});
 };
-document.addEventListener('click',e=>{ if(!e.target.closest('#searchbox')) res.classList.remove('on'); });
+document.addEventListener('click',e=>{if(!e.target.closest('#searchbox'))res.classList.remove('on');});
 
-const hint=document.getElementById('hint');
-function say(t,ms){hint.textContent=t;hint.classList.add('on');clearTimeout(say.t);
-  say.t=setTimeout(()=>hint.classList.remove('on'),ms||3200);}
+function say(t,ms){const h=$('hint');h.textContent=t;h.classList.add('on');clearTimeout(say.t);
+  say.t=setTimeout(()=>h.classList.remove('on'),ms||3200);}
 
-const tools=document.getElementById('tools');
-document.getElementById('gear').onclick=()=>tools.classList.toggle('on');
-document.getElementById('ctr').value=`${CFG.center[1]}, ${CFG.center[0]}`;
-document.getElementById('rot').value=CFG.rotation; document.getElementById('rotv').textContent=CFG.rotation;
-document.getElementById('scl').value=Math.round(CFG.scale*100); document.getElementById('sclv').textContent=CFG.scale.toFixed(2);
-document.getElementById('rot').oninput=e=>document.getElementById('rotv').textContent=e.target.value;
-document.getElementById('scl').oninput=e=>document.getElementById('sclv').textContent=(e.target.value/100).toFixed(2);
-document.getElementById('dimr').oninput=e=>{document.getElementById('dimv').textContent=e.target.value;
-  map.setPaintProperty('base','raster-opacity',e.target.value/100);};
-document.getElementById('apply').onclick=()=>{
-  const v=document.getElementById('ctr').value.split(',').map(s=>parseFloat(s.trim()));
-  if(v.length===2&&!isNaN(v[0])&&!isNaN(v[1])) CFG.center=[v[1],v[0]];
-  CFG.rotation=+document.getElementById('rot').value;
-  CFG.scale=+document.getElementById('scl').value/100;
-  saveCfg(); clearRoute(); map.getSource('rooms').setData(build());
-  map.flyTo({center:CFG.center,zoom:18,duration:900}); refresh(); say('บันทึกพิกัดแล้ว');
+/* แผงตั้งค่า / แผงจัดการ — เปิดทีละแผง */
+function togglePanel(id,btn){
+  const open=!$(id).classList.contains('on');
+  ['tools','mgr'].forEach(p=>$(p).classList.remove('on'));['gear','edit'].forEach(b=>$(b).classList.remove('on'));
+  if(open){$(id).classList.add('on');$(btn).classList.add('on');}
+}
+$('gear').onclick=()=>togglePanel('tools','gear');
+$('edit').onclick=()=>togglePanel('mgr','edit');
+
+$('ctr').value=`${CFG.center[1]}, ${CFG.center[0]}`;
+$('rot').value=CFG.rotation;$('rotv').textContent=CFG.rotation;
+$('scl').value=Math.round(CFG.scale*100);$('sclv').textContent=CFG.scale.toFixed(2);
+$('rot').oninput=e=>$('rotv').textContent=e.target.value;
+$('scl').oninput=e=>$('sclv').textContent=(e.target.value/100).toFixed(2);
+$('dimr').oninput=e=>{$('dimv').textContent=e.target.value;map.setPaintProperty('base','raster-opacity',e.target.value/100);};
+$('apply').onclick=()=>{
+  const v=$('ctr').value.trim(),m=v.match(/(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/);
+  if(v&&!m){say('รูปแบบพิกัดไม่ถูกต้อง ตัวอย่าง: 10.123456, 99.123456');return;}
+  if(m)CFG.center=[+m[2],+m[1]];
+  CFG.rotation=+$('rot').value;CFG.scale=+$('scl').value/100;
+  saveCfg();clearRoute();closeSheet();rebuild();
+  $('ctr').value=`${CFG.center[1]}, ${CFG.center[0]}`;
+  map.flyTo({center:CFG.center,zoom:18,duration:900});say('บันทึกพิกัดแล้ว');
 };
 document.querySelectorAll('.bm').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('.bm').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  document.querySelectorAll('.bm').forEach(x=>x.classList.remove('on'));b.classList.add('on');
   map.getSource('base').setTiles(BASES[b.dataset.b].t);
 });
-
-document.getElementById('draw').onclick=()=>{DRAW=true;pts=[];say('คลิกตามมุมห้อง แล้วกด "ปิดรูป"');};
-document.getElementById('undo').onclick=()=>{pts.pop();paint();};
-map.on('click',e=>{
-  if(SETSTART){ const p=toLocal(e.lngLat.lng,e.lngLat.lat);
-    START={l:LV,x:p[0],y:p[1],name:'จุดที่เลือกบนแผนที่'}; SETSTART=false; say('ตั้งจุดเริ่มต้นเรียบร้อย'); return; }
-  if(DRAW){ pts.push([e.lngLat.lng,e.lngLat.lat]); paint(); }
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if($('modal').classList.contains('on'))$('modal').classList.remove('on');else if(DRAW)stopDraw();}
+  if(DRAW&&(e.key==='Backspace'||(e.ctrlKey&&e.key==='z'))&&document.activeElement.tagName!=='INPUT'){pts.pop();paint();e.preventDefault();}
 });
-function paint(){ const f=[];
-  if(pts.length>1) f.push({type:'Feature',properties:{},geometry:{type:'LineString',coordinates:pts}});
-  if(pts.length>2) f.push({type:'Feature',properties:{},geometry:{type:'Polygon',coordinates:[[...pts,pts[0]]]}});
-  map.getSource('draft').setData({type:'FeatureCollection',features:f}); }
-document.getElementById('fin').onclick=()=>{
-  if(pts.length<3){say('ต้องมีอย่างน้อย 3 จุด');return;}
-  const n=prompt('ชื่อห้อง:'); if(!n) return;
-  const no=prompt('หมายเลขห้อง:','X001')||'X001';
-  const c=prompt('หมวด ('+Object.keys(CAT).join(' / ')+'):','opd');
-  const l=+(prompt('ชั้น (1 หรือ 2):','1')||1);
-  const loc=pts.map(p=>toLocal(p[0],p[1])), xs=loc.map(p=>p[0]), ys=loc.map(p=>p[1]);
-  CUSTOM.push({no,n,c:CAT[c]?c:'opd',l,b:'วาดเอง',t:'-',tel:'-',ring:[...pts,pts[0]],
-    x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys)});
-  pts=[];DRAW=false;paint();for(const k in BLK)delete BLK[k];
-  map.getSource('rooms').setData(build());refresh();say('เพิ่มห้องสำเร็จ');
-};
-document.getElementById('exp').onclick=()=>{
-  const blob=new Blob([JSON.stringify(build(),null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download='sawi-hospital-map.geojson'; a.click();
-};
 </script>
 </body>
 </html>
