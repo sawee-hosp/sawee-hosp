@@ -764,7 +764,7 @@ $('f_ok').onclick=()=>{
   const isCover=($('f_c').value==='cover');
   const n=$('f_n').value.trim()||(isCover?'ทางเดินร่ม':'ไม่มีชื่อ');
   const o={no:isCover?'':$('f_no').value.trim(),n,c:$('f_c').value,l:Math.max(1,Math.min(9,+$('f_l').value||1)),color:FCOL,
-    b:isCover?'':$('f_b').value.trim(),t:isCover?'':$('f_t').value.trim(),tel:isCover?'':$('f_tel').value.trim(),grp:isCover?'':$('[id^=f_g]').value.trim()||undefined};
+    b:isCover?'':$('f_b').value.trim(),t:isCover?'':$('f_t').value.trim(),tel:isCover?'':$('f_tel').value.trim(),grp:isCover?'':$('f_g').value.trim()||undefined};
   let id;
   if(EDIT){Object.assign(EDIT,o);id=EDIT.id;}
   else{id='c'+Date.now().toString(36);DB.custom.push({id,...o,ring:PENDING});stopDraw();}
