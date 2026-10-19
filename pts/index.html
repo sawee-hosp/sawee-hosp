@@ -9,8 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Sawee Docs">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f46e5'/%3E%3Ctext x='32' y='43' font-family='Arial' font-weight='bold' font-size='30' text-anchor='middle' fill='white'%3ESD%3C/text%3E%3C/svg%3E">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="favicon.ico" sizes="any">
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
@@ -305,6 +304,14 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 .saved-row .acts{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
 .btn-link-leave{background:#059669;margin-top:8px;width:100%}
 @media(max-width:900px){.leave-grid{grid-template-columns:1fr;padding:12px}.mode-tab{font-size:12px}}
+.card-stat{font-size:12px;color:var(--text-muted);font-weight:500;margin-left:auto;align-self:center;opacity:.8}
+.leave-kinds .card-stat{color:#fff;opacity:.75;margin-left:2px;font-size:11px}
+.mode-tabs-hdr{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.mode-tabs-hdr button{background:#e2e8f0;color:#475569;padding:5px 12px;font-size:12px;border-radius:999px;font-weight:600}
+.mode-tabs-hdr button.active.ghost{background:#334155;color:#fff}
+.mode-tabs-hdr button.active.local{background:#d97706;color:#fff}
+.mode-tabs-hdr button.active.cloud{background:#0ea5e9;color:#fff}
+.app-header .user-info{flex-wrap:wrap;justify-content:flex-end}
 </style>
 </head>
 <body>
@@ -325,38 +332,12 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
     </div>
   </div>
 </div>
-<div id="save-indicator" class="save-indicator hidden"></div>
-
-<!-- ============================================================
-     LANDING PAGE — ระบบเอกสาร Sawee Docs (เลือกโหมด + เมนูเอกสาร)
-     ============================================================ -->
-<div id="page-landing" class="landing-page">
-  <div class="landing-header">
-    <h1>ระบบเอกสาร Sawee Docs</h1>
-    <p>โรงพยาบาลสวี จังหวัดชุมพร</p>
-  </div>
-
-  <div class="stat-card">
-    <div class="stat-title">สถิติการพิมพ์เอกสาร (ครั้ง) <span id="stat-scope" class="stat-scope"></span></div>
-    <div class="stat-scroll"><table class="stat-tbl" id="stat-tbl"></table></div>
-  </div>
-
-  <div class="mode-wrap">
-    <div class="mode-tabs" role="tablist">
-      <button class="mode-tab ghost active" id="tab-ghost" onclick="setTab('ghost')">👤 โหมดล่องหน</button>
-      <button class="mode-tab local" id="tab-local" onclick="setTab('local')">💾 โหมดบันทึกในเครื่อง</button>
-      <button class="mode-tab cloud" id="tab-cloud" onclick="setTab('cloud')">☁️ โหมดในคลาวด์</button>
-    </div>
-
-    <!-- Ghost -->
-    <div class="mode-panel ghost" id="panel-ghost">
-      <p class="mode-desc"><b>โหมดล่องหน</b> พิมพ์เอกสารโดยไม่บันทึกประวัติใดๆ แต่จะต้องพิมพ์ข้อมูลใหม่ทุกครั้งทุกช่อง</p>
-      <button class="btn-primary" style="background:#334155" onclick="enterGhostMode()">ใช้โหมดล่องหน</button>
-    </div>
-
+<div id="modal-auth" class="modal-overlay">
+  <div class="modal-box" style="max-width:560px;text-align:left;max-height:90vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="font-family:'Prompt',sans-serif" id="auth-title">เลือกโหมดบันทึก</b><button style="background:#e2e8f0;color:#334155;padding:2px 10px" onclick="closeAuth()">✕</button></div>
     <!-- Local -->
-    <div class="mode-panel local hidden" id="panel-local">
-      <p class="mode-desc"><b>โหมดบันทึกในเครื่อง</b> บันทึกประวัติไว้ในเครื่องส่วนตัว เมื่อย้ายเครื่องจะไม่มีข้อมูล ถ้าล้างเครื่องข้อมูลจะหาย</p>
+    <div id="panel-local">
+      <p class="mode-desc"><b>โหมด บันทึกในเครื่อง</b> บันทึกประวัติไว้ในเครื่องส่วนตัว เมื่อย้ายเครื่องจะไม่มีข้อมูล ถ้าล้างเครื่องข้อมูลจะหาย</p>
       <label class="consent-row"><input type="checkbox" id="chk-cookie" style="width:auto;accent-color:var(--warning)">
         อนุญาตให้เว็บนี้เก็บข้อมูลในเบราว์เซอร์ของเครื่องนี้ (localStorage / cookie) เพื่อจดจำประวัติของฉัน</label>
       <div id="local-users-list" style="margin:10px 0"></div>
@@ -369,8 +350,8 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
     </div>
 
     <!-- Cloud -->
-    <div class="mode-panel cloud hidden" id="panel-cloud">
-      <p class="mode-desc"><b>โหมดในคลาวด์</b> ดึงข้อมูลออนไลน์ได้จากทุกที่ ต้องสมัคร email ไว้ login และอนุญาต PDPA</p>
+    <div id="panel-cloud" class="hidden">
+      <p class="mode-desc"><b>โหมด login</b> (เก็บในคลาวด์) ดึงข้อมูลออนไลน์ได้จากทุกที่ ต้องสมัคร email ไว้ login และอนุญาต PDPA</p>
       <div class="pdpa-box">
       <h3>นโยบายความเป็นส่วนตัว (PDPA)</h3>
       <p>ระบบนี้จัดทำขึ้นเพื่ออำนวยความสะดวกในการพิมพ์ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่ายสำหรับเจ้าหน้าที่ รพ.สวี</p>
@@ -405,9 +386,16 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
     </div>
   </div>
 
-  <div class="active-bar hidden" id="active-bar">
-    <span id="active-text"></span>
-    <button class="btn-outline" style="padding:4px 12px;font-size:12px" onclick="doLogout()">ออกจากระบบ / เปลี่ยนโหมด</button>
+</div>
+<div id="save-indicator" class="save-indicator hidden"></div>
+
+<!-- ============================================================
+     LANDING PAGE — ระบบเอกสาร Sawee Docs (เลือกโหมด + เมนูเอกสาร)
+     ============================================================ -->
+<div id="page-landing" class="landing-page">
+  <div class="landing-header">
+    <h1>ระบบเอกสาร Sawee Docs</h1>
+    <p>โรงพยาบาลสวี จังหวัดชุมพร</p>
   </div>
 
   <div class="menu-title">เลือกเอกสารที่ต้องการพิมพ์</div>
@@ -416,26 +404,26 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
       <div class="icon-circle" style="background:linear-gradient(135deg,#4f46e5,#7c3aed)">
         <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       </div>
-      <div class="card-text"><h3>พิมพ์ พตส.รพ.สวี</h3><p>ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่าย</p></div>
+      <div class="card-text"><h3>พิมพ์ พตส.รพ.สวี</h3><p>ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่าย</p></div><span class="card-stat" data-stat="pts"></span>
     </div>
     <div class="submenu-card wide" id="card-leave">
       <div style="display:flex;align-items:center;gap:16px;cursor:pointer" onclick="toggleLeaveMenu()">
         <div class="icon-circle" style="background:linear-gradient(135deg,#059669,#10b981)">
           <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         </div>
-        <div class="card-text"><h3>พิมพ์ใบลา</h3><p>เลือกประเภทการลา แล้วกรอกแบบฟอร์ม</p></div>
+        <div class="card-text"><h3>พิมพ์ใบลา</h3><p>เลือกประเภทการลา แล้วกรอกแบบฟอร์ม</p></div><span class="card-stat" data-stat="leave_sick,leave_personal,leave_vacation" style="margin-left:auto"></span>
       </div>
       <div class="leave-kinds hidden" id="leave-kinds">
-        <button onclick="openLeavePage('leave','ลาป่วย')">ลาป่วย</button>
-        <button onclick="openLeavePage('leave','ลากิจ')">ลากิจ</button>
-        <button onclick="openLeavePage('leave','ลาพักผ่อน')">ลาพักผ่อน</button>
+        <button onclick="openLeavePage('leave','ลาป่วย')">ลาป่วย <small class="card-stat" data-stat="leave_sick"></small></button>
+        <button onclick="openLeavePage('leave','ลากิจ')">ลากิจ <small class="card-stat" data-stat="leave_personal"></small></button>
+        <button onclick="openLeavePage('leave','ลาพักผ่อน')">ลาพักผ่อน <small class="card-stat" data-stat="leave_vacation"></small></button>
       </div>
     </div>
     <div class="submenu-card" onclick="openLeavePage('cancel')">
       <div class="icon-circle" style="background:linear-gradient(135deg,#dc2626,#f97316)">
         <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
       </div>
-      <div class="card-text"><h3>ยกเลิกวันลา</h3><p>ดึงวันลาออกจากปฏิทิน และพิมพ์แบบใบขอยกเลิกวันลา</p></div>
+      <div class="card-text"><h3>ยกเลิกวันลา</h3><p>ดึงวันลาออกจากปฏิทิน และพิมพ์แบบใบขอยกเลิกวันลา</p></div><span class="card-stat" data-stat="leave_cancel"></span>
     </div>
   </div>
   <button class="btn-install" id="btn-install" onclick="installApp()">
@@ -453,7 +441,7 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
   <div class="app-header">
     <h1 id="lv-title">พิมพ์ใบลา</h1>
     <div class="user-info">
-      <span id="lv-mode-badge" class="mode-badge"></span>
+      <div class="mode-tabs-hdr"></div>
       <span id="lv-user-info" style="font-size:13px"></span>
       <button class="btn-outline" style="padding:5px 12px;font-size:12px" onclick="showPage('page-landing')">← หน้าหลัก</button>
     </div>
@@ -579,7 +567,7 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
   <div class="app-header">
     <h1>แบบพิมพ์ พตส. รพ.สวี</h1>
     <div class="user-info">
-      <span id="lbl-mode-badge" class="mode-badge"></span>
+      <div class="mode-tabs-hdr"></div>
       <span id="lbl-user-info" style="font-size:13px"></span>
       <button class="btn-outline" style="padding:5px 12px;font-size:12px" onclick="showPage('page-landing')">← หน้าหลัก</button>
     </div>
@@ -904,7 +892,6 @@ async function gasCall(action,payload={}){
 function enterGhostMode(){
   S.mode='ghost';S.username='';S.email='';S.profiles=[];S.leaves=[];S.printHistory=[];S.leaveForms=[];S.leaveCancels=[];
   S.activeProfileId='temp';S.selectedDays=[];
-  refreshLanding();
 }
 
 function enterLocalMode(){
@@ -920,7 +907,7 @@ function enterLocalMode(){
   }catch(e){}
   loadAllData().then(()=>{
     if(S.profiles.length>0) S.activeProfileId=S.profiles[0].id;
-    refreshLanding();
+    finishEnter();
   });
 }
 
@@ -939,9 +926,8 @@ function clearLocalData(){
     try{
       Object.keys(localStorage).filter(k=>/^(ptsd_|sd_)/.test(k)).forEach(k=>localStorage.removeItem(k));
     }catch(e){}
-    if(S.mode==='local'){doLogout();}
     document.getElementById('chk-cookie').checked=false;
-    refreshLanding();showAlert('ล้างข้อมูลจากเครื่องนี้แล้ว');
+    closeAuth();if(S.mode==='local')toGhost();else refreshLanding();showAlert('ล้างข้อมูลจากเครื่องนี้แล้ว');
   });
 }
 
@@ -957,7 +943,7 @@ async function doCloudLogin(){
     S.mode='cloud';S.username=username;S.email=email;S.selectedDays=[];
     setStorageData(res.data);
     S.activeProfileId=S.profiles.length>0?S.profiles[0].id:null;
-    refreshLanding();
+    finishEnter();
   }catch(e){showAlert('เชื่อมต่อล้มเหลว: '+e.message);}
   finally{btn.disabled=!document.getElementById('chk-pdpa').checked;btn.innerHTML='เข้าสู่ระบบ';}
 }
@@ -986,17 +972,13 @@ async function showForgotUsername(){
   }catch(e){showAlert('เกิดข้อผิดพลาด: '+e.message);}
 }
 
-function modeLabel(){return {ghost:['ล่องหน','background:#334155;color:#e2e8f0'],local:['บันทึกในเครื่อง','background:#d97706;color:#fff'],cloud:['ในคลาวด์','background:#0ea5e9;color:#fff']}[S.mode]||['',''];}
+function modeLabel(){return {ghost:['ล่องหน'],local:['โหมด บันทึกในเครื่อง'],cloud:['โหมด login']}[S.mode]||[''];}
 function userText(){return S.mode==='cloud'?S.username+' ('+S.email+')':(S.mode==='local'?S.username:'');}
 function setupDashboard(){
-  const [label,st]=modeLabel();
-  document.getElementById('profile-bar').classList.toggle('hidden',S.mode==='ghost');
+  if(!S.mode) enterGhostMode();
   showPage('page-dashboard');
   if(S.mode!=='ghost'&&S.profiles.length===0){try{addNewProfile();}catch(e){}}
-  const badge=document.getElementById('lbl-mode-badge');
-  badge.innerText=label;badge.style.cssText=st+';padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.3px';
-  document.getElementById('lbl-user-info').innerText=userText();
-  initDashboard();
+  applyModeUI();
 }
 function doLogout(){
   S={mode:null,username:'',email:'',profiles:[],activeProfileId:null,leaves:[],printHistory:[],currentMonthYear:'',currentViewYear:new Date().getFullYear()+543,selectedDays:[],leaveForms:[],leaveCancels:[]};
@@ -1818,8 +1800,8 @@ window.addEventListener('appinstalled',()=>{_dip=null;const b=document.getElemen
     }catch(e){}
   }
   try{
-    fetch('manifest.webmanifest',{cache:'no-cache'}).then(r=>{
-      if(r.ok){const l=document.createElement('link');l.rel='manifest';l.href='manifest.webmanifest';document.head.appendChild(l);
+    Promise.all([fetch('manifest.webmanifest',{cache:'no-cache'}),fetch('icon-192.png',{cache:'no-cache'}),fetch('icon-512.png',{cache:'no-cache'})]).then(rs=>{
+      if(rs.every(r=>r.ok)){const l=document.createElement('link');l.rel='manifest';l.href='manifest.webmanifest';document.head.appendChild(l);
         if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});}
       else addBlob();
     }).catch(addBlob);
@@ -1838,42 +1820,85 @@ async function installApp(){
 // ================================================================
 //  LANDING: mode tabs, stats, menu
 // ================================================================
-let _tab='ghost';
 function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
-function setTab(m){
-  _tab=m;
-  ['ghost','local','cloud'].forEach(x=>{
-    document.getElementById('tab-'+x).classList.toggle('active',x===m);
-    document.getElementById('panel-'+x).classList.toggle('hidden',x!==m);
-  });
-  if(m==='local') renderLocalUsers();
-  renderStats();
-}
 function toggleRegister(on){
   document.getElementById('cloud-login-box').classList.toggle('hidden',!!on);
   document.getElementById('cloud-register-box').classList.toggle('hidden',!on);
 }
-function refreshLanding(){
-  const bar=document.getElementById('active-bar');
-  if(S.mode){
-    const [l]=modeLabel();
-    document.getElementById('active-text').textContent='✓ ใช้งานอยู่: โหมด'+l+(userText()?' — '+userText():'');
-    bar.classList.remove('hidden');
-    if(_tab!==S.mode) setTab(S.mode);
-  } else bar.classList.add('hidden');
-  document.getElementById('menu-cards').classList.toggle('dim',!S.mode);
-  const ck=document.getElementById('chk-cookie');
-  if(ck&&!ck.checked&&lsGet('sd_consent')==='1') ck.checked=true;
-  renderStats();
+function refreshLanding(){updateCardStats();}
+function openPts(){ setupDashboard(); }
+function toggleLeaveMenu(){ document.getElementById('leave-kinds').classList.toggle('hidden'); }
+
+// ---------- mode tabs (top-right of the form pages) ----------
+const MODE_TABS=[['ghost','ล่องหน','พิมพ์โดยไม่บันทึกประวัติใดๆ ต้องพิมพ์ข้อมูลใหม่ทุกครั้ง'],['local','โหมด บันทึกในเครื่อง','บันทึกประวัติไว้ในเครื่องส่วนตัว ย้ายเครื่องข้อมูลไม่ตามไป ล้างเครื่องข้อมูลหาย'],['cloud','โหมด login','ดึงข้อมูลออนไลน์ได้จากทุกที่ ต้องสมัคร email ไว้ login และอนุญาต PDPA']];
+function renderModeTabs(){
+  document.querySelectorAll('.mode-tabs-hdr').forEach(el=>{
+    el.innerHTML='';
+    MODE_TABS.forEach(t=>{
+      const b=document.createElement('button');b.textContent=t[1];b.title=t[2];
+      b.className=(t[0]===S.mode?'active ':'')+t[0];
+      b.onclick=()=>clickModeTab(t[0]);el.appendChild(b);
+    });
+  });
 }
-function needMode(){
-  if(S.mode) return true;
-  showAlert('กรุณาเลือกโหมดการใช้งานด้านบนก่อน\n(ล่องหน / บันทึกในเครื่อง / ในคลาวด์) แล้วกด "ใช้งาน" หรือ "เข้าสู่ระบบ"');
-  window.scrollTo({top:0,behavior:'smooth'});
-  return false;
+let _snap=null;
+function takeSnapshot(){
+  if(S.mode!=='ghost') return null;
+  return {fd:getFormData(),leaves:S.leaves.slice(),forms:S.leaveForms.slice(),cancels:S.leaveCancels.slice(),hist:S.printHistory.slice()};
 }
-function openPts(){ if(!needMode())return; setupDashboard(); }
-function toggleLeaveMenu(){ if(!needMode())return; document.getElementById('leave-kinds').classList.toggle('hidden'); }
+function clickModeTab(m){
+  if(m===S.mode) return;
+  if(m==='ghost') return toGhost();
+  _snap=takeSnapshot();
+  document.getElementById('panel-local').classList.toggle('hidden',m!=='local');
+  document.getElementById('panel-cloud').classList.toggle('hidden',m!=='cloud');
+  document.getElementById('auth-title').textContent=m==='local'?'ใช้โหมด บันทึกในเครื่อง':'ใช้โหมด login';
+  if(m==='local'){renderLocalUsers();const ck=document.getElementById('chk-cookie');if(lsGet('sd_consent')==='1')ck.checked=true;}
+  document.getElementById('modal-auth').classList.add('active');
+}
+function closeAuth(){document.getElementById('modal-auth').classList.remove('active');}
+function toGhost(){
+  const onLeave=!document.getElementById('page-leave').classList.contains('hidden');
+  const tab=LV.tab;
+  doLogout();enterGhostMode();
+  if(onLeave) openLeavePage(tab); else setupDashboard();
+}
+function finishEnter(){
+  const sn=_snap;_snap=null;
+  const has=sn&&(sn.fd.name||sn.fd.surname||sn.leaves.length||sn.forms.length);
+  if(has){
+    let p=sn.fd.name?S.profiles.find(x=>x.name===sn.fd.name&&x.surname===sn.fd.surname):null;
+    if(!p){p=Object.assign({},sn.fd,{id:uid()});S.profiles.push(p);}
+    S.activeProfileId=p.id;
+    sn.leaves.forEach(l=>S.leaves.push(Object.assign({},l,{profile_id:p.id})));
+    sn.forms.forEach(f=>S.leaveForms.push(Object.assign({},f,{profile_id:p.id})));
+    sn.cancels.forEach(c=>S.leaveCancels.push(Object.assign({},c,{profile_id:p.id})));
+    sn.hist.forEach(h=>S.printHistory.push(Object.assign({},h,{profile_id:p.id})));
+    scheduleSave();
+  } else if(!S.activeProfileId&&S.profiles.length) S.activeProfileId=S.profiles[0].id;
+  closeAuth();
+  if(S.profiles.length===0){try{ensureProfile();}catch(e){}}
+  applyModeUI();
+  flashSave('เข้าสู่ '+modeLabel()[0]+' แล้ว','#059669');
+}
+function applyModeUI(){
+  renderModeTabs();
+  const ut=userText();
+  document.querySelectorAll('#lbl-user-info,#lv-user-info').forEach(e=>e.innerText=ut);
+  const onDash=!document.getElementById('page-dashboard').classList.contains('hidden');
+  const onLeave=!document.getElementById('page-leave').classList.contains('hidden');
+  const ghost=S.mode==='ghost';
+  document.getElementById('profile-bar').classList.toggle('hidden',ghost);
+  if(onDash) initDashboard();
+  if(onLeave){
+    document.getElementById('lv-ghost-hint').classList.toggle('hidden',!ghost);
+    document.getElementById('lv-save-box').classList.toggle('hidden',ghost);
+    document.getElementById('lv-saved-card').classList.toggle('hidden',ghost);
+    document.getElementById('cc-pick-box').classList.toggle('hidden',ghost);
+    renderLeaveSaved();fillCancelPick();updateLeavePreview();
+  }
+  updateCardStats();
+}
 
 document.getElementById('chk-pdpa').addEventListener('change',function(){
   document.getElementById('btn-login').disabled=!this.checked;
@@ -1883,23 +1908,19 @@ document.getElementById('chk-cookie').addEventListener('change',function(){
   try{if(this.checked)localStorage.setItem('sd_consent','1');else localStorage.removeItem('sd_consent');}catch(e){}
 });
 
-// ---------- stats (per document × per mode) ----------
-const STAT_DOCS=[['pts','พตส.รพ.สวี'],['leave_sick','ใบลาป่วย'],['leave_personal','ใบลากิจ'],['leave_vacation','ใบลาพักผ่อน'],['leave_cancel','ใบขอยกเลิกวันลา']];
-const STAT_MODES=[['ghost','ล่องหน'],['local','ในเครื่อง'],['cloud','ในคลาวด์']];
+// ---------- stats: small numbers on the menu cards ----------
+const STAT_MODES=[['ghost','ล่องหน'],['local','บันทึกในเครื่อง'],['cloud','login']];
 let _statSrv=null;
 function localStats(){try{return JSON.parse(lsGet('sd_stats')||'{}');}catch(e){return {};}}
-function renderStats(){
-  const t=document.getElementById('stat-tbl');if(!t)return;
+function updateCardStats(){
   const st=_statSrv||localStats();
-  document.getElementById('stat-scope').textContent=_statSrv?'(รวมทุกเครื่อง)':'(เฉพาะเครื่องนี้)';
-  let h='<tr><th>เอกสาร</th>'+STAT_MODES.map(m=>'<th class="'+(_tab===m[0]?'cur':'')+'">'+m[1]+'</th>').join('')+'<th>รวม</th></tr>';
-  STAT_DOCS.forEach(d=>{
-    let tot=0;
-    const cells=STAT_MODES.map(m=>{const n=+(st[d[0]+':'+m[0]]||0);tot+=n;return '<td class="num '+(_tab===m[0]?'cur':'')+'">'+n.toLocaleString('th-TH')+'</td>';}).join('');
-    h+='<tr><td>'+d[1]+'</td>'+cells+'<td class="num">'+tot.toLocaleString('th-TH')+'</td></tr>';
+  document.querySelectorAll('[data-stat]').forEach(el=>{
+    const docs=el.dataset.stat.split(',');let tot=0,tip=[];
+    STAT_MODES.forEach(m=>{const n=docs.reduce((a,d)=>a+(+(st[d+':'+m[0]]||0)),0);tot+=n;tip.push(m[1]+' '+n);});
+    el.textContent=tot?tot.toLocaleString('th-TH'):'';el.title=tip.join(' · ')+(_statSrv?'':' (เฉพาะเครื่องนี้)');
   });
-  t.innerHTML=h;
 }
+const renderStats=updateCardStats;
 async function loadStat(){
   renderStats();
   try{const r=await gasCall('statGet');if(r&&r.ok&&r.stats){_statSrv=r.stats;renderStats();}}catch(e){}
@@ -1909,7 +1930,7 @@ async function bumpStat(doc){
   if(lsGet('sd_consent')==='1'){try{const l=localStats();const k=doc+':'+mode;l[k]=(l[k]||0)+1;localStorage.setItem('sd_stats',JSON.stringify(l));}catch(e){}}
   try{const r=await gasCall('statInc',{doc,mode});if(r&&r.ok&&r.stats){_statSrv=r.stats;renderStats();}}catch(e){}
 }
-window.addEventListener('DOMContentLoaded',()=>{loadStat();refreshLanding();});
+window.addEventListener('DOMContentLoaded',()=>{loadStat();refreshLanding();renderModeTabs();});
 
 // ================================================================
 //  LEAVE MODULE
@@ -1958,10 +1979,10 @@ function effDays(f){
 
 // ---------- page open / tabs ----------
 function openLeavePage(tab,kind,pre){
-  if(!needMode()) return;
+  if(!S.mode) enterGhostMode();
+  if(S.mode!=='ghost') ensureProfile();
   pre=pre||{};
-  const [l,st]=modeLabel();
-  const b=$('lv-mode-badge');b.innerText=l;b.style.cssText=st+';padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700';
+  renderModeTabs();
   $('lv-user-info').innerText=userText();
   $('lv-ghost-hint').classList.toggle('hidden',S.mode!=='ghost');
   $('lv-save-box').classList.toggle('hidden',S.mode==='ghost');
