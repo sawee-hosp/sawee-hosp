@@ -312,6 +312,8 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 .mode-tabs-hdr button.active.local{background:#d97706;color:#fff}
 .mode-tabs-hdr button.active.cloud{background:#0ea5e9;color:#fff}
 .app-header .user-info{flex-wrap:wrap;justify-content:flex-end}
+.warn-box{background:#fffbeb;border:1px solid #fcd34d;color:#92400e;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.6;margin-bottom:8px}
+.pw-chip{cursor:pointer;margin:2px}
 </style>
 </head>
 <body>
@@ -338,54 +340,72 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
     <!-- Local -->
     <div id="panel-local">
       <p class="mode-desc"><b>โหมด บันทึกในเครื่อง</b> บันทึกประวัติไว้ในเครื่องส่วนตัว เมื่อย้ายเครื่องจะไม่มีข้อมูล ถ้าล้างเครื่องข้อมูลจะหาย</p>
+      <div class="warn-box">⚠ ข้อมูลของทุกชื่ออยู่ <b>เฉพาะในเครื่องนี้เท่านั้น</b> (ไม่ขึ้นเซิร์ฟเวอร์) เปลี่ยนเครื่อง ใช้เบราว์เซอร์อื่น หรือล้างข้อมูลเบราว์เซอร์ ข้อมูลจะหาย และหากลืมรหัสผ่านจะกู้คืนไม่ได้</div>
       <label class="consent-row"><input type="checkbox" id="chk-cookie" style="width:auto;accent-color:var(--warning)">
         อนุญาตให้เว็บนี้เก็บข้อมูลในเบราว์เซอร์ของเครื่องนี้ (localStorage / cookie) เพื่อจดจำประวัติของฉัน</label>
       <div id="local-users-list" style="margin:10px 0"></div>
-      <div class="form-group"><label>ชื่อผู้ใช้ (ตั้งเพื่อแยกข้อมูลของแต่ละคน)</label>
-        <input type="text" id="local-username" placeholder="พิมพ์ชื่อ เช่น สมชาย" onkeydown="if(event.key==='Enter')enterLocalMode()"></div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <div class="form-row">
+        <div class="form-group"><label>ชื่อ (1 เครื่องมีได้หลายชื่อ)</label>
+          <input type="text" id="local-username" placeholder="พิมพ์ชื่อ เช่น สมชาย" autocomplete="off"></div>
+        <div class="form-group"><label>รหัสผ่าน</label>
+          <input type="password" id="local-password" placeholder="รหัสผ่านของชื่อนี้" autocomplete="off" onkeydown="if(event.key==='Enter')enterLocalMode()"></div>
+      </div>
+      <p class="hint" id="local-hint">ชื่อใหม่: รหัสผ่านที่พิมพ์จะถูกตั้งเป็นรหัสผ่านของชื่อนั้น ชื่อเดิม: ใส่รหัสผ่านที่เคยตั้ง</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px">
         <button class="btn-primary" style="background:var(--warning)" onclick="enterLocalMode()">เข้าใช้งาน</button>
-        <button class="btn-outline" style="border-color:var(--danger);color:var(--danger)" onclick="clearLocalData()">🗑 ล้างข้อมูลจากเครื่องนี้</button>
+        <button class="btn-outline" style="border-color:var(--danger);color:var(--danger)" onclick="deleteLocalUser()">ลืมรหัสผ่าน / ลบชื่อนี้</button>
+        <button class="btn-outline" style="border-color:var(--danger);color:var(--danger)" onclick="clearLocalData()">🗑 ล้างข้อมูลทั้งเครื่อง</button>
       </div>
     </div>
 
     <!-- Cloud -->
     <div id="panel-cloud" class="hidden">
-      <p class="mode-desc"><b>โหมด login</b> (เก็บในคลาวด์) ดึงข้อมูลออนไลน์ได้จากทุกที่ ต้องสมัคร email ไว้ login และอนุญาต PDPA</p>
+      <p class="mode-desc"><b>โหมด login</b> (เก็บในคลาวด์) ดึงข้อมูลออนไลน์ได้จากทุกที่ ใช้ Email + รหัสผ่านเข้าสู่ระบบ (1 Email ต่อ 1 บัญชี) และต้องอนุญาต PDPA</p>
       <div class="pdpa-box">
       <h3>นโยบายความเป็นส่วนตัว (PDPA)</h3>
-      <p>ระบบนี้จัดทำขึ้นเพื่ออำนวยความสะดวกในการพิมพ์ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่ายสำหรับเจ้าหน้าที่ รพ.สวี</p>
-      <p><b>ข้อมูลที่เก็บรวบรวม:</b> ชื่อ-นามสกุล, ตำแหน่ง, ประวัติการปฏิบัติงาน, ข้อมูลวันลา, จำนวนเงินค่าตอบแทน</p>
-      <p><b>วัตถุประสงค์:</b> เพื่อจัดทำเอกสารใบขอรับเงินค่าตอบแทนเท่านั้น</p>
+      <p>ระบบนี้จัดทำขึ้นเพื่ออำนวยความสะดวกในการพิมพ์เอกสารสำหรับเจ้าหน้าที่ รพ.สวี (ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่าย และใบลา)</p>
+      <p><b>ข้อมูลที่เก็บรวบรวม:</b> Email, ชื่อ-นามสกุล, ตำแหน่ง, ประวัติการปฏิบัติงาน, ข้อมูลวันลาและใบลา, จำนวนเงินค่าตอบแทน (รหัสผ่านเก็บเป็นค่าแฮช ไม่เก็บข้อความจริง)</p>
+      <p><b>วัตถุประสงค์:</b> เพื่อจัดทำเอกสารดังกล่าวเท่านั้น</p>
       <p><b>การจัดเก็บ:</b> ข้อมูลจัดเก็บใน Google Sheets ที่มีการจำกัดสิทธิ์การเข้าถึง ผู้ใช้สามารถขอลบข้อมูลได้ตลอดเวลา</p>
       <p><b>ระบบไม่บันทึกเอกสาร PDF ของท่านเลย</b> — เอกสารถูกสร้างในเบราว์เซอร์ของท่านเท่านั้น</p>
-      <p><b>ความปลอดภัย:</b> หากมีผู้อื่นทราบ Email + Username ของท่าน จะสามารถเห็นข้อมูลที่ท่านบันทึกไว้ได้ กรุณาเก็บรักษาข้อมูลเข้าระบบไว้เป็นความลับ</p>
+      <p><b>ความปลอดภัย:</b> กรุณาเก็บรักษา Email และรหัสผ่านไว้เป็นความลับ</p>
     </div>
       <label class="consent-row"><input type="checkbox" id="chk-pdpa" style="width:auto;accent-color:var(--primary)"> ข้าพเจ้ายอมรับนโยบายความเป็นส่วนตัว (PDPA)</label>
       <div id="cloud-login-box">
         <div class="form-row">
-          <div class="form-group"><label>Email <span class="required-mark">*</span></label><input type="email" id="login-email" placeholder="example@hospital.go.th"></div>
-          <div class="form-group"><label>Username <span class="required-mark">*</span></label><input type="text" id="login-username" placeholder="username ที่ตั้งไว้"></div>
+          <div class="form-group"><label>Email <span class="required-mark">*</span></label><input type="email" id="login-email" placeholder="example@hospital.go.th" autocomplete="username"></div>
+          <div class="form-group"><label>รหัสผ่าน <span class="required-mark">*</span></label><input type="password" id="login-password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doCloudLogin()"></div>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
           <button class="btn-primary" id="btn-login" disabled onclick="doCloudLogin()" style="background:#0ea5e9">เข้าสู่ระบบ</button>
-          <a href="#" onclick="showForgotUsername();return false" style="color:#0ea5e9;font-size:13px">ลืม Username?</a>
-          <a href="#" onclick="toggleRegister(true);return false" style="color:var(--success);font-size:13px">ลงทะเบียนใหม่</a>
+          <a href="#" onclick="cloudView('reset');return false" style="color:#0ea5e9;font-size:13px">ลืมรหัสผ่าน?</a>
+          <a href="#" onclick="cloudView('register');return false" style="color:var(--success);font-size:13px">ลงทะเบียนใหม่</a>
         </div>
       </div>
       <div id="cloud-register-box" class="hidden">
         <div class="form-row">
-          <div class="form-group"><label>Email <span class="required-mark">*</span></label><input type="email" id="reg-email" placeholder="ใช้สำหรับกู้คืน Username"></div>
-          <div class="form-group"><label>ตั้ง Username <span class="required-mark">*</span></label><input type="text" id="reg-username" placeholder="ตั้งเป็นชื่อที่จำง่าย"></div>
+          <div class="form-group"><label>Email <span class="required-mark">*</span></label><input type="email" id="reg-email" placeholder="ใช้เป็นชื่อเข้าระบบ (1 Email ต่อ 1 บัญชี)" autocomplete="username"></div>
+          <div class="form-group"><label>ตั้งรหัสผ่าน <span class="required-mark">*</span></label><input type="password" id="reg-password" autocomplete="new-password" placeholder="ตั้งอะไรก็ได้ ไม่จำกัดความยาว"></div>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
           <button class="btn-success" id="btn-reg" disabled onclick="doCloudRegister()">ลงทะเบียน</button>
-          <a href="#" onclick="toggleRegister(false);return false" style="font-size:13px">← กลับไปเข้าสู่ระบบ</a>
+          <a href="#" onclick="cloudView('login');return false" style="font-size:13px">← กลับไปเข้าสู่ระบบ</a>
         </div>
+      </div>
+      <div id="cloud-reset-box" class="hidden">
+        <div class="form-group"><label>Email ที่ลงทะเบียนไว้</label><input type="email" id="rst-email" placeholder="example@hospital.go.th"></div>
+        <button class="btn-primary" id="btn-rst-send" disabled onclick="doResetRequest()" style="background:#8b5cf6">ส่งรหัสยืนยันไปที่ Email</button>
+        <div id="rst-step2" class="hidden" style="margin-top:12px">
+          <div class="form-row">
+            <div class="form-group"><label>รหัสยืนยัน 6 หลัก (จาก Email)</label><input type="text" id="rst-code" inputmode="numeric" autocomplete="one-time-code"></div>
+            <div class="form-group"><label>รหัสผ่านใหม่</label><input type="password" id="rst-password" autocomplete="new-password"></div>
+          </div>
+          <button class="btn-success" onclick="doResetConfirm()">ตั้งรหัสผ่านใหม่</button>
+        </div>
+        <div style="margin-top:10px"><a href="#" onclick="cloudView('login');return false" style="font-size:13px">← กลับไปเข้าสู่ระบบ</a></div>
       </div>
     </div>
   </div>
-
 </div>
 <div id="save-indicator" class="save-indicator hidden"></div>
 
@@ -443,7 +463,8 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
     <div class="user-info">
       <div class="mode-tabs-hdr"></div>
       <span id="lv-user-info" style="font-size:13px"></span>
-      <button class="btn-outline" style="padding:5px 12px;font-size:12px" onclick="showPage('page-landing')">← หน้าหลัก</button>
+      <button class="btn-outline" style="padding:5px 12px;font-size:12px" onclick="backToPts()">← กลับฟอร์ม พตส.</button>
+      <button class="btn-outline" style="padding:5px 12px;font-size:12px" onclick="showPage('page-landing')">หน้าหลัก</button>
     </div>
   </div>
   <div class="leave-grid">
@@ -780,6 +801,7 @@ let S = {
   currentMonthYear: '',
   currentViewYear: new Date().getFullYear() + 543,
   selectedDays: [],
+  token: '',
   leaveForms: [],    // ใบลาที่บันทึก
   leaveCancels: [],  // ประวัติยกเลิกวันลา
 };
@@ -834,7 +856,7 @@ async function loadAllData(){
   }
   if(S.mode==='cloud'){
     try{
-      const res=await gasCall('load',{email:S.email,username:S.username});
+      const res=await gasCall('load',{email:S.email,token:S.token});
       if(res.ok && res.data) setStorageData(res.data);
     }catch(e){showAlert('โหลดข้อมูลล้มเหลว: '+e.message);}
   }
@@ -851,7 +873,7 @@ async function saveAllData(){
   if(S.mode==='cloud'){
     flashSave('กำลังบันทึก...','#0ea5e9');
     try{
-      const res=await gasCall('save',{email:S.email,username:S.username,userData:d});
+      const res=await gasCall('save',{email:S.email,token:S.token,userData:d});
       if(res.ok) flashSave('บันทึกแล้ว','#059669');
       else flashSave('บันทึกล้มเหลว','#dc2626');
     }catch(e){flashSave('บันทึกล้มเหลว','#dc2626');}
@@ -894,17 +916,45 @@ function enterGhostMode(){
   S.activeProfileId='temp';S.selectedDays=[];
 }
 
-function enterLocalMode(){
-  const u=document.getElementById('local-username').value.trim();
-  if(!document.getElementById('chk-cookie').checked) return showAlert('กรุณาติ๊กอนุญาตให้เว็บเก็บข้อมูลในเครื่องนี้ก่อน');
-  if(!u) return showAlert('กรุณากรอกชื่อผู้ใช้');
-  try{localStorage.setItem('sd_consent','1');}catch(e){}
-  S.mode='local';S.username=u;S.email='';S.profiles=[];S.leaves=[];S.printHistory=[];S.leaveForms=[];S.leaveCancels=[];
-  S.activeProfileId=null;S.selectedDays=[];
+// ---------- password hashing (PBKDF2 when available) ----------
+async function pwHash(pw,salt){
   try{
-    let users=JSON.parse(localStorage.getItem('ptsd_local_users')||'[]');
-    if(!users.includes(u)){users.push(u);localStorage.setItem('ptsd_local_users',JSON.stringify(users));}
+    if(window.crypto&&crypto.subtle){
+      const enc=new TextEncoder();
+      const key=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveBits']);
+      const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:enc.encode(salt),iterations:100000,hash:'SHA-256'},key,256);
+      return Array.from(new Uint8Array(bits)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
   }catch(e){}
+  let h=2166136261;const str=salt+'|'+pw;
+  for(let r=0;r<2000;r++)for(let i=0;i<str.length;i++){h^=str.charCodeAt(i)+r;h=Math.imul(h,16777619)>>>0;}
+  return 'f'+h.toString(16);
+}
+function localAuth(){try{return JSON.parse(localStorage.getItem('ptsd_local_auth')||'{}');}catch(e){return {};}}
+function localUsers(){try{return JSON.parse(localStorage.getItem('ptsd_local_users')||'[]');}catch(e){return [];}}
+
+async function enterLocalMode(){
+  const u=document.getElementById('local-username').value.trim();
+  const pw=document.getElementById('local-password').value;
+  if(!document.getElementById('chk-cookie').checked) return showAlert('กรุณาติ๊กอนุญาตให้เว็บเก็บข้อมูลในเครื่องนี้ก่อน');
+  if(!u) return showAlert('กรุณากรอกชื่อ');
+  if(!pw) return showAlert('กรุณากรอกรหัสผ่านของชื่อนี้');
+  try{localStorage.setItem('sd_consent','1');}catch(e){}
+  const auth=localAuth();
+  const rec=auth[u];
+  if(rec){
+    if(await pwHash(pw,rec.s)!==rec.h) return showAlert('รหัสผ่านไม่ถูกต้อง');
+  } else {
+    const salt=uid()+uid();
+    auth[u]={s:salt,h:await pwHash(pw,salt)};
+    try{
+      localStorage.setItem('ptsd_local_auth',JSON.stringify(auth));
+      const users=localUsers();if(!users.includes(u)){users.push(u);localStorage.setItem('ptsd_local_users',JSON.stringify(users));}
+    }catch(e){return showAlert('บันทึกในเครื่องนี้ไม่ได้ (เบราว์เซอร์บล็อกการเก็บข้อมูล)');}
+  }
+  S.mode='local';S.username=u;S.email='';S.token='';S.profiles=[];S.leaves=[];S.printHistory=[];S.leaveForms=[];S.leaveCancels=[];
+  S.activeProfileId=null;S.selectedDays=[];
+  document.getElementById('local-password').value='';
   loadAllData().then(()=>{
     if(S.profiles.length>0) S.activeProfileId=S.profiles[0].id;
     finishEnter();
@@ -913,16 +963,27 @@ function enterLocalMode(){
 
 function renderLocalUsers(){
   const el=document.getElementById('local-users-list');
-  try{
-    const users=JSON.parse(localStorage.getItem('ptsd_local_users')||'[]');
-    if(users.length===0){el.innerHTML='';return;}
-    el.innerHTML='<div style="font-size:12px;font-weight:700;color:var(--text-light);margin-bottom:6px">ผู้ใช้ที่มีอยู่ในเครื่องนี้ (กดเพื่อเข้า):</div>'+
-      users.map(u=>`<span class="profile-chip" style="cursor:pointer;margin:2px" data-u="${esc(u)}">${esc(u)}</span>`).join('');
-    el.querySelectorAll('[data-u]').forEach(c=>c.onclick=()=>{document.getElementById('local-username').value=c.dataset.u;enterLocalMode();});
-  }catch(e){el.innerHTML='';}
+  const users=localUsers();
+  if(users.length===0){el.innerHTML='<div class="hint">ยังไม่มีชื่อในเครื่องนี้ — พิมพ์ชื่อใหม่และตั้งรหัสผ่านด้านล่าง</div>';return;}
+  el.innerHTML='<div style="font-size:12px;font-weight:700;color:var(--text-light);margin-bottom:6px">ชื่อที่มีอยู่ในเครื่องนี้ (กดเลือก แล้วใส่รหัสผ่าน):</div>'+
+    users.map(u=>`<span class="profile-chip pw-chip" data-u="${esc(u)}">${esc(u)}</span>`).join('');
+  el.querySelectorAll('[data-u]').forEach(c=>c.onclick=()=>{document.getElementById('local-username').value=c.dataset.u;document.getElementById('local-password').focus();});
+}
+function deleteLocalUser(){
+  const u=document.getElementById('local-username').value.trim();
+  if(!u||!localUsers().includes(u)) return showAlert('เลือกหรือพิมพ์ชื่อที่ต้องการลบก่อน');
+  showConfirm('ลบชื่อ "'+u+'" และข้อมูลทั้งหมดของชื่อนี้ออกจากเครื่อง?\n(ใช้เมื่อลืมรหัสผ่าน — กู้คืนไม่ได้)',()=>{
+    try{
+      localStorage.removeItem('ptsd_'+u);
+      const a=localAuth();delete a[u];localStorage.setItem('ptsd_local_auth',JSON.stringify(a));
+      localStorage.setItem('ptsd_local_users',JSON.stringify(localUsers().filter(x=>x!==u)));
+    }catch(e){}
+    document.getElementById('local-username').value='';renderLocalUsers();
+    if(S.mode==='local'&&S.username===u){closeAuth();toGhost();}
+  });
 }
 function clearLocalData(){
-  showConfirm('ล้างข้อมูลทั้งหมดที่บันทึกไว้ในเครื่องนี้ (ทุกผู้ใช้ ใบลา และสถิติในเครื่อง)?\nการกระทำนี้ย้อนกลับไม่ได้',()=>{
+  showConfirm('ล้างข้อมูลทั้งหมดที่บันทึกไว้ในเครื่องนี้ (ทุกชื่อ รหัสผ่าน ใบลา และสถิติในเครื่อง)?\nการกระทำนี้ย้อนกลับไม่ได้',()=>{
     try{
       Object.keys(localStorage).filter(k=>/^(ptsd_|sd_)/.test(k)).forEach(k=>localStorage.removeItem(k));
     }catch(e){}
@@ -931,49 +992,74 @@ function clearLocalData(){
   });
 }
 
+// ---------- cloud: email + password ----------
+function cloudView(v){
+  document.getElementById('cloud-login-box').classList.toggle('hidden',v!=='login');
+  document.getElementById('cloud-register-box').classList.toggle('hidden',v!=='register');
+  document.getElementById('cloud-reset-box').classList.toggle('hidden',v!=='reset');
+  if(v==='reset'){document.getElementById('rst-step2').classList.add('hidden');const le=document.getElementById('login-email').value;if(le&&!document.getElementById('rst-email').value)document.getElementById('rst-email').value=le;}
+}
 async function doCloudLogin(){
   const email=document.getElementById('login-email').value.trim();
-  const username=document.getElementById('login-username').value.trim();
-  if(!email||!username) return showAlert('กรุณากรอก Email และ Username');
+  const password=document.getElementById('login-password').value;
+  if(!email||!password) return showAlert('กรุณากรอก Email และรหัสผ่าน');
   const btn=document.getElementById('btn-login');
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span> กำลังเข้าสู่ระบบ...';
   try{
-    const res=await gasCall('login',{email,username});
-    if(!res.ok) return showAlert(res.error||'เข้าสู่ระบบล้มเหลว');
-    S.mode='cloud';S.username=username;S.email=email;S.selectedDays=[];
+    const res=await gasCall('login',{email,password});
+    if(!res.ok){
+      if(res.code==='NO_PASSWORD'){showAlert(res.error);document.getElementById('rst-email').value=email;cloudView('reset');return;}
+      return showAlert(res.error||'เข้าสู่ระบบล้มเหลว');
+    }
+    S.mode='cloud';S.username=res.username||email;S.email=email.toLowerCase();S.token=res.token;S.selectedDays=[];
     setStorageData(res.data);
     S.activeProfileId=S.profiles.length>0?S.profiles[0].id:null;
+    document.getElementById('login-password').value='';
     finishEnter();
   }catch(e){showAlert('เชื่อมต่อล้มเหลว: '+e.message);}
   finally{btn.disabled=!document.getElementById('chk-pdpa').checked;btn.innerHTML='เข้าสู่ระบบ';}
 }
-
 async function doCloudRegister(){
   const email=document.getElementById('reg-email').value.trim();
-  const username=document.getElementById('reg-username').value.trim();
-  if(!email||!username) return showAlert('กรุณากรอก Email และ Username');
+  const password=document.getElementById('reg-password').value;
+  if(!email||!password) return showAlert('กรุณากรอก Email และตั้งรหัสผ่าน');
   try{
-    const res=await gasCall('register',{email,username});
+    const res=await gasCall('register',{email,password});
     if(!res.ok) return showAlert(res.error);
-    showAlert('ลงทะเบียนสำเร็จ!\nUsername: '+username+'\nEmail: '+email+'\n\nกรุณาจดจำข้อมูลนี้ไว้');
+    showAlert('ลงทะเบียนสำเร็จ!\nเข้าสู่ระบบด้วย Email: '+email+'\nและรหัสผ่านที่ตั้งไว้');
     document.getElementById('login-email').value=email;
-    document.getElementById('login-username').value=username;
-    toggleRegister(false);
+    document.getElementById('login-password').value='';
+    document.getElementById('reg-password').value='';
+    cloudView('login');
   }catch(e){showAlert('ลงทะเบียนล้มเหลว: '+e.message);}
 }
-
-async function showForgotUsername(){
-  const email=document.getElementById('login-email').value.trim();
-  if(!email) return showAlert('กรุณาพิมพ์ Email ในช่องด้านบนก่อน');
+async function doResetRequest(){
+  const email=document.getElementById('rst-email').value.trim();
+  if(!email) return showAlert('กรุณากรอก Email');
   try{
-    const res=await gasCall('forgot',{email});
+    const res=await gasCall('resetRequest',{email});
     if(!res.ok) return showAlert(res.error);
-    showAlert('Username ของท่านคือ: '+res.username);
+    document.getElementById('rst-step2').classList.remove('hidden');
+    showAlert('ส่งรหัสยืนยัน 6 หลักไปที่ '+email+' แล้ว (ใช้ได้ 15 นาที)\nหากไม่พบ ให้ตรวจโฟลเดอร์สแปม');
+  }catch(e){showAlert('เกิดข้อผิดพลาด: '+e.message);}
+}
+async function doResetConfirm(){
+  const email=document.getElementById('rst-email').value.trim();
+  const code=document.getElementById('rst-code').value.trim();
+  const password=document.getElementById('rst-password').value;
+  if(!email||!code||!password) return showAlert('กรุณากรอกรหัสยืนยันและรหัสผ่านใหม่');
+  try{
+    const res=await gasCall('resetConfirm',{email,code,password});
+    if(!res.ok) return showAlert(res.error);
+    showAlert('ตั้งรหัสผ่านใหม่เรียบร้อย กรุณาเข้าสู่ระบบด้วยรหัสผ่านใหม่');
+    document.getElementById('login-email').value=email;
+    document.getElementById('rst-code').value='';document.getElementById('rst-password').value='';
+    cloudView('login');
   }catch(e){showAlert('เกิดข้อผิดพลาด: '+e.message);}
 }
 
 function modeLabel(){return {ghost:['ล่องหน'],local:['โหมด บันทึกในเครื่อง'],cloud:['โหมด login']}[S.mode]||[''];}
-function userText(){return S.mode==='cloud'?S.username+' ('+S.email+')':(S.mode==='local'?S.username:'');}
+function userText(){return S.mode==='cloud'?S.email:(S.mode==='local'?S.username:'');}
 function setupDashboard(){
   if(!S.mode) enterGhostMode();
   showPage('page-dashboard');
@@ -981,14 +1067,20 @@ function setupDashboard(){
   applyModeUI();
 }
 function doLogout(){
-  S={mode:null,username:'',email:'',profiles:[],activeProfileId:null,leaves:[],printHistory:[],currentMonthYear:'',currentViewYear:new Date().getFullYear()+543,selectedDays:[],leaveForms:[],leaveCancels:[]};
-  clearForm();showPage('page-landing');
+  S={mode:null,username:'',email:'',profiles:[],activeProfileId:null,leaves:[],printHistory:[],currentMonthYear:'',currentViewYear:new Date().getFullYear()+543,selectedDays:[],token:'',leaveForms:[],leaveCancels:[]};
+  clearForm();_dashInit=false;showPage('page-landing');
 }
 
 // ================================================================
 //  DASHBOARD INIT
 // ================================================================
+let _dashInit=false;
+function backToPts(){
+  if(_dashInit){showPage('page-dashboard');renderCalendar();renderLeaveTable();renderMonthGrid();updatePreview();}
+  else setupDashboard();
+}
 function initDashboard(){
+  _dashInit=true;
   const now=new Date();
   S.currentViewYear=now.getFullYear()+543;
   if(S.profiles.length>0){
@@ -1211,6 +1303,10 @@ function updateCalSummary(){
 function addLeaveFromCal(){
   if(S.selectedDays.length===0) return showAlert('กรุณาเลือกวันที่ในปฏิทิน');
   const type=document.getElementById('lv-type').value;
+  {const have=new Set();S.leaves.forEach(l=>{if(l.profile_id===S.activeProfileId&&l.month_year===S.currentMonthYear&&l.type_of_leave===type&&!l.half)l.days.forEach(d=>have.add(d));});
+   const fresh=S.selectedDays.filter(d=>!have.has(d));
+   if(!fresh.length) return showAlert('วันที่เลือกมีวันลาประเภทนี้อยู่แล้ว (ไม่เพิ่มซ้ำ)');
+   if(fresh.length!==S.selectedDays.length){S.selectedDays=fresh;}}
   const isHalf=document.getElementById('chk-half').checked;
   const period=isHalf?document.getElementById('sel-half-period').value:null;
   const monthYear=S.currentMonthYear;
@@ -1337,7 +1433,7 @@ function updatePreview(){
 // ================================================================
 //  ABSOLUTE-POSITION RENDERER (coordinates from reference PDF overlay, unit = pt, origin top-left)
 // ================================================================
-const FS=16;               // body font size in reference
+const FS=17;               // body font size (reference 16pt + 1pt)
 const DOT_W=0.9;              // dotted leader thickness (pt)
 let _blRatio=null;
 function blRatio(){
@@ -1367,10 +1463,13 @@ function txc(x1,x2,B,txt,o){o=o||{};const fs=o.fs||FS;
 // text whose right edge is x2
 function txr(x2,B,txt,o){o=o||{};const fs=o.fs||FS;
   return '<div class="ab" style="left:'+(x2-300)+'pt;width:300pt;text-align:right;top:'+(B-blRatio()*fs).toFixed(2)+'pt;font-size:'+fs+'pt;'+(o.b?'font-weight:bold;':'')+'">'+txt+'</div>';}
-// dotted leader sitting ON the baseline (like typed "......")
-function dots(x1,x2,B){
-  if(x2<=x1) return '';
-  return '<div class="ab" style="left:'+x1+'pt;width:'+(x2-x1)+'pt;top:'+(B-DOT_W+0.45).toFixed(2)+'pt;height:0;border-bottom:'+DOT_W+'pt dotted #000"></div>';}
+// dotted leader made of typed "." characters (same look as the .docx: short dots, wide spacing), sitting ON the baseline
+function dots(x1,x2,B,fs){
+  fs=fs||FS;if(x2<=x1) return '';
+  const adv=mw('.',fs)||fs*0.22,w=x2-x1,n=Math.max(1,Math.floor(w/adv));
+  const ls=n>1?(w-n*adv)/(n-1):0;
+  return '<div class="ab" style="left:'+x1+'pt;width:'+(w+1)+'pt;overflow:hidden;top:'+(B-blRatio()*fs).toFixed(2)+'pt;font-size:'+fs+'pt;letter-spacing:'+ls.toFixed(3)+'pt">'+'.'.repeat(n)+'</div>';
+}
 // dotted region x1..x2 with value text centred (at cx if given)
 function seg(x1,x2,B,val,cx,fs){
   let s=dots(x1,x2,B);
@@ -1398,8 +1497,47 @@ const BL1={1:81.1,2:102.8,3:134.2,4:159.8,5:184.6,6:203.5,7:221.8,8:242.1,
   20:485.0,21:510.5,22:539.4,23:558.5,24:613.0,25:631.9,26:679.6,27:707.1,28:725.6,29:762.3,30:781.4,31:800.9};
 for(let k=9;k<=19;k++) BL1[k]=+(96.14+18.878*k).toFixed(2);
 
+// ---- flow layout: text labels (measured) + dotted fields sharing the remaining width ----
+// parts: {t:'text',b} | {f:value, w:weight | fw:fixedWidthPt, left:1} | {sp:weight}
+function flow(x1,x2,B,parts,fs){
+  fs=fs||FS;
+  let fixed=0,wsum=0;
+  parts.forEach(p=>{
+    if(p.t!==undefined){p._w=mw(p.t,fs,p.b)}
+    else if(p.fw!==undefined){p._w=p.fw}
+    else {p._w=undefined;wsum+=(p.w!==undefined?p.w:(p.sp!==undefined?p.sp:1));}
+    if(p._w!==undefined)fixed+=p._w;
+  });
+  const spare=Math.max(0,(x2-x1)-fixed);
+  let x=x1,h='';
+  parts.forEach(p=>{
+    const w=p._w!==undefined?p._w:spare*(p.w!==undefined?p.w:(p.sp!==undefined?p.sp:1))/(wsum||1);
+    if(p.t!==undefined) h+=tx(x,B,p.t,{fs:fs,b:p.b});
+    else if(p.sp===undefined){
+      h+=dots(x,x+w,B,fs);
+      const v=(p.f===undefined||p.f===null)?'':String(p.f);
+      if(v!==''){
+        const avail=w-3;let f2=fs;const m=mw(v,fs,true);if(m>avail&&m>0)f2=Math.max(10,fs*avail/m);
+        if(p.left) h+=tx(x+mw(' ',fs)+0.5,B,esc(v),{b:1,fs:+f2.toFixed(2)});
+        else h+=txc(x+w/2-250,x+w/2+250,B,esc(v),{b:1,fs:+f2.toFixed(2)});
+      }
+    }
+    x+=w;
+  });
+  return h;
+}
+// greedy wrap on spaces by measured width
+function wrapSpaces(text,fs,w1,w2){
+  const words=text.split(' ');const lines=[];let cur='',lim=w1;
+  words.forEach(wd=>{
+    const t=cur?cur+' '+wd:wd;
+    if(mw(t,fs)<=lim||!cur) cur=t; else {lines.push(cur);cur=wd;lim=w2;}
+  });
+  lines.push(cur);return lines;
+}
+
 function renderPage1(data,workDur,totalDur,hospitals,moneyFmt,moneyTxt){
-  const B=BL1;
+  const B=BL1,L=70.8,R=545,TF=FS+3;
   const curHosp=data.hospital1?'โรงพยาบาล'+data.hospital1:'โรงพยาบาลสวี';
   const curProv=data.province1||'ชุมพร';
   const curLevel=data.level1||'';
@@ -1410,88 +1548,65 @@ function renderPage1(data,workDur,totalDur,hospitals,moneyFmt,moneyTxt){
   let h='';
 
   // ---- Title ----
-  h+=txc(169,469,B[1],'ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่ายสำหรับเจ้าหน้าที่',{b:1,fs:19});
-  h+=txc(169,469,B[2],'ที่ปฏิบัติงานในหน่วยบริการสังกัดกระทรวงสาธารณสุข',{b:1,fs:19});
+  const t1='ใบขอรับเงินค่าตอบแทนเบี้ยเลี้ยงเหมาจ่ายสำหรับเจ้าหน้าที่',t2='ที่ปฏิบัติงานในหน่วยบริการสังกัดกระทรวงสาธารณสุข';
+  h+=txc(169,469,B[1],t1,{b:1,fs:TF});
+  h+=txc(169,469,B[2],t2,{b:1,fs:TF});
 
-  // ---- หน่วยบริการ / ประจำเดือน (right block) ----
-  h+=tx(376.8,B[3],'หน่วยบริการ')+seg(428.5,545,B[3],curHosp,473.5);
-  h+=tx(376.5,B[4],'ประจำเดือน')+seg(428.0,545,B[4],S.currentMonthYear,472.4);
+  // ---- หน่วยบริการ / ประจำเดือน : first letter aligned with "ก" of "กระทรวง" ----
+  let xk=319-mw(t2,TF,true)/2+mw('ที่ปฏิบัติงานในหน่วยบริการสังกัด',TF,true);
+  if(!(xk>330&&xk<430)) xk=376.8;
+  h+=flow(xk,R,B[3],[{t:'หน่วยบริการ'},{f:curHosp,w:1}]);
+  h+=flow(xk,R,B[4],[{t:'ประจำเดือน'},{f:S.currentMonthYear,w:1}]);
 
-  // ---- ข้าพเจ้า ชื่อ ... ----
-  h+=tx(70.8,B[5],'ข้าพเจ้า ชื่อ')+seg(120.5,226,B[5],data.name);
-  h+=tx(227.8,B[5],'นามสกุล')+seg(264.5,345.5,B[5],data.surname);
-  h+=tx(347.2,B[5],'ตำแหน่ง')+seg(385.5,545,B[5],data.job);
-
-  // ---- ปัจจุบันปฏิบัติงานที่ ----
-  h+=tx(70.6,B[6],'ปัจจุบันปฏิบัติงานที่')+seg(154.5,269,B[6],curHosp,212.85);
-  h+=tx(270.8,B[6],'จังหวัด')+seg(301,394,B[6],curProv,336.6);
-  h+=tx(396.0,B[6],'ระดับ/กลุ่ม')+seg(443,545,B[6],curLevel,481.7);
-
-  // ---- ปฏิบัติงานในหน่วยบริการ  ปี เดือน ----
-  h+=tx(70.0,B[7],'ปฏิบัติงานในหน่วยบริการ')+seg(179,260.5,B[7],s(workDur.y));
-  h+=tx(262.1,B[7],'ปี')+seg(272,358.5,B[7],s(workDur.m));
-  h+=tx(360.0,B[7],'เดือน')+tx(389.4,B[7],'(นับถึงสิ้นเดือนที่เบิกจ่าย)')+dots(495,545,B[7]);
-
-  h+=tx(70.8,B[8],'โดยมีรายละเอียดการปฏิบัติงาน ดังนี้ ( เฉพาะสายแพทย์ตอบข้อ 1 ด้วย )');
+  h+=flow(L,R,B[5],[{t:'ข้าพเจ้า ชื่อ'},{f:data.name,w:105.5},{t:'นามสกุล'},{f:data.surname,w:81},{t:'ตำแหน่ง'},{f:data.job,w:159.5}]);
+  h+=flow(L,R,B[6],[{t:'ปัจจุบันปฏิบัติงานที่'},{f:curHosp,w:114.5},{t:'จังหวัด'},{f:curProv,w:93},{t:'ระดับ/กลุ่ม'},{f:curLevel,w:102}]);
+  h+=flow(L,R,B[7],[{t:'ปฏิบัติงานในหน่วยบริการ'},{f:s(workDur.y),fw:81.5},{t:'ปี'},{f:s(workDur.m),fw:86.5},{t:'เดือน (นับถึงสิ้นเดือนที่เบิกจ่าย)'}]);
+  h+=tx(L,B[8],'โดยมีรายละเอียดการปฏิบัติงาน ดังนี้ ( เฉพาะสายแพทย์ตอบข้อ 1 ด้วย )');
 
   // ---- 1. ฝึกเพิ่มพูนทักษะ (แพทย์) ----
-  h+=flexRow(71.4,481.8,B[9],[{t:'1. ฝึกเพิ่มพูนทักษะ (ปีที่ 1) รวมระยะเวลาการปฏิบัติงาน'},{v:doc?s(data.train_y):''},{t:'ปี'},{v:doc?s(data.train_m):''},{t:'เดือนดังนี้'}]);
+  h+=flow(L,500,B[9],[{t:'1. ฝึกเพิ่มพูนทักษะ (ปีที่ 1) รวมระยะเวลาการปฏิบัติงาน'},{f:doc?s(data.train_y):'',w:1},{t:'ปี'},{f:doc?s(data.train_m):'',w:1},{t:'เดือนดังนี้'}]);
   const tdate=x=>doc&&x?formatThaiDate(x):'';
-  h+=bullet(94.2,B[10])+txr(150.7,B[10],'รพศ./รพท.')+seg(152.5,262,B[10],doc?data.train_hosp1_name:'')
-    +tx(263.7,B[10],'จังหวัด')+seg(293.5,361,B[10],doc?data.train_hosp1_prov:'')
-    +tx(362.7,B[10],'ตั้งแต่')+seg(388,459,B[10],tdate(data.train_hosp1_start),null,14)
-    +tx(460.7,B[10],'ถึง')+seg(477,545,B[10],tdate(data.train_hosp1_end),null,14);
-  h+=bullet(94.9,B[11])+txr(133.0,B[11],'รพช./')+seg(135,260.5,B[11],doc?data.train_hosp2_name:'')
-    +tx(262.3,B[11],'จังหวัด')+seg(293.3,358.5,B[11],doc?data.train_hosp2_prov:'')
-    +tx(360.3,B[11],'ตั้งแต่')+seg(386.5,461.5,B[11],tdate(data.train_hosp2_start),null,14)
-    +tx(463.3,B[11],'ถึง')+seg(476.5,545,B[11],tdate(data.train_hosp2_end),null,14);
+  h+=bullet(94.2,B[10])+flow(103,R,B[10],[{t:'รพศ./รพท.'},{f:doc?data.train_hosp1_name:'',w:109.5},{t:'จังหวัด'},{f:doc?data.train_hosp1_prov:'',w:67.5},{t:'ตั้งแต่'},{f:tdate(data.train_hosp1_start),w:71},{t:'ถึง'},{f:tdate(data.train_hosp1_end),w:68}]);
+  h+=bullet(94.9,B[11])+flow(103,R,B[11],[{t:'รพช./'},{f:doc?data.train_hosp2_name:'',w:125.5},{t:'จังหวัด'},{f:doc?data.train_hosp2_prov:'',w:65},{t:'ตั้งแต่'},{f:tdate(data.train_hosp2_start),w:75},{t:'ถึง'},{f:tdate(data.train_hosp2_end),w:68.5}]);
 
   // ---- 2..5 hospitals ----
   for(let i=0;i<4;i++){
     const hp=hospitals[i]||{};
     const rl=12+i*2, rd=13+i*2;
-    h+=tx(71.2,B[rl],(i+2)+'. ปฏิบัติงานที่โรงพยาบาล')+seg(184.5,310.5,B[rl],hp.name||'')
-      +tx(312.7,B[rl],'จังหวัด')+seg(343.5,430.5,B[rl],hp.prov||'')
-      +tx(432.5,B[rl],'จัดระดับ')+seg(471,545,B[rl],hp.level||'');
-    h+=tx(81.0,B[rd],'ตั้งแต่วันที่')+seg(125,246.5,B[rd],hp.start||'',null,14.5)
-      +tx(248.0,B[rd],'ถึงวันที่')+seg(277,394.5,B[rd],hp.end||'',null,14.5)
-      +tx(396.1,B[rd],'รวม')+seg(413.5,443.5,B[rd],s(hp.y))
-      +tx(445.0,B[rd],'ปี')+seg(453.5,479.5,B[rd],s(hp.m))
-      +tx(481.2,B[rd],'เดือน')+seg(505.5,529.5,B[rd],s(hp.d))
-      +tx(531.1,B[rd],'วัน');
+    h+=flow(L,R,B[rl],[{t:(i+2)+'. ปฏิบัติงานที่โรงพยาบาล'},{f:hp.name||'',w:126},{t:'จังหวัด'},{f:hp.prov||'',w:87},{t:'จัดระดับ'},{f:hp.level||'',w:74}]);
+    h+=flow(81,R,B[rd],[{t:'ตั้งแต่วันที่'},{f:hp.start||'',w:121.5},{t:'ถึงวันที่'},{f:hp.end||'',w:117.5},{t:'รวม'},{f:s(hp.y),w:30},{t:'ปี'},{f:s(hp.m),w:26},{t:'เดือน'},{f:s(hp.d),w:24},{t:'วัน'}]);
   }
 
-  // ---- รวมทั้งสิ้น ----
+  // ---- รวมทั้งสิ้น / ได้รับเงินจำนวน ----
   const tY=totalDur.y!==''?String(totalDur.y):'', tM=totalDur.m!==''?String(totalDur.m):'', tD=totalDur.d?String(totalDur.d):'';
-  h+=tx(113.9,B[20],'รวมทั้งสิ้น',{b:1})+seg(159,259.5,B[20],tY)
-    +tx(261.1,B[20],'ปี',{b:1})+seg(270.5,332.5,B[20],tM)
-    +tx(334.4,B[20],'เดือน',{b:1})+seg(358.5,410,B[20],tD)
-    +tx(411.7,B[20],'วัน',{b:1});
-  // ---- ได้รับเงินจำนวน ----
-  h+=tx(114.1,B[21],'ได้รับเงินจำนวน',{b:1})+seg(186,281,B[21],moneyFmt)
-    +tx(282.6,B[21],'บาท (',{b:1})+seg(305,466,B[21],moneyTxt)+tx(467.2,B[21],')',{b:1});
+  h+=flow(113.9,R,B[20],[{t:'รวมทั้งสิ้น',b:1},{f:tY,fw:100.5},{t:'ปี',b:1},{f:tM,fw:62},{t:'เดือน',b:1},{f:tD,fw:51.5},{t:'วัน',b:1}]);
+  const mfw=Math.max(161,mw(moneyTxt||'',FS,true)+12);
+  h+=flow(114.1,R,B[21],[{t:'ได้รับเงินจำนวน',b:1},{f:moneyFmt,fw:95},{t:'บาท (',b:1},{f:moneyTxt,fw:mfw,left:1},{t:')',b:1}]);
 
-  // ---- รับรอง ----
-  h+=tx(142.6,B[22],'ข้าพเจ้าขอรับรองว่า ข้อมูลดังกล่าวเป็นความจริงทุกประการ และหากมีการเรียกเงินคืน ข้าพเจ้า');
-  h+=tx(72.0,B[23],'ขอรับผิดชอบคืนเงินแต่เพียงผู้เดียว');
-  // ---- ลายเซ็นผู้ขอรับเงิน ----
-  h+=tx(305.0,B[24],'(')+txc(310,422,B[24],esc(fullName),{b:1})+txr(427.3,B[24],')');
-  h+=tx(254.4,B[25],'ตำแหน่ง')+txc(291,454.5,B[25],esc(data.job||''),{b:1});
+  // ---- รับรอง (wrapped to stay inside the margin) ----
+  const cert='ข้าพเจ้าขอรับรองว่า ข้อมูลดังกล่าวเป็นความจริงทุกประการ และหากมีการเรียกเงินคืน ข้าพเจ้า ขอรับผิดชอบคืนเงินแต่เพียงผู้เดียว';
+  const cl=wrapSpaces(cert,FS,R-142.6,R-L);
+  h+=tx(142.6,B[22],cl[0]);
+  if(cl.length>1) h+=tx(L+1.2,B[23],cl.slice(1).join(' '));
+  // ---- ลายเซ็นผู้ขอรับเงิน (with dotted lines) ----
+  h+=flow(303,434,B[24],[{t:'('},{f:fullName,w:1},{t:')'}]);
+  h+=flow(254.4,R-30,B[25],[{t:'ตำแหน่ง'},{f:data.job||'',w:1}]);
 
   // ---- ผู้อำนวยการ (ทุกประเภท) ----
   h+=tx(321.8,B[26],'เรียน ผู้อำนวยการโรงพยาบาลสวี');
   h+=tx(349.5,B[27],'ได้ตรวจสอบ / วันปฏิบัติงานแล้ว');
-  h+='<div class="ab" style="left:321pt;width:212.5pt;text-align:justify;text-align-last:justify;top:'+(B[28]-blRatio()*FS).toFixed(2)+'pt;font-size:'+FS+'pt">( ) ครบ 15 วันทำการ ( ) ไม่ครบ 15 วันทำการ</div>';
-  const wSign=mw('(ลงชื่อ)',FS)||34;
-  h+=tx(359.0,B[29],'(ลงชื่อ)')+dots(359.0+wSign+1,526.0,B[29]);
-  h+=tx(389.2,B[30],'(')+dots(393.5,517,B[30])+txr(521.5,B[30],')');
-  h+=tx(359.1,B[31],'ตำแหน่ง')+dots(359.1+37.5,522.1,B[31]);
+  h+=flow(321,R-8,B[28],[{t:'('},{sp:2.2},{t:')'},{sp:1},{t:'ครบ 15 วันทำการ'},{sp:1},{t:'('},{sp:2.2},{t:')'},{sp:1},{t:'ไม่ครบ 15 วันทำการ'}]);
+  h+=flow(359,526,B[29],[{t:'(ลงชื่อ)'},{f:'',w:1}]);
+  h+=flow(389.2,521.5,B[30],[{t:'('},{f:'',w:1},{t:')'}]);
+  h+=flow(359.1,522.1,B[31],[{t:'ตำแหน่ง'},{f:'',w:1}]);
 
-  // ---- หัวหน้างาน (เฉพาะลูกจ้าง) : ฝั่งซ้าย ----
+  // ---- หัวหน้าฝ่าย/หัวหน้างาน (เฉพาะลูกจ้าง) : ฝั่งซ้าย ----
   if(isLookjang){
-    h+=tx(82.0,B[29],'(ลงชื่อ)')+dots(82.0+wSign+1,285,B[29]);
-    h+=tx(100.0,B[30],'(')+dots(106,264,B[30])+txr(270,B[30],')');
-    h+=tx(82.0,B[31],'ตำแหน่ง')+dots(82.0+37.5,290,B[31]);
+    h+=tx(L,B[26],'ตรวจสอบแล้วถูกต้อง');
+    h+=flow(82,285,B[27],[{t:'(ลงชื่อ)'},{f:'',w:1}]);
+    h+=flow(100,270,B[28],[{t:'('},{f:'',w:1},{t:')'}]);
+    h+=flow(82,290,B[29],[{t:'ตำแหน่ง'},{f:'',w:1}]);
+    h+=txc(82,290,B[30],'หัวหน้าฝ่าย / หัวหน้างาน');
   }
   return h;
 }
@@ -1527,10 +1642,10 @@ function renderPage2(data){
   const totalStr=allNone?'-':(totalCount%1!==0?totalCount.toFixed(1)+' วัน':totalCount+' วัน');
   const fullName=((data.name||'')+' '+(data.surname||'')).trim();
 
-  const F2=18;                       // body size on page 2
+  const F2=19;                       // body size on page 2 (+1pt)
   const cx0=303.7;                   // content centre of page 2
   let h='';
-  h+=txc(cx0-120,cx0+120,120.4,'สรุปวันลา',{b:1,fs:24});
+  h+=txc(cx0-120,cx0+120,120.4,'สรุปวันลา',{b:1,fs:25});
   h+=txc(cx0-200,cx0+200,157.2,'ชื่อ - สกุล&nbsp;&nbsp;'+esc(fullName),{b:1,fs:F2});
 
   // ---- table geometry ----
@@ -1545,7 +1660,7 @@ function renderPage2(data){
   xs.forEach(x=>{h+=ln((x-T/2).toFixed(2),TOP-T/2,T,BOT-TOP+T);});
   const ctr=i=>(xs[i]+xs[i+1])/2;
   // header text (18pt, centred in cell)
-  const hc=TOP+HDR/2, p2=21.3;
+  const hc=TOP+HDR/2, p2=22.6;
   h+=txc(xs[0],xs[1],hc+5.4,'ประจำเดือน',{fs:F2});
   for(let i=1;i<=3;i++){
     h+=txc(xs[i],xs[i+1],hc-p2/2+5.4,'วัน/เดือน/ปี',{fs:F2});
@@ -1563,12 +1678,10 @@ function renderPage2(data){
   h+=cell(1,sick.text,true)+cell(2,per.text,true)+cell(3,vac.text,true)+cell(4,totalStr,true);
 
   // ---- signature ----
-  h+=txc(219.8,335.9,468.9,'ตรวจสอบแล้วถูกต้อง',{b:1,fs:20});
-  const w89=mw('(ลงชื่อ)',F2)||38;
-  h+=tx(282.4,529.7,'(ลงชื่อ)',{fs:F2})+dots(282.4+w89+1,474.9,529.7);
-  h+=tx(341.2,553.6,'(',{fs:F2})+dots(346.5,457,553.6)+txr(462.5,553.6,')',{fs:F2});
-  const w91=mw('ตำแหน่ง',F2)||41;
-  h+=tx(283.5,578.7,'ตำแหน่ง',{fs:F2})+dots(283.5+w91+1,477.2,578.7);
+  h+=txc(219.8,335.9,468.9,'ตรวจสอบแล้วถูกต้อง',{b:1,fs:21});
+  h+=flow(282.4,474.9,529.7,[{t:'(ลงชื่อ)'},{f:'',w:1}],F2);
+  h+=flow(341.2,462.5,553.6,[{t:'('},{f:'',w:1},{t:')'}],F2);
+  h+=flow(283.5,477.2,578.7,[{t:'ตำแหน่ง'},{f:'',w:1}],F2);
   return h;
 }
 
@@ -1677,7 +1790,7 @@ async function doSendEmail(){
       const data=getFormData();
       const res=await gasCall('confirmPrint',{
         email:S.email,
-        username:S.username,
+        token:S.token,
         month_year:S.currentMonthYear,
         name:(data.name||'')+' '+(data.surname||''),
         pdf_base64:pdfBase64
@@ -1821,10 +1934,6 @@ async function installApp(){
 //  LANDING: mode tabs, stats, menu
 // ================================================================
 function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
-function toggleRegister(on){
-  document.getElementById('cloud-login-box').classList.toggle('hidden',!!on);
-  document.getElementById('cloud-register-box').classList.toggle('hidden',!on);
-}
 function refreshLanding(){updateCardStats();}
 function openPts(){ setupDashboard(); }
 function toggleLeaveMenu(){ document.getElementById('leave-kinds').classList.toggle('hidden'); }
@@ -1903,6 +2012,7 @@ function applyModeUI(){
 document.getElementById('chk-pdpa').addEventListener('change',function(){
   document.getElementById('btn-login').disabled=!this.checked;
   document.getElementById('btn-reg').disabled=!this.checked;
+  document.getElementById('btn-rst-send').disabled=!this.checked;
 });
 document.getElementById('chk-cookie').addEventListener('change',function(){
   try{if(this.checked)localStorage.setItem('sd_consent','1');else localStorage.removeItem('sd_consent');}catch(e){}
@@ -2075,6 +2185,15 @@ function newLeaveForm(){openLeavePage('leave',gv('lv-kind'));}
 function syncFormToCalendar(f){
   S.leaves=S.leaves.filter(l=>l.form_id!==f.id);
   const dates=expandDates(f).filter(d=>!(f.cancelDates||[]).includes(d));
+  // no duplicates: drop the same days from manually-added entries of the same kind (the form entry replaces them)
+  const dset=new Set(dates);
+  S.leaves.forEach(l=>{
+    if(l.form_id||l.profile_id!==f.profile_id||l.type_of_leave!==f.kind)return;
+    const ds=entryDates(l),keep=[];
+    ds.forEach((x,i)=>{if(!dset.has(x))keep.push(l.days[i]);});
+    l.days=keep;
+  });
+  S.leaves=S.leaves.filter(l=>l.days.length>0);
   if(!dates.length){refreshCalViews();return;}
   if(f.half){
     const d=isoD(dates[0]);
@@ -2094,6 +2213,7 @@ function saveLeaveForm(silent){
   const f=getLeaveForm();
   if(!f.name||!f.start||!f.end){if(!silent)showAlert('กรุณากรอกชื่อ-สกุล และวันที่ลา (ตั้งแต่/ถึง) ก่อนบันทึก');return false;}
   f.profile_id=ensureProfile();
+  if(!LV.id){const same=S.leaveForms.find(x=>x.profile_id===f.profile_id&&x.kind===f.kind&&x.start===f.start&&x.end===f.end);if(same)LV.id=same.id;}
   f.id=LV.id||uid();LV.id=f.id;
   const old=S.leaveForms.find(x=>x.id===f.id);
   if(old){f.cancelDates=old.cancelDates||[];Object.assign(old,f);}else S.leaveForms.push(f);
@@ -2228,10 +2348,10 @@ function mkF(sx,sy,ox,oy){
   o.tc=(cx,y,s,op)=>txc(X(cx)-250,X(cx)+250,Y(y),s,op);
   o.u=(cx,y,s,op)=>o.tc(cx,y,'<u>'+s+'</u>',op);
   o.tr=(x,y,s,op)=>txr(X(x),Y(y),s,op);
-  o.d=(x1,x2,y)=>dots(X(x1),X(x2),Y(y));
+  o.d=(x1,x2,y)=>dots(X(x1)+2.5,X(x2),Y(y));
   function fit(val,w,fs){const m=mw(val,fs,true);return m>w?Math.max(9,fs*w/m):fs;}
   o.v=(x1,x2,y,val,op)=>{
-    op=op||{};let h=dots(X(x1),X(x2),Y(y));
+    op=op||{};let h=dots(X(x1)+2.5,X(x2),Y(y));
     if(val===''||val===null||val===undefined) return h;
     val=String(val);const fs=fit(val,X(x2)-X(x1)-3,op.fs||FS);
     if(op.left) return h+tx(X(x1)+2,Y(y),esc(val),{b:1,fs});
@@ -2260,7 +2380,7 @@ const fdt=iso=>iso?fmtDate(isoD(iso)):'';
 function renderCancelForm(c){
   const F=mkF(0.397,0.397,0,0);let h='';
   const dp=dParts(c.date);
-  h+=F.tc(762,205,'แบบใบขอยกเลิกวันลา',{b:1,fs:19});
+  h+=F.tc(762,205,'แบบใบขอยกเลิกวันลา',{b:1,fs:20});
   h+=F.tr(1327,300,'โรงพยาบาลสวี&nbsp;&nbsp;&nbsp;&nbsp;อ.สวี&nbsp;&nbsp;&nbsp;&nbsp;จ.ชุมพร');
   h+=F.t(766,365,'วันที่')+F.v(822,893,365,dp.d)+F.t(905,365,'เดือน')+F.v(973,1155,365,dp.m)+F.t(1165,365,'พ.ศ.')+F.v(1224,1327,365,dp.y);
   h+=F.t(190,428,'เรื่อง')+F.t(270,428,'ขอยกเลิกวันลา');
@@ -2303,7 +2423,7 @@ function renderVacationForm(f){
   const dp=dParts(f.date);
   const acc=parseFloat(f.vacAcc),right=parseFloat(f.vacRight);
   const total=(isNaN(acc)?0:acc)+(isNaN(right)?0:right);
-  h+=F.u(785,105,'แบบใบลาพักผ่อน',{b:1,fs:19});
+  h+=F.u(785,105,'แบบใบลาพักผ่อน',{b:1,fs:20});
   h+=F.tr(1358,183,'โรงพยาบาลสวี&nbsp;&nbsp;อ.สวี&nbsp;&nbsp;จ.ชุมพร&nbsp;&nbsp;&nbsp;&nbsp;86130');
   h+=F.t(790,243,'วันที่')+F.v(850,910,243,dp.d)+F.t(922,243,'เดือน')+F.v(988,1195,243,dp.m)+F.t(1205,243,'พ.ศ.')+F.v(1262,1358,243,dp.y);
   h+=F.t(208,298,'เรื่อง')+F.t(285,298,'ขอลาพักผ่อน');
@@ -2348,7 +2468,7 @@ function renderSickForm(f){
   const F=mkF(0.426,0.426,-21.3,-12.8);let h='';const d=derive(f);
   const dp=dParts(f.date);
   const sick=f.kind==='ลาป่วย',pers=f.kind==='ลากิจ';
-  h+=F.tc(760,75,'ใบลาป่วย&nbsp;&nbsp;&nbsp;ลาคลอดบุตร&nbsp;&nbsp;&nbsp;ลากิจส่วนตัว',{b:1,fs:19});
+  h+=F.tc(760,75,'ใบลาป่วย&nbsp;&nbsp;&nbsp;ลาคลอดบุตร&nbsp;&nbsp;&nbsp;ลากิจส่วนตัว',{b:1,fs:20});
   h+=F.tr(1316,140,'โรงพยาบาลสวี&nbsp;&nbsp;อ.สวี&nbsp;&nbsp;จ.ชุมพร&nbsp;&nbsp;&nbsp;86130');
   h+=F.t(785,200,'วันที่')+F.v(838,897,200,dp.d)+F.t(908,200,'เดือน')+F.v(968,1165,200,dp.m)+F.t(1173,200,'พ.ศ.')+F.v(1225,1316,200,dp.y);
   h+=F.t(205,257,'เรื่อง')+F.v(275,650,257,'ขอ'+(pers?'ลากิจส่วนตัว':f.kind));
