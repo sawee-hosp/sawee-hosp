@@ -8,8 +8,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 /* === TH Sarabun New (for A4 document) === */
-@font-face{font-family:'TH Sarabun New';src:url('https://github.com/sawee-hosp/sawee-vmi/raw/refs/heads/main/font/THSarabunNew.ttf') format('truetype');font-weight:normal;font-style:normal}
-@font-face{font-family:'TH Sarabun New';src:url('https://github.com/sawee-hosp/sawee-vmi/raw/refs/heads/main/font/THSarabunNew%20Bold.ttf') format('truetype');font-weight:bold;font-style:normal}
+@font-face{font-family:'TH Sarabun New';src:url('https://raw.githubusercontent.com/sawee-hosp/sawee-vmi/main/font/THSarabunNew.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:block}
+@font-face{font-family:'TH Sarabun New';src:url('https://raw.githubusercontent.com/sawee-hosp/sawee-vmi/main/font/THSarabunNew%20Bold.ttf') format('truetype');font-weight:bold;font-style:normal;font-display:block}
 
 /* === CSS Variables === */
 :root{
@@ -181,7 +181,7 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
   margin-bottom:20px;
 }
 .ab{position:absolute;white-space:nowrap;line-height:1;margin:0;padding:0}
-.page-a4 *{font-family:inherit}
+.page-a4,.page-a4 *{font-family:'TH Sarabun New','TH SarabunPSK',serif!important;-webkit-font-smoothing:antialiased}
 .p-title{text-align:center;font-weight:bold;font-size:18.5pt;line-height:1.35;margin:0}
 .fl{display:flex;align-items:baseline;margin-top:1pt;position:relative;line-height:1.35}
 .fl.mt{margin-top:4pt}
@@ -212,11 +212,11 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 
 /* === Print === */
 @media print{
-  body *{visibility:hidden}
-  #print-area,#print-area *{visibility:visible}
-  #print-area{position:absolute;top:0;left:0;width:100%}
-  .page-a4{box-shadow:none!important;margin:0!important;page-break-after:always}
-  .page-a4:last-child{page-break-after:auto}
+  body.printing>*:not(#print-clone){display:none!important}
+  body.printing{background:#fff;min-height:0}
+  #print-clone{width:595.28pt;margin:0;padding:0}
+  #print-clone .page-a4{box-shadow:none!important;margin:0!important;height:1122px;page-break-after:always;break-after:page}
+  #print-clone .page-a4:last-child{page-break-after:auto;break-after:auto}
   @page{size:A4;margin:0}
 }
 
@@ -1451,7 +1451,18 @@ function doPrint(){
     renderMonthGrid();
     if(S.mode!=='ghost') scheduleSave();
   }
-  window.print();
+  printPages();
+}
+async function printPages(){
+  await preloadTHFont(); await document.fonts.ready;
+  _blRatio=null; updatePreview();
+  const src=document.getElementById('print-area');
+  const clone=src.cloneNode(true);clone.id='print-clone';
+  document.body.appendChild(clone);
+  document.body.classList.add('printing');
+  const done=()=>{document.body.classList.remove('printing');clone.remove();window.removeEventListener('afterprint',done);};
+  window.addEventListener('afterprint',done);
+  setTimeout(()=>window.print(),50);
 }
 
 // ================================================================
@@ -1545,7 +1556,7 @@ async function doSendEmail(){
 // ================================================================
 //  FONT PRELOAD — blob URL ให้ html2canvas ใช้ได้ (ไม่ติด CORS)
 // ================================================================
-const FONT_BASE = 'https://github.com/sawee-hosp/sawee-vmi/raw/refs/heads/main/font/';
+const FONT_BASE = 'https://raw.githubusercontent.com/sawee-hosp/sawee-vmi/main/font/';
 let _fontsReady = false;
 
 async function preloadTHFont() {
@@ -1564,6 +1575,7 @@ async function preloadTHFont() {
       document.head.appendChild(s);
       await document.fonts.ready;
     }
+    try{await Promise.all([document.fonts.load("16pt 'TH Sarabun New'"),document.fonts.load("bold 16pt 'TH Sarabun New'")]);}catch(_){}
     _fontsReady = true; _blRatio=null; try{updatePreview();}catch(_){}
   } catch(e) {
     console.warn('TH Sarabun New preload:', e);
