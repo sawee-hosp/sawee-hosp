@@ -180,7 +180,7 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
   box-shadow:0 0 12px rgba(0,0,0,.4);position:relative;overflow:hidden;
   margin-bottom:20px;
 }
-.ab{position:absolute;white-space:nowrap;line-height:1;margin:0;padding:0}
+.ab{-webkit-print-color-adjust:exact;print-color-adjust:exact;position:absolute;white-space:nowrap;line-height:1;margin:0;padding:0}
 .page-a4,.page-a4 *{font-family:'TH Sarabun New','TH SarabunPSK',serif!important;-webkit-font-smoothing:antialiased}
 .p-title{text-align:center;font-weight:bold;font-size:18.5pt;line-height:1.35;margin:0}
 .fl{display:flex;align-items:baseline;margin-top:1pt;position:relative;line-height:1.35}
@@ -212,6 +212,7 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 
 /* === Print === */
 @media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   body.printing>*:not(#print-clone){display:none!important}
   body.printing{background:#fff;min-height:0}
   #print-clone{width:595.28pt;margin:0;padding:0}
@@ -252,6 +253,10 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 .thd-grid span.sel{background:var(--primary);color:#fff}
 .thd-foot{display:flex;justify-content:space-between;margin-top:8px}
 .thd-foot a{color:var(--primary);cursor:pointer;font-size:12px}
+.stat-box{display:flex;align-items:baseline;gap:8px;background:#fff;border-radius:999px;padding:8px 20px;box-shadow:var(--shadow);margin-bottom:20px;font-size:14px;color:var(--text-light)}
+.stat-num{font-family:'Prompt',sans-serif;font-size:24px;font-weight:700;color:var(--primary)}
+.btn-install{margin-top:24px;background:var(--text);padding:12px 26px;border-radius:999px;font-size:15px}
+.btn-install:hover{background:#0f172a}
 </style>
 </head>
 <body>
@@ -282,6 +287,7 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
     <h1>ระบบเอกสาร Sawee Docs</h1>
     <p>โรงพยาบาลสวี จังหวัดชุมพร</p>
   </div>
+  <div class="stat-box" id="stat-box"><span class="stat-num" id="stat-num">–</span><span>ครั้ง ที่มีการพิมพ์เอกสารแล้ว</span></div>
   <div class="submenu-cards">
     <div class="submenu-card" onclick="showPage('page-mode-select')">
       <div class="icon-circle" style="background:linear-gradient(135deg,#4f46e5,#7c3aed)">
@@ -293,6 +299,10 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
       </div>
     </div>
   </div>
+  <button class="btn-install" id="btn-install" onclick="installApp()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    ติดตั้งไว้ในเครื่อง
+  </button>
 </div>
 
 <!-- ============================================================
@@ -1275,23 +1285,23 @@ function renderPage1(data,workDur,totalDur,hospitals,moneyFmt,moneyTxt){
   h+=txc(169,469,B[2],'ที่ปฏิบัติงานในหน่วยบริการสังกัดกระทรวงสาธารณสุข',{b:1,fs:19});
 
   // ---- หน่วยบริการ / ประจำเดือน (right block) ----
-  h+=tx(376.8,B[3],'หน่วยบริการ')+seg(428.5,519.5,B[3],curHosp,473.5);
-  h+=tx(376.5,B[4],'ประจำเดือน')+seg(428.0,519.5,B[4],S.currentMonthYear,472.4);
+  h+=tx(376.8,B[3],'หน่วยบริการ')+seg(428.5,545,B[3],curHosp,473.5);
+  h+=tx(376.5,B[4],'ประจำเดือน')+seg(428.0,545,B[4],S.currentMonthYear,472.4);
 
   // ---- ข้าพเจ้า ชื่อ ... ----
   h+=tx(70.8,B[5],'ข้าพเจ้า ชื่อ')+seg(120.5,226,B[5],data.name);
   h+=tx(227.8,B[5],'นามสกุล')+seg(264.5,345.5,B[5],data.surname);
-  h+=tx(347.2,B[5],'ตำแหน่ง')+seg(385.5,522,B[5],data.job);
+  h+=tx(347.2,B[5],'ตำแหน่ง')+seg(385.5,545,B[5],data.job);
 
   // ---- ปัจจุบันปฏิบัติงานที่ ----
   h+=tx(70.6,B[6],'ปัจจุบันปฏิบัติงานที่')+seg(154.5,269,B[6],curHosp,212.85);
   h+=tx(270.8,B[6],'จังหวัด')+seg(301,394,B[6],curProv,336.6);
-  h+=tx(396.0,B[6],'ระดับ/กลุ่ม')+seg(443,522,B[6],curLevel,481.7);
+  h+=tx(396.0,B[6],'ระดับ/กลุ่ม')+seg(443,545,B[6],curLevel,481.7);
 
   // ---- ปฏิบัติงานในหน่วยบริการ  ปี เดือน ----
   h+=tx(70.0,B[7],'ปฏิบัติงานในหน่วยบริการ')+seg(179,260.5,B[7],s(workDur.y));
   h+=tx(262.1,B[7],'ปี')+seg(272,358.5,B[7],s(workDur.m));
-  h+=tx(360.0,B[7],'เดือน')+tx(389.4,B[7],'(นับถึงสิ้นเดือนที่เบิกจ่าย)');
+  h+=tx(360.0,B[7],'เดือน')+tx(389.4,B[7],'(นับถึงสิ้นเดือนที่เบิกจ่าย)')+dots(495,545,B[7]);
 
   h+=tx(70.8,B[8],'โดยมีรายละเอียดการปฏิบัติงาน ดังนี้ ( เฉพาะสายแพทย์ตอบข้อ 1 ด้วย )');
 
@@ -1451,6 +1461,7 @@ function doPrint(){
     renderMonthGrid();
     if(S.mode!=='ghost') scheduleSave();
   }
+  bumpStat();
   printPages();
 }
 async function printPages(){
@@ -1638,6 +1649,47 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   window.addEventListener('DOMContentLoaded',()=>document.querySelectorAll('input[type="date"][data-thai]').forEach(init));
 })();
+
+// ================================================================
+//  PRINT COUNTER (global via GAS, anonymous) + INSTALL APP
+// ================================================================
+function _localCount(){try{return parseInt(localStorage.getItem('sd_print_count')||'0',10)||0;}catch(e){return 0;}}
+async function loadStat(){
+  const el=document.getElementById('stat-num');if(!el)return;
+  el.textContent=_localCount()||'–';
+  try{const r=await gasCall('statGet');if(r&&r.ok)el.textContent=Number(r.count).toLocaleString('th-TH');}catch(e){}
+}
+async function bumpStat(){
+  try{localStorage.setItem('sd_print_count',String(_localCount()+1));}catch(e){}
+  try{const r=await gasCall('statInc');if(r&&r.ok){const el=document.getElementById('stat-num');if(el)el.textContent=Number(r.count).toLocaleString('th-TH');}}catch(e){}
+}
+window.addEventListener('DOMContentLoaded',loadStat);
+
+let _dip=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();_dip=e;});
+window.addEventListener('appinstalled',()=>{_dip=null;const b=document.getElementById('btn-install');if(b)b.classList.add('hidden');});
+(function(){ // manifest + icon generated in-page
+  try{
+    const c=document.createElement('canvas');c.width=c.height=512;const x=c.getContext('2d');
+    x.fillStyle='#4f46e5';x.fillRect(0,0,512,512);x.fillStyle='#fff';x.font='bold 300px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('SD',256,270);
+    c.toBlob(b=>{
+      const icon=URL.createObjectURL(b);
+      const m={name:'Sawee Docs',short_name:'Sawee Docs',start_url:location.href.split('#')[0],display:'standalone',background_color:'#f1f5f9',theme_color:'#4f46e5',
+        icons:[{src:icon,sizes:'512x512',type:'image/png',purpose:'any'}]};
+      const l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));
+      document.head.appendChild(l);
+    });
+  }catch(e){}
+})();
+if(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches||navigator.standalone){
+  window.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('btn-install');if(b)b.classList.add('hidden');});
+}
+async function installApp(){
+  if(_dip){_dip.prompt();try{await _dip.userChoice;}catch(e){}_dip=null;return;}
+  const ua=navigator.userAgent;
+  if(/iPhone|iPad|iPod/.test(ua)) return showAlert('บน iPhone/iPad: กดปุ่มแชร์ (สี่เหลี่ยมมีลูกศรขึ้น) ใน Safari แล้วเลือก "เพิ่มไปยังหน้าจอโฮม"');
+  showAlert('เบราว์เซอร์นี้ยังไม่เปิดให้ติดตั้งในคลิกเดียว\\nChrome/Edge: เปิดเมนู ⋮ แล้วเลือก "ติดตั้งแอป" หรือ "เพิ่มลงในหน้าจอหลัก"');
+}
 </script>
 </body>
 </html>
