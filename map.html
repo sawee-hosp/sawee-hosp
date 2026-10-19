@@ -721,7 +721,7 @@ function paint(){
 function startDraw(){
   DRAW=true;pts=[];paint();closeSheet();map.doubleClickZoom.disable();
   map.getCanvas().style.cursor='crosshair';
-  map.easeTo({pitch:0,bearing:0,duration:700});
+  map.easeTo({pitch:0, duration:700});        // <-- เอา bearing:0 ออก ให้คงทิศที่ตั้งไว้
   map.setPaintProperty('r3d','fill-extrusion-opacity',.35);
   say('คลิกตามมุมห้องบนภาพดาวเทียม → คลิกจุดแรก (สีเหลือง) ซ้ำเพื่อปิดรูป',5000);
 }
