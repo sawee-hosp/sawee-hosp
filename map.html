@@ -7,8 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;800&display=swap" rel="stylesheet">
 <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
 <style>
-:root{--bg:#070b14;--glass:rgba(14,22,38,.78);--line:rgba(125,211,252,.18);
-  --cy:#22d3ee;--rose:#fb7185;--txt:#e8f3ff;--dim:#8da4bf}
+:root{--bg:#070b14;--glass:rgba(14,22,38,.8);--line:rgba(125,211,252,.18);
+  --cy:#22d3ee;--rose:#fb7185;--pk:#f472b6;--txt:#e8f3ff;--dim:#8da4bf}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;font-family:'Noto Sans Thai',system-ui,sans-serif;background:var(--bg);color:var(--txt);overflow:hidden}
 #map{position:absolute;inset:0}
@@ -36,10 +36,11 @@ html,body{height:100%;font-family:'Noto Sans Thai',system-ui,sans-serif;backgrou
 #levels button:hover{background:rgba(255,255,255,.07);color:#fff}
 #levels button.on{background:linear-gradient(135deg,var(--cy),#0ea5e9);color:#04121a;box-shadow:0 0 22px rgba(34,211,238,.5)}
 #cats{position:absolute;left:12px;bottom:14px;z-index:5;display:flex;gap:6px;flex-wrap:wrap;max-width:48vw}
+body.drawing #cats{display:none}
 .chip{padding:8px 13px;border-radius:999px;font-size:12.5px;cursor:pointer;user-select:none;
   background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(14px);transition:.2s}
 .chip.on{background:rgba(34,211,238,.2);border-color:var(--cy);color:#fff}
-#sheet{position:absolute;left:12px;bottom:-700px;width:min(390px,calc(100vw - 24px));max-height:80vh;overflow:auto;
+#sheet{position:absolute;left:12px;bottom:-760px;width:min(390px,calc(100vw - 24px));max-height:80vh;overflow:auto;
   z-index:6;padding:18px;transition:bottom .42s cubic-bezier(.22,1,.36,1)}
 #sheet.on{bottom:14px}
 #sheet h2{font-size:20px;font-weight:800;margin:4px 0 3px}
@@ -53,9 +54,13 @@ html,body{height:100%;font-family:'Noto Sans Thai',system-ui,sans-serif;backgrou
   font:700 13.5px 'Noto Sans Thai';background:rgba(255,255,255,.09);color:var(--txt);transition:.2s}
 .btn:hover{background:rgba(255,255,255,.17)}
 .btn.pri{background:linear-gradient(135deg,var(--cy),#0ea5e9);color:#04121a}
+.btn.blu{background:linear-gradient(135deg,#38bdf8,#0284c7);color:#04121a}
+.btn.pk{background:linear-gradient(135deg,#f472b6,#be185d);color:#fff}
 .btn.red{background:linear-gradient(135deg,#fb7185,#e11d48);color:#fff}
 .btn.sm{width:auto;margin:0;padding:7px 11px;font-size:12px}
 .row2{display:flex;gap:7px}.row2 .btn{flex:1}
+.help{font-size:11.5px;color:var(--dim);margin-top:8px;line-height:1.6}
+.help b{color:var(--txt)}
 #steps{margin-top:12px;font-size:13px}
 #steps .s{display:flex;gap:9px;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,.08)}
 #steps .ic{width:22px;text-align:center;color:var(--cy);font-size:15px}
@@ -71,7 +76,7 @@ html,body{height:100%;font-family:'Noto Sans Thai',system-ui,sans-serif;backgrou
 .inp{width:100%;padding:9px 11px;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.35);
   color:var(--txt);font:13.5px 'Noto Sans Thai';outline:none}
 .inp:focus{border-color:var(--cy)}
-select.inp option{background:#0e1626}
+select.inp option,#dbar select option{background:#0e1626}
 input[type=range]{width:100%;accent-color:var(--cy)}
 .bmrow{display:flex;gap:5px;flex-wrap:wrap}
 .bm{flex:1 1 46%;padding:9px;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.3);
@@ -79,10 +84,10 @@ input[type=range]{width:100%;accent-color:var(--cy)}
 .bm.on{background:rgba(34,211,238,.2);border-color:var(--cy);color:#fff}
 #list,#catcol{display:flex;flex-direction:column;gap:6px;margin-top:6px}
 #list{max-height:30vh;overflow:auto}
-.li{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+.li{display:flex;align-items:center;gap:6px;padding:7px 8px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
 .li .nm{flex:1;min-width:0;font-size:13px;line-height:1.3;overflow:hidden;text-overflow:ellipsis}
 .li .nm small{display:block;color:var(--dim);font-size:11px}
-.li button{width:30px;height:30px;border:0;border-radius:9px;background:rgba(255,255,255,.08);color:#fff;cursor:pointer;font-size:13px;flex:0 0 30px}
+.li button{width:29px;height:29px;border:0;border-radius:9px;background:rgba(255,255,255,.08);color:#fff;cursor:pointer;font-size:13px;flex:0 0 29px}
 .li button:hover{background:rgba(255,255,255,.2)}
 .li button.del:hover{background:#e11d48}
 input[type=color]{width:30px;height:30px;border:0;border-radius:8px;background:none;cursor:pointer;padding:0;flex:0 0 30px}
@@ -103,6 +108,23 @@ input[type=color]::-moz-color-swatch{border:2px solid rgba(255,255,255,.35);bord
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 #hint{position:absolute;left:50%;transform:translateX(-50%);top:78px;z-index:25;padding:11px 20px;border-radius:999px;font-size:13px;display:none;max-width:88vw;text-align:center}
 #hint.on{display:block}
+/* ---------- แถบเครื่องมือวาด ---------- */
+#dbar{position:absolute;left:50%;transform:translateX(-50%);bottom:14px;z-index:9;display:none;padding:8px 10px;gap:8px;
+  align-items:center;flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 24px)}
+#dbar.on{display:flex}
+#dbar .grp{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+#dbar button{height:38px;padding:0 12px;border:0;border-radius:10px;background:rgba(255,255,255,.09);color:var(--txt);
+  font:700 13px 'Noto Sans Thai';cursor:pointer;white-space:nowrap}
+#dbar button:hover{background:rgba(255,255,255,.18)}
+#dbar button.on{background:rgba(34,211,238,.25);box-shadow:inset 0 0 0 1px var(--cy)}
+#dbar button.pri{background:linear-gradient(135deg,var(--cy),#0ea5e9);color:#04121a}
+#dbar select,#dbar input[type=number]{height:34px;border-radius:9px;border:1px solid var(--line);background:rgba(0,0,0,.4);
+  color:var(--txt);font:13px 'Noto Sans Thai';padding:0 6px;outline:none}
+#dbar input[type=number]{width:64px}
+#dbar label{font-size:12px;color:var(--dim);display:flex;align-items:center;gap:4px;white-space:nowrap}
+#dbar .sep{width:1px;height:26px;background:rgba(255,255,255,.12)}
+#dbar .mode{font:800 12px 'Noto Sans Thai';color:var(--pk);padding:0 4px}
+#meas{position:absolute;z-index:20;pointer-events:none;padding:5px 10px;border-radius:9px;font:700 12px 'Noto Sans Thai';display:none;white-space:nowrap;border-radius:10px}
 .lbl{text-align:center;pointer-events:none;line-height:1.15}
 .lbl .n{font-size:10px;font-weight:800;color:#0b1220;background:rgba(226,245,255,.92);padding:1px 5px;border-radius:5px;letter-spacing:.3px}
 .lbl .t{display:block;margin-top:2px;font-size:11.5px;font-weight:600;color:#fff;text-shadow:0 1px 5px #000,0 0 12px rgba(0,0,0,.95);white-space:nowrap}
@@ -116,7 +138,8 @@ input[type=color]::-moz-color-swatch{border:2px solid rgba(255,255,255,.35);bord
 .maplibregl-ctrl-attrib{font-size:10px}
 @media(max-width:640px){#brand span{display:none}#cats{max-width:calc(100vw - 80px)}
   #levels button{width:42px;height:42px}
-  .panel{left:12px;right:12px;width:auto;top:120px;max-height:calc(100vh - 134px)}}
+  .panel{left:12px;right:12px;width:auto;top:120px;max-height:calc(100vh - 134px)}
+  #dbar{bottom:8px;padding:6px}#dbar button{height:34px;padding:0 9px;font-size:12px}}
 </style>
 </head>
 <body>
@@ -137,6 +160,40 @@ input[type=color]::-moz-color-swatch{border:2px solid rgba(255,255,255,.35);bord
 <div id="mode3d" class="glass fab on" title="สลับโหมด 2D / 3D">3D</div>
 <div id="hint" class="glass"></div>
 <div id="sheet" class="glass"></div>
+<div id="meas" class="glass"></div>
+
+<!-- ============ แถบเครื่องมือวาด / แก้ไข ============ -->
+<div id="dbar" class="glass">
+  <div class="grp" id="g-draw">
+    <span class="mode" id="dmode">วาดห้อง</span>
+    <button class="tool on" data-t="line" title="ลากหรือคลิกทีละจุด">✏ เส้น</button>
+    <button class="tool" data-t="rect" title="ลากจากมุมถึงมุม">▭ สี่เหลี่ยม</button>
+    <button id="db-undo" title="ถอยจุด (Ctrl+Z)">↶</button>
+    <button id="db-fin" class="pri" title="Enter / ดับเบิลคลิก">✓ ปิดรูป</button>
+  </div>
+  <div class="grp" id="g-edit">
+    <span class="mode">แก้รูปทรง</span>
+    <button id="db-delv" title="Delete">✕ ลบจุด</button>
+    <button id="db-eundo" title="Ctrl+Z">↶ ย้อน</button>
+    <button id="db-save" class="pri" title="Enter">✓ บันทึกรูปทรง</button>
+  </div>
+  <span class="sep"></span>
+  <div class="grp">
+    <label>กริด <select id="db-gs">
+      <option value="0.25">0.25 ม.</option><option value="0.5">0.5 ม.</option><option value="1">1 ม.</option>
+      <option value="2">2 ม.</option><option value="5">5 ม.</option></select></label>
+    <label><input type="checkbox" id="db-snap"> Snap</label>
+    <label><input type="checkbox" id="db-grid"> แสดงกริด</label>
+    <label><input type="checkbox" id="db-vsnap"> จับมุมห้องอื่น</label>
+    <label><input type="checkbox" id="db-ortho"> มุมฉาก</label>
+    <label>มุมกริด <input type="number" id="db-rot" step="0.5" min="0" max="359.5">°</label>
+  </div>
+  <span class="sep"></span>
+  <div class="grp">
+    <button id="db-pan" title="เลื่อนแผนที่ (หรือกด Space ค้าง)">✋</button>
+    <button id="db-x">ยกเลิก</button>
+  </div>
+</div>
 
 <!-- ============ แผงตั้งค่า ============ -->
 <div id="tools" class="glass panel">
@@ -160,8 +217,8 @@ input[type=color]::-moz-color-swatch{border:2px solid rgba(255,255,255,.35);bord
   <h3>พิกัดจริงของโรงพยาบาล</h3>
   <label>วาง lat, lng หรือวางลิงก์ Google Maps ทั้งลิงก์ก็ได้</label>
   <input id="ctr" class="inp" type="text" placeholder="10.xxxxxx, 99.xxxxxx">
-  <label>หมุนผังตัวอย่าง (ให้ตรงภาพดาวเทียม): <b id="rotv">0</b>°</label>
-  <input id="rot" type="range" min="0" max="359" value="0">
+  <label>มุมกริด / หมุนผังตัวอย่าง (ให้ตรงแนวอาคาร): <b id="rotv">0</b>°</label>
+  <input id="rot" type="range" min="0" max="359.5" step="0.5" value="0">
   <label>ขยาย/ย่อผังตัวอย่าง: <b id="sclv">1.00</b>×</label>
   <input id="scl" type="range" min="50" max="200" value="100">
   <button class="btn pri" id="apply">ใช้ค่านี้ &amp; บันทึก</button>
@@ -173,10 +230,15 @@ input[type=color]::-moz-color-swatch{border:2px solid rgba(255,255,255,.35);bord
 
 <!-- ============ แผงวาด / จัดการห้อง ============ -->
 <div id="mgr" class="glass panel">
-  <h3>วาดโครงสร้าง / ทางเดิน / ห้อง</h3>
-  <div class="row2"><button class="btn pri" id="draw">▶ วาดห้องใหม่</button><button class="btn pri" id="drawCover" style="background:linear-gradient(135deg,#38bdf8,#0284c7);color:#04121a">☂ วาดทางเดินร่ม</button></div>
-  <div class="row2"><button class="btn" id="undo">↶ ถอยจุด</button><button class="btn" id="fin">✓ ปิดรูป</button><button class="btn" id="cancel">✕ เลิกวาด</button></div>
-  <div style="font-size:11.5px;color:var(--dim);margin-top:8px;line-height:1.5">คลิกตามมุมห้องทีละจุด → คลิกจุดแรกซ้ำ หรือกด "ปิดรูป" เพื่อจบ</div>
+  <h3>วาด</h3>
+  <div class="row2"><button class="btn pri" id="draw">▶ วาดห้องใหม่</button><button class="btn blu" id="drawCover">☂ วาดทางเดินร่ม</button></div>
+  <button class="btn pk" id="pickEdit">⬚ แก้รูปทรง — คลิกเลือกบนแผนที่</button>
+  <div class="help">
+    <b>ลาก</b>เมาส์เพื่อสร้างเส้นทีละช่วง หรือ<b>คลิก</b>ทีละจุด<br>
+    ปิดรูป: คลิกจุดแรก (สีเหลือง) · ดับเบิลคลิก · Enter<br>
+    <b>Shift</b> ค้าง = ล็อกมุมฉาก · <b>Space</b> ค้าง = เลื่อนแผนที่<br>
+    กริดหมุนตาม "มุมกริด" — ตั้งให้ขนานกับผนังอาคารก่อนวาด
+  </div>
 
   <h3>รายการที่วาดไว้ <span id="cnt" style="color:var(--dim);font-weight:400"></span></h3>
   <input id="mf" class="inp" type="text" placeholder="กรองรายการ...">
@@ -195,6 +257,7 @@ input[type=color]::-moz-color-swatch{border:2px solid rgba(255,255,255,.35);bord
 <!-- ============ ฟอร์มข้อมูลห้อง ============ -->
 <div id="modal"><div class="glass box">
   <h3 id="mt">ห้องใหม่</h3>
+  <div id="f_area" style="font-size:12px;color:var(--dim)"></div>
   <div class="g2" id="f_norow">
     <div><label>หมายเลขห้อง</label><input id="f_no" class="inp" placeholder="เช่น A101"></div>
     <div><label>ชั้น</label><input id="f_l" class="inp" type="number" min="1" max="9" value="1"></div>
@@ -212,20 +275,30 @@ input[type=color]::-moz-color-swatch{border:2px solid rgba(255,255,255,.35);bord
     <div><label>เบอร์ภายใน</label><input id="f_tel" class="inp"></div>
   </div>
   <label id="lbl_t">เวลาทำการ</label><input id="f_t" class="inp" placeholder="เช่น 08:00-16:00">
-  <label id="lbl_g">กลุ่มลิฟต์/บันได</label><input id="f_g" class="inp">
+  <label id="lbl_g">กลุ่มลิฟต์/บันได (ชื่อเดียวกันทุกชั้น เว้นว่างถ้าไม่ใช่)</label><input id="f_g" class="inp">
   <div class="row2" style="margin-top:6px"><button class="btn" id="f_cancel">ยกเลิก</button><button class="btn pri" id="f_ok">บันทึก</button></div>
 </div></div>
 
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
+/* ======================================================================
+   0) CONFIG — แก้พิกัดจริงตรงนี้ [lng, lat] หรือกรอกผ่าน ⚙
+   ====================================================================== */
 const DEF={center:[99.0940,10.2850],rotation:0,scale:1};
 const CFG=Object.assign({},DEF,JSON.parse(localStorage.getItem('swi-cfg')||'{}'));
 const UP=new URLSearchParams(location.search);
 if(UP.get('lat')&&UP.get('lng')) CFG.center=[+UP.get('lng'),+UP.get('lat')];
 const saveCfg=()=>localStorage.setItem('swi-cfg',JSON.stringify(CFG));
+const UI=Object.assign({gs:1,snap:true,grid:true,vsnap:true,ortho:false},JSON.parse(localStorage.getItem('swi-ui')||'{}'));
+const saveUI=()=>localStorage.setItem('swi-ui',JSON.stringify(UI));
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=v=>(Math.round(v*100)/100).toString();
+const EMPTY={type:'FeatureCollection',features:[]};
 
+/* ======================================================================
+   1) หมวด + ชุดสี
+   ====================================================================== */
 const CAT={
   cover:{n:'ทางเดินร่ม (Covered Way)',c:'#64748b'},
   info:{n:'ประชาสัมพันธ์',c:'#38bdf8'}, opd:{n:'ตรวจโรค',c:'#22d3ee'},
@@ -236,11 +309,17 @@ const CAT={
 const PALETTE=['#64748b','#22d3ee','#38bdf8','#6366f1','#a78bfa','#f472b6','#fb7185',
                '#f97316','#facc15','#4ade80','#14b8a6','#94a3b8','#f1f5f9'];
 
+/* ======================================================================
+   2) ข้อมูลในเครื่อง
+   ====================================================================== */
 const DB=Object.assign({custom:[],ovr:{},catc:{},sample:true},JSON.parse(localStorage.getItem('swi-data')||'{}'));
 const save=()=>localStorage.setItem('swi-data',JSON.stringify(DB));
-const catColor=c=>DB.catc[c]||CAT[c].c;
+const catColor=c=>DB.catc[c]||(CAT[c]?CAT[c].c:'#94a3b8');
 let TRASH=null;
 
+/* ======================================================================
+   3) ผังตัวอย่าง (เมตร: x=ตะวันออก, y=เหนือ)
+   ====================================================================== */
 const SAMPLE=[
 {no:'A101',n:'ประชาสัมพันธ์ / คัดกรอง',c:'info',l:1,x:-62,y:-34,w:12,h:11,b:'อาคาร A ผู้ป่วยนอก',t:'08:00-16:00',tel:'101'},
 {no:'A102',n:'เวชระเบียน',c:'info',l:1,x:-50,y:-34,w:12,h:11,b:'อาคาร A ผู้ป่วยนอก',t:'07:00-16:00',tel:'102'},
@@ -286,6 +365,9 @@ const SAMPLE=[
 const FOOT={2:[{x:-65,y:-36,w:82,h:34},{x:-43,y:4,w:66,h:25}]};
 const ENTRANCE={l:1,x:-70,y:-20,name:'ทางเข้าหลัก (หน้าอาคาร A)'};
 
+/* ======================================================================
+   4) เรขาคณิต (local = เมตรในระบบกริด, หมุนตาม CFG.rotation)
+   ====================================================================== */
 const D2R=Math.PI/180;
 function mo(dx,dy){
   const s=CFG.scale,r=CFG.rotation*D2R,X=dx*s*Math.cos(r)-dy*s*Math.sin(r),Y=dx*s*Math.sin(r)+dy*s*Math.cos(r);
@@ -295,31 +377,32 @@ function toLocal(lng,lat){
   const X=(lng-CFG.center[0])*111320*Math.cos(CFG.center[1]*D2R),Y=(lat-CFG.center[1])*110540,r=-CFG.rotation*D2R;
   return [(X*Math.cos(r)-Y*Math.sin(r))/CFG.scale,(X*Math.sin(r)+Y*Math.cos(r))/CFG.scale];
 }
+const L2=p=>mo(p[0],p[1]);
+const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 function centroid(p){let x=0,y=0;p.forEach(q=>{x+=q[0];y+=q[1];});return [x/p.length,y/p.length];}
+function areaM2(p){let a=0;for(let i=0,j=p.length-1;i<p.length;j=i++)a+=(p[j][0]+p[i][0])*(p[j][1]-p[i][1]);return Math.abs(a/2)*CFG.scale*CFG.scale;}
+function openRing(r){const a=r[0],b=r[r.length-1];return(r.length>1&&a[0]===b[0]&&a[1]===b[1])?r.slice(0,-1):r.slice();}
+const rectLocal=(a,b)=>[[a[0],a[1]],[b[0],a[1]],[b[0],b[1]],[a[0],b[1]]];
 
 let R=[];
 function rooms(){
   const out=[];
   if(DB.sample) SAMPLE.forEach(r=>out.push({...r,key:'S:'+r.no,src:'s',color:DB.ovr['S:'+r.no]||null,
     poly:[[r.x,r.y],[r.x+r.w,r.y],[r.x+r.w,r.y+r.h],[r.x,r.y+r.h]]}));
-  DB.custom.forEach(r=>out.push({...r,key:r.id,src:'c',poly:r.ring.slice(0,-1).map(p=>toLocal(p[0],p[1]))}));
-  out.forEach(r=>{
-    r.col=r.color||catColor(r.c);
-    const c=centroid(r.poly);r.cx=c[0];r.cy=c[1];
-    // จัดลำดับชั้นเลเยอร์: cover อยู่ล่างสุด (z=0), ห้องปกติอยู่บน
-    r.zIndex=(r.c==='cover')?0:1;
-  });
-  // จัดเรียงให้ cover อยู่ก่อนห้องเสมอ เวลาเรนเดอร์จะได้อยู่ล่าง
-  out.sort((a,b)=>a.zIndex-b.zIndex);
+  DB.custom.forEach(r=>out.push({...r,key:r.id,src:'c',poly:openRing(r.ring).map(p=>toLocal(p[0],p[1]))}));
+  out.forEach(r=>{r.col=r.color||catColor(r.c);const c=centroid(r.poly);r.cx=c[0];r.cy=c[1];r.z=r.c==='cover'?0:1;});
+  out.sort((a,b)=>a.z-b.z);
   return out;
 }
 function fc(){
   return {type:'FeatureCollection',features:R.map((r,i)=>({type:'Feature',id:i+1,
-    geometry:{type:'Polygon',coordinates:[r.src==='c'?r.ring:[...r.poly,r.poly[0]].map(p=>mo(p[0],p[1]))]},
-    properties:{key:r.key,l:r.l,c:r.c,color:r.col,
-      top:(r.c==='cover')?0.8:(r.c==='circ'?0.3:4.2)}}))};
+    geometry:{type:'Polygon',coordinates:[r.src==='c'?r.ring:[...r.poly,r.poly[0]].map(L2)]},
+    properties:{key:r.key,l:r.l,c:r.c,color:r.col,top:r.c==='circ'?0.3:4.2}}))};
 }
 
+/* ======================================================================
+   5) กริดเดิน + A* (นำทาง)
+   ====================================================================== */
 let G=null;const BLK={},CIRC={};
 function resetGrid(){
   let x0=-60,y0=-60,x1=60,y1=60;
@@ -337,16 +420,17 @@ function polyCells(p,cb){
   for(let y=Math.floor(y0);y<=Math.ceil(y1);y++)for(let x=Math.floor(x0);x<=Math.ceil(x1);x++){
     if(pip(x+.5,y+.5,p)){const i=ci(x+.5,y+.5);if(i>=0)cb(i);}}
 }
+const walkable=c=>c==='circ'||c==='cover';
 function gridOf(lv){
   if(BLK[lv])return BLK[lv];
   const N=G.W*G.H,b=new Uint8Array(N),cm=new Uint8Array(N);
-  const circ=R.filter(r=>r.l===lv&&(r.c==='circ'||r.c==='cover'));
+  const circ=R.filter(r=>r.l===lv&&walkable(r.c));
   if(lv>1){
     const areas=[...(DB.sample&&FOOT[lv]?FOOT[lv].map(f=>[[f.x,f.y],[f.x+f.w,f.y],[f.x+f.w,f.y+f.h],[f.x,f.y+f.h]]):[]),...circ.map(r=>r.poly)];
     if(areas.length){b.fill(1);areas.forEach(p=>polyCells(p,i=>b[i]=0));}
   }
   circ.forEach(r=>polyCells(r.poly,i=>cm[i]=1));
-  R.forEach(r=>{if(r.l===lv&&r.c!=='circ'&&r.c!=='cover')polyCells(r.poly,i=>{b[i]=1;cm[i]=0;});});
+  R.forEach(r=>{if(r.l===lv&&!walkable(r.c))polyCells(r.poly,i=>{b[i]=1;cm[i]=0;});});
   CIRC[lv]=cm;return BLK[lv]=b;
 }
 function nearFree(b,x,y){
@@ -357,11 +441,11 @@ function nearFree(b,x,y){
 }
 function doorOf(r){
   const b=gridOf(r.l),cm=CIRC[r.l];
-  if(r.c==='circ'||r.c==='cover')return nearFree(b,r.cx,r.cy);
+  if(walkable(r.c))return nearFree(b,r.cx,r.cy);
   const inside=new Set();polyCells(r.poly,i=>inside.add(i));
   let best=-1,bs=1e9;
   inside.forEach(i=>{const x=i%G.W,y=(i/G.W)|0;
-    [[1,0],[-1,0],[0,1],['0','-1']].forEach(([dx,dy])=>{const nx=x+dx,ny=y+dy;
+    [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy])=>{const nx=x+dx,ny=y+dy;
       if(nx<0||ny<0||nx>=G.W||ny>=G.H)return;const n=ny*G.W+nx;if(b[n]||inside.has(n))return;
       const p=cxy(n),s=Math.hypot(p[0]-r.cx,p[1]-r.cy)-(cm[n]?1000:0);if(s<bs){bs=s;best=n;}});});
   return best>=0?best:nearFree(b,r.cx,r.cy);
@@ -410,6 +494,9 @@ function pickElev(lv,pt){
   return e.sort((a,b)=>Math.hypot(a.cx-px,a.cy-py)-Math.hypot(b.cx-px,b.cy-py))[0];
 }
 
+/* ======================================================================
+   6) แผนที่
+   ====================================================================== */
 const gt=l=>[0,1,2,3].map(n=>`https://mt${n}.google.com/vt/lyrs=${l}&x={x}&y={y}&z={z}`);
 const BASES={
   gsat:{t:gt('s'),a:'Imagery © Google'}, ghyb:{t:gt('y'),a:'Imagery © Google'},
@@ -423,66 +510,86 @@ const map=new maplibregl.Map({
     sources:{base:{type:'raster',tiles:BASES.gsat.t,tileSize:256,maxzoom:20,attribution:BASES.gsat.a+' | ผัง © โรงพยาบาลสวี'}},
     layers:[{id:'bg',type:'background',paint:{'background-color':'#0a1220'}},
             {id:'base',type:'raster',source:'base',paint:{'raster-opacity':.85}}]},
-  center:CFG.center,zoom:18,pitch:58,bearing:-18,maxZoom:22,maxPitch:80,antialias:true
+  center:CFG.center,zoom:18,pitch:58,bearing:-18,maxZoom:22.5,maxPitch:80,antialias:true
 });
 map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'bottom-right');
 map.addControl(new maplibregl.GeolocateControl({positionOptions:{enableHighAccuracy:true},trackUserLocation:true}),'bottom-right');
 map.addControl(new maplibregl.ScaleControl({unit:'metric'}),'bottom-left');
-
 (function(){const b=Math.round(((map.getBearing()%360)+360)%360);$('brg').value=b;$('brgv').textContent=b;})();
 
 const defaultStart=()=>DB.sample?{...ENTRANCE}:{l:1,x:0,y:0,name:'ศูนย์กลางผัง'};
 let LV=1,FILT=null,SEL=null,labels=[],arrows=[],pins=[],ROUTE=null,START=defaultStart(),
-    DRAW=false,SETSTART=false,DRAW_TYPE='room',pts=[],EDIT=null,PENDING=null,FCOL=null,IS3D=true;
+    SETSTART=false,PICK=false,EDIT=null,PENDING=null,FCOL=null,IS3D=true;
+/* สถานะการวาด / แก้ไข */
+let DRAW=false,DRAW_TYPE='room',TOOL='line',pts=[],HOV=null,RS=null,
+    DOWN=false,DP=null,ADDED_FIRST=false,CLOSE=false,
+    EDITING=null,DRAG=null,PRE=null,SHIFT=false,SPACE=false,PANBTN=false;
 
 map.on('load',()=>{
   R=rooms();resetGrid();
   map.addSource('rooms',{type:'geojson',data:fc()});
-  map.addSource('route',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
-  map.addSource('draft',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+  map.addSource('route',{type:'geojson',data:EMPTY});
+  map.addSource('draft',{type:'geojson',data:EMPTY});
+  map.addSource('edit',{type:'geojson',data:EMPTY});
+  map.addSource('grid',{type:'geojson',data:EMPTY});
+
   map.addLayer({id:'ghost',type:'fill',source:'rooms',paint:{'fill-color':'#7dd3fc','fill-opacity':.07}});
+  /* ทางเดินร่ม — เป็นเงาแบนราบอยู่ล่างสุด */
+  map.addLayer({id:'cov-fill',type:'fill',source:'rooms',paint:{'fill-color':['get','color'],'fill-opacity':.45}});
+  map.addLayer({id:'cov-line',type:'line',source:'rooms',paint:{'line-color':['get','color'],'line-width':1.5,'line-opacity':.9,'line-dasharray':[2,2]}});
   map.addLayer({id:'r3d',type:'fill-extrusion',source:'rooms',
     paint:{'fill-extrusion-color':['get','color'],'fill-extrusion-height':['get','top'],'fill-extrusion-base':0,
            'fill-extrusion-opacity':.88,'fill-extrusion-vertical-gradient':true}});
   map.addLayer({id:'edge',type:'line',source:'rooms',paint:{'line-color':'#fff','line-width':1,'line-opacity':.35}});
   map.addLayer({id:'hl',type:'fill-extrusion',source:'rooms',filter:['==',['get','key'],'~'],
     paint:{'fill-extrusion-color':'#fff','fill-extrusion-height':['+',['get','top'],1.8],'fill-extrusion-opacity':.5}});
+  map.addLayer({id:'grid',type:'line',source:'grid',
+    paint:{'line-color':'#7dd3fc','line-width':['case',['boolean',['get','major'],false],1.2,.6],
+           'line-opacity':['case',['boolean',['get','major'],false],.6,.28]}});
   map.addLayer({id:'rt-glow',type:'line',source:'route',layout:{'line-cap':'round','line-join':'round'},
     paint:{'line-color':'#22d3ee','line-width':14,'line-opacity':.22,'line-blur':8}});
   map.addLayer({id:'rt-line',type:'line',source:'route',layout:{'line-cap':'round','line-join':'round'},
     paint:{'line-color':'#67e8f9','line-width':4.5,'line-opacity':.95,'line-dasharray':[0,4,3]}});
+  /* ร่างที่กำลังวาด */
   map.addLayer({id:'dpoly',type:'fill',source:'draft',filter:['==',['geometry-type'],'Polygon'],
-    paint:{'fill-color':'#38bdf8','fill-opacity':.35}});
+    paint:{'fill-color':'#38bdf8','fill-opacity':.3}});
   map.addLayer({id:'dline',type:'line',source:'draft',filter:['==',['geometry-type'],'LineString'],
-    paint:{'line-color':'#38bdf8','line-width':2.5,'line-dasharray':[2,1.5]}});
+    paint:{'line-color':'#38bdf8','line-width':2.5}});
   map.addLayer({id:'dpt',type:'circle',source:'draft',filter:['==',['geometry-type'],'Point'],
-    paint:{'circle-radius':['case',['get','first'],7,5],'circle-color':['case',['get','first'],'#facc15','#fff'],
+    paint:{'circle-radius':['case',['boolean',['get','first'],false],7,['boolean',['get','cur'],false],4.5,5],
+           'circle-color':['case',['boolean',['get','first'],false],'#facc15',['boolean',['get','cur'],false],'#f472b6','#fff'],
            'circle-stroke-color':'#0284c7','circle-stroke-width':2}});
+  /* ตัวแก้รูปทรง */
+  map.addLayer({id:'ed-fill',type:'fill',source:'edit',filter:['==',['geometry-type'],'Polygon'],
+    paint:{'fill-color':'#f472b6','fill-opacity':.22}});
+  map.addLayer({id:'ed-line',type:'line',source:'edit',filter:['==',['geometry-type'],'Polygon'],
+    paint:{'line-color':'#f472b6','line-width':2.5}});
+  map.addLayer({id:'ed-mid',type:'circle',source:'edit',filter:['==',['get','kind'],'m'],
+    paint:{'circle-radius':4.5,'circle-color':'#f472b6','circle-stroke-color':'#fff','circle-stroke-width':1.5,'circle-opacity':.9}});
+  map.addLayer({id:'ed-v',type:'circle',source:'edit',filter:['==',['get','kind'],'v'],
+    paint:{'circle-radius':['case',['boolean',['get','sel'],false],8,6.5],
+           'circle-color':['case',['boolean',['get','sel'],false],'#facc15','#ffffff'],
+           'circle-stroke-color':'#be185d','circle-stroke-width':2.5}});
 
-  buildLevels();buildCats();buildCatColors();renderList();refresh();antMarch();
+  buildLevels();buildCats();buildCatColors();renderList();refresh();antMarch();syncBar();
   $('smp').checked=DB.sample;
 
   map.on('click','r3d',e=>{
-    const p=e.features[0].properties;
-    if(DRAW||SETSTART)return;
-    // ทางเดินร่มไม่มีป้ายและไม่มีหน้าต่างการ์ดห้องรายละเอียด
-    if(p.c==='cover')return;
-    select(p.key);
+    if(DRAW||SETSTART||EDITING||PICK)return;
+    select(e.features[0].properties.key);
   });
-  map.on('mouseenter','r3d',e=>{
-    if(DRAW)return;
-    if(e.features[0].properties.c!=='cover') map.getCanvas().style.cursor='pointer';
-  });
-  map.on('mouseleave','r3d',()=>{map.getCanvas().style.cursor=DRAW?'crosshair':'';});
+  map.on('mouseenter','r3d',()=>{if(!DRAW&&!EDITING)map.getCanvas().style.cursor='pointer';});
+  map.on('mouseleave','r3d',()=>{if(!DRAW&&!EDITING)map.getCanvas().style.cursor=PICK?'crosshair':'';});
   map.on('zoom',drawLabels);
-  say('แตะห้องเพื่อดูรายละเอียด · วาดทางเดินร่มได้จากแผง ✎',4200);
+  let gq=false;map.on('move',()=>{if(!gq){gq=true;requestAnimationFrame(()=>{gq=false;updateGrid();});}});
+  say('แตะห้องเพื่อดูรายละเอียด · กด ✎ เพื่อวาดหรือแก้ผัง',4200);
 });
 
 function rebuild(){
   R=rooms();resetGrid();
   if(map.getSource('rooms'))map.getSource('rooms').setData(fc());
   buildLevels();buildCats();renderList();refresh();
-  map.setFilter('hl',['==',['get','key'],SEL||'~']);
+  if(map.getLayer('hl'))map.setFilter('hl',['==',['get','key'],SEL||'~']);
 }
 
 const DASHES=[[0,4,3],[0.5,4,2.5],[1,4,2],[1.5,4,1.5],[2,4,1],[2.5,4,.5],[3,4,0],[0,.5,3,3.5],[0,1,3,3],[0,1.5,3,2.5],[0,2,3,2],[0,2.5,3,1.5],[0,3,3,1],[0,3.5,3,.5]];
@@ -491,8 +598,10 @@ function antMarch(){let i=0;setInterval(()=>{if(map.getLayer('rt-line'))
 
 function refresh(){
   if(!map.getLayer('r3d'))return;
-  const lv=['==',['get','l'],LV],cat=FILT?['==',['get','c'],FILT]:true;
-  map.setFilter('r3d',['all',lv,cat]);map.setFilter('edge',['all',lv,cat]);
+  const lv=['==',['get','l'],LV],cat=FILT?['==',['get','c'],FILT]:true,
+        ne=['!=',['get','key'],EDITING?EDITING.id:'~'],nc=['!=',['get','c'],'cover'],ic=['==',['get','c'],'cover'];
+  map.setFilter('r3d',['all',lv,cat,nc,ne]);map.setFilter('edge',['all',lv,cat,nc,ne]);
+  map.setFilter('cov-fill',['all',lv,ic,ne]);map.setFilter('cov-line',['all',lv,ic,ne]);
   map.setFilter('ghost',['!=',['get','l'],LV]);
   map.setFilter('rt-glow',['==',['get','l'],LV]);map.setFilter('rt-line',['==',['get','l'],LV]);
   drawLabels();drawArrows();
@@ -501,7 +610,8 @@ function drawLabels(){
   labels.forEach(m=>m.remove());labels=[];
   if(map.getZoom()<17.1)return;
   R.forEach(r=>{
-    if(r.l!==LV||(FILT&&r.c!==FILT)||r.c==='cover')return; // ทางเดินร่มไม่แสดงป้ายชื่อ
+    if(r.l!==LV||(FILT&&r.c!==FILT)||r.c==='cover')return;
+    if(EDITING&&r.key===EDITING.id)return;
     if(r.c==='circ'&&map.getZoom()<18.3)return;
     const el=document.createElement('div');el.className='lbl';
     el.innerHTML=(r.no?`<span class="n">${esc(r.no)}</span>`:'')+`<span class="t">${esc(r.n)}</span>`;
@@ -509,13 +619,16 @@ function drawLabels(){
   });
 }
 
+/* ======================================================================
+   7) โหมด 2D / 3D + หมุนกล้อง
+   ====================================================================== */
 function setMode(on){
   IS3D=on;
   if(map.getLayer('r3d')) map.setPaintProperty('r3d','fill-extrusion-height', on?['get','top']:0.05);
   if(map.getLayer('hl'))  map.setPaintProperty('hl','fill-extrusion-height', on?['+',['get','top'],1.8]:0.4);
   if(map.getLayer('ghost')) map.setLayoutProperty('ghost','visibility', on?'visible':'none');
   map.setMaxPitch(on?80:0);
-  map.easeTo({pitch:on?58:0,duration:650});
+  if(!DRAW&&!EDITING)map.easeTo({pitch:on?58:0,duration:650});
   $('mode3d').classList.toggle('on',on);$('mode3d').textContent=on?'3D':'2D';
   $('is3d').checked=on;
 }
@@ -525,6 +638,312 @@ $('brg').oninput=e=>map.setBearing(+e.target.value);
 $('north').onclick=()=>map.easeTo({bearing:0,duration:600});
 map.on('rotate',()=>{const b=Math.round(((map.getBearing()%360)+360)%360);$('brg').value=b;$('brgv').textContent=b;});
 
+/* ======================================================================
+   8) กริด + Snap
+   ====================================================================== */
+function gridSnap(p){
+  if(!UI.snap)return p;
+  const s=UI.gs/CFG.scale;return [Math.round(p[0]/s)*s,Math.round(p[1]/s)*s];
+}
+function snapAt(e,ref,exclude){
+  if(UI.vsnap){
+    let best=null,bd=10;
+    DB.custom.forEach(r=>{if(r.id===exclude||r.l!==LV)return;
+      r.ring.forEach(ll=>{const q=map.project(ll),d=Math.hypot(q.x-e.point.x,q.y-e.point.y);if(d<bd){bd=d;best=ll;}});});
+    if(best)return toLocal(best[0],best[1]);
+  }
+  const p=gridSnap(toLocal(e.lngLat.lng,e.lngLat.lat));
+  if(ref&&(UI.ortho||SHIFT)){
+    if(Math.abs(p[0]-ref[0])>=Math.abs(p[1]-ref[1]))p[1]=ref[1];else p[0]=ref[0];
+  }
+  return p;
+}
+function updateGrid(){
+  const src=map.getSource('grid');if(!src)return;
+  if(!UI.grid||!(DRAW||EDITING)){src.setData(EMPTY);return;}
+  const c=map.getCanvas(),w=c.clientWidth,h=c.clientHeight;
+  const cs=[[0,0],[w,0],[w,h],[0,h]].map(p=>{const q=map.unproject(p);return toLocal(q.lng,q.lat);});
+  const xs=cs.map(p=>p[0]),ys=cs.map(p=>p[1]);
+  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const base=UI.gs/CFG.scale;let k=1;
+  while((x1-x0+y1-y0)/(base*k)>260)k*=2;
+  const s=base*k,f=[];
+  for(let i=Math.floor(x0/s);i<=Math.ceil(x1/s);i++)
+    f.push({type:'Feature',properties:{major:Math.round(i*k)%5===0},geometry:{type:'LineString',coordinates:[mo(i*s,y0),mo(i*s,y1)]}});
+  for(let j=Math.floor(y0/s);j<=Math.ceil(y1/s);j++)
+    f.push({type:'Feature',properties:{major:Math.round(j*k)%5===0},geometry:{type:'LineString',coordinates:[mo(x0,j*s),mo(x1,j*s)]}});
+  src.setData({type:'FeatureCollection',features:f});
+}
+/* เปลี่ยนมุมกริด/พิกัดโดยไม่ทำให้รูปที่กำลังวาด/แก้ขยับ */
+function withCfg(fn){
+  const a=pts.map(L2),b=EDITING?EDITING.ring.map(L2):null,hh=EDITING?EDITING.hist.map(r=>r.map(L2)):null,c=RS?L2(RS):null;
+  fn();
+  pts=a.map(q=>toLocal(q[0],q[1]));
+  if(EDITING){EDITING.ring=b.map(q=>toLocal(q[0],q[1]));EDITING.hist=hh.map(r=>r.map(q=>toLocal(q[0],q[1])));}
+  RS=c?toLocal(c[0],c[1]):null;HOV=null;
+}
+function setRotation(v){
+  withCfg(()=>{CFG.rotation=((+v%360)+360)%360;saveCfg();});
+  $('rot').value=CFG.rotation;$('rotv').textContent=CFG.rotation;$('db-rot').value=CFG.rotation;
+  rebuild();paintDraft();paintEdit();updateGrid();
+}
+
+/* ======================================================================
+   9) วาด (ลาก / คลิก / สี่เหลี่ยม)
+   ====================================================================== */
+const fPt=(c,p)=>({type:'Feature',properties:p||{},geometry:{type:'Point',coordinates:c}});
+const fLn=c=>({type:'Feature',properties:{},geometry:{type:'LineString',coordinates:c}});
+const fPg=c=>({type:'Feature',properties:{},geometry:{type:'Polygon',coordinates:[c]}});
+
+function paintDraft(){
+  const s=map.getSource('draft');if(!s)return;
+  if(!DRAW){s.setData(EMPTY);return;}
+  const f=[];
+  if(TOOL==='rect'&&RS&&HOV){const r=rectLocal(RS,HOV).map(L2);f.push(fPg([...r,r[0]]),fLn([...r,r[0]]));}
+  else{
+    const P=pts.map(L2);
+    if(pts.length>2)f.push(fPg([...P,P[0]]));
+    const line=[...P];if(HOV&&pts.length&&TOOL==='line')line.push(L2(HOV));
+    if(line.length>1)f.push(fLn(line));
+    P.forEach((c,i)=>f.push(fPt(c,{first:i===0})));
+  }
+  if(HOV)f.push(fPt(L2(HOV),{cur:true}));
+  s.setData({type:'FeatureCollection',features:f});
+}
+function meas(pt,txt){
+  const m=$('meas');if(!txt){m.style.display='none';return;}
+  m.textContent=txt;m.style.display='block';m.style.left=(pt.x+16)+'px';m.style.top=(pt.y+16)+'px';
+}
+function showBar(mode){
+  $('dbar').classList.toggle('on',!!mode);
+  $('g-draw').style.display=mode==='draw'?'flex':'none';
+  $('g-edit').style.display=mode==='edit'?'flex':'none';
+  document.body.classList.toggle('drawing',!!mode);
+}
+function setPan(){
+  const on=!(DRAW||EDITING)||SPACE||PANBTN;
+  on?map.dragPan.enable():map.dragPan.disable();
+  $('db-pan').classList.toggle('on',PANBTN);
+  if(DRAW||EDITING)map.getCanvas().style.cursor=on?'grab':(DRAW?'crosshair':'default');
+}
+function closePanels(){['tools','mgr'].forEach(p=>$(p).classList.remove('on'));['gear','edit'].forEach(b=>$(b).classList.remove('on'));}
+
+function startDraw(type){
+  if(EDITING)endEdit(true);
+  PICK=false;DRAW_TYPE=type;DRAW=true;pts=[];HOV=null;RS=null;
+  closeSheet();closePanels();clearRoute();
+  map.doubleClickZoom.disable();
+  map.easeTo({pitch:0,duration:600});            // มองตรงจากด้านบน แต่คงทิศที่หมุนไว้
+  map.setPaintProperty('r3d','fill-extrusion-opacity',.35);
+  $('dmode').textContent=type==='cover'?'วาดทางเดินร่ม':'วาดห้อง';
+  showBar('draw');setPan();updateGrid();paintDraft();
+  say('ลากหรือคลิกตามมุม · คลิกจุดแรก / ดับเบิลคลิก / Enter เพื่อปิดรูป · Shift = มุมฉาก · Space = เลื่อนแผนที่',6000);
+}
+function stopDraw(keepView){
+  DRAW=false;pts=[];HOV=null;RS=null;DOWN=false;paintDraft();meas();
+  map.doubleClickZoom.enable();map.getCanvas().style.cursor='';
+  map.setPaintProperty('r3d','fill-extrusion-opacity',.88);
+  showBar(null);setPan();updateGrid();
+  if(!keepView&&IS3D)map.easeTo({pitch:55,duration:600});
+}
+function finishDraw(){
+  let p=pts.filter((q,i)=>i===0||dist(q,pts[i-1])>1e-6);
+  if(p.length>1&&dist(p[0],p[p.length-1])<1e-6)p.pop();
+  if(p.length<3){say('ต้องมีอย่างน้อย 3 มุม');return;}
+  pts=p;HOV=null;paintDraft();meas();
+  const ll=p.map(L2);openForm(null,[...ll,ll[0]],DRAW_TYPE,areaM2(p));
+}
+function drawDown(e){
+  DOWN=true;DP=e.point;
+  if(TOOL==='rect'){pts=[];RS=snapAt(e,null);HOV=RS;paintDraft();return;}
+  if(pts.length>=3){const a=map.project(L2(pts[0]));
+    if(Math.hypot(a.x-e.point.x,a.y-e.point.y)<14){CLOSE=true;return;}}
+  ADDED_FIRST=!pts.length;
+  if(ADDED_FIRST)pts.push(snapAt(e,null));
+  paintDraft();
+}
+function drawMove(e){
+  const last=pts[pts.length-1];
+  if(TOOL==='line'&&pts.length>=3){const a=map.project(L2(pts[0]));
+    if(Math.hypot(a.x-e.point.x,a.y-e.point.y)<14){HOV=pts[0];paintDraft();meas(e.point,'ปิดรูป');return;}}
+  HOV=snapAt(e,TOOL==='rect'?null:last);
+  paintDraft();
+  if(TOOL==='rect'&&RS&&DOWN){
+    const w=Math.abs(HOV[0]-RS[0])*CFG.scale,h=Math.abs(HOV[1]-RS[1])*CFG.scale;
+    meas(e.point,`${fmt(w)} × ${fmt(h)} ม. · ${fmt(w*h)} ม²`);
+  }else if(TOOL==='line'&&last){
+    meas(e.point,`${fmt(dist(HOV,last)*CFG.scale)} ม.`+(pts.length>=2?` · รวม ${pts.length} จุด`:''));
+  }else meas();
+}
+function drawUp(e){
+  if(!DOWN)return;DOWN=false;
+  if(TOOL==='rect'){
+    if(RS&&HOV){const w=Math.abs(HOV[0]-RS[0])*CFG.scale,h=Math.abs(HOV[1]-RS[1])*CFG.scale;
+      if(w>=0.2&&h>=0.2){pts=rectLocal(RS,HOV);RS=null;finishDraw();return;}}
+    RS=null;paintDraft();return;
+  }
+  if(CLOSE){CLOSE=false;finishDraw();return;}
+  const moved=DP&&e.point&&Math.hypot(e.point.x-DP.x,e.point.y-DP.y)>4;
+  if(ADDED_FIRST&&!moved){ADDED_FIRST=false;paintDraft();return;}
+  ADDED_FIRST=false;
+  const last=pts[pts.length-1],s=e.lngLat?snapAt(e,last):HOV;
+  if(s&&(!last||dist(s,last)>1e-6))pts.push(s);
+  paintDraft();
+}
+
+/* ======================================================================
+   10) แก้รูปทรง
+   ====================================================================== */
+function paintEdit(){
+  const s=map.getSource('edit');if(!s)return;
+  if(!EDITING){s.setData(EMPTY);return;}
+  const r=EDITING.ring,n=r.length,P=r.map(L2),f=[fPg([...P,P[0]])];
+  r.forEach((q,i)=>{const b=r[(i+1)%n];f.push(fPt(mo((q[0]+b[0])/2,(q[1]+b[1])/2),{kind:'m',i}));});
+  P.forEach((c,i)=>f.push(fPt(c,{kind:'v',i,sel:i===EDITING.sel})));
+  s.setData({type:'FeatureCollection',features:f});
+}
+function hitEdit(e){
+  const p=e.point,box=[[p.x-9,p.y-9],[p.x+9,p.y+9]];
+  const v=map.queryRenderedFeatures(box,{layers:['ed-v']});if(v.length)return{k:'v',i:+v[0].properties.i};
+  const m=map.queryRenderedFeatures(box,{layers:['ed-mid']});if(m.length)return{k:'m',i:+m[0].properties.i};
+  const l=toLocal(e.lngLat.lng,e.lngLat.lat);if(pip(l[0],l[1],EDITING.ring))return{k:'in'};
+  return null;
+}
+function startEdit(id){
+  const o=DB.custom.find(x=>x.id===id);if(!o)return;
+  if(DRAW)stopDraw(true);
+  PICK=false;closeSheet();closePanels();clearRoute();
+  if(o.l!==LV)setLevel(o.l);
+  EDITING={id,ring:openRing(o.ring).map(q=>toLocal(q[0],q[1])),sel:-1,hist:[]};
+  map.doubleClickZoom.disable();
+  map.setPaintProperty('r3d','fill-extrusion-opacity',.35);
+  showBar('edit');setPan();refresh();paintEdit();
+  const b=new maplibregl.LngLatBounds();o.ring.forEach(q=>b.extend(q));
+  map.fitBounds(b,{padding:140,pitch:0,bearing:map.getBearing(),maxZoom:20.5,duration:700});
+  setTimeout(updateGrid,750);
+  say('ลากจุดขาว = ย้ายมุม · ลากจุดชมพู = เพิ่มมุม · ลากในรูป = ย้ายทั้งรูป · Delete = ลบมุมที่เลือก',6500);
+}
+function endEdit(keepView){
+  EDITING=null;DRAG=null;paintEdit();meas();
+  map.doubleClickZoom.enable();
+  map.setPaintProperty('r3d','fill-extrusion-opacity',.88);
+  showBar(null);setPan();map.getCanvas().style.cursor='';refresh();updateGrid();
+  if(!keepView&&IS3D)map.easeTo({pitch:55,duration:600});
+}
+function saveEdit(){
+  const E=EDITING;if(!E)return;
+  if(E.ring.length<3){say('ต้องมีอย่างน้อย 3 มุม');return;}
+  const o=DB.custom.find(x=>x.id===E.id);
+  const ll=E.ring.map(L2);o.ring=[...ll,ll[0]];
+  save();const id=E.id,isCover=o.c==='cover';
+  endEdit();rebuild();if(!isCover)select(id,true);
+  say('บันทึกรูปทรงแล้ว');
+}
+function delVertex(){
+  const E=EDITING;if(!E)return;
+  if(E.sel<0){say('คลิกเลือกจุดที่ต้องการลบก่อน');return;}
+  if(E.ring.length<=3){say('ต้องเหลืออย่างน้อย 3 มุม');return;}
+  E.hist.push(E.ring.map(p=>p.slice()));E.ring.splice(E.sel,1);E.sel=-1;paintEdit();
+}
+function editUndo(){const E=EDITING;if(!E||!E.hist.length)return;E.ring=E.hist.pop();E.sel=-1;paintEdit();}
+function editDown(e){
+  const E=EDITING,h=hitEdit(e);
+  if(!h){E.sel=-1;paintEdit();return;}
+  PRE=JSON.stringify(E.ring);
+  if(h.k==='v'){E.sel=h.i;DRAG={k:'v',i:h.i};}
+  else if(h.k==='m'){
+    const n=E.ring.length,a=E.ring[h.i],b=E.ring[(h.i+1)%n];
+    E.ring.splice(h.i+1,0,gridSnap([(a[0]+b[0])/2,(a[1]+b[1])/2]));E.sel=h.i+1;DRAG={k:'v',i:h.i+1};
+  }else{
+    DRAG={k:'all',start:gridSnap(toLocal(e.lngLat.lng,e.lngLat.lat)),orig:E.ring.map(p=>p.slice())};
+  }
+  paintEdit();
+}
+function editMove(e){
+  const E=EDITING;
+  if(!DRAG){const h=hitEdit(e);map.getCanvas().style.cursor=h?(h.k==='in'?'move':'pointer'):'default';return;}
+  if(DRAG.k==='v'){
+    const n=E.ring.length,prev=E.ring[(DRAG.i-1+n)%n],next=E.ring[(DRAG.i+1)%n];
+    const p=snapAt(e,prev,E.id);E.ring[DRAG.i]=p;
+    meas(e.point,`ด้าน ${fmt(dist(prev,p)*CFG.scale)} / ${fmt(dist(p,next)*CFG.scale)} ม.`);
+  }else{
+    const p=gridSnap(toLocal(e.lngLat.lng,e.lngLat.lat)),dx=p[0]-DRAG.start[0],dy=p[1]-DRAG.start[1];
+    E.ring=DRAG.orig.map(q=>[q[0]+dx,q[1]+dy]);
+    meas(e.point,`เลื่อน ${fmt(dx*CFG.scale)}, ${fmt(dy*CFG.scale)} ม.`);
+  }
+  paintEdit();
+}
+function editUp(){
+  if(!DRAG)return;DRAG=null;meas();
+  if(PRE&&PRE!==JSON.stringify(EDITING.ring))EDITING.hist.push(JSON.parse(PRE));
+  PRE=null;
+}
+
+/* ---- ตัวรับเหตุการณ์เมาส์ / สัมผัส ---- */
+function canHandle(e){
+  const oe=e.originalEvent;
+  if(SPACE||PANBTN||$('modal').classList.contains('on'))return false;
+  if(oe&&oe.touches&&oe.touches.length>1)return false;
+  if(oe&&oe.button>0)return false;
+  return true;
+}
+function onDown(e){
+  if(!(DRAW||EDITING)||!canHandle(e))return;
+  if(e.preventDefault)e.preventDefault();
+  DRAW?drawDown(e):editDown(e);
+}
+function onMove(e){
+  if(!(DRAW||EDITING))return;
+  if(SPACE||PANBTN||$('modal').classList.contains('on')){meas();return;}
+  if(!e.lngLat)return;
+  DRAW?drawMove(e):editMove(e);
+}
+function onUp(e){if(DRAW)drawUp(e);else if(EDITING)editUp(e);}
+map.on('mousedown',onDown);map.on('touchstart',onDown);
+map.on('mousemove',onMove);map.on('touchmove',onMove);
+map.on('mouseup',onUp);map.on('touchend',onUp);
+map.on('mouseout',()=>meas());
+map.on('dblclick',e=>{if(DRAW&&TOOL==='line'){e.preventDefault();finishDraw();}});
+
+map.on('click',e=>{
+  if(PICK){
+    PICK=false;map.getCanvas().style.cursor='';
+    const k=map.queryRenderedFeatures(e.point,{layers:['r3d','cov-fill']}).map(f=>f.properties.key)
+      .find(k=>DB.custom.some(c=>c.id===k));
+    if(k)startEdit(k);else say('แก้รูปทรงได้เฉพาะห้อง/ทางเดินที่วาดเอง');
+    return;
+  }
+  if(SETSTART){const p=toLocal(e.lngLat.lng,e.lngLat.lat);
+    START={l:LV,x:p[0],y:p[1],name:'จุดที่เลือกบนแผนที่'};SETSTART=false;say(`ตั้งจุดเริ่มต้นแล้ว (ชั้น ${LV})`);}
+});
+
+/* ---- แถบเครื่องมือ ---- */
+function syncBar(){
+  $('db-gs').value=String(UI.gs);$('db-snap').checked=UI.snap;$('db-grid').checked=UI.grid;
+  $('db-vsnap').checked=UI.vsnap;$('db-ortho').checked=UI.ortho;$('db-rot').value=CFG.rotation;
+}
+document.querySelectorAll('#dbar .tool').forEach(b=>b.onclick=()=>{
+  TOOL=b.dataset.t;pts=[];RS=null;HOV=null;
+  document.querySelectorAll('#dbar .tool').forEach(x=>x.classList.toggle('on',x===b));
+  paintDraft();say(TOOL==='rect'?'ลากจากมุมหนึ่งไปอีกมุมเพื่อสร้างห้องสี่เหลี่ยม':'ลากหรือคลิกตามมุมห้อง');
+});
+$('db-undo').onclick=()=>{pts.pop();paintDraft();};
+$('db-fin').onclick=finishDraw;
+$('db-delv').onclick=delVertex;
+$('db-eundo').onclick=editUndo;
+$('db-save').onclick=saveEdit;
+$('db-x').onclick=()=>{if(DRAW)stopDraw();if(EDITING)endEdit();say('ยกเลิกแล้ว');};
+$('db-pan').onclick=()=>{PANBTN=!PANBTN;setPan();say(PANBTN?'โหมดเลื่อนแผนที่ — กด ✋ อีกครั้งเพื่อกลับไปวาด':'กลับสู่โหมดวาด');};
+$('db-gs').onchange=e=>{UI.gs=+e.target.value;saveUI();updateGrid();};
+$('db-snap').onchange=e=>{UI.snap=e.target.checked;saveUI();};
+$('db-grid').onchange=e=>{UI.grid=e.target.checked;saveUI();updateGrid();};
+$('db-vsnap').onchange=e=>{UI.vsnap=e.target.checked;saveUI();};
+$('db-ortho').onchange=e=>{UI.ortho=e.target.checked;saveUI();};
+$('db-rot').onchange=e=>setRotation(+e.target.value||0);
+
+/* ======================================================================
+   11) นำทาง
+   ====================================================================== */
 const bearingOf=(dx,dy)=>(Math.atan2(dx,dy)*180/Math.PI+CFG.rotation+360)%360;
 function segLen(p){let s=0;for(let i=1;i<p.length;i++)s+=Math.hypot(p[i][0]-p[i-1][0],p[i][1]-p[i-1][1]);return s*CFG.scale;}
 function turnSteps(p){
@@ -546,7 +965,7 @@ function navigateTo(key){
     segs.push({l:r.l,p});steps.push({t:'walk',l:r.l,s:turnSteps(p),d:segLen(p)});
   }else{
     const eD=pickElev(r.l,r),eS=(eD&&R.find(x=>x.l===START.l&&x.grp===eD.grp))||pickElev(START.l,START);
-    if(!eS||!eD)return fail('ยังไม่มีลิฟต์/บันไดเชื่อมชั้น');
+    if(!eS||!eD)return fail('ยังไม่มีลิฟต์/บันไดเชื่อมชั้น — ใส่ "กลุ่มลิฟต์" ชื่อเดียวกันทุกชั้น');
     const p1=pathLocal(START.l,s0,doorOf(eS)),p2=pathLocal(r.l,doorOf(eD),doorOf(r));
     if(!p1||!p2)return fail();
     segs.push({l:START.l,p:p1});steps.push({t:'walk',l:START.l,s:turnSteps(p1),d:segLen(p1)});
@@ -555,9 +974,9 @@ function navigateTo(key){
   }
   ROUTE={segs,steps,dest:r};
   map.getSource('route').setData({type:'FeatureCollection',features:segs.map(s=>({type:'Feature',properties:{l:s.l},
-    geometry:{type:'LineString',coordinates:s.p.map(q=>mo(q[0],q[1]))}}))});
+    geometry:{type:'LineString',coordinates:s.p.map(L2)}}))});
   setLevel(START.l);showRoute();
-  const b=new maplibregl.LngLatBounds();segs.forEach(s=>s.p.forEach(q=>b.extend(mo(q[0],q[1]))));
+  const b=new maplibregl.LngLatBounds();segs.forEach(s=>s.p.forEach(q=>b.extend(L2(q))));
   map.fitBounds(b,{padding:{top:120,bottom:260,left:60,right:90},pitch:IS3D?55:0,duration:1300,maxZoom:19.5});
 }
 function drawArrows(){
@@ -578,12 +997,12 @@ function drawArrows(){
     since+=len-pos;
   }
   const mk=(p,cls,ic)=>{const d=document.createElement('div');d.className='pin '+cls;d.innerHTML='<i>'+ic+'</i>';
-    pins.push(new maplibregl.Marker({element:d}).setLngLat(mo(p[0],p[1])).addTo(map));};
+    pins.push(new maplibregl.Marker({element:d}).setLngLat(L2(p)).addTo(map));};
   if(seg===ROUTE.segs[0])mk(seg.p[0],'st','●');
   if(seg===ROUTE.segs[ROUTE.segs.length-1])mk(seg.p[seg.p.length-1],'go','◆');
 }
 function clearRoute(){
-  ROUTE=null;if(map.getSource('route'))map.getSource('route').setData({type:'FeatureCollection',features:[]});
+  ROUTE=null;if(map.getSource('route'))map.getSource('route').setData(EMPTY);
   arrows.forEach(m=>m.remove());arrows=[];pins.forEach(m=>m.remove());pins=[];
 }
 function showRoute(){
@@ -604,6 +1023,9 @@ function showRoute(){
   sheet.innerHTML=html;sheet.classList.add('on');$('close').onclick=closeSheet;
 }
 
+/* ======================================================================
+   12) การ์ดห้อง + สี + ลบ
+   ====================================================================== */
 const sheet=$('sheet');
 const swatches=cur=>PALETTE.map(c=>`<i data-c="${c}" style="background:${c}" class="${c===String(cur||'').toLowerCase()?'on':''}"></i>`).join('');
 function closeSheet(){sheet.classList.remove('on');SEL=null;if(map.getLayer('hl'))map.setFilter('hl',['==',['get','key'],'~']);}
@@ -623,6 +1045,7 @@ function select(key,noFly){
       <tr><td>ชั้น</td><td>${r.l}</td></tr>
       <tr><td>เวลาทำการ</td><td>${esc(r.t||'-')}</td></tr>
       <tr><td>เบอร์ภายใน</td><td>${esc(r.tel||'-')}</td></tr>
+      <tr><td>พื้นที่</td><td>${fmt(areaM2(r.poly))} ม²</td></tr>
       <tr><td>พิกัด</td><td style="font-size:12px">${c[1].toFixed(6)}, ${c[0].toFixed(6)}</td></tr>
     </table>
     <span class="lb">สีของห้องนี้</span>
@@ -633,8 +1056,9 @@ function select(key,noFly){
     <button class="btn pri" onclick="navigateTo('${key}')">➤ นำทางไปห้องนี้</button>
     <div class="row2"><button class="btn" onclick="setStartRoom('${key}')">ตั้งเป็นจุดเริ่ม</button>
       <button class="btn" onclick="gmap(${c[1]},${c[0]})">Google Maps</button></div>
-    ${isC?`<div class="row2"><button class="btn" onclick="editRoom('${key}')">✎ แก้ไข</button>
-      <button class="btn red" onclick="delRoom('${key}')">🗑 ลบห้องนี้</button></div>`:''}`;
+    ${isC?`<div class="row2"><button class="btn pk" onclick="startEdit('${key}')">⬚ แก้รูปทรง</button>
+      <button class="btn" onclick="editRoom('${key}')">✎ แก้ข้อมูล</button></div>
+      <button class="btn red" onclick="delRoom('${key}')">🗑 ลบห้องนี้</button>`:''}`;
   sheet.classList.add('on');
   $('close').onclick=closeSheet;
   sheet.querySelectorAll('#ssw i').forEach(i=>i.onclick=()=>setRoomColor(key,i.dataset.c));
@@ -655,21 +1079,27 @@ function setLevel(l){LV=l;[...$('levels').children].forEach(b=>b.classList.toggl
 function afterDel(msg){save();clearRoute();closeSheet();rebuild();say(msg+' — กู้คืนได้ในแผง ✎',4000);}
 function delRoom(key){
   const o=DB.custom.find(x=>x.id===key);if(!o)return;
-  if(!confirm(`ลบ ${o.c==='cover'?'ทางเดินร่ม':('ห้อง '+o.no)} ${o.n} ?`))return;
-  TRASH=[o];DB.custom=DB.custom.filter(x=>x.id!==key);afterDel(`ลบรายการนี้แล้ว`);
+  if(!confirm(`ลบ${o.c==='cover'?'ทางเดินร่ม':' ห้อง '+(o.no||'')} ${o.n} ?`))return;
+  if(EDITING&&EDITING.id===key)endEdit();
+  TRASH=[o];DB.custom=DB.custom.filter(x=>x.id!==key);afterDel('ลบรายการแล้ว');
 }
 function clearAll(){
   if(!DB.custom.length){say('ยังไม่มีข้อมูลที่วาดไว้');return;}
   if(!confirm(`ลบข้อมูลที่วาดไว้ทั้งหมด ${DB.custom.length} รายการ?`))return;
+  if(EDITING)endEdit();
   TRASH=DB.custom.slice();DB.custom=[];afterDel('ล้างทั้งหมดแล้ว');
 }
 function clearLevel(){
   const t=DB.custom.filter(x=>x.l===LV);if(!t.length){say(`ชั้น ${LV} ไม่มีข้อมูลที่วาดไว้`);return;}
   if(!confirm(`ลบข้อมูลบนชั้น ${LV} ทั้งหมด ${t.length} รายการ?`))return;
+  if(EDITING)endEdit();
   TRASH=t;DB.custom=DB.custom.filter(x=>x.l!==LV);afterDel(`ล้างชั้น ${LV} แล้ว`);
 }
 function restore(){if(!TRASH)return;DB.custom.push(...TRASH);TRASH=null;save();rebuild();say('กู้คืนแล้ว');}
 
+/* ======================================================================
+   13) แผงจัดการ
+   ====================================================================== */
 function renderList(){
   const f=$('mf').value.trim().toLowerCase();
   const items=DB.custom.filter(r=>!f||(r.n+' '+(r.no||'')).toLowerCase().includes(f))
@@ -677,13 +1107,15 @@ function renderList(){
   $('cnt').textContent=`(${DB.custom.length})`;
   $('list').innerHTML=items.length?items.map(r=>`<div class="li">
       <input type="color" data-k="${r.id}" value="${r.color||catColor(r.c)}" title="เปลี่ยนสี">
-      <div class="nm"><b>${esc(r.no||(r.c==='cover'?'☂':'—'))}</b> ${esc(r.n)}<small>ชั้น ${r.l} · ${CAT[r.c].n}</small></div>
+      <div class="nm"><b>${esc(r.no||(r.c==='cover'?'☂':'—'))}</b> ${esc(r.n)}<small>ชั้น ${r.l} · ${CAT[r.c].n}${r.grp?' · ลิฟต์ '+esc(r.grp):''}</small></div>
       ${r.c!=='cover'?`<button data-go="${r.id}" title="ไปที่ห้อง">◎</button>`:''}
-      <button data-ed="${r.id}" title="แก้ไข">✎</button>
+      <button data-sh="${r.id}" title="แก้รูปทรง">⬚</button>
+      <button data-ed="${r.id}" title="แก้ข้อมูล">✎</button>
       <button class="del" data-del="${r.id}" title="ลบ">🗑</button></div>`).join('')
     :`<div class="empty">${DB.custom.length?'ไม่พบตามคำค้น':'ยังไม่มีข้อมูล — กดปุ่มวาดด้านบน'}</div>`;
   $('list').querySelectorAll('input[type=color]').forEach(i=>i.onchange=e=>setRoomColor(i.dataset.k,e.target.value));
   $('list').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>select(b.dataset.go));
+  $('list').querySelectorAll('[data-sh]').forEach(b=>b.onclick=()=>startEdit(b.dataset.sh));
   $('list').querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>editRoom(b.dataset.ed));
   $('list').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>delRoom(b.dataset.del));
   $('restore').style.display=TRASH?'block':'none';
@@ -692,65 +1124,40 @@ function renderList(){
 $('mf').oninput=renderList;
 $('restore').onclick=restore;$('clrAll').onclick=clearAll;$('clrLv').onclick=clearLevel;
 $('smp').onchange=e=>{DB.sample=e.target.checked;save();START=defaultStart();clearRoute();closeSheet();rebuild();
-  say(DB.sample?'แสดงผังตัวอย่าง':'ซ่อนผังตัวอย่างแล้ว');};
-
-function paint(){
-  const f=pts.map((p,i)=>({type:'Feature',properties:{first:i===0},geometry:{type:'Point',coordinates:p}}));
-  if(pts.length>1)f.push({type:'Feature',properties:{},geometry:{type:'LineString',coordinates:pts}});
-  if(pts.length>2)f.push({type:'Feature',properties:{},geometry:{type:'Polygon',coordinates:[[...pts,pts[0]]]}});
-  map.getSource('draft').setData({type:'FeatureCollection',features:f});
-}
-function startDraw(type){
-  DRAW_TYPE=type;DRAW=true;pts=[];paint();closeSheet();map.doubleClickZoom.disable();
-  map.getCanvas().style.cursor='crosshair';
-  map.easeTo({pitch:0,duration:700});
-  map.setPaintProperty('r3d','fill-extrusion-opacity',.35);
-  say(type==='cover'?'คลิกตามมุมทางเดินร่ม → คลิกจุดแรกเพื่อปิดรูป':'คลิกตามมุมห้อง → คลิกจุดแรกเพื่อปิดรูป',5000);
-}
-function stopDraw(){
-  DRAW=false;pts=[];paint();map.doubleClickZoom.enable();map.getCanvas().style.cursor='';
-  map.setPaintProperty('r3d','fill-extrusion-opacity',.88);
-}
-function finishDraw(){if(pts.length<3){say('ต้องคลิกอย่างน้อย 3 มุม');return;}openForm(null,[...pts,pts[0]],DRAW_TYPE);}
+  say(DB.sample?'แสดงผังตัวอย่าง':'ซ่อนผังตัวอย่างแล้ว — เริ่มวาดผังจริงได้เลย');};
 $('draw').onclick=()=>startDraw('room');
 $('drawCover').onclick=()=>startDraw('cover');
-$('undo').onclick=()=>{pts.pop();paint();};
-$('fin').onclick=finishDraw;
-$('cancel').onclick=()=>{stopDraw();say('ยกเลิกแล้ว');};
+$('pickEdit').onclick=()=>{
+  if(DRAW)stopDraw(true);
+  if(!DB.custom.length){say('ยังไม่มีห้องที่วาดไว้');return;}
+  PICK=true;closePanels();closeSheet();map.getCanvas().style.cursor='crosshair';
+  say('คลิกห้องหรือทางเดินร่มที่ต้องการแก้รูปทรง (Esc = ยกเลิก)',5000);
+};
 
-map.on('click',e=>{
-  if(SETSTART){const p=toLocal(e.lngLat.lng,e.lngLat.lat);
-    START={l:LV,x:p[0],y:p[1],name:'จุดที่เลือกบนแผนที่'};SETSTART=false;say(`ตั้งจุดเริ่มต้นแล้ว (ชั้น ${LV})`);return;}
-  if(!DRAW)return;
-  if(pts.length>=3){const a=map.project(pts[0]);
-    if(Math.hypot(a.x-e.point.x,a.y-e.point.y)<14){finishDraw();return;}}
-  pts.push([e.lngLat.lng,e.lngLat.lat]);paint();
-});
-
+/* ---------- ฟอร์มห้อง ---------- */
 $('f_c').innerHTML=Object.entries(CAT).map(([k,v])=>`<option value="${k}">${v.n}</option>`).join('');
 function paintFormColor(){
   const auto=!FCOL,col=FCOL||catColor($('f_c').value);
   $('f_auto').checked=auto;$('f_col').value=col;$('f_sw').innerHTML=swatches(auto?'':col);
   $('f_sw').querySelectorAll('i').forEach(i=>i.onclick=()=>{FCOL=i.dataset.c;paintFormColor();});
 }
-function openForm(room,ring,type){
+function openForm(room,ring,type,area){
   EDIT=room;PENDING=ring;
-  const isCover=(room?room.c==='cover':type==='cover');
-  $('mt').textContent=isCover?(room?'แก้ไขทางเดินร่ม':'วาดทางเดินร่ม'):(room?'แก้ไขห้อง':'ห้องใหม่');
-  
-  // ซ่อนฟิลด์ที่ไม่จำเป็นสำหรับทางเดินร่ม
-  $('f_norow').style.display=isCover?'none':'grid';
-  $('lbl_n').textContent=isCover?'ชื่อ/รายละเอียดทางเดิน (ไม่บังคับ)':'ชื่อห้อง *';
+  const isCover=room?room.c==='cover':type==='cover';
+  $('mt').textContent=isCover?(room?'แก้ไขทางเดินร่ม':'ทางเดินร่มใหม่'):(room?'แก้ไขห้อง':'ห้องใหม่');
+  $('f_area').textContent=area?`พื้นที่ ${fmt(area)} ม²`:'';
+  $('f_norow').style.display='grid';
+  $('f_no').parentElement.style.display=isCover?'none':'block';
+  $('lbl_n').textContent=isCover?'ชื่อ/รายละเอียด (ไม่บังคับ)':'ชื่อห้อง *';
   $('f_n').value=room?room.n:(isCover?'ทางเดินเชื่อมอาคาร':'');
   $('f_c').value=room?room.c:(isCover?'cover':'opd');
-  $('f_c').disabled=isCover; // ล็อกหมวดไว้ถ้ากดมาจากปุ่มทางเดินร่ม
+  $('f_c').disabled=isCover;
+  $('f_no').value=room?room.no||'':'';
   $('f_l').value=room?room.l:LV;
   $('f_b').value=room?room.b||'':'';$('f_tel').value=room?room.tel||'':'';
   $('f_t').value=room?room.t||'':'';$('f_g').value=room?room.grp||'':'';
-  $('f_ext').style.display=isCover?'none':'grid';
-  $('lbl_t').style.display=isCover?'none':'block';$('f_t').style.display=isCover?'none':'block';
-  $('lbl_g').style.display=isCover?'none':'block';$('f_g').style.display=isCover?'none':'block';
-
+  ['f_ext'].forEach(id=>$(id).style.display=isCover?'none':'grid');
+  ['lbl_t','f_t','lbl_g','f_g'].forEach(id=>$(id).style.display=isCover?'none':'block');
   FCOL=room?room.color||null:null;paintFormColor();
   $('modal').classList.add('on');setTimeout(()=>$('f_n').focus(),50);
 }
@@ -761,19 +1168,21 @@ $('f_col').oninput=e=>{FCOL=e.target.value;$('f_auto').checked=false;$('f_sw').i
 $('f_auto').onchange=e=>{FCOL=e.target.checked?null:$('f_col').value;paintFormColor();};
 $('f_cancel').onclick=()=>$('modal').classList.remove('on');
 $('f_ok').onclick=()=>{
-  const isCover=($('f_c').value==='cover');
-  const n=$('f_n').value.trim()||(isCover?'ทางเดินร่ม':'ไม่มีชื่อ');
+  const isCover=$('f_c').value==='cover';
+  const n=$('f_n').value.trim()||(isCover?'ทางเดินร่ม':'');
+  if(!n){say('กรุณาใส่ชื่อห้อง');$('f_n').focus();return;}
   const o={no:isCover?'':$('f_no').value.trim(),n,c:$('f_c').value,l:Math.max(1,Math.min(9,+$('f_l').value||1)),color:FCOL,
-    b:isCover?'':$('f_b').value.trim(),t:isCover?'':$('f_t').value.trim(),tel:isCover?'':$('f_tel').value.trim(),grp:isCover?'':$('f_g').value.trim()||undefined};
-  let id;
+    b:isCover?'':$('f_b').value.trim(),t:isCover?'':$('f_t').value.trim(),tel:isCover?'':$('f_tel').value.trim(),
+    grp:isCover?undefined:($('f_g').value.trim()||undefined)};
+  const wasEdit=!!EDIT;let id;
   if(EDIT){Object.assign(EDIT,o);id=EDIT.id;}
   else{id='c'+Date.now().toString(36);DB.custom.push({id,...o,ring:PENDING});stopDraw();}
   save();clearRoute();$('modal').classList.remove('on');
-  if(o.l!==LV)LV=o.l;
   rebuild();setLevel(o.l);if(!isCover)select(id,true);
-  say(EDIT?'บันทึกการแก้ไขแล้ว':(isCover?'เพิ่มทางเดินร่มแล้ว':'เพิ่มห้องสำเร็จ'));EDIT=null;
+  say(wasEdit?'บันทึกการแก้ไขแล้ว':(isCover?'เพิ่มทางเดินร่มแล้ว':`เพิ่มห้อง "${n}" แล้ว`));EDIT=null;
 };
 
+/* ---------- ส่งออก / นำเข้า ---------- */
 $('exp').onclick=()=>{
   const gj={type:'FeatureCollection',features:DB.custom.map(r=>({type:'Feature',
     geometry:{type:'Polygon',coordinates:[r.ring]},
@@ -789,14 +1198,19 @@ $('impf').onchange=e=>{
     let n=0;
     (JSON.parse(t).features||[]).forEach(ft=>{
       if(!ft.geometry||ft.geometry.type!=='Polygon')return;const p=ft.properties||{};
+      const ring=ft.geometry.coordinates[0].slice();const a=ring[0],b=ring[ring.length-1];
+      if(a[0]!==b[0]||a[1]!==b[1])ring.push(a.slice());
       DB.custom.push({id:'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),
         no:p.no||'',n:p.n||p.name||'ไม่มีชื่อ',c:CAT[p.c]?p.c:'opd',l:+p.l||1,color:p.color||null,
-        b:p.b||'',t:p.t||'',tel:p.tel||'',grp:p.grp||undefined,ring:ft.geometry.coordinates[0]});n++;});
+        b:p.b||'',t:p.t||'',tel:p.tel||'',grp:p.grp||undefined,ring});n++;});
     save();rebuild();say(`นำเข้า ${n} รายการแล้ว`);
   }).catch(()=>say('ไฟล์ไม่ถูกต้อง'));
   e.target.value='';
 };
 
+/* ======================================================================
+   14) UI ทั่วไป
+   ====================================================================== */
 function buildLevels(){
   const lvs=[...new Set([1,...R.map(r=>r.l)])].sort((a,b)=>b-a);
   if(!lvs.includes(LV))LV=1;
@@ -810,7 +1224,7 @@ function buildCats(){
   const box=$('cats');box.innerHTML='';
   const all=document.createElement('div');all.className='chip'+(FILT?'':' on');all.textContent='ทั้งหมด';
   all.onclick=()=>{FILT=null;buildCats();refresh();};box.appendChild(all);
-  Object.entries(CAT).forEach(([k,v])=>{if(k==='circ')return;
+  Object.entries(CAT).forEach(([k,v])=>{if(k==='circ'||k==='cover')return;
     const d=document.createElement('div');d.className='chip'+(FILT===k?' on':'');
     d.innerHTML=`<span style="color:${catColor(k)}">●</span> ${v.n}`;
     d.onclick=()=>{FILT=k;buildCats();refresh();};box.appendChild(d);});
@@ -840,8 +1254,7 @@ function say(t,ms){const h=$('hint');h.textContent=t;h.classList.add('on');clear
   say.t=setTimeout(()=>h.classList.remove('on'),ms||3200);}
 
 function togglePanel(id,btn){
-  const open=!$(id).classList.contains('on');
-  ['tools','mgr'].forEach(p=>$(p).classList.remove('on'));['gear','edit'].forEach(b=>$(b).classList.remove('on'));
+  const open=!$(id).classList.contains('on');closePanels();
   if(open){$(id).classList.add('on');$(btn).classList.add('on');}
 }
 $('gear').onclick=()=>togglePanel('tools','gear');
@@ -856,19 +1269,46 @@ $('dimr').oninput=e=>{$('dimv').textContent=e.target.value;map.setPaintProperty(
 $('apply').onclick=()=>{
   const v=$('ctr').value.trim(),m=v.match(/(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/);
   if(v&&!m){say('รูปแบบพิกัดไม่ถูกต้อง ตัวอย่าง: 10.123456, 99.123456');return;}
-  if(m)CFG.center=[+m[2],+m[1]];
-  CFG.rotation=+$('rot').value;CFG.scale=+$('scl').value/100;
-  saveCfg();clearRoute();closeSheet();rebuild();
+  withCfg(()=>{
+    if(m)CFG.center=[+m[2],+m[1]];
+    CFG.rotation=+$('rot').value;CFG.scale=+$('scl').value/100;saveCfg();
+  });
+  $('db-rot').value=CFG.rotation;
+  clearRoute();closeSheet();rebuild();paintDraft();paintEdit();updateGrid();
   $('ctr').value=`${CFG.center[1]}, ${CFG.center[0]}`;
-  map.flyTo({center:CFG.center,zoom:18,duration:900});say('บันทึกพิกัดแล้ว');
+  if(m)map.flyTo({center:CFG.center,zoom:18,duration:900});
+  say('บันทึกค่าแล้ว');
 };
 document.querySelectorAll('.bm').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.bm').forEach(x=>x.classList.remove('on'));b.classList.add('on');
   map.getSource('base').setTiles(BASES[b.dataset.b].t);
 });
+
+/* ---------- คีย์ลัด ---------- */
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){if($('modal').classList.contains('on'))$('modal').classList.remove('on');else if(DRAW)stopDraw();}
-  if(DRAW&&(e.key==='Backspace'||(e.ctrlKey&&e.key==='z'))&&document.activeElement.tagName!=='INPUT'){pts.pop();paint();e.preventDefault();}
+  const ae=document.activeElement,typing=ae&&['INPUT','SELECT','TEXTAREA'].includes(ae.tagName)&&ae.type!=='checkbox'&&ae.type!=='range';
+  if(e.key==='Shift')SHIFT=true;
+  if(e.code==='Space'&&!typing&&(DRAW||EDITING)){if(!SPACE){SPACE=true;setPan();}e.preventDefault();return;}
+  if(e.key==='Escape'){
+    if($('modal').classList.contains('on'))$('modal').classList.remove('on');
+    else if(DRAW)stopDraw();else if(EDITING)endEdit();
+    else if(PICK){PICK=false;map.getCanvas().style.cursor='';say('ยกเลิกแล้ว');}
+    return;
+  }
+  if(typing||$('modal').classList.contains('on'))return;
+  const undo=(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z';
+  if(DRAW){
+    if(e.key==='Backspace'||undo){pts.pop();paintDraft();e.preventDefault();}
+    else if(e.key==='Enter')finishDraw();
+  }else if(EDITING){
+    if(e.key==='Delete'||e.key==='Backspace'){delVertex();e.preventDefault();}
+    else if(undo){editUndo();e.preventDefault();}
+    else if(e.key==='Enter')saveEdit();
+  }
+});
+document.addEventListener('keyup',e=>{
+  if(e.key==='Shift')SHIFT=false;
+  if(e.code==='Space'&&SPACE){SPACE=false;setPan();}
 });
 </script>
 </body>
