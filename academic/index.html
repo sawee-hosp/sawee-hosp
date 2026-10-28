@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>คลังผลงานวิชาการ | โรงพยาบาลสวี</title>
+<meta name="description" content="ผลงานวิชาการ การพัฒนาคุณภาพ งานวิจัย และนวัตกรรม โรงพยาบาลสวี">
+<link rel="icon" href="https://sawee-hosp.github.io/sawee-mr/hosp_logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0b2540;--teal:#0a8f9c;--aqua:#7fe0dc;--gold:#e5c46b;--ink:#0f2a43;--muted:#5d7083;--line:#dfe8ef;--bg:#f3f7fb}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Sarabun',Tahoma,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
+h1,h2,h3,.brand b,.year-big,.stats b,.cat b{font-family:'Prompt','Sarabun',sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}
+.hidden{display:none!important}
+.wrap{max-width:1240px;margin:auto;padding:72px 24px 0}
+.topbar{position:sticky;top:0;z-index:30;backdrop-filter:blur(14px);background:#f3f7fbd9;border-bottom:1px solid #dfe8ef99}
+.topbar .in{max-width:1240px;margin:auto;padding:10px 24px;display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:12px;margin-right:auto;cursor:pointer;background:none;border:0;padding:0;text-align:left;color:inherit}
+.brand img{width:46px;height:46px;object-fit:contain}
+.brand b{display:block;font-size:16px;line-height:1.3}.brand small{color:var(--muted);font-size:12px}
+.nav{display:flex;gap:4px}.nav button{background:none;border:0;padding:8px 14px;border-radius:10px;color:var(--ink)}
+.nav button:hover{background:#e3edf5}
+.auth{border:1px solid var(--line)!important;background:#fff!important;font-size:14px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hero{position:relative;overflow:hidden;isolation:isolate;max-width:1240px;margin:16px auto 0;border-radius:32px;color:#fff;
+background:radial-gradient(900px 420px at 85% -10%,#10707d 0,transparent 60%),linear-gradient(125deg,#06172a,#0b2540 45%,#0d4b5f);box-shadow:0 40px 80px -30px #0b254080}
+#net{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+.gridbg{position:absolute;inset:0;z-index:-2;background-image:linear-gradient(#ffffff0b 1px,transparent 1px),linear-gradient(90deg,#ffffff0b 1px,transparent 1px);background-size:48px 48px;-webkit-mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%);mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%)}
+.ring{position:absolute;border:1px solid #7fe0dc33;border-radius:50%;z-index:-1;animation:spin 40s linear infinite}
+.r1{width:520px;height:520px;right:-140px;top:-170px;border-style:dashed}.r2{width:340px;height:340px;right:-50px;top:-80px;animation-direction:reverse;animation-duration:26s}
+.r3{width:760px;height:760px;left:-320px;bottom:-520px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero-in{display:grid;grid-template-columns:1.45fr 1fr;gap:40px;align-items:center;padding:76px 56px 44px}
+.eyebrow{letter-spacing:3px;font-size:12px;font-weight:700;color:var(--aqua);text-transform:uppercase;display:flex;align-items:center;gap:10px;margin:0}
+.eyebrow:before{content:"";width:28px;height:2px;background:var(--gold)}
+h1{font-size:clamp(34px,5vw,60px);line-height:1.3;margin:16px 0}
+.shine{background:linear-gradient(90deg,#7fe0dc,#fff,#e5c46b,#7fe0dc);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s linear infinite}
+@keyframes shine{to{background-position:300% 0}}
+.intro{color:#d5e4ee;font-size:18px;max-width:560px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.btn{border:0;border-radius:14px;padding:12px 22px;font-weight:700;transition:.2s;text-decoration:none;display:inline-block}
+.btn:hover{transform:translateY(-2px)}
+.btn.primary{background:linear-gradient(135deg,#e9fbf8,#bdeee9);color:#0b3a4a;box-shadow:0 10px 30px -10px #7fe0dc}
+.btn.ghost{background:#ffffff14;color:#fff;border:1px solid #ffffff45}
+.btn.dark{background:var(--navy);color:#fff}
+.btn.line{background:#fff;color:var(--navy);border:1px solid var(--line)}
+.btn.small{padding:7px 14px;font-size:13px;border-radius:10px;background:var(--navy);color:#fff}
+.panel{background:#ffffff10;border:1px solid #ffffff2b;border-radius:24px;padding:28px;backdrop-filter:blur(14px);animation:rise .9s .15s both}
+.hero-text{animation:rise .9s both}
+@keyframes rise{from{opacity:0;transform:translateY(20px)}}
+.panel .lbl{font-size:12px;color:#bcd3e0;letter-spacing:2px}
+.year-big{font-size:76px;font-weight:700;line-height:1.1;background:linear-gradient(180deg,#fff,#9fd9e0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 20px}
+.pills button{border:1px solid #ffffff45;background:transparent;color:#fff;border-radius:999px;padding:3px 14px;font-size:13px}
+.pills button.on{background:var(--gold);border-color:var(--gold);color:#1d2a35;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;border-top:1px solid #ffffff26;padding-top:18px}
+.stats b{display:block;font-size:30px}.stats span{font-size:12px;color:#bcd3e0}
+.ticker{border-top:1px solid #ffffff1f;overflow:hidden;white-space:nowrap;padding:14px 0;color:#bcd3e0;font-size:14px}
+.ticker div{display:inline-block;animation:marq 45s linear infinite}
+.ticker span{margin:0 26px}.ticker span:before{content:"✦";color:var(--gold);margin-right:10px}
+@keyframes marq{to{transform:translateX(-50%)}}
+.sh{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.sh .eyebrow{color:var(--teal)}h2{font-size:30px;margin:6px 0 0;line-height:1.4}
+.cats{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.cat{position:relative;overflow:hidden;text-align:left;border:1px solid var(--line);background:#fff;border-radius:22px;padding:22px;transition:.25s;color:var(--ink)}
+.cat:hover,.cat.on{transform:translateY(-4px);box-shadow:0 20px 40px -20px #0b254055;border-color:var(--teal)}
+.cat .ico{width:50px;height:50px;border-radius:15px;display:grid;place-items:center;color:#fff;margin-bottom:14px}
+.cat b{display:block;font-size:16px;line-height:1.45}.cat small{color:var(--muted);font-size:11px;letter-spacing:1.5px}
+.cat .n{position:absolute;right:18px;top:12px;font-family:Prompt;font-size:34px;color:#0b25401c;font-weight:700}
+.t0{background:linear-gradient(135deg,#2a7bc0,#0b3d6b)}.t1{background:linear-gradient(135deg,#14a3a0,#0a5f6b)}
+.t2{background:linear-gradient(135deg,#e0a540,#a8641a)}.t3{background:linear-gradient(135deg,#6f6fd6,#3a3a8f)}
+.t4{background:linear-gradient(135deg,#2fb47c,#126b47)}.t5{background:linear-gradient(135deg,#8aa0b3,#4d6273)}
+.cv0{background:linear-gradient(135deg,#dcecf7,#a9c9e4)}.cv1{background:linear-gradient(135deg,#d8f1ee,#9fd6d1)}
+.cv2{background:linear-gradient(135deg,#f6ecd9,#e3c99a)}.cv3{background:linear-gradient(135deg,#e6e6f7,#c0c2ea)}
+.cv4{background:linear-gradient(135deg,#dcf2e7,#a5dcc0)}.cv5{background:linear-gradient(135deg,#e9eef2,#c9d3db)}
+.bar{display:grid;grid-template-columns:1fr 230px 170px;gap:12px}
+.search{position:relative}.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.bar input,.bar select{width:100%;height:52px;border:1px solid var(--line);border-radius:14px;padding:0 16px;background:#fff;color:var(--ink)}
+.search input{padding-left:46px}
+.deep{display:inline-flex;align-items:center;gap:8px;margin-top:12px;font-size:14px;color:var(--muted);cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 6px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 16px;font-size:14px;color:var(--ink)}
+.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}.chip i{font-style:normal;opacity:.6;margin-left:6px}
+.count{color:var(--muted);font-size:14px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.card{background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .25s,opacity .6s;display:flex;flex-direction:column}
+.card:hover,.card:focus{transform:translateY(-5px);box-shadow:0 24px 50px -24px #0b254066;outline:none}
+.thumb{position:relative;height:230px;overflow:hidden}
+.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;transition:transform .6s}
+.card:hover .thumb img{transform:scale(1.05)}
+.deco{position:absolute;width:190px;height:190px;right:-30px;bottom:-50px;border:30px solid #ffffff60;border-radius:48px;transform:rotate(28deg)}
+.big{position:absolute;left:20px;bottom:18px;color:#0b2540b0}
+.ty{position:absolute;left:14px;top:14px;background:#0b2540d0;color:#fff;font-size:12px;padding:2px 10px;border-radius:999px;z-index:1}
+.feat{position:absolute;right:14px;top:14px;background:var(--gold);color:#2a2100;font-size:12px;padding:2px 10px;border-radius:999px;font-weight:700;z-index:1}
+.body{padding:18px 20px 18px;display:flex;flex-direction:column;flex:1}
+.body .c{font-size:12px;color:var(--teal);font-weight:700}
+.body h3{font-size:17px;line-height:1.55;margin:6px 0 8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.meta{font-size:13px;color:var(--muted);margin:2px 0}
+.snip{font-size:13px;background:#fff8e1;border-radius:10px;padding:8px 10px;margin:8px 0 0}
+mark{background:#ffe08a;padding:0 2px;border-radius:3px;color:inherit}
+.foot{margin-top:auto;padding-top:12px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
+.acc{padding:2px 10px;border-radius:999px;background:#eef4f8;font-size:12px}
+.acc.verified{background:#e2f5f3;color:#0a6f78}.acc.public{background:#e6f4e8;color:#2e7d32}.acc.filename_only{background:#fbefe0;color:#9a5b12}
+.skel{height:380px;border-radius:22px;background:linear-gradient(90deg,#e9eff4,#f7fafc,#e9eff4);background-size:200% 100%;animation:sk 1.3s linear infinite}
+@keyframes sk{to{background-position:-200% 0}}
+.empty{background:#fff;border:1px dashed var(--line);border-radius:20px;padding:40px;text-align:center;color:var(--muted);grid-column:1/-1}
+.fstrip{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.rv{opacity:0;transform:translateY(24px)}.rv.in{opacity:1;transform:none}
+.modal{position:fixed;inset:0;z-index:50;background:#061423a6;backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:28px 14px;overflow:auto}
+.dlg{background:#fff;border-radius:26px;width:min(1000px,100%);overflow:hidden;animation:pop .25s ease-out}
+.dlg.small{width:min(520px,100%)}
+@keyframes pop{from{opacity:0;transform:translateY(20px) scale(.98)}}
+.dlg-head{position:relative;padding:28px 120px 22px 30px;color:#fff;background:linear-gradient(125deg,#0b2540,#0d4b5f)}
+.dlg-head h2{font-size:24px;margin:8px 0 6px}
+.hmeta{display:flex;flex-wrap:wrap;gap:6px 18px;color:#cfe2ec;font-size:14px}
+.x{position:absolute;right:16px;top:16px;width:40px;height:40px;border-radius:12px;border:0;background:#ffffff22;color:#fff;font-size:22px}
+.share{position:absolute;right:64px;top:16px;height:40px;border-radius:12px;border:0;background:#ffffff22;color:#fff;font-size:13px;padding:0 12px}
+.tabs{display:flex;gap:4px;padding:0 20px;border-bottom:1px solid var(--line);background:#f7fafc;overflow:auto}
+.tabs button{border:0;background:none;padding:14px 16px;border-bottom:3px solid transparent;color:var(--muted);font-weight:600;white-space:nowrap}
+.tabs button.on{color:var(--navy);border-color:var(--teal)}
+.pane{padding:26px 30px}
+.lead{font-size:16px;background:#f6fafc;border-left:4px solid var(--teal);padding:14px 18px;border-radius:0 14px 14px 0}
+.h3{font-size:16px;margin:22px 0 10px}
+.info{display:grid;grid-template-columns:130px 1fr;gap:8px 16px;margin:18px 0}.info dt{color:var(--muted)}.info dd{margin:0}
+.kw{display:flex;flex-wrap:wrap;gap:6px}.kw span{background:#eef5f9;border-radius:999px;padding:3px 12px;font-size:13px}
+.ov-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.lock{text-align:center;padding:44px 20px;background:linear-gradient(180deg,#f1f8fa,#fff);border-radius:20px;border:1px solid var(--line)}
+.lock .ico{width:66px;height:66px;margin:0 auto 12px;border-radius:20px;display:grid;place-items:center;background:#e2f5f3;color:var(--teal)}
+.lock p{color:var(--muted);max-width:460px;margin:6px auto 18px}
+.note{font-size:13px;color:var(--muted);background:#f4f8fb;border-radius:12px;padding:10px 14px;margin:0 0 14px}
+.find{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.find input{flex:1;height:44px;border:1px solid var(--line);border-radius:12px;padding:0 14px}
+.find span{font-size:13px;color:var(--muted);white-space:nowrap}
+.textbox{white-space:pre-wrap;font-size:15px;line-height:1.95;background:#fbfdfe;border:1px solid var(--line);border-radius:16px;padding:22px;max-height:62vh;overflow:auto}
+.doc-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;font-size:14px;color:var(--muted)}
+.viewer{width:100%;height:72vh;border:0;border-radius:14px;background:#eef3f7}
+.field{display:block;margin-bottom:14px}.field span{display:block;font-size:14px;margin-bottom:6px;color:var(--muted)}
+.field input{width:100%;height:48px;border:1px solid var(--line);border-radius:12px;padding:0 14px}
+.otp{letter-spacing:12px;text-align:center;font-size:26px!important;font-family:Prompt}
+.consent{display:flex;gap:10px;font-size:13px;color:var(--muted);margin:6px 0 16px;align-items:flex-start}
+.err{color:#b42323;font-size:14px;min-height:20px}
+.linkbtn{background:none;border:0;color:var(--teal);text-decoration:underline;padding:0;margin-top:12px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0b2540;color:#fff;padding:12px 20px;border-radius:14px;z-index:99;opacity:0;transition:.3s;pointer-events:none;max-width:90vw}
+#toast.show{opacity:1}
+.site-foot{margin-top:90px;background:#0b2540;color:#bcd3e0;padding:44px 24px;text-align:center;font-size:14px}
+.site-foot b{color:#fff;font-family:Prompt}
+@media(max-width:1000px){.cats{grid-template-columns:repeat(3,1fr)}.grid,.fstrip{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:860px){.hero-in{grid-template-columns:1fr;padding:48px 26px 30px}.hero{margin:12px 12px 0;border-radius:24px}.bar{grid-template-columns:1fr}.nav .hide-m{display:none}}
+@media(max-width:560px){.cats{grid-template-columns:repeat(2,1fr)}.grid,.fstrip{grid-template-columns:1fr}.year-big{font-size:56px}.pane{padding:20px}.info{grid-template-columns:1fr}.wrap{padding:56px 16px 0}.dlg-head{padding:70px 20px 20px}.auth{max-width:150px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="in">
+  <button class="brand" data-go="#top"><img id="logo" src="https://sawee-hosp.github.io/sawee-mr/hosp_logo.png" alt="" onerror="this.style.display='none'"><span><b id="hName">โรงพยาบาลสวี</b><small>คลังผลงานวิชาการ</small></span></button>
+  <nav class="nav"><button class="hide-m" data-go="#cats">ประเภทผลงาน</button><button class="hide-m" data-go="#gallery">สำรวจผลงาน</button><button class="auth" id="authBtn">ยืนยันอีเมล</button></nav>
+</div></header>
+
+<section class="hero" id="top">
+  <canvas id="net"></canvas><div class="gridbg"></div>
+  <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+  <div class="hero-in">
+    <div class="hero-text">
+      <p class="eyebrow">Academic Showcase</p>
+      <h1><span id="evTitle">มหกรรมวิชาการ</span><br><span class="shine" id="evSub">องค์ความรู้สู่คุณภาพการดูแล</span></h1>
+      <p class="intro" id="intro">พื้นที่รวบรวมผลงานวิชาการ การพัฒนาคุณภาพ งานวิจัย และนวัตกรรมของบุคลากรโรงพยาบาลสวี</p>
+      <div class="actions"><button class="btn primary" data-go="#gallery">สำรวจผลงานวิชาการ →</button><button class="btn ghost" data-go="#cats">ดูตามประเภท</button></div>
+    </div>
+    <aside class="panel">
+      <div class="lbl">ACADEMIC YEAR · ปีการประกวด</div>
+      <div class="year-big" id="yearBig">—</div>
+      <div class="pills" id="pills"></div>
+      <div class="stats">
+        <div><b id="stWorks">0</b><span>ผลงานที่เผยแพร่</span></div>
+        <div><b id="stDepts">0</b><span>หน่วยงานที่ร่วมส่ง</span></div>
+        <div><b id="stCats">0</b><span>ประเภทผลงาน</span></div>
+        <div><b id="stViews">0</b><span>ยอดเข้าชม</span></div>
+      </div>
+    </aside>
+  </div>
+  <div class="ticker"><div id="ticker"></div></div>
+</section>
+
+<section class="wrap" id="cats">
+  <div class="sh"><div><p class="eyebrow">Categories</p><h2>ประเภทผลงาน</h2></div></div>
+  <div class="cats" id="catGrid"></div>
+</section>
+
+<section class="wrap hidden" id="featSec">
+  <div class="sh"><div><p class="eyebrow">Featured</p><h2>ผลงานเด่น</h2></div></div>
+  <div class="fstrip" id="featured"></div>
+</section>
+
+<section class="wrap" id="gallery">
+  <div class="sh"><div><p class="eyebrow">Explore the collection</p><h2>ผลงานวิชาการ</h2></div></div>
+  <div class="bar">
+    <label class="search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="ค้นหาชื่อผลงาน ผู้จัดทำ หน่วยงาน หรือคำสำคัญ"></label>
+    <select id="dept"><option value="">ทุกหน่วยงาน</option></select>
+    <select id="sort"><option value="rec">เรียง: แนะนำ</option><option value="title">เรียง: ชื่อ ก-ฮ</option><option value="views">เรียง: ยอดเข้าชม</option></select>
+  </div>
+  <label class="deep"><input type="checkbox" id="deep"> ค้นในเนื้อหาเอกสารด้วย (ข้อความจาก OCR)</label>
+  <div class="chips" id="chips"></div>
+  <p class="count" id="count">กำลังโหลด…</p>
+  <div class="grid" id="grid"></div>
+</section>
+
+<footer class="site-foot"><b id="fName">โรงพยาบาลสวี</b><br>คลังผลงานวิชาการ การพัฒนาคุณภาพ งานวิจัย และนวัตกรรม<br><small id="fContact"></small></footer>
+
+<div class="modal hidden" id="workModal"><div class="dlg">
+  <div class="dlg-head"><button class="share" id="shareBtn">คัดลอกลิงก์</button><button class="x" data-close aria-label="ปิด">×</button><div id="wHead"></div></div>
+  <div class="tabs" id="wTabs"></div>
+  <div class="pane" id="wPane"></div>
+</div></div>
+
+<div class="modal hidden" id="verifyModal"><div class="dlg small">
+  <div class="dlg-head"><button class="x" data-close aria-label="ปิด">×</button><p class="eyebrow">Verify email</p><h2>ยืนยันอีเมลเพื่ออ่านผลงานฉบับเต็ม</h2></div>
+  <div class="pane">
+    <form id="vStep1">
+      <label class="field"><span>อีเมล *</span><input id="vEmail" type="email" required autocomplete="email"></label>
+      <label class="field"><span>ชื่อ-สกุล (ไม่บังคับ)</span><input id="vName" maxlength="80"></label>
+      <label class="field"><span>หน่วยงาน/สถานที่ทำงาน (ไม่บังคับ)</span><input id="vOrg" maxlength="120"></label>
+      <label class="consent"><input type="checkbox" id="vConsent" required> ข้าพเจ้ายินยอมให้โรงพยาบาลเก็บอีเมลและข้อมูลข้างต้น เพื่อยืนยันการเข้าถึงผลงานและจัดทำสถิติการใช้งาน</label>
+      <p class="err" id="vErr1"></p>
+      <button class="btn dark" id="vSend" style="width:100%">ส่งรหัสยืนยันไปที่อีเมล</button>
+    </form>
+    <form id="vStep2" class="hidden">
+      <p>ส่งรหัส 6 หลักไปที่ <b id="vTo"></b> แล้ว (หากไม่พบ ให้ดูในโฟลเดอร์สแปม)</p>
+      <label class="field"><input id="vCode" class="otp" inputmode="numeric" maxlength="6" autocomplete="one-time-code" required></label>
+      <p class="err" id="vErr2"></p>
+      <button class="btn dark" id="vOk" style="width:100%">ยืนยัน</button>
+      <button type="button" class="linkbtn" id="vBack">เปลี่ยนอีเมล / ขอรหัสใหม่</button>
+    </form>
+  </div>
+</div></div>
+<div id="toast"></div>
+
+<script>
+/* ================= ตั้งค่า =================
+ * URL ของ Apps Script Web app (ต้องลงท้ายด้วย /exec)
+ * ถ้าสร้าง Deployment ใหม่ URL จะเปลี่ยน ต้องแก้บรรทัดนี้ด้วย
+ * ========================================= */
+const API_URL = 'https://script.google.com/macros/s/AKfycbyoNAS-hUagvEiykv75HiZQavQ-8QoLWfnbmYph1yBaZj364mGXy8VuhMssaZGusQAUaA/exec';
+
+const CATS=['ระดับทีม/หน่วยงาน','CQI','Photo voice','วิจัยและ R2R','นวัตกรรม'];
+const CAT_EN={'ระดับทีม/หน่วยงาน':'TEAM / UNIT','CQI':'CONTINUOUS QI','Photo voice':'PHOTO VOICE','วิจัยและ R2R':'RESEARCH & R2R','นวัตกรรม':'INNOVATION'};
+const ACC={filename_only:'เผยแพร่เฉพาะชื่อไฟล์',metadata:'ข้อมูลเบื้องต้น',verified:'ยืนยันอีเมลเพื่ออ่าน',public:'อ่านได้ทันที'};
+const ICONS={
+ 'ระดับทีม/หน่วยงาน':'<path d="M16 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1"/><circle cx="9" cy="7" r="4"/><path d="M22 19v-1a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+ 'CQI':'<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/><path d="m9 12 2 2 4-4"/>',
+ 'Photo voice':'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+ 'วิจัยและ R2R':'<path d="M9 3h6M10 3v6L4.5 19.5A1 1 0 0 0 5.4 21h13.2a1 1 0 0 0 .9-1.5L14 9V3"/><path d="M7 15h10"/>',
+ 'นวัตกรรม':'<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2V18h6v-1.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/>'
+};
+const EYE='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+const LOCK='<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+const S={works:[],settings:{},year:'',cat:'',dept:'',q:'',sort:'rec',deep:false,hits:null,session:'',email:'',visitor:'',current:null,detail:null,opened:{}};
+const mem={};
+const store={
+  get:function(k){try{return localStorage.getItem(k);}catch(e){return mem[k]||null;}},
+  set:function(k,v){try{localStorage.setItem(k,v);}catch(e){mem[k]=v;}},
+  del:function(k){try{localStorage.removeItem(k);}catch(e){delete mem[k];}}
+};
+
+function Q(s){return document.querySelector(s);}
+function api(action,data){
+  const body=JSON.stringify(Object.assign({action:action},data||{}));
+  return fetch(API_URL,{method:'POST',body:body,redirect:'follow'})
+    .catch(function(){throw new Error('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาตรวจอินเทอร์เน็ต หรือแจ้งผู้ดูแลระบบ');})
+    .then(function(r){if(!r.ok)throw new Error('เซิร์ฟเวอร์ตอบกลับผิดพลาด (HTTP '+r.status+')');return r.json();})
+    .then(function(j){if(!j||!j.ok)throw new Error((j&&j.error)||'เกิดข้อผิดพลาด');return j.data;});
+}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function norm(s){return String(s||'').normalize('NFC').toLowerCase();}
+function terms(){return norm(S.q).trim().split(/\s+/).filter(Boolean);}
+function reEsc(s){return s.replace(/[.*+?^{}()|[\]\\\x24]/g,function(c){return '\\'+c;});}
+function hl(t,list){
+  list=list||terms();
+  const s=esc(t);
+  if(!list.length)return s;
+  const re=new RegExp('('+list.map(function(x){return reEsc(esc(x));}).join('|')+')','gi');
+  return s.replace(re,function(m){return '<mark>'+m+'</mark>';});
+}
+function icon(c,n){return '<svg width="'+(n||24)+'" height="'+(n||24)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+(ICONS[c]||ICONS['นวัตกรรม'])+'</svg>';}
+function catIdx(c){const i=CATS.indexOf(c);return i<0?5:i;}
+function toast(m){const t=Q('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},3500);}
+function errMsg(e){return String((e&&e.message)||e||'เกิดข้อผิดพลาด');}
+function th(n){return Number(n||0).toLocaleString('th-TH');}
+function imgFallback(img){
+  if(!img.dataset.f){img.dataset.f='1';img.src='https://lh3.googleusercontent.com/d/'+img.dataset.fid+'=w800';}
+  else{img.remove();}
+}
+
+window.addEventListener('load',init);
+async function init(){
+  S.visitor=store.get('sv_vid');
+  if(!S.visitor){S.visitor='v'+Math.random().toString(36).slice(2)+Date.now().toString(36);store.set('sv_vid',S.visitor);}
+  S.session=store.get('sv_ses')||'';
+  startNet();bindUI();renderSkeleton();renderAuth();
+  try{
+    const data=await api('catalog');
+    S.works=data.works||[];S.settings=data.settings||{};
+    applySettings();
+    const ys=years();
+    S.year=ys.indexOf(String(S.settings.defaultYear))>=0?String(S.settings.defaultYear):(ys[0]||'');
+    renderAll();
+    const wid=new URLSearchParams(location.search).get('work');
+    if(wid)openWork(wid);
+  }catch(e){
+    Q('#grid').innerHTML='<div class="empty">โหลดข้อมูลไม่สำเร็จ: '+esc(errMsg(e))+'</div>';
+    Q('#count').textContent='';
+  }
+  if(S.session){
+    api('session',{session:S.session}).then(function(r){
+      if(r.valid){S.email=r.email;}else{S.session='';store.del('sv_ses');}
+      renderAuth();
+    }).catch(function(){});
+  }
+}
+function applySettings(){
+  const s=S.settings;
+  if(s.logoUrl){Q('#logo').src=s.logoUrl;}
+  if(s.hospitalName){Q('#hName').textContent=s.hospitalName;Q('#fName').textContent=s.hospitalName;document.title='คลังผลงานวิชาการ | '+s.hospitalName;}
+  if(s.eventTitle)Q('#evTitle').textContent=s.eventTitle;
+  if(s.eventSubtitle)Q('#evSub').textContent=s.eventSubtitle;
+  if(s.intro)Q('#intro').textContent=s.intro;
+  Q('#fContact').textContent=s.contactEmail?('ติดต่อ: '+s.contactEmail):'';
+}
+function bindUI(){
+  document.addEventListener('click',function(e){
+    const go=e.target.closest('[data-go]');
+    if(go){const el=document.querySelector(go.dataset.go);if(el)el.scrollIntoView({behavior:'smooth'});}
+    const cl=e.target.closest('[data-close]');
+    if(cl)closeModal(cl.closest('.modal'));
+    if(e.target.classList.contains('modal'))closeModal(e.target);
+    const v=e.target.closest('[data-verify]');
+    if(v)openVerify();
+    const tg=e.target.closest('[data-tab-go]');
+    if(tg)renderWork(tg.dataset.tabGo);
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape')document.querySelectorAll('.modal:not(.hidden)').forEach(closeModal);
+    if(e.key==='Enter'&&e.target.dataset&&e.target.dataset.id)openWork(e.target.dataset.id);
+  });
+  Q('#q').addEventListener('input',function(e){S.q=e.target.value;if(S.deep)deepSearch();renderGrid();});
+  Q('#dept').addEventListener('change',function(e){S.dept=e.target.value;renderGrid();});
+  Q('#sort').addEventListener('change',function(e){S.sort=e.target.value;renderGrid();});
+  Q('#deep').addEventListener('change',function(e){S.deep=e.target.checked;S.hits=null;if(S.deep)deepSearch();renderGrid();});
+  ['#grid','#featured'].forEach(function(sel){
+    Q(sel).addEventListener('click',function(e){const c=e.target.closest('[data-id]');if(c)openWork(c.dataset.id);});
+  });
+  Q('#wTabs').addEventListener('click',function(e){const b=e.target.closest('[data-tab]');if(b)renderWork(b.dataset.tab);});
+  Q('#shareBtn').addEventListener('click',copyLink);
+  Q('#authBtn').addEventListener('click',function(){
+    if(S.session){
+      api('logout',{session:S.session}).catch(function(){});
+      S.session='';S.email='';store.del('sv_ses');renderAuth();toast('ออกจากระบบแล้ว');
+    }else openVerify();
+  });
+  Q('#vStep1').addEventListener('submit',sendOtp);
+  Q('#vStep2').addEventListener('submit',checkOtp);
+  Q('#vBack').addEventListener('click',function(){Q('#vStep2').classList.add('hidden');Q('#vStep1').classList.remove('hidden');});
+}
+function renderAuth(){Q('#authBtn').textContent=S.session?('✓ '+(S.email||'ยืนยันแล้ว')+' · ออก'):'ยืนยันอีเมล';}
+function years(){return Array.from(new Set(S.works.map(function(w){return w.year;}).filter(Boolean))).sort(function(a,b){return Number(b)-Number(a);});}
+function yearWorks(){return S.works.filter(function(w){return !S.year||w.year===S.year;});}
+
+function renderAll(){renderYears();renderStats();renderCats();renderFeatured();renderDepts();renderGrid();renderTicker();}
+function renderYears(){
+  const ys=years();
+  Q('#yearBig').textContent=S.year||'ทุกปี';
+  Q('#pills').innerHTML=ys.map(function(y){return '<button data-y="'+esc(y)+'" class="'+(y===S.year?'on':'')+'">'+esc(y)+'</button>';}).join('')+
+    '<button data-y="" class="'+(!S.year?'on':'')+'">ทุกปี</button>';
+  Q('#pills').onclick=function(e){
+    const b=e.target.closest('[data-y]');if(!b)return;
+    S.year=b.dataset.y;S.dept='';S.hits=null;renderAll();if(S.deep)deepSearch();
+  };
+}
+function countTo(el,n){
+  const s=Number(el.dataset.v||0);el.dataset.v=n;const t0=performance.now();
+  function step(t){const k=Math.min(1,(t-t0)/900);el.textContent=th(Math.round(s+(n-s)*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(step);}
+  requestAnimationFrame(step);
+}
+function renderStats(){
+  const ws=yearWorks();
+  countTo(Q('#stWorks'),ws.length);
+  countTo(Q('#stDepts'),new Set(ws.map(function(w){return w.department;}).filter(Boolean)).size);
+  countTo(Q('#stCats'),new Set(ws.map(function(w){return w.category;})).size);
+  countTo(Q('#stViews'),ws.reduce(function(a,w){return a+(w.views||0);},0));
+}
+function renderCats(){
+  const ws=yearWorks();
+  Q('#catGrid').innerHTML=CATS.map(function(c,i){
+    return '<button class="cat'+(S.cat===c?' on':'')+'" data-cat="'+esc(c)+'"><span class="n">'+ws.filter(function(w){return w.category===c;}).length+
+      '</span><span class="ico t'+i+'">'+icon(c,26)+'</span><small>'+CAT_EN[c]+'</small><b>'+esc(c)+'</b></button>';
+  }).join('');
+  Q('#catGrid').onclick=function(e){
+    const b=e.target.closest('[data-cat]');if(!b)return;
+    S.cat=S.cat===b.dataset.cat?'':b.dataset.cat;renderCats();renderGrid();
+    Q('#gallery').scrollIntoView({behavior:'smooth'});
+  };
+}
+function renderFeatured(){
+  const f=yearWorks().filter(function(w){return w.featured;}).slice(0,6);
+  Q('#featSec').classList.toggle('hidden',!f.length);
+  Q('#featured').innerHTML=f.map(card).join('');observe();
+}
+function renderDepts(){
+  const ds=Array.from(new Set(yearWorks().map(function(w){return w.department;}).filter(Boolean))).sort(function(a,b){return a.localeCompare(b,'th');});
+  if(ds.indexOf(S.dept)<0)S.dept='';
+  Q('#dept').innerHTML='<option value="">ทุกหน่วยงาน</option>'+ds.map(function(d){return '<option'+(d===S.dept?' selected':'')+'>'+esc(d)+'</option>';}).join('');
+}
+function renderTicker(){
+  const items=['ผลงานวิชาการ '+(S.year||'')].concat(CATS,[S.settings.hospitalName||'']);
+  const html=items.map(function(x){return '<span>'+esc(x)+'</span>';}).join('');
+  Q('#ticker').innerHTML=html+html+html+html;
+}
+function filtered(){
+  const ts=terms();
+  let list=yearWorks().filter(function(w){return (!S.cat||w.category===S.cat)&&(!S.dept||w.department===S.dept);});
+  if(ts.length){
+    list=list.filter(function(w){
+      const hay=norm([w.title,w.authors,w.department,w.keywords,w.summary,w.category].join(' '));
+      return ts.every(function(t){return hay.indexOf(t)>=0;})||(S.deep&&S.hits&&S.hits.has(w.id));
+    });
+  }
+  const by={
+    rec:function(a,b){return (b.featured-a.featured)||a.title.localeCompare(b.title,'th');},
+    title:function(a,b){return a.title.localeCompare(b.title,'th');},
+    views:function(a,b){return (b.views||0)-(a.views||0);}
+  };
+  return list.sort(by[S.sort]||by.rec);
+}
+function renderChips(){
+  const ws=yearWorks();
+  Q('#chips').innerHTML=[''].concat(CATS).map(function(c){
+    return '<button class="chip'+(S.cat===c?' on':'')+'" data-c="'+esc(c)+'">'+(c?esc(c):'ทั้งหมด')+'<i>'+ws.filter(function(w){return !c||w.category===c;}).length+'</i></button>';
+  }).join('');
+  Q('#chips').onclick=function(e){const b=e.target.closest('[data-c]');if(!b)return;S.cat=b.dataset.c;renderCats();renderGrid();};
+}
+function card(w){
+  const i=catIdx(w.category);
+  const snip=S.deep&&S.hits&&S.hits.get(w.id);
+  const fid=encodeURIComponent(w.thumb||'');
+  const img=w.thumb?'<img loading="lazy" alt="" data-fid="'+fid+'" src="https://drive.google.com/thumbnail?id='+fid+'&sz=w800" onerror="imgFallback(this)">':'';
+  return '<article class="card rv" tabindex="0" data-id="'+esc(w.id)+'"><div class="thumb cv'+i+'"><span class="deco"></span><span class="big">'+icon(w.category,46)+'</span>'+img+
+    '<span class="ty">'+esc(w.year)+'</span>'+(w.featured?'<span class="feat">ผลงานเด่น</span>':'')+'</div><div class="body"><span class="c">'+esc(w.category)+'</span><h3>'+hl(w.title)+'</h3>'+
+    (w.department?'<p class="meta">'+hl(w.department)+'</p>':'')+(w.authors?'<p class="meta">'+hl(w.authors)+'</p>':'')+
+    (snip?'<p class="snip">…'+hl(snip)+'…</p>':'')+
+    '<div class="foot"><span class="acc '+esc(w.access)+'">'+(ACC[w.access]||'')+'</span><span>'+EYE+' '+th(w.views)+'</span></div></div></article>';
+}
+function renderSkeleton(){Q('#grid').innerHTML='<div class="skel"></div><div class="skel"></div><div class="skel"></div>';}
+function renderGrid(){
+  renderChips();
+  const list=filtered();
+  Q('#count').textContent='พบ '+th(list.length)+' รายการ'+(S.year?' ในปี '+S.year:'');
+  Q('#grid').innerHTML=list.length?list.map(card).join(''):
+    '<div class="empty">'+(S.works.length?'ไม่พบผลงานตามเงื่อนไข ลองเปลี่ยนคำค้นหรือตัวกรอง':'ยังไม่มีผลงานที่เผยแพร่')+'</div>';
+  observe();
+}
+let io;
+function observe(){
+  const els=document.querySelectorAll('.rv:not(.in)');
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});return;}
+  if(!io)io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}});},{threshold:.08});
+  els.forEach(function(e,i){e.style.transitionDelay=Math.min(i%6,5)*60+'ms';io.observe(e);});
+}
+let deepT;
+function deepSearch(){
+  clearTimeout(deepT);
+  const q=S.q.trim();
+  if(q.length<2){S.hits=null;return;}
+  deepT=setTimeout(async function(){
+    Q('#count').textContent='กำลังค้นในเนื้อหาเอกสาร…';
+    try{
+      const r=await api('search',{q:q,session:S.session});
+      if(q!==S.q.trim())return;
+      S.hits=new Map(r.map(function(x){return [x.id,x.snippet];}));
+    }catch(e){S.hits=new Map();}
+    renderGrid();
+  },500);
+}
+
+/* ---------- รายละเอียดผลงาน ---------- */
+function showModal(m){m.classList.remove('hidden');document.body.style.overflow='hidden';}
+function closeModal(m){
+  if(!m)return;
+  m.classList.add('hidden');
+  if(m.id==='workModal'){
+    Q('#wPane').innerHTML='';S.current=null;
+    try{history.replaceState(null,'',location.pathname);}catch(e){}
+  }
+  if(!document.querySelector('.modal:not(.hidden)'))document.body.style.overflow='';
+}
+async function openWork(id,tab){
+  S.current=id;showModal(Q('#workModal'));
+  try{history.replaceState(null,'',location.pathname+'?work='+encodeURIComponent(id));}catch(e){}
+  Q('#wHead').innerHTML='<p class="eyebrow">กำลังโหลด…</p>';Q('#wTabs').innerHTML='';
+  Q('#wPane').innerHTML='<p class="note">กำลังโหลดข้อมูลผลงาน…</p>';
+  try{S.detail=await api('work',{id:id,session:S.session,visitor:S.visitor});renderWork(tab||'overview');}
+  catch(e){Q('#wPane').innerHTML='<div class="lock"><h3>เปิดผลงานไม่ได้</h3><p>'+esc(errMsg(e))+'</p></div>';}
+}
+function copyLink(){
+  const url=location.href;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(function(){toast('คัดลอกลิงก์ผลงานแล้ว');}).catch(function(){prompt('คัดลอกลิงก์นี้',url);});
+  }else prompt('คัดลอกลิงก์นี้',url);
+}
+function renderWork(tab){
+  const w=S.detail;if(!w)return;
+  Q('#wHead').innerHTML='<p class="eyebrow">'+esc(CAT_EN[w.category]||w.category)+' · '+esc(w.year)+'</p><h2>'+esc(w.title)+'</h2><div class="hmeta">'+
+    (w.department?'<span>หน่วยงาน: '+esc(w.department)+'</span>':'')+(w.authors?'<span>ผู้จัดทำ: '+esc(w.authors)+'</span>':'')+'</div>';
+  Q('#wTabs').innerHTML=[['overview','ภาพรวม'],['text','อ่านเนื้อหา'],['doc','ดูเอกสาร / โปสเตอร์']].map(function(t){
+    return '<button data-tab="'+t[0]+'" class="'+(t[0]===tab?'on':'')+'">'+t[1]+'</button>';
+  }).join('');
+  const p=Q('#wPane');
+  if(tab==='overview'){p.innerHTML=overviewHtml(w);return;}
+  const gate=gateHtml(w);
+  if(gate){p.innerHTML=gate;return;}
+  if(tab==='text')renderText(w);else renderDoc(w);
+}
+function lockBox(t,d,btn){
+  return '<div class="lock"><div class="ico">'+LOCK+'</div><h3>'+esc(t)+'</h3><p>'+esc(d)+'</p>'+(btn?'<button class="btn dark" data-verify>ยืนยันอีเมล</button>':'')+'</div>';
+}
+function gateHtml(w){
+  if(w.access==='filename_only')return lockBox('ผลงานนี้เผยแพร่เฉพาะชื่อไฟล์','เพื่อคุ้มครองข้อมูลส่วนบุคคลตาม PDPA เนื้อหาและภาพในเอกสารจึงไม่เปิดเผยต่อสาธารณะ');
+  if(w.access==='metadata')return lockBox('ผลงานนี้เผยแพร่เฉพาะข้อมูลเบื้องต้น','หากต้องการรายละเอียดเพิ่มเติม กรุณาติดต่อเจ้าของผลงานหรือโรงพยาบาล'+(S.settings.contactEmail?' ('+S.settings.contactEmail+')':''));
+  if(w.needVerify)return lockBox('ยืนยันอีเมลเพื่ออ่านฉบับเต็ม','ใช้เวลาไม่ถึง 1 นาที ระบบจะส่งรหัส 6 หลักไปที่อีเมลของคุณ ยืนยันครั้งเดียวใช้ได้ 30 วัน',true);
+  return '';
+}
+function overviewHtml(w){
+  const kw=(w.keywords||'').split(/[,，]/).map(function(x){return x.trim();}).filter(Boolean);
+  return (w.summary?'<h3 class="h3">บทสรุป</h3><p class="lead">'+esc(w.summary)+'</p>':'')+
+    '<dl class="info"><dt>ประเภทผลงาน</dt><dd>'+esc(w.category)+'</dd><dt>ปีการประกวด</dt><dd>'+esc(w.year)+'</dd>'+
+    (w.department?'<dt>หน่วยงาน</dt><dd>'+esc(w.department)+'</dd>':'')+(w.authors?'<dt>ผู้จัดทำ</dt><dd>'+esc(w.authors)+'</dd>':'')+
+    '<dt>การเข้าถึง</dt><dd><span class="acc '+esc(w.access)+'">'+(ACC[w.access]||'')+'</span></dd></dl>'+
+    (kw.length?'<h3 class="h3">คำสำคัญ</h3><div class="kw">'+kw.map(function(k){return '<span>'+esc(k)+'</span>';}).join('')+'</div>':'')+
+    '<div class="ov-actions">'+(w.canRead?'<button class="btn dark" data-tab-go="text">อ่านเนื้อหา</button><button class="btn line" data-tab-go="doc">ดูเอกสาร</button>':
+    (w.needVerify?'<button class="btn dark" data-verify>ยืนยันอีเมลเพื่ออ่านฉบับเต็ม</button>':''))+'</div>';
+}
+function renderText(w){
+  const p=Q('#wPane');
+  if(!w.text){
+    p.innerHTML='<div class="lock"><h3>ยังไม่มีข้อความจากเอกสาร</h3><p>ระบบอาจยังประมวลผลไม่เสร็จ หรืออ่านข้อความจากไฟล์นี้ไม่ได้ กรุณาดูที่แท็บเอกสาร</p></div>';
+    return;
+  }
+  p.innerHTML='<p class="note">ข้อความนี้แปลงจากไฟล์ด้วยระบบ OCR อัตโนมัติ อาจมีคำผิดหรือลำดับคลาดเคลื่อน โปรดอ้างอิงตัวเลขและตารางจากเอกสารต้นฉบับ</p>'+
+    '<div class="find"><input id="tFind" type="search" placeholder="ค้นหาคำในเนื้อหานี้" value="'+esc(S.q)+'"><span id="tCount"></span></div><div class="textbox" id="tBox"></div>';
+  function draw(jump){
+    const q=norm(Q('#tFind').value).trim();
+    const list=q?q.split(/\s+/):[];
+    Q('#tBox').innerHTML=hl(w.text,list);
+    const marks=Q('#tBox').querySelectorAll('mark');
+    Q('#tCount').textContent=list.length?('พบ '+marks.length+' ตำแหน่ง'):'';
+    if(jump&&marks[0])marks[0].scrollIntoView({block:'center'});
+  }
+  Q('#tFind').addEventListener('input',function(){draw(true);});
+  draw(false);
+}
+function renderDoc(w){
+  const p=Q('#wPane');
+  if(!w.viewerUrl){
+    p.innerHTML='<div class="lock"><h3>ยังไม่มีเอกสารสำหรับเปิดดู</h3><p>ผู้ดูแลระบบยังไม่ได้เตรียมไฟล์สำหรับแสดงผล</p></div>';
+    return;
+  }
+  const kind=w.kind==='image'?'ภาพ':(w.kind==='doc'?'เอกสาร':'PDF');
+  p.innerHTML='<div class="doc-bar"><span>'+kind+' · เปิดดูผ่าน Google Drive</span><span><a class="btn small" href="'+esc(w.openUrl)+'" target="_blank" rel="noopener">เปิดเต็มจอ ↗</a> '+
+    (w.downloadUrl?'<a class="btn small" href="'+esc(w.downloadUrl)+'" target="_blank" rel="noopener">ดาวน์โหลด</a>':'')+'</span></div>'+
+    '<iframe class="viewer" src="'+esc(w.viewerUrl)+'" allow="autoplay; fullscreen"></iframe><p class="note" style="margin-top:12px">ไฟล์ขนาดใหญ่อาจใช้เวลาโหลดสักครู่</p>';
+  if(!S.opened[w.id]){S.opened[w.id]=1;api('open',{id:w.id,session:S.session,visitor:S.visitor}).catch(function(){});}
+}
+
+/* ---------- ยืนยันอีเมล ---------- */
+function openVerify(){
+  Q('#vStep1').classList.remove('hidden');Q('#vStep2').classList.add('hidden');
+  Q('#vErr1').textContent='';Q('#vErr2').textContent='';
+  showModal(Q('#verifyModal'));setTimeout(function(){Q('#vEmail').focus();},100);
+}
+async function sendOtp(e){
+  e.preventDefault();
+  const b=Q('#vSend');b.disabled=true;b.textContent='กำลังส่ง…';Q('#vErr1').textContent='';
+  try{
+    await api('requestOtp',{email:Q('#vEmail').value,name:Q('#vName').value,org:Q('#vOrg').value});
+    Q('#vTo').textContent=Q('#vEmail').value;
+    Q('#vStep1').classList.add('hidden');Q('#vStep2').classList.remove('hidden');
+    Q('#vCode').value='';Q('#vCode').focus();
+  }catch(err){Q('#vErr1').textContent=errMsg(err);}
+  finally{b.disabled=false;b.textContent='ส่งรหัสยืนยันไปที่อีเมล';}
+}
+async function checkOtp(e){
+  e.preventDefault();
+  const b=Q('#vOk');b.disabled=true;Q('#vErr2').textContent='';
+  try{
+    const r=await api('verifyOtp',{email:Q('#vEmail').value,code:Q('#vCode').value});
+    S.session=r.token;S.email=r.email;store.set('sv_ses',r.token);renderAuth();
+    closeModal(Q('#verifyModal'));toast('ยืนยันอีเมลสำเร็จ อ่านผลงานฉบับเต็มได้แล้ว');
+    if(S.current)openWork(S.current,'text');
+  }catch(err){Q('#vErr2').textContent=errMsg(err);}
+  finally{b.disabled=false;}
+}
+
+/* ---------- Animation เครือข่ายองค์ความรู้ ---------- */
+function startNet(){
+  const cv=Q('#net'),ctx=cv.getContext('2d');if(!ctx)return;
+  const rm=window.matchMedia('(prefers-reduced-motion: reduce)').matches,dpr=Math.min(window.devicePixelRatio||1,2);
+  let W=0,H=0,P=[];const mouse={x:-999,y:-999};
+  function size(){
+    const r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+    const n=Math.min(90,Math.max(28,Math.floor(W*H/12000)));
+    P=Array.from({length:n},function(){return {x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*1.8+.8};});
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    if(!rm)P.forEach(function(p){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;});
+    for(let i=0;i<P.length;i++){
+      for(let j=i+1;j<P.length;j++){
+        const a=P[i],b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+        if(d<140){ctx.strokeStyle='rgba(127,224,220,'+(.24*(1-d/140)).toFixed(3)+')';ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
+      }
+      const dm=Math.hypot(P[i].x-mouse.x,P[i].y-mouse.y);
+      if(dm<180){ctx.strokeStyle='rgba(229,196,107,'+(.55*(1-dm/180)).toFixed(3)+')';ctx.beginPath();ctx.moveTo(P[i].x,P[i].y);ctx.lineTo(mouse.x,mouse.y);ctx.stroke();}
+    }
+    ctx.fillStyle='rgba(220,248,245,.85)';
+    P.forEach(function(p){ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();});
+    if(!rm)requestAnimationFrame(draw);
+  }
+  const hero=cv.parentElement;
+  hero.addEventListener('mousemove',function(e){const r=cv.getBoundingClientRect();mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top;});
+  hero.addEventListener('mouseleave',function(){mouse.x=-999;mouse.y=-999;});
+  size();draw();
+  window.addEventListener('resize',function(){size();if(rm)draw();});
+}
+</script>
+</body>
+</html>
