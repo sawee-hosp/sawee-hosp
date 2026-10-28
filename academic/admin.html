@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin · คลังผลงานวิชาการ</title>
+<meta name="robots" content="noindex,nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0b2540;--teal:#0a8f9c;--gold:#e5c46b;--ink:#0f2a43;--muted:#5d7083;--line:#dfe8ef;--bg:#f3f7fb;--red:#b42323;--green:#2e7d32}
+*{box-sizing:border-box}body{margin:0;font-family:'Sarabun',Tahoma,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+h1,h2,h3{font-family:'Prompt',sans-serif;margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}
+.hidden{display:none!important}
+a{color:var(--teal)}
+.login{min-height:100vh;display:grid;place-items:center;background:linear-gradient(125deg,#06172a,#0b2540 50%,#0d4b5f)}
+.login-card{background:#fff;padding:36px;border-radius:24px;width:min(380px,92vw);text-align:center}
+.login-card img{width:64px;height:64px;object-fit:contain}
+.login-card input{width:100%;height:48px;border:1px solid var(--line);border-radius:12px;padding:0 14px;margin:18px 0 12px}
+.btn{border:0;border-radius:12px;padding:10px 18px;font-weight:600;background:#e9f0f5;color:var(--ink);transition:.15s}
+.btn:hover{filter:brightness(.96)}.btn.primary{background:var(--navy);color:#fff}.btn.teal{background:var(--teal);color:#fff}
+.btn.gold{background:var(--gold);color:#2a2100}.btn.danger{background:#fde8e8;color:var(--red)}.btn.sm{padding:6px 12px;font-size:13px;border-radius:9px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.err{color:var(--red);font-size:14px;min-height:20px}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.side{background:var(--navy);color:#cfe0ea;padding:22px 14px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh}
+.side .brand{display:flex;gap:10px;align-items:center;padding:0 8px 18px;color:#fff}.side .brand img{width:38px;height:38px;object-fit:contain}
+.side nav button{display:block;width:100%;text-align:left;background:none;border:0;color:#cfe0ea;padding:11px 14px;border-radius:10px}
+.side nav button.on,.side nav button:hover{background:#ffffff18;color:#fff}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:8px}.side-foot a{color:#9fe3df;font-size:14px;padding:0 14px}
+.side-foot button{background:#ffffff14;border:0;color:#fff;border-radius:10px;padding:9px}
+.main{padding:28px 32px 60px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.top h2{font-size:24px}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px}
+.card h3{font-size:16px;margin-bottom:12px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}.kpi b{display:block;font-family:Prompt;font-size:28px}
+.kpi span{font-size:13px;color:var(--muted)}.kpi.warn b{color:#b26a00}.kpi.bad b{color:var(--red)}.kpi.good b{color:var(--green)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.bars .b{display:grid;grid-template-columns:150px 1fr 110px;gap:10px;align-items:center;font-size:14px;margin:8px 0}
+.track{height:12px;background:#eef3f7;border-radius:99px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,var(--teal),#5fd0c8);border-radius:99px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:13px;background:#f8fbfd;position:sticky;top:0;z-index:1}
+tr.click{cursor:pointer}tr.click:hover td{background:#f6fafc}
+.tag{display:inline-block;font-size:12px;padding:1px 9px;border-radius:99px;background:#eef3f7;margin:1px 2px 1px 0;white-space:nowrap}
+.tag.ok{background:#e6f4e8;color:var(--green)}.tag.wait{background:#fff4e0;color:#9a5b12}.tag.bad{background:#fde8e8;color:var(--red)}.tag.info{background:#e2f5f3;color:#0a6f78}
+input.in,select.in,textarea.in{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:#fff}
+textarea.in{min-height:90px;resize:vertical}
+label.f{display:block;margin-bottom:12px}label.f span{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.grid3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.checks{display:flex;gap:18px;flex-wrap:wrap;margin:6px 0 14px}.checks label{display:flex;gap:6px;align-items:center;font-size:14px}
+.muted{color:var(--muted);font-size:13px}
+.drawer{position:fixed;inset:0;background:#06142380;z-index:40;display:flex;justify-content:flex-end}
+.drawer .panel{background:#fff;width:min(720px,100%);height:100%;overflow:auto;padding:26px;animation:slide .2s ease-out}
+@keyframes slide{from{transform:translateX(40px);opacity:0}}
+.infobox{background:#f6f9fb;border-radius:12px;padding:12px 14px;font-size:13px;margin-bottom:14px}
+.busy{position:fixed;inset:0;background:#061423b3;z-index:90;display:grid;place-items:center;color:#fff;text-align:center;padding:20px}
+.spin{width:46px;height:46px;border:4px solid #ffffff40;border-top-color:#fff;border-radius:50%;animation:sp 1s linear infinite;margin:0 auto 14px}@keyframes sp{to{transform:rotate(360deg)}}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 20px;border-radius:12px;z-index:99;opacity:0;transition:.3s;pointer-events:none;max-width:90vw}
+#toast.show{opacity:1}#toast.bad{background:var(--red)}
+.scroll{overflow:auto;max-height:65vh}
+@media(max-width:900px){.app{grid-template-columns:1fr}.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap}.side nav{display:flex;flex-wrap:wrap}.two,.grid3,.grid2{grid-template-columns:1fr}.main{padding:18px}.bars .b{grid-template-columns:100px 1fr 90px}}
+</style>
+</head>
+<body>
+<div id="login" class="login">
+  <form id="loginForm" class="login-card">
+    <img src="https://sawee-hosp.github.io/sawee-mr/hosp_logo.png" alt="" onerror="this.style.display='none'">
+    <h2 style="margin-top:10px">ระบบผู้ดูแล</h2><p class="muted">คลังผลงานวิชาการ</p>
+    <input type="password" id="pw" placeholder="รหัสผ่าน Admin" required autocomplete="current-password">
+    <p class="err" id="loginErr"></p>
+    <button class="btn primary" style="width:100%">เข้าสู่ระบบ</button>
+  </form>
+</div>
+
+<div id="app" class="app hidden">
+  <aside class="side">
+    <div class="brand"><img src="https://sawee-hosp.github.io/sawee-mr/hosp_logo.png" alt="" onerror="this.style.display='none'"><div><b>Admin</b><br><small>คลังผลงานวิชาการ</small></div></div>
+    <nav id="nav">
+      <button data-v="dash" class="on">ภาพรวมและสถิติ</button>
+      <button data-v="sources">แหล่งไฟล์ Drive</button>
+      <button data-v="works">ผลงาน</button>
+      <button data-v="visitors">ผู้ยืนยันอีเมล</button>
+      <button data-v="settings">ตั้งค่า</button>
+    </nav>
+    <div class="side-foot"><a id="siteLink" class="hidden" target="_blank" rel="noopener">เปิดหน้าเว็บสาธารณะ ↗</a><button id="logoutBtn">ออกจากระบบ</button></div>
+  </aside>
+
+  <main class="main">
+    <section id="v-dash" class="view">
+      <div class="top"><h2>ภาพรวมและสถิติ</h2>
+        <div class="row"><select id="dYear" class="in" style="width:auto"><option value="">ทุกปี</option></select>
+          <button class="btn teal" id="btnSync">ซิงก์ + OCR ตอนนี้</button>
+          <button class="btn" id="btnOcr">ประมวลผลคิว OCR</button>
+          <button class="btn gold" id="btnAuto">ซิงก์อัตโนมัติ</button></div></div>
+      <div class="kpis" id="kpis"></div>
+      <div class="two">
+        <div class="card"><h3>แยกตามประเภท (เผยแพร่/ทั้งหมด · ยอดชม)</h3><div class="bars" id="byCat"></div></div>
+        <div class="card"><h3>ยอดเข้าชมรายเดือน</h3><div class="bars" id="byMonth"></div></div>
+      </div>
+      <div class="card"><h3>10 อันดับผลงานที่มีผู้เข้าชมมากที่สุด</h3><div id="top"></div></div>
+      <div class="card"><h3>สถานะระบบ</h3><div id="sys" class="muted"></div></div>
+    </section>
+
+    <section id="v-sources" class="view hidden">
+      <div class="top"><h2>แหล่งไฟล์ Google Drive</h2></div>
+      <div class="card">
+        <h3>เพิ่มโฟลเดอร์</h3>
+        <div class="grid3">
+          <label class="f"><span>ลิงก์โฟลเดอร์ Google Drive</span><input id="sUrl" class="in" placeholder="https://drive.google.com/drive/folders/..."></label>
+          <label class="f"><span>ปีการประกวด</span><input id="sYear" class="in" placeholder="2569" maxlength="4"></label>
+          <label class="f"><span>ประเภท</span><select id="sCat" class="in"></select></label>
+        </div>
+        <label class="f"><span>หมายเหตุ (ไม่บังคับ)</span><input id="sNote" class="in"></label>
+        <div class="row"><button class="btn" id="sCheck">ตรวจโฟลเดอร์</button><button class="btn primary" id="sAdd">เพิ่มแหล่งไฟล์</button></div>
+        <div id="sPreview" style="margin-top:14px"></div>
+      </div>
+      <div class="card"><h3>แหล่งไฟล์ทั้งหมด</h3><div id="sList" class="scroll"></div></div>
+    </section>
+
+    <section id="v-works" class="view hidden">
+      <div class="top"><h2>ผลงาน</h2>
+        <div class="row"><button class="btn teal sm" id="bulkPub">เผยแพร่ที่เลือก</button><button class="btn sm" id="bulkUnpub">ยกเลิกเผยแพร่ที่เลือก</button><button class="btn sm" id="wReload">โหลดใหม่</button></div></div>
+      <div class="card">
+        <div class="row" style="margin-bottom:12px">
+          <select id="fYear" class="in" style="width:auto"><option value="">ทุกปี</option></select>
+          <select id="fCat" class="in" style="width:auto"><option value="">ทุกประเภท</option></select>
+          <select id="fStatus" class="in" style="width:auto">
+            <option value="">ทุกสถานะ</option><option value="review" selected>รอตรวจทาน (ยังไม่เผยแพร่)</option><option value="published">เผยแพร่แล้ว</option>
+            <option value="pending">รอ OCR</option><option value="error">OCR ผิดพลาด</option><option value="missing">ไฟล์หาย</option><option value="ignored">ซ่อนไว้</option>
+          </select>
+          <input id="fSearch" class="in" style="flex:1;min-width:200px" placeholder="ค้นหาชื่อ ผู้จัดทำ หน่วยงาน ชื่อไฟล์">
+        </div>
+        <p class="muted" id="wCount"></p>
+        <div class="scroll"><table><thead><tr><th><input type="checkbox" id="chkAll"></th><th>ผลงาน</th><th>ปี</th><th>ประเภท</th><th>หน่วยงาน</th><th>สถานะ</th><th>ชม</th></tr></thead><tbody id="wBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="v-visitors" class="view hidden">
+      <div class="top"><h2>ผู้ยืนยันอีเมล</h2></div>
+      <div class="card"><p class="muted">ข้อมูลส่วนบุคคล ใช้เพื่อการติดต่อและสถิติเท่านั้น ห้ามเปิดเผยต่อบุคคลอื่น (ดูแบบเต็มได้ที่แท็บ Visitors ใน Google Sheets)</p><div id="vList" class="scroll"></div></div>
+    </section>
+
+    <section id="v-settings" class="view hidden">
+      <div class="top"><h2>ตั้งค่า</h2></div>
+      <div class="card"><h3>หน้าเว็บ</h3>
+        <div class="grid2">
+          <label class="f"><span>ชื่อโรงพยาบาล</span><input class="in" data-set="hospitalName"></label>
+          <label class="f"><span>URL โลโก้</span><input class="in" data-set="logoUrl"></label>
+          <label class="f"><span>ชื่องาน (บรรทัดที่ 1)</span><input class="in" data-set="eventTitle"></label>
+          <label class="f"><span>คำโปรย (บรรทัดที่ 2)</span><input class="in" data-set="eventSubtitle"></label>
+          <label class="f"><span>ลิงก์หน้าเว็บบน GitHub (เช่น .../academic.html)</span><input class="in" data-set="siteUrl"></label>
+          <label class="f"><span>ปีที่แสดงเป็นค่าเริ่มต้น (เว้นว่าง = ปีล่าสุด)</span><input class="in" data-set="defaultYear" maxlength="4"></label>
+          <label class="f"><span>อีเมลติดต่อ (แสดงท้ายเว็บ)</span><input class="in" data-set="contactEmail"></label>
+        </div>
+        <label class="f"><span>ข้อความแนะนำหน้าแรก</span><textarea class="in" data-set="intro"></textarea></label>
+        <div class="checks">
+          <label><input type="checkbox" data-set="requireVerify"> ต้องยืนยันอีเมลก่อนอ่านผลงานแบบ "verified"</label>
+          <label><input type="checkbox" data-set="allowDownload"> อนุญาตให้ดาวน์โหลด</label>
+          <label><input type="checkbox" data-set="useAI"> ใช้ AI (Gemini) ช่วยสกัดข้อมูลหลัง OCR</label>
+        </div>
+        <button class="btn primary" id="setSave">บันทึกการตั้งค่า</button>
+      </div>
+      <div class="card"><h3>AI ช่วยสกัดข้อมูล (ไม่บังคับ)</h3>
+        <p class="muted">ข้อความจากเอกสารจะถูกส่งไปประมวลผลที่ Google Gemini API ใช้เฉพาะเมื่อได้รับอนุญาตจากโรงพยาบาล และไม่ควรใช้กับเอกสารที่มีข้อมูลผู้ป่วย<br>สถานะ: <b id="aiState"></b></p>
+        <div class="grid2"><label class="f"><span>Gemini API key (พิมพ์ - เพื่อลบ)</span><input id="aiKey" class="in" type="password" autocomplete="off"></label>
+          <label class="f"><span>ชื่อโมเดล</span><input id="aiModel" class="in"></label></div>
+        <button class="btn" id="aiSave">บันทึก API key</button>
+      </div>
+      <div class="card"><h3>ลิงก์ระบบ</h3><div id="links" class="muted"></div></div>
+    </section>
+  </main>
+</div>
+
+<div id="drawer" class="drawer hidden"><div class="panel" id="dPanel"></div></div>
+<div id="busy" class="busy hidden"><div><div class="spin"></div><p id="busyText"></p></div></div>
+<div id="toast"></div>
+
+<script>
+/* ================= ตั้งค่า =================
+ * ใช้เมื่อเปิดไฟล์นี้จาก GitHub (ถ้าเปิดผ่าน Apps Script ?page=admin จะไม่ใช้ค่านี้)
+ * ========================================= */
+const API_URL = 'https://script.google.com/macros/s/AKfycbyoNAS-hUagvEiykv75HiZQavQ-8QoLWfnbmYph1yBaZj364mGXy8VuhMssaZGusQAUaA/exec';
+
+const CATS=['ระดับทีม/หน่วยงาน','CQI','Photo voice','วิจัยและ R2R','นวัตกรรม'];
+const ACCESS={filename_only:'เฉพาะชื่อไฟล์ (PDPA)',metadata:'ข้อมูลเบื้องต้นเท่านั้น',verified:'ยืนยันอีเมลก่อนอ่าน',public:'สาธารณะ อ่านได้ทันที'};
+const OCR={pending:['รอ OCR','wait'],done:['OCR แล้ว','info'],skipped:['ไม่ทำ OCR',''],error:['OCR ผิดพลาด','bad'],missing:['ไฟล์หาย','bad'],ignored:['ซ่อน','']};
+const IN_GAS=!!(window.google&&google.script&&google.script.run);
+let T='',W=[],SEL=new Set(),SETTINGS={},DASH=null,CUR=null,AI_READY=false,SHOWN=0;
+try{T=sessionStorage.getItem('sv_adm')||'';}catch(e){}
+
+/* ---------- ตัวช่วย ---------- */
+function Q(s){return document.querySelector(s);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function msg(e){return String((e&&e.message)||e||'เกิดข้อผิดพลาด');}
+function transport(req){
+  if(IN_GAS){
+    return new Promise(function(ok,no){google.script.run.withSuccessHandler(ok).withFailureHandler(no).api(req);});
+  }
+  return fetch(API_URL,{method:'POST',body:JSON.stringify(req),redirect:'follow'})
+    .catch(function(){throw new Error('เชื่อมต่อ Apps Script ไม่ได้ ตรวจอินเทอร์เน็ตและ API_URL');})
+    .then(function(r){if(!r.ok)throw new Error('เซิร์ฟเวอร์ตอบกลับผิดพลาด (HTTP '+r.status+')');return r.json();});
+}
+function call(action,data){
+  const req=Object.assign({action:action,token:T},data||{});
+  return transport(req).then(function(j){
+    if(!j||!j.ok){
+      const m=(j&&j.error)||'เกิดข้อผิดพลาด';
+      if(m.indexOf('SESSION_EXPIRED')>=0){doLogout();toast('หมดเวลาเข้าสู่ระบบ กรุณาเข้าสู่ระบบใหม่',true);}
+      throw new Error(m);
+    }
+    return j.data;
+  });
+}
+function toast(m,bad){const t=Q('#toast');t.textContent=m;t.className='show'+(bad?' bad':'');clearTimeout(t._t);t._t=setTimeout(function(){t.className='';},4500);}
+function busy(on,text){Q('#busy').classList.toggle('hidden',!on);Q('#busyText').textContent=text||'';}
+function th(n){return Number(n||0).toLocaleString('th-TH');}
+function bool(v){return v===true||String(v).trim().toUpperCase()==='TRUE';}
+function isYear(y){return /^\d{4}(?![\s\S])/.test(String(y||'').trim());}
+function when(s){if(!s)return '-';const d=new Date(s);return isNaN(d.getTime())?esc(s):d.toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'});}
+function tag(text,cls){return '<span class="tag '+(cls||'')+'">'+esc(text)+'</span>';}
+function cleanTitle(n){return String(n||'').replace(/\.(pdf|jpe?g|png)(?![\s\S])/i,'').replace(/\s*-\s*Google\s*(เอกสาร|Docs)\s*/i,' ').replace(/_+/g,' ').replace(/\s+/g,' ').trim();}
+function thMonth(m){
+  const p=String(m).split('-');
+  const n=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  return (n[Number(p[1])-1]||p[1])+' '+(Number(p[0])+543);
+}
+
+/* ---------- เริ่มต้น ---------- */
+window.addEventListener('load',function(){bind();if(T)enter();});
+
+function bind(){
+  Q('#loginForm').addEventListener('submit',async function(e){
+    e.preventDefault();Q('#loginErr').textContent='';busy(true,'กำลังเข้าสู่ระบบ…');
+    try{
+      T=await call('adminLogin',{password:Q('#pw').value});
+      try{sessionStorage.setItem('sv_adm',T);}catch(x){}
+      Q('#pw').value='';enter();
+    }catch(err){Q('#loginErr').textContent=msg(err);}
+    finally{busy(false);}
+  });
+  Q('#logoutBtn').addEventListener('click',doLogout);
+  Q('#nav').addEventListener('click',function(e){const b=e.target.closest('[data-v]');if(b)show(b.dataset.v);});
+  Q('#dYear').addEventListener('change',loadDash);
+  Q('#btnSync').addEventListener('click',syncNow);
+  Q('#btnOcr').addEventListener('click',ocrNow);
+  Q('#btnAuto').addEventListener('click',toggleAuto);
+  Q('#top').addEventListener('click',async function(e){
+    const r=e.target.closest('[data-top]');if(!r)return;
+    if(!W.length)await loadWorks();
+    openEdit(r.dataset.top);
+  });
+  Q('#sCat').innerHTML='<option value="">อัตโนมัติจากชื่อโฟลเดอร์ย่อย</option>'+CATS.map(function(c){return '<option>'+esc(c)+'</option>';}).join('');
+  Q('#sCheck').addEventListener('click',checkFolder);
+  Q('#sAdd').addEventListener('click',addSource);
+  Q('#sList').addEventListener('click',sourceAction);
+  ['#fYear','#fCat','#fStatus'].forEach(function(s){Q(s).addEventListener('change',function(){SEL.clear();renderWorks();});});
+  Q('#fSearch').addEventListener('input',function(){SEL.clear();renderWorks();});
+  Q('#chkAll').addEventListener('change',function(e){
+    filteredWorks().forEach(function(w){if(e.target.checked)SEL.add(String(w.id));else SEL.delete(String(w.id));});
+    renderWorks();
+  });
+  Q('#wBody').addEventListener('click',function(e){
+    const cb=e.target.closest('input[data-sel]');
+    if(cb){if(cb.checked)SEL.add(cb.dataset.sel);else SEL.delete(cb.dataset.sel);updateCount();return;}
+    const tr=e.target.closest('tr[data-id]');
+    if(tr)openEdit(tr.dataset.id);
+  });
+  Q('#bulkPub').addEventListener('click',function(){bulk('publish');});
+  Q('#bulkUnpub').addEventListener('click',function(){bulk('unpublish');});
+  Q('#wReload').addEventListener('click',loadWorks);
+  Q('#drawer').addEventListener('click',function(e){if(e.target.id==='drawer'||e.target.closest('[data-close]'))closeDrawer();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDrawer();});
+  Q('#setSave').addEventListener('click',saveSettings);
+  Q('#aiSave').addEventListener('click',saveAiKey);
+}
+function enter(){Q('#login').classList.add('hidden');Q('#app').classList.remove('hidden');show('dash');}
+function doLogout(){
+  T='';W=[];SEL.clear();
+  try{sessionStorage.removeItem('sv_adm');}catch(e){}
+  closeDrawer();Q('#app').classList.add('hidden');Q('#login').classList.remove('hidden');
+}
+function show(v){
+  document.querySelectorAll('.view').forEach(function(s){s.classList.toggle('hidden',s.id!=='v-'+v);});
+  document.querySelectorAll('#nav [data-v]').forEach(function(b){b.classList.toggle('on',b.dataset.v===v);});
+  if(v==='dash')loadDash();
+  if(v==='sources')loadSources();
+  if(v==='works'){if(!W.length)loadWorks();else renderWorks();}
+  if(v==='visitors')loadVisitors();
+  if(v==='settings')loadSettings();
+}
+
+/* ---------- ภาพรวม ---------- */
+async function loadDash(){
+  if(!T)return;
+  const y=Q('#dYear').value||'';
+  try{
+    const d=await call('dashboard',{year:y});DASH=d;AI_READY=!!d.aiReady;
+    Q('#dYear').innerHTML='<option value="">ทุกปี</option>'+d.years.map(function(x){return '<option'+(String(x)===y?' selected':'')+'>'+esc(x)+'</option>';}).join('');
+    const k=d.kpi;
+    const items=[['ผลงานทั้งหมด',k.total,''],['เผยแพร่แล้ว',k.published,'good'],['รอตรวจทาน',k.review,k.review?'warn':''],['รอ OCR',k.pending,k.pending?'warn':''],
+      ['OCR ผิดพลาด',k.error,k.error?'bad':''],['ไฟล์หาย',k.missing,k.missing?'bad':''],['ยอดเข้าชม',k.views,''],['ยอดเปิดเอกสาร',k.opens,''],
+      ['ผู้เข้าชมไม่ซ้ำ (โดยประมาณ)',k.visitors,''],['ผู้ยืนยันอีเมลทั้งหมด',d.verifiedUsers,'']];
+    Q('#kpis').innerHTML=items.map(function(i){return '<div class="kpi '+i[2]+'"><b>'+th(i[1])+'</b><span>'+esc(i[0])+'</span></div>';}).join('');
+    const cats=Object.keys(d.byCat||{});
+    const maxC=Math.max.apply(null,[1].concat(cats.map(function(c){return d.byCat[c].total;})));
+    Q('#byCat').innerHTML=cats.length?cats.map(function(c){
+      const o=d.byCat[c];
+      return '<div class="b"><span>'+esc(c)+'</span><div class="track"><div class="fill" style="width:'+(o.total/maxC*100)+'%"></div></div><span class="muted">'+th(o.published)+'/'+th(o.total)+' · '+th(o.views)+' ชม</span></div>';
+    }).join(''):'<p class="muted">ยังไม่มีข้อมูล</p>';
+    const months=Object.keys(d.byMonth||{}).sort().slice(-12);
+    const maxM=Math.max.apply(null,[1].concat(months.map(function(m){return d.byMonth[m];})));
+    Q('#byMonth').innerHTML=months.length?months.map(function(m){
+      return '<div class="b"><span>'+thMonth(m)+'</span><div class="track"><div class="fill" style="width:'+(d.byMonth[m]/maxM*100)+'%"></div></div><span class="muted">'+th(d.byMonth[m])+' ครั้ง</span></div>';
+    }).join(''):'<p class="muted">ยังไม่มียอดเข้าชม</p>';
+    Q('#top').innerHTML=d.top.length?'<table><thead><tr><th>#</th><th>ผลงาน</th><th>ประเภท</th><th>เข้าชม</th><th>เปิดเอกสาร</th></tr></thead><tbody>'+
+      d.top.map(function(t,i){return '<tr class="click" data-top="'+esc(t.id)+'"><td>'+(i+1)+'</td><td>'+esc(t.title)+'</td><td>'+esc(t.category)+'</td><td>'+th(t.views)+'</td><td>'+th(t.opens)+'</td></tr>';}).join('')+
+      '</tbody></table>':'<p class="muted">ยังไม่มียอดเข้าชม</p>';
+    Q('#sys').innerHTML='<p>ซิงก์อัตโนมัติ: <b>'+(d.autoSync?'เปิด (ทุก 1 ชั่วโมง)':'ปิด')+'</b></p>'+
+      '<p>โควตาส่งอีเมลยืนยันที่เหลือวันนี้: <b>'+th(d.mailQuota)+'</b> ฉบับ</p>'+
+      '<p>AI ช่วยสกัดข้อมูล: <b>'+(d.useAI&&d.aiReady?'เปิดใช้งาน':(d.aiReady?'มี API key แต่ยังไม่เปิดใช้':'ไม่ได้ใช้'))+'</b></p>';
+    Q('#btnAuto').textContent=d.autoSync?'ปิดซิงก์อัตโนมัติ':'เปิดซิงก์อัตโนมัติ';
+    if(d.siteUrl){Q('#siteLink').href=d.siteUrl;Q('#siteLink').classList.remove('hidden');}
+  }catch(e){if(T)toast(msg(e),true);}
+}
+async function syncNow(){
+  if(!confirm('เริ่มซิงก์ไฟล์จาก Drive และทำ OCR?\nอาจใช้เวลาถึง 5 นาที ระหว่างนี้ห้ามปิดหน้านี้'))return;
+  busy(true,'กำลังซิงก์และทำ OCR… อาจใช้เวลาถึง 5 นาที ห้ามปิดหน้านี้');
+  try{
+    const r=await call('syncNow');const s=r.sync||{},o=r.ocr||{};
+    let t='ซิงก์เสร็จ\nไฟล์ใหม่: '+(s.added||0)+'\nไฟล์ถูกแก้ไข: '+(s.changed||0)+'\nไฟล์หาย: '+(s.missing||0)+
+      '\n\nOCR สำเร็จ: '+(o.done||0)+'\nOCR ผิดพลาด: '+(o.errors||0)+'\nค้างคิว: '+(o.left||0);
+    if(o.busy)t+='\n\n(คิว OCR กำลังถูกใช้งานอยู่ ให้กด "ประมวลผลคิว OCR" ภายหลัง)';
+    if(o.left)t+='\n\nยังมีไฟล์ค้างคิว กด "ประมวลผลคิว OCR" ต่อได้ หรือรอซิงก์อัตโนมัติ';
+    if(s.errors&&s.errors.length)t+='\n\nข้อผิดพลาด:\n'+s.errors.join('\n');
+    busy(false);alert(t);W=[];
+  }catch(e){busy(false);if(T)alert('ซิงก์ไม่สำเร็จ: '+msg(e));}
+  loadDash();
+}
+async function ocrNow(){
+  busy(true,'กำลังทำ OCR ไฟล์ที่ค้างคิว… อาจใช้เวลาถึง 5 นาที');
+  try{
+    const r=await call('processNow');busy(false);
+    if(r.busy)toast('ระบบกำลังซิงก์หรือทำ OCR อยู่ กรุณาลองใหม่อีกสักครู่',true);
+    else alert('OCR สำเร็จ: '+r.done+'\nผิดพลาด: '+r.errors+'\nค้างคิว: '+r.left+(r.left?'\n\nกดปุ่มนี้ซ้ำเพื่อทำต่อ':''));
+    W=[];
+  }catch(e){busy(false);if(T)toast(msg(e),true);}
+  loadDash();
+}
+async function toggleAuto(){
+  const on=!(DASH&&DASH.autoSync);busy(true,'กำลังตั้งค่า…');
+  try{await call('setAutoSync',{on:on});toast(on?'เปิดซิงก์อัตโนมัติทุก 1 ชั่วโมงแล้ว':'ปิดซิงก์อัตโนมัติแล้ว');}
+  catch(e){toast(msg(e),true);}
+  finally{busy(false);}
+  loadDash();
+}
+
+/* ---------- แหล่งไฟล์ ---------- */
+async function loadSources(){
+  Q('#sList').innerHTML='<p class="muted">กำลังโหลด…</p>';
+  try{renderSources(await call('sources'));}
+  catch(e){Q('#sList').innerHTML='<p class="err">'+esc(msg(e))+'</p>';}
+}
+function renderSources(list){
+  if(!list.length){Q('#sList').innerHTML='<p class="muted">ยังไม่มีแหล่งไฟล์ เพิ่มโฟลเดอร์ด้านบนได้เลย</p>';return;}
+  Q('#sList').innerHTML='<table><thead><tr><th>โฟลเดอร์</th><th>ปี</th><th>ประเภท</th><th>ผลงาน</th><th>สถานะ</th><th>ซิงก์ล่าสุด</th><th></th></tr></thead><tbody>'+
+    list.map(function(s){
+      const on=bool(s.enabled);
+      return '<tr><td><a href="'+esc(s.folderUrl)+'" target="_blank" rel="noopener">'+esc(s.folderName||s.folderId)+'</a>'+
+        (s.note?'<div class="muted">'+esc(s.note)+'</div>':'')+'</td><td>'+esc(s.year)+'</td><td>'+esc(s.category||'อัตโนมัติ')+'</td><td>'+th(s.works)+'</td><td>'+
+        tag(on?'เปิดใช้':'ปิดอยู่',on?'ok':'')+'</td><td>'+when(s.lastSync)+'</td><td><div class="row"><button class="btn sm" data-toggle="'+esc(s.sourceId)+'" data-on="'+(on?1:0)+'">'+
+        (on?'ปิด':'เปิด')+'</button><button class="btn sm danger" data-del="'+esc(s.sourceId)+'">ลบ</button></div></td></tr>';
+    }).join('')+'</tbody></table>';
+}
+async function checkFolder(){
+  const url=Q('#sUrl').value.trim();
+  if(!url)return toast('กรุณาวางลิงก์โฟลเดอร์',true);
+  busy(true,'กำลังตรวจโฟลเดอร์… (ถ้ามีไฟล์มากอาจใช้เวลาสักครู่)');
+  try{
+    const p=await call('previewFolder',{url:url});
+    if(!Q('#sYear').value&&p.guessYear)Q('#sYear').value=p.guessYear;
+    const rows=p.subfolders.map(function(s){
+      return '<tr><td>'+esc(s.name)+'</td><td>'+(s.category?tag(s.category,'info'):tag('ไม่รู้จักประเภท','wait'))+'</td><td>'+th(s.files)+'</td></tr>';
+    }).join('');
+    Q('#sPreview').innerHTML='<div class="infobox"><b>'+esc(p.name)+'</b><br>พบไฟล์ที่รองรับทั้งหมด '+th(p.total)+' ไฟล์ (อยู่ในโฟลเดอร์หลักโดยตรง '+th(p.rootFiles)+' ไฟล์)'+
+      (p.category?'<br>ประเภทจากชื่อโฟลเดอร์หลัก: '+esc(p.category):'')+'</div>'+
+      (rows?'<table><thead><tr><th>โฟลเดอร์ย่อย</th><th>ประเภทที่ระบบจับได้</th><th>จำนวนไฟล์</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+      '<p class="muted">โฟลเดอร์ที่ "ไม่รู้จักประเภท" จะถูกนำเข้าเป็น "ยังไม่จัดประเภท" แก้ภายหลังได้ในหน้าผลงาน หรือเลือกประเภทตายตัวด้านบน</p>':'<p class="muted">ไม่มีโฟลเดอร์ย่อย</p>');
+  }catch(e){Q('#sPreview').innerHTML='<p class="err">'+esc(msg(e))+'</p>';}
+  finally{busy(false);}
+}
+async function addSource(){
+  const o={folderUrl:Q('#sUrl').value.trim(),year:Q('#sYear').value.trim(),category:Q('#sCat').value,note:Q('#sNote').value.trim()};
+  if(!o.folderUrl)return toast('กรุณาวางลิงก์โฟลเดอร์',true);
+  if(!isYear(o.year))return toast('กรุณาระบุปีเป็นตัวเลข 4 หลัก เช่น 2569',true);
+  busy(true,'กำลังเพิ่มแหล่งไฟล์…');
+  try{
+    renderSources(await call('addSource',{source:o}));
+    Q('#sUrl').value='';Q('#sNote').value='';Q('#sPreview').innerHTML='';
+    toast('เพิ่มแล้ว ไปที่หน้าภาพรวมแล้วกด "ซิงก์ + OCR ตอนนี้" เพื่อนำเข้าไฟล์');
+  }catch(e){toast(msg(e),true);}
+  finally{busy(false);}
+}
+async function sourceAction(e){
+  const t=e.target.closest('[data-toggle]'),d=e.target.closest('[data-del]');
+  if(!t&&!d)return;
+  if(d&&!confirm('ลบแหล่งไฟล์นี้?\nผลงานที่นำเข้าแล้วจะยังอยู่ แต่จะไม่ซิงก์จากโฟลเดอร์นี้อีก'))return;
+  busy(true,'กำลังบันทึก…');
+  try{
+    if(t)renderSources(await call('updateSource',{sourceId:t.dataset.toggle,enabled:t.dataset.on!=='1'}));
+    else{renderSources(await call('deleteSource',{sourceId:d.dataset.del}));toast('ลบแหล่งไฟล์แล้ว');}
+  }catch(err){toast(msg(err),true);}
+  finally{busy(false);}
+}
+
+/* ---------- ผลงาน ---------- */
+async function loadWorks(){
+  if(!T)return;
+  busy(true,'กำลังโหลดรายการผลงาน…');
+  try{W=await call('listWorks');fillWorkFilters();renderWorks();}
+  catch(e){if(T)toast(msg(e),true);}
+  finally{busy(false);}
+}
+function fillWorkFilters(){
+  const yv=Q('#fYear').value,cv=Q('#fCat').value;
+  const ys=Array.from(new Set(W.map(function(w){return String(w.year);}).filter(Boolean))).sort().reverse();
+  Q('#fYear').innerHTML='<option value="">ทุกปี</option>'+ys.map(function(y){return '<option'+(y===yv?' selected':'')+'>'+esc(y)+'</option>';}).join('');
+  const extra=Array.from(new Set(W.map(function(w){return String(w.category);}))).filter(function(c){return c&&CATS.indexOf(c)<0;});
+  Q('#fCat').innerHTML='<option value="">ทุกประเภท</option>'+CATS.concat(extra).map(function(c){return '<option'+(c===cv?' selected':'')+'>'+esc(c)+'</option>';}).join('');
+}
+function statusOk(w,s){
+  const st=String(w.ocrStatus),pub=bool(w.published);
+  if(s==='review')return !pub&&['done','skipped','error'].indexOf(st)>=0;
+  if(s==='published')return pub;
+  if(s)return st===s;
+  return st!=='ignored';
+}
+function filteredWorks(){
+  const y=Q('#fYear').value,c=Q('#fCat').value,s=Q('#fStatus').value,q=Q('#fSearch').value.trim().toLowerCase();
+  return W.filter(function(w){
+    return (!y||String(w.year)===y)&&(!c||String(w.category)===c)&&statusOk(w,s)&&
+      (!q||[w.title,w.authors,w.department,w.keywords,w.fileName].join(' ').toLowerCase().indexOf(q)>=0);
+  });
+}
+function updateCount(){
+  Q('#wCount').textContent='แสดง '+th(SHOWN)+' จาก '+th(W.length)+' รายการ · เลือกไว้ '+th(SEL.size)+' รายการ · คลิกที่แถวเพื่อตรวจและแก้ไข';
+}
+function renderWorks(){
+  const list=filteredWorks();SHOWN=list.length;
+  Q('#wBody').innerHTML=list.length?list.map(function(w){
+    const id=String(w.id),o=OCR[w.ocrStatus]||[w.ocrStatus,''],pub=bool(w.published);
+    return '<tr class="click" data-id="'+esc(id)+'"><td><input type="checkbox" data-sel="'+esc(id)+'"'+(SEL.has(id)?' checked':'')+'></td>'+
+      '<td><b>'+esc(w.title||w.fileName)+'</b>'+(w.authors?'<div class="muted">'+esc(w.authors)+'</div>':'')+
+      '<div class="muted">ไฟล์: '+esc(w.fileName)+' · '+esc(w.sizeMB)+' MB</div></td>'+
+      '<td>'+esc(w.year)+'</td><td>'+esc(w.category)+'</td><td>'+esc(w.department||'-')+'</td>'+
+      '<td>'+tag(pub?'เผยแพร่':'ยังไม่เผยแพร่',pub?'ok':'wait')+tag(o[0],o[1])+'<br>'+tag(ACCESS[w.access]||w.access,'')+
+      (bool(w.featured)?tag('ผลงานเด่น','info'):'')+(bool(w.locked)?tag('ล็อกข้อมูล',''):'')+'</td>'+
+      '<td>'+th(w.views)+'</td></tr>';
+  }).join(''):'<tr><td colspan="7" class="muted" style="text-align:center;padding:30px">ไม่มีรายการตามเงื่อนไข ลองเปลี่ยนตัวกรองสถานะเป็น "ทุกสถานะ"</td></tr>';
+  Q('#chkAll').checked=list.length>0&&list.every(function(w){return SEL.has(String(w.id));});
+  updateCount();
+}
+async function bulk(mode){
+  if(!SEL.size)return toast('กรุณาติ๊กเลือกรายการก่อน',true);
+  const n=SEL.size,pub=mode==='publish';
+  if(!confirm((pub?'เผยแพร่':'ยกเลิกการเผยแพร่')+' '+n+' รายการ?'+(pub?'\n\nกรุณาตรวจว่าข้อมูลถูกต้องและไม่มีข้อมูลผู้ป่วยแล้ว\n(ระบบจะสร้างสำเนาไฟล์สำหรับเปิดดู อาจใช้เวลาสักครู่)':'')))return;
+  busy(true,'กำลังดำเนินการ '+n+' รายการ…');
+  try{
+    const r=await call('bulk',{ids:Array.from(SEL),mode:mode});
+    SEL.clear();busy(false);
+    toast('ดำเนินการแล้ว '+r.count+' รายการ');
+    if(r.warns&&r.warns.length)alert('บางรายการสร้างไฟล์สำหรับเปิดดูไม่สำเร็จ:\n'+r.warns.join('\n'));
+  }catch(e){busy(false);toast(msg(e),true);}
+  if(T)await loadWorks();
+}
+
+/* ---------- แก้ไขผลงาน ---------- */
+function opt(list,cur){return list.map(function(v){return '<option'+(String(v)===String(cur)?' selected':'')+'>'+esc(v)+'</option>';}).join('');}
+function chk(v){return bool(v)?' checked':'';}
+function openEdit(id){
+  const w=W.find(function(x){return String(x.id)===String(id);});
+  if(!w)return toast('ไม่พบรายการ ลองกด "โหลดใหม่"',true);
+  CUR=w;
+  const o=OCR[w.ocrStatus]||[w.ocrStatus,''],hidden=w.ocrStatus==='ignored',noPub=hidden||w.ocrStatus==='missing';
+  const cats=CATS.indexOf(w.category)<0&&w.category?CATS.concat([w.category]):CATS;
+  const depts=Array.from(new Set(W.map(function(x){return String(x.department||'').trim();}).filter(Boolean))).sort(function(a,b){return a.localeCompare(b,'th');});
+  Q('#dPanel').innerHTML=
+    '<div class="top"><h2>ตรวจและแก้ไขผลงาน</h2><button class="btn sm" data-close>ปิด ✕</button></div>'+
+    '<div class="infobox">ไฟล์ต้นฉบับ: <a href="'+esc(w.fileUrl)+'" target="_blank" rel="noopener">'+esc(w.fileName)+'</a> · '+esc(w.sizeMB)+' MB<br>'+
+    'สถานะ: '+tag(o[0],o[1])+' '+esc(w.ocrNote||'')+'<br>ข้อความ OCR: '+th(w.textChars)+' ตัวอักษร · ยอดเข้าชม '+th(w.views)+' · แก้ไขล่าสุด '+when(w.updatedAt)+'</div>'+
+    (w.thumbId?'<img src="https://drive.google.com/thumbnail?id='+encodeURIComponent(w.thumbId)+'&sz=w400" alt="" style="max-width:180px;border-radius:12px;border:1px solid var(--line);margin-bottom:14px" onerror="this.remove()">':'')+
+    '<label class="f"><span>ชื่อผลงาน</span><textarea class="in" id="eTitle" style="min-height:60px">'+esc(w.title)+'</textarea></label>'+
+    '<label class="f"><span>ผู้จัดทำ (คั่นด้วยจุลภาค) ใส่เฉพาะชื่อที่อนุญาตให้เผยแพร่</span><input class="in" id="eAuthors" value="'+esc(w.authors)+'"></label>'+
+    '<div class="grid2"><label class="f"><span>หน่วยงาน</span><input class="in" id="eDept" list="deptList" value="'+esc(w.department)+'"></label>'+
+    '<label class="f"><span>คำสำคัญ (คั่นด้วยจุลภาค)</span><input class="in" id="eKw" value="'+esc(w.keywords)+'"></label></div>'+
+    '<datalist id="deptList">'+depts.map(function(d){return '<option value="'+esc(d)+'">';}).join('')+'</datalist>'+
+    '<label class="f"><span>บทสรุป / คำโปรย (แสดงสาธารณะ ห้ามมีข้อมูลผู้ป่วย)</span><textarea class="in" id="eSum">'+esc(w.summary)+'</textarea></label>'+
+    '<div class="grid3"><label class="f"><span>สิทธิ์การเข้าถึง</span><select class="in" id="eAcc">'+
+    Object.keys(ACCESS).map(function(k){return '<option value="'+k+'"'+(k===w.access?' selected':'')+'>'+esc(ACCESS[k])+'</option>';}).join('')+'</select></label>'+
+    '<label class="f"><span>ปีการประกวด</span><input class="in" id="eYear" maxlength="4" value="'+esc(w.year)+'"></label>'+
+    '<label class="f"><span>ประเภท</span><select class="in" id="eCat">'+opt(cats,w.category)+'</select></label></div>'+
+    '<div class="checks"><label><input type="checkbox" id="ePub"'+chk(w.published)+(noPub?' disabled':'')+'> เผยแพร่</label>'+
+    '<label><input type="checkbox" id="eFeat"'+chk(w.featured)+'> ผลงานเด่น</label>'+
+    '<label><input type="checkbox" id="eThumb"'+chk(w.showThumb)+'> แสดงภาพปก</label>'+
+    '<label><input type="checkbox" id="eLock"'+chk(w.locked)+'> ล็อกข้อมูล (OCR ไม่เขียนทับ)</label></div>'+
+    '<div class="row" style="margin-bottom:12px"><button class="btn primary" id="eSave">บันทึก</button>'+
+    '<button class="btn" id="eSuggest">เติมข้อมูลจาก OCR</button>'+
+    (AI_READY?'<button class="btn gold" id="eAI">เติมด้วย AI</button>':'')+
+    '<button class="btn" id="eText">ดู/แก้ข้อความ OCR</button>'+
+    '<button class="btn" id="eRerun">ทำ OCR ใหม่</button>'+
+    '<button class="btn danger" id="eHide">'+(hidden?'กู้คืนรายการ':'ซ่อนรายการนี้')+'</button></div>'+
+    '<p class="muted">ถ้าเลือก "เฉพาะชื่อไฟล์" เว็บจะไม่แสดงภาพปก ผู้จัดทำ หน่วยงาน และเนื้อหา'+(noPub?'<br>รายการนี้ไฟล์หายหรือถูกซ่อน จึงเผยแพร่ไม่ได้':'')+'</p>'+
+    '<div id="eTextBox"></div>';
+  Q('#drawer').classList.remove('hidden');
+  Q('#eSave').onclick=saveWork;
+  Q('#eSuggest').onclick=function(){suggest(false);};
+  if(AI_READY)Q('#eAI').onclick=function(){suggest(true);};
+  Q('#eText').onclick=showText;
+  Q('#eRerun').onclick=rerun;
+  Q('#eHide').onclick=hideWork;
+  Q('#eAcc').onchange=function(e){if(e.target.value==='filename_only')Q('#eThumb').checked=false;};
+}
+function closeDrawer(){Q('#drawer').classList.add('hidden');Q('#dPanel').innerHTML='';CUR=null;}
+
+async function saveWork(){
+  const d={id:CUR.id,title:Q('#eTitle').value,authors:Q('#eAuthors').value,department:Q('#eDept').value,keywords:Q('#eKw').value,
+    summary:Q('#eSum').value,year:Q('#eYear').value.trim(),category:Q('#eCat').value,access:Q('#eAcc').value,
+    published:Q('#ePub').checked,featured:Q('#eFeat').checked,showThumb:Q('#eThumb').checked,locked:Q('#eLock').checked};
+  if(!isYear(d.year))return toast('ปีต้องเป็นตัวเลข 4 หลัก',true);
+  if(d.published&&d.access!=='filename_only'&&!d.title.trim())return toast('กรุณาใส่ชื่อผลงานก่อนเผยแพร่',true);
+  busy(true,d.published?'กำลังบันทึกและเตรียมไฟล์สำหรับเปิดดู…':'กำลังบันทึก…');
+  try{
+    const r=await call('saveWork',{work:d});
+    const i=W.findIndex(function(x){return String(x.id)===String(d.id);});
+    if(i>=0)W[i]=Object.assign({},W[i],r.work);
+    busy(false);closeDrawer();renderWorks();
+    if(r.warn)alert(r.warn);else toast('บันทึกแล้ว');
+  }catch(e){busy(false);toast(msg(e),true);}
+}
+async function suggest(ai){
+  busy(true,ai?'AI กำลังอ่านเอกสาร…':'กำลังดึงข้อมูลจากข้อความ OCR…');
+  let m;
+  try{m=await call('suggestMeta',{id:CUR.id,ai:ai});}
+  catch(e){busy(false);return toast(msg(e),true);}
+  busy(false);
+  const map={title:'#eTitle',authors:'#eAuthors',department:'#eDept',keywords:'#eKw',summary:'#eSum'};
+  const found=Object.keys(map).filter(function(k){return String(m[k]||'').trim();});
+  if(!found.length)return toast('ไม่พบข้อมูลที่ดึงได้ กรุณากรอกเอง',true);
+  const replace=confirm('พบข้อมูล '+found.length+' ช่อง\n\nกด OK = แทนที่ข้อมูลเดิมทั้งหมด\nกด Cancel = เติมเฉพาะช่องที่ยังว่าง');
+  found.forEach(function(k){
+    const el=Q(map[k]);const v=el.value.trim();
+    if(replace||!v||(k==='title'&&v===cleanTitle(CUR.fileName)))el.value=m[k];
+  });
+  toast('เติมข้อมูลแล้ว กรุณาตรวจทานก่อนกดบันทึก');
+}
+async function showText(){
+  busy(true,'กำลังโหลดข้อความ…');
+  let t;
+  try{t=await call('getText',{id:CUR.id});}
+  catch(e){busy(false);return toast(msg(e),true);}
+  busy(false);
+  Q('#eTextBox').innerHTML='<h3 style="margin:10px 0">ข้อความจาก OCR</h3><p class="muted">แก้คำผิดหรือลบข้อมูลอ่อนไหวได้ ข้อความนี้ใช้ค้นหาและแสดงในแท็บ "อ่านเนื้อหา"</p>'+
+    '<textarea class="in" id="eTextArea" style="min-height:320px;font-size:14px"></textarea>'+
+    '<div class="row" style="margin-top:8px"><button class="btn primary" id="eTextSave">บันทึกข้อความ</button><span class="muted" id="eTextLen"></span></div>';
+  const ta=Q('#eTextArea');ta.value=t||'';
+  function len(){Q('#eTextLen').textContent=th(ta.value.length)+' ตัวอักษร (สูงสุด 45,000)';}
+  len();ta.oninput=len;
+  Q('#eTextSave').onclick=async function(){
+    const id=CUR.id;busy(true,'กำลังบันทึกข้อความ…');
+    try{
+      await call('saveText',{id:id,text:ta.value});
+      const w=W.find(function(x){return String(x.id)===String(id);});
+      if(w)w.textChars=Math.min(ta.value.length,45000);
+      toast('บันทึกข้อความแล้ว');
+    }catch(e){toast(msg(e),true);}
+    finally{busy(false);}
+  };
+  ta.scrollIntoView({behavior:'smooth'});
+}
+async function rerun(){
+  if(!confirm('ทำ OCR ใหม่สำหรับไฟล์นี้?\nข้อความ OCR เดิมจะถูกแทนที่ ข้อมูลที่กรอกไว้จะไม่ถูกเขียนทับ (ยกเว้นช่องที่ยังว่าง)'))return;
+  const id=CUR.id;busy(true,'กำลังทำ OCR… อาจใช้เวลา 1–5 นาที');
+  try{
+    const r=await call('rerunOcr',{id:id});const x=r.result||{};busy(false);
+    if(x.busy)toast('ระบบกำลังซิงก์หรือทำ OCR อยู่ รายการนี้อยู่ในคิวแล้ว',true);
+    else if(x.done)toast('OCR สำเร็จ');
+    else toast('OCR ไม่สำเร็จ ดูหมายเหตุในรายการ',true);
+  }catch(e){busy(false);toast(msg(e),true);}
+  if(T){await loadWorks();openEdit(id);}
+}
+async function hideWork(){
+  const hide=CUR.ocrStatus!=='ignored';
+  if(!confirm(hide?'ซ่อนรายการนี้?\nจะยกเลิกการเผยแพร่ และการซิงก์ครั้งต่อไปจะไม่นำเข้าซ้ำ (กู้คืนได้ภายหลัง)':'กู้คืนรายการนี้?\nระบบจะทำ OCR ใหม่ในรอบถัดไป'))return;
+  busy(true,'กำลังบันทึก…');
+  try{
+    await call('hideWork',{id:CUR.id,hide:hide});
+    busy(false);closeDrawer();
+    toast(hide?'ซ่อนแล้ว (ดูได้ที่ตัวกรองสถานะ "ซ่อนไว้")':'กู้คืนแล้ว');
+  }catch(e){busy(false);toast(msg(e),true);}
+  if(T)loadWorks();
+}
+
+/* ---------- ผู้ยืนยันอีเมล ---------- */
+async function loadVisitors(){
+  Q('#vList').innerHTML='<p class="muted">กำลังโหลด…</p>';
+  try{
+    const list=await call('listVisitors');
+    list.sort(function(a,b){return String(b.lastSeen).localeCompare(String(a.lastSeen));});
+    Q('#vList').innerHTML=list.length?'<p class="muted">ทั้งหมด '+th(list.length)+' คน</p><table><thead><tr><th>อีเมล</th><th>ชื่อ</th><th>หน่วยงาน</th><th>ยืนยันครั้งแรก</th><th>ล่าสุด</th><th>จำนวนครั้ง</th></tr></thead><tbody>'+
+      list.map(function(v){return '<tr><td>'+esc(v.email)+'</td><td>'+esc(v.name||'-')+'</td><td>'+esc(v.org||'-')+'</td><td>'+when(v.firstSeen)+'</td><td>'+when(v.lastSeen)+'</td><td>'+th(v.logins)+'</td></tr>';}).join('')+
+      '</tbody></table>':'<p class="muted">ยังไม่มีผู้ยืนยันอีเมล</p>';
+  }catch(e){Q('#vList').innerHTML='<p class="err">'+esc(msg(e))+'</p>';}
+}
+
+/* ---------- ตั้งค่า ---------- */
+async function loadSettings(){
+  try{
+    const r=await call('getSettings');SETTINGS=r.settings||{};AI_READY=!!r.aiKey;
+    document.querySelectorAll('[data-set]').forEach(function(el){
+      const v=SETTINGS[el.dataset.set];
+      if(el.type==='checkbox')el.checked=bool(v);else el.value=v==null?'':v;
+    });
+    Q('#aiState').textContent=r.aiKey?'ตั้ง API key แล้ว':'ยังไม่ได้ตั้ง API key';
+    Q('#aiModel').value=r.aiModel||'';
+    const u=r.url||API_URL;
+    const site=SETTINGS.siteUrl||'';
+    Q('#links').innerHTML=
+      (site?'หน้าเว็บสาธารณะ: <a href="'+esc(site)+'" target="_blank" rel="noopener">'+esc(site)+'</a><br>':'หน้าเว็บสาธารณะ: ยังไม่ได้ใส่ลิงก์ GitHub ในช่องด้านบน<br>')+
+      'API (Apps Script): '+esc(u)+'<br>หน้า Admin ผ่าน Apps Script: <a href="'+esc(u)+'?page=admin" target="_blank" rel="noopener">'+esc(u)+'?page=admin</a>'+
+      '<br><br>เปลี่ยนรหัสผ่าน Admin: Apps Script → Project Settings → Script Properties → ADMIN_PASSWORD';
+  }catch(e){if(T)toast(msg(e),true);}
+}
+async function saveSettings(){
+  const o={};
+  document.querySelectorAll('[data-set]').forEach(function(el){o[el.dataset.set]=el.type==='checkbox'?(el.checked?'TRUE':'FALSE'):el.value.trim();});
+  if(o.defaultYear&&!isYear(o.defaultYear))return toast('ปีเริ่มต้นต้องเป็นตัวเลข 4 หลัก หรือเว้นว่าง',true);
+  if(o.useAI==='TRUE'&&!AI_READY&&!confirm('ยังไม่ได้ตั้ง Gemini API key ระบบ AI จะยังไม่ทำงานจนกว่าจะตั้ง key\nต้องการบันทึกต่อหรือไม่?'))return;
+  busy(true,'กำลังบันทึก…');
+  try{await call('saveSettings',{settings:o});toast('บันทึกแล้ว รีเฟรชหน้าเว็บสาธารณะเพื่อดูผล (อาจรอ 5 นาที)');await loadSettings();}
+  catch(e){toast(msg(e),true);}
+  finally{busy(false);}
+}
+async function saveAiKey(){
+  const key=Q('#aiKey').value.trim(),model=Q('#aiModel').value.trim();
+  if(!key&&!model)return toast('กรุณาใส่ API key หรือชื่อโมเดล',true);
+  busy(true,'กำลังบันทึก…');
+  try{await call('setAiKey',{key:key,model:model});Q('#aiKey').value='';toast(key==='-'?'ลบ API key แล้ว':'บันทึกแล้ว');await loadSettings();}
+  catch(e){toast(msg(e),true);}
+  finally{busy(false);}
+}
+</script>
+</body>
+</html>
