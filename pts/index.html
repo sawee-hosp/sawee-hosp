@@ -1542,6 +1542,20 @@ function ThaiBaht(num){
 function updatePreview(){
   const data=getFormData(),endDate=parseThaiMonth(S.currentMonthYear);
   
+  // 1. คำนวณ "รวมทั้งสิ้น" ตั้งแต่วันแรกที่เริ่มทำงาน ถึงสิ้นเดือนที่เบิก
+  const rawTotalDur=calculateDuration(parseDate(data.start_date),endDate);
+  
+  let totalDisplayD = durationText(rawTotalDur.d);
+  if(!data.count_extra_days_all) {
+    totalDisplayD = '-';
+  }
+  const totalDur = {
+    y: durationText(rawTotalDur.y),
+    m: durationText(rawTotalDur.m),
+    d: totalDisplayD
+  };
+
+  // 2. คำนวณระยะเวลาปฏิบัติงานในหน่วยบริการ (บรรทัดที่ 7)
   let workStart=data.start_date;
   if(!workStart){
     for(let i=1;i<=3;i++){
@@ -1549,38 +1563,20 @@ function updatePreview(){
     }
   }
   const workDur=calculateDuration(parseDate(workStart),endDate);
-  
-  // ปรับวันเศษของบรรทัด "ปฏิบัติงานในหน่วยบริการ" (ปีแรก) ตาม checkbox แยกอิสระ
   let displayWorkDurD = durationText(workDur.d);
-  let calcWorkDurD = workDur.d; // ใช้สำหรับคำนวณรวม
-  if(!data.count_extra_days_all){
-    displayWorkDurD = '-';
-    calcWorkDurD = 0; // ถ้าไม่นับ ให้ถือว่าเศษวันเป็น 0
-  }
+  if(!data.count_extra_days_all) displayWorkDurD = '-';
   const finalWorkDur = { y: durationText(workDur.y), m: durationText(workDur.m), d: displayWorkDurD };
 
+  // 3. รายละเอียดแต่ละโรงพยาบาล
   const hospitals=[];
-  const allDurationsForTotal = []; // เก็บระยะเวลาแต่ละก้อนเพื่อเอามาบวกผลรวมรวมทั้งสิ้น
-
-  // ถ้าระยะเวลาเริ่มแรก (workStart) ถูกใช้คำนวณรวม ให้ใส่เข้าไปด้วย
-  if(workStart) {
-    allDurationsForTotal.push({ y: workDur.y, m: workDur.m, d: calcWorkDurD });
-  }
-
   for(let i=1;i<=3;i++){
     if(!data['hospital'+i])continue;
     const start=data['start_date'+i],end=data['end_date'+i];
     const eDate=end?parseDate(end):(start?endDate:null);
     const dur=calculateDuration(parseDate(start),eDate);
-    
     let displayDays=durationText(dur.d);
-    let calcDays=dur.d;
-
-    // ถ้ายกเลิกติ๊ก "นับจำนวนวันเศษ" ของ รพ. นั้นๆ
-    if(!data['count_extra_days'+i]){
-      displayDays='-';
-      calcDays=0; // ไม่นำวันเศษไปรวม
-    }
+    
+    if(!data['count_extra_days'+i]) displayDays='-';
 
     hospitals.push({
       name:data['hospital'+i],prov:data['province'+i],level:data['level'+i],
@@ -1588,34 +1584,7 @@ function updatePreview(){
       end:end?formatThaiDate(end):(start?fmtDate(eDate):''),
       y:durationText(dur.y),m:durationText(dur.m),d:displayDays
     });
-
-    // เก็บข้อมูลลงอาเรย์เพื่อนำไปคำนวณ "รวมทั้งสิ้น"
-    allDurationsForTotal.push({ y: dur.y, m: dur.m, d: calcDays });
   }
-
-  // --- ระบบคำนวณ "รวมทั้งสิ้น" ใหม่ โดยนำเฉพาะช่องที่ติ๊กมารวมกัน ---
-  let totalY = 0, totalM = 0, totalD = 0;
-  allDurationsForTotal.forEach(item => {
-    totalY += Number(item.y || 0);
-    totalM += Number(item.m || 0);
-    totalD += Number(item.d || 0);
-  });
-
-  // ปัดเศษเดือนและปีหากวันหรือเดือนเกิน
-  if(totalD >= 30){ // คร่าวๆ หรือใช้ระบบทดเดือนตามปกติ
-    totalM += Math.floor(totalD / 30);
-    totalD = totalD % 30;
-  }
-  if(totalM >= 12){
-    totalY += Math.floor(totalM / 12);
-    totalM = totalM % 12;
-  }
-
-  const totalDur = {
-    y: totalY > 0 ? totalY : '',
-    m: totalM > 0 ? totalM : '',
-    d: totalD > 0 ? totalD : '-'
-  };
 
   $('preview-page1').innerHTML=renderPage1(
     data,finalWorkDur,totalDur,hospitals,
