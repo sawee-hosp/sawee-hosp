@@ -1375,14 +1375,37 @@ function parseThaiMonth(s){
 }
 function formatThaiDate(s){const d=parseDate(s);if(!d||isNaN(d))return'';return fmtDate(d);}
 function fmtDate(d){if(!d||isNaN(d))return'';return d.getDate()+' '+THAI_MONTHS[d.getMonth()]+' '+(d.getFullYear()+543);}
-function calculateDuration(dStart,dEnd){
-  if(!dStart||!dEnd)return{y:'',m:'',d:''};
-  let y=dEnd.getFullYear()-dStart.getFullYear();
-  let m=dEnd.getMonth()-dStart.getMonth();
-  let d=dEnd.getDate()-dStart.getDate();
-  if(d<0){m--;const prev=new Date(dEnd.getFullYear(),dEnd.getMonth(),0);d+=prev.getDate();}
-  if(m<0){y--;m+=12;}
-  return{y,m,d};
+function calculateDuration(dStart, dEnd) {
+  if (!dStart || !dEnd) return { y: '', m: '', d: '' };
+  
+  let y = dEnd.getFullYear() - dStart.getFullYear();
+  let m = dEnd.getMonth() - dStart.getMonth();
+  let d = dEnd.getDate() - dStart.getDate();
+
+  // ตรวจสอบว่าเป็นวันสิ้นเดือนของเดือนนั้นๆ หรือไม่ (เช่น 31 ตุลาคม, 30 เมษายน ฯลฯ)
+  const isEndDetailPage = new Date(dEnd.getFullYear(), dEnd.getMonth() + 1, 0).getDate() === dEnd.getDate();
+  const isStartFirst = dStart.getDate() === 1;
+
+  // ถ้าเริ่มวันที่ 1 และมาสิ้นสุดในวันสิ้นเดือนพอดี ให้ปรับเศษวันเป็น 0 และบวกเดือนเพิ่มอีก 1 เดือน
+  if (isStartFirst && isEndDetailPage) {
+    m += 1;
+    d = 0;
+  } else if (d < 0) {
+    m--;
+    const prev = new Date(dEnd.getFullYear(), dEnd.getMonth(), 0);
+    d += prev.getDate();
+  }
+
+  if (m >= 12) {
+    y += Math.floor(m / 12);
+    m = m % 12;
+  }
+  if (m < 0) {
+    y--;
+    m += 12;
+  }
+  
+  return { y, m, d };
 }
 function ThaiBaht(num){
   if(isNaN(num)||num===0)return'';
