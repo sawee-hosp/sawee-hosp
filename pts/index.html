@@ -1539,16 +1539,11 @@ function ThaiBaht(num){
 }
 
 // PREVIEW
+// PREVIEW
 function updatePreview(){
   const data=getFormData(),endDate=parseThaiMonth(S.currentMonthYear);
   const totalDur=calculateDuration(parseDate(data.start_date),endDate);
   
-  // ปรับการแสดงผล "ปฏิบัติงานในหน่วยบริการ" (ปีแรก) ตาม checkbox แยกอิสระ
-  let displayWorkDurY = durationText(workDur.y);
-  let displayWorkDurM = durationText(workDur.m);
-  let displayWorkDurD = durationText(workDur.d);
-  if(!data.count_extra_days_all) displayWorkDurD = '-';
-
   let workStart=data.start_date;
   if(!workStart){
     for(let i=1;i<=3;i++){
@@ -1557,6 +1552,12 @@ function updatePreview(){
   }
   const workDur=calculateDuration(parseDate(workStart),endDate);
   
+  // ปรับการแสดงผล "ปฏิบัติงานในหน่วยบริการ" (ปีแรก) ตาม checkbox แยกอิสระ
+  let displayWorkDurY = durationText(workDur.y);
+  let displayWorkDurM = durationText(workDur.m);
+  let displayWorkDurD = durationText(workDur.d);
+  if(!data.count_extra_days_all) displayWorkDurD = '-';
+
   const hospitals=[];
   for(let i=1;i<=3;i++){
     if(!data['hospital'+i])continue;
@@ -1576,8 +1577,8 @@ function updatePreview(){
     });
   }
   
-  // ปรับผลรวมปีแรกถ้าใช้เงื่อนไขจากวันเริ่มรับราชการ
-  const finalWorkDur = { y: durationText(workDur.y), m: durationText(workDur.m) };
+  // ปรับผลรวมปีแรกตามตัวเลือก
+  const finalWorkDur = { y: durationText(workDur.y), m: durationText(workDur.m), d: displayWorkDurD };
 
   $('preview-page1').innerHTML=renderPage1(
     data,finalWorkDur,totalDur,hospitals,
