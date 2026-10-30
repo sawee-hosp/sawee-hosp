@@ -632,7 +632,42 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
             <div class="form-group"><label>ระดับ/กลุ่ม</label><input type="text" id="fm-level1" placeholder="เช่น พื้นที่ปกติ 2" oninput="onFormInput()"></div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label>เริ่มปฏิบัติงาน รพ.นี้</label><input type="date" data-thai="1" id="fm-start1" oninput="onFormInput()"></div>
+            <div class="form-group">
+
+  <label>เริ่มปฏิบัติงาน รพ.นี้</label>
+
+  <input
+
+    type="date"
+
+    data-thai="1"
+
+    id="fm-start1"
+
+    oninput="onFormInput()"
+
+  >
+
+
+  <label style="display:flex;align-items:center;gap:6px;margin-top:8px;cursor:pointer;font-size:13px;font-weight:400">
+
+    <input
+
+      type="checkbox"
+
+      id="fm-count-extra-days1"
+
+      checked
+
+      style="width:auto;accent-color:var(--primary)"
+
+    >
+
+    นับจำนวนวันเศษ
+
+  </label>
+
+</div>
             <div class="form-group"><label>สิ้นสุด (เว้นว่างถ้ายังอยู่)</label><input type="date" data-thai="1" id="fm-end1" oninput="onFormInput()"></div>
           </div>
         </div>
@@ -1122,7 +1157,7 @@ function addNewProfile(){
     hospital3:'',province3:'',level3:'',start_date3:'',end_date3:'',
     doctor_mode:false,train_y:'',train_m:'',
     train_hosp1_name:'',train_hosp1_prov:'',train_hosp1_start:'',train_hosp1_end:'',
-    train_hosp2_name:'',train_hosp2_prov:'',train_hosp2_start:'',train_hosp2_end:''};
+    train_hosp2_name:'',train_hosp2_prov:'',train_hosp2_start:'',train_hosp2_end:'',count_extra_days1: true,};
   S.profiles.push(np);S.activeProfileId=np.id;
   clearForm();renderProfileChips();renderLeaveTable();updatePreview();
   scheduleSave();
@@ -1137,6 +1172,13 @@ function populateForm(p){
   s('fm-name',p.name);s('fm-surname',p.surname);s('fm-job',p.job);s('fm-money',p.money||'');s('fm-start-all',p.start_date);
   document.querySelectorAll('input[name="emp-type"]').forEach(r=>{r.checked=r.value===(p.emp_type||'ข้าราชการ');});
   s('fm-hosp1',p.hospital1);s('fm-prov1',p.province1);s('fm-level1',p.level1);s('fm-start1',p.start_date1);s('fm-end1',p.end_date1);
+  const countDays1 = document.getElementById('fm-count-extra-days1');
+
+if (countDays1) {
+  // รายชื่อเก่าที่ยังไม่มีค่านี้ ให้ติ๊กเป็นค่าเริ่มต้น
+  countDays1.checked = p.count_extra_days1 !== false;
+}
+
   s('fm-hosp2',p.hospital2);s('fm-prov2',p.province2);s('fm-level2',p.level2);s('fm-start2',p.start_date2);s('fm-end2',p.end_date2);
   s('fm-hosp3',p.hospital3);s('fm-prov3',p.province3);s('fm-level3',p.level3);s('fm-start3',p.start_date3);s('fm-end3',p.end_date3);
   // Doctor fields
@@ -1145,6 +1187,12 @@ function populateForm(p){
   s('fm-train-hosp1',p.train_hosp1_name);s('fm-train-prov1',p.train_hosp1_prov);s('fm-train-start1',p.train_hosp1_start);s('fm-train-end1',p.train_hosp1_end);
   s('fm-train-hosp2',p.train_hosp2_name);s('fm-train-prov2',p.train_hosp2_prov);s('fm-train-start2',p.train_hosp2_start);s('fm-train-end2',p.train_hosp2_end);
   updatePreview();
+  const countDays1 = document.getElementById('fm-count-extra-days1');
+
+if (countDays1) {
+  countDays1.checked = true;
+}
+
 }
 function clearForm(){
   document.querySelectorAll('#user-form input[type="text"],#user-form input[type="number"],#user-form input[type="date"]').forEach(i=>i.value='');
@@ -1163,6 +1211,7 @@ function getFormData(){
     train_y:g('fm-train-y'),train_m:g('fm-train-m'),
     train_hosp1_name:g('fm-train-hosp1'),train_hosp1_prov:g('fm-train-prov1'),train_hosp1_start:g('fm-train-start1'),train_hosp1_end:g('fm-train-end1'),
     train_hosp2_name:g('fm-train-hosp2'),train_hosp2_prov:g('fm-train-prov2'),train_hosp2_start:g('fm-train-start2'),train_hosp2_end:g('fm-train-end2'),
+    count_extra_days1: document.getElementById('fm-count-extra-days1')?.checked ?? true,
   };
 }
 function fillSawee(n,checked){
@@ -1445,9 +1494,33 @@ function updatePreview(){
     if(data['hospital'+i]){
       const s=data['start_date'+i],e=data['end_date'+i];
       const eDate=e?parseDate(e):(s?endDate:null);
-      const dur=s&&eDate?calculateDuration(parseDate(s),eDate):{y:'',m:'',d:''};
-      hospitals.push({name:data['hospital'+i],prov:data['province'+i],level:data['level'+i],
-        start:formatThaiDate(s),end:e?formatThaiDate(e):(s?fmtDate(eDate):''),y:dur.y,m:dur.m,d:dur.d});
+const dur = s && eDate
+  ? calculateDuration(parseDate(s), eDate)
+  : { y: '', m: '', d: '' };
+
+// ปรับเฉพาะการแสดงผล ไม่เปลี่ยนผลคำนวณจริง
+let displayDays = dur.d;
+
+// เศษวันเป็น 0 ให้แสดง "-"
+if (displayDays === 0 || displayDays === '0') {
+  displayDays = '-';
+}
+
+// ไม่ติ๊ก "นับจำนวนวันเศษ" ให้ รพ. 1 แสดง "-"
+if (i === 1 && !data.count_extra_days1) {
+  displayDays = '-';
+}
+
+hospitals.push({
+  name: data['hospital' + i],
+  prov: data['province' + i],
+  level: data['level' + i],
+  start: formatThaiDate(s),
+  end: e ? formatThaiDate(e) : (s ? fmtDate(eDate) : ''),
+  y: dur.y,
+  m: dur.m,
+  d: displayDays
+});
     }
   }
   const moneyFmt=data.money?data.money.toLocaleString('en-US'):'';
