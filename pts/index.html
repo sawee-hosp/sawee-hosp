@@ -1382,11 +1382,9 @@ function calculateDuration(dStart, dEnd) {
   let m = dEnd.getMonth() - dStart.getMonth();
   let d = dEnd.getDate() - dStart.getDate();
 
-  // ตรวจสอบว่าเป็นวันสิ้นเดือนของเดือนนั้นๆ หรือไม่ (เช่น 31 ตุลาคม, 30 เมษายน ฯลฯ)
   const isEndDetailPage = new Date(dEnd.getFullYear(), dEnd.getMonth() + 1, 0).getDate() === dEnd.getDate();
   const isStartFirst = dStart.getDate() === 1;
 
-  // ถ้าเริ่มวันที่ 1 และมาสิ้นสุดในวันสิ้นเดือนพอดี ให้ปรับเศษวันเป็น 0 และบวกเดือนเพิ่มอีก 1 เดือน
   if (isStartFirst && isEndDetailPage) {
     m += 1;
     d = 0;
@@ -1405,7 +1403,12 @@ function calculateDuration(dStart, dEnd) {
     m += 12;
   }
   
-  return { y, m, d };
+  // แปลงค่า 0 ให้เป็น '-' ทุกจุด
+  return { 
+    y: y === 0 ? '-' : y, 
+    m: m === 0 ? '-' : m, 
+    d: d === 0 ? '-' : d 
+  };
 }
 function ThaiBaht(num){
   if(isNaN(num)||num===0)return'';
@@ -1601,7 +1604,7 @@ function renderPage1(data,workDur,totalDur,hospitals,moneyFmt,moneyTxt){
   }
 
   // ---- รวมทั้งสิ้น / ได้รับเงินจำนวน ----
-  const tY=totalDur.y!==''?String(totalDur.y):'', tM=totalDur.m!==''?String(totalDur.m):'', tD=totalDur.d?String(totalDur.d):'';
+  const tY=totalDur.y!==''?String(totalDur.y):'', tM=totalDur.m!==''?String(totalDur.m):'', tD=totalDur.d?String(totalDur.d):'-';
   h+=flow(113.9,R,B[20],[{t:'รวมทั้งสิ้น',b:1},{f:tY,fw:100.5},{t:'ปี',b:1},{f:tM,fw:62},{t:'เดือน',b:1},{f:tD,fw:51.5},{t:'วัน',b:1}]);
   const mfw=Math.max(161,mw(moneyTxt||'',FS,true)+12);
   h+=flow(114.1,R,B[21],[{t:'ได้รับเงินจำนวน',b:1},{f:moneyFmt,fw:95},{t:'บาท (',b:1},{f:moneyTxt,fw:mfw,left:1},{t:')',b:1}]);
