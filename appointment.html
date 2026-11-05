@@ -173,6 +173,7 @@ body.light h1{background:linear-gradient(92deg,#0f2f6b,#0a84c9 55%,#6d4fd0);
 .hbtn{background:none;border:none;color:var(--dim);cursor:pointer;font-size:15px;padding:3px 5px;
   border-radius:8px;line-height:1}
 .hbtn:hover{background:var(--chip);color:var(--txt)}
+.hbtn.on{background:rgba(16,185,129,.18);box-shadow:inset 0 0 0 1px rgba(16,185,129,.55)}
 .sub{font-size:11px;color:var(--dim);margin-top:3px;display:flex;gap:6px;align-items:center}
 .dot{width:6px;height:6px;border-radius:50%;background:#22e38a;box-shadow:0 0 8px #22e38a;flex:0 0 6px}
 .stale{color:#ff6070!important;font-weight:600;animation:pulse 1.6s ease-in-out infinite}
@@ -358,6 +359,37 @@ body.light #medPop { box-shadow: 0 10px 25px rgba(40,60,110,0.25); border-color:
 .mb-pill { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
 body.light .mb-day { background: rgba(225,29,72,0.1); color: #e11d48; }
 body.light .mb-pill { background: rgba(5,150,105,0.1); color: #059669; }
+
+/* ===== แถบถามสลับโหมดประหยัด ===== */
+#liteAsk{position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:95;display:none;
+  align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;max-width:calc(100% - 20px);
+  padding:9px 12px;border-radius:12px;background:var(--head);color:var(--txt);
+  border:1px solid #f59e0b;font-size:12px;line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+#liteAsk.on{display:flex}
+#liteAsk span{flex:1 1 220px}
+#liteAsk button{padding:6px 10px;font-size:12px}
+
+/* =================================================================
+   โหมดประหยัด RAM (body.lite) — ปิดเฉพาะเอฟเฟกต์ที่หนักต่อ GPU/RAM
+   โหมดเต็มด้านบนไม่ถูกแตะต้อง สลับกลับได้ทุกเมื่อ
+================================================================= */
+body.lite #bg, body.lite #grid{display:none}
+body.lite header, body.lite .bar, body.lite footer, body.lite .mask{
+  backdrop-filter:none;-webkit-backdrop-filter:none}
+body.lite header{background:var(--head)}
+body.lite .bar{background:var(--stick)}
+body.lite footer{background:var(--head);box-shadow:none}
+body.lite .mask{background:rgba(4,7,16,.9)}
+body.lite.light .mask{background:rgba(190,205,230,.92)}
+body.lite .modal, body.lite #medPop, body.lite #toast, body.lite #liteAsk{box-shadow:none}
+body.lite .bk, body.lite .cd .v{background:none;-webkit-background-clip:border-box;background-clip:border-box;
+  color:var(--txt);-webkit-text-fill-color:currentColor;filter:none}
+body.lite .cd.zero .v{-webkit-text-fill-color:var(--dim)}
+body.lite .c-sum{box-shadow:none;border-right:1px solid var(--line)}
+body.lite .cd.now{box-shadow:0 0 0 1px var(--acc)}
+body.lite .plus.t0, body.lite .stale, body.lite .cd.now, body.lite .sk{animation:none}
+body.lite .cd:hover{transform:none}
+body.lite .wkw.on, body.lite .slot-chip.on{box-shadow:none}
 </style>
 </head>
 <body>
@@ -475,6 +507,11 @@ body.light .mb-pill { background: rgba(5,150,105,0.1); color: #059669; }
 <div id="bg"></div><div id="grid"></div>
 <div id="toast"></div>
 <div id="medPop"></div>
+<div id="liteAsk">
+  <span id="liteAskMsg"></span>
+  <button class="btn-p" onclick="answerLite(true)">🍃 สลับโหมดประหยัด</button>
+  <button onclick="answerLite(false)">ไม่ตอนนี้</button>
+</div>
 
 <!-- ================= LOGIN ================= -->
 <div class="mask on" id="mLogin"><div class="modal" style="text-align:center">
@@ -515,6 +552,7 @@ body.light .mb-pill { background: rgba(5,150,105,0.1); color: #059669; }
         <path d="M256 258v112M200 314h112" stroke="#fff" stroke-width="38" stroke-linecap="round"/>
       </svg>
       <h1>ตารางนัด รพ.สวี</h1>
+      <button class="hbtn" id="btnLite" onclick="toggleLite()" title="โหมดประหยัด RAM">✨</button>
       <button class="hbtn" id="btnTheme" onclick="toggleTheme()" title="สลับโหมดสว่าง/มืด">🌙</button>
       <button class="hbtn" onclick="logout()" title="ออกจากระบบ">⏻</button>
     </div>
@@ -628,6 +666,7 @@ const HOLIDAYS={
 
 let TOKEN=localStorage.getItem('tk')||'', ROLE=localStorage.getItem('rl')||'';
 let DATA=null,timer=null,VIEW='t',loading=false;
+let VER='', lastDay='', visBound=false;
 let MODE=localStorage.getItem('md')||'sum';
 let SEL=new Set(JSON.parse(localStorage.getItem('sel')||'[]'));
 let DOW=new Set(JSON.parse(localStorage.getItem('dow')||'[1,2,3,4,5]'));
@@ -657,6 +696,87 @@ function toggleTheme(){
   applyTheme();
 }
 applyTheme();
+
+/*========== โหมดประหยัด RAM (Lite) ==========
+  - เปิด/ปิดเองได้ที่ปุ่ม ✨/🍃 มุมขวาบน (จำค่าไว้ในเครื่อง)
+  - ระบบจะ "ถาม" ให้สลับเมื่อ:
+    1) เปิดครั้งแรกบนเครื่องที่ RAM ≤ LOW_RAM_GB (navigator.deviceMemory)
+    2) หน่วยความจำ JS ของหน้านี้เกิน MEM_LIMIT ของ RAM เครื่อง (Chrome)
+    3) เฟรมแสดงผลช้าต่อเนื่อง 2 รอบ (อาการเครื่องกำลังหนักจากเอฟเฟกต์)
+  - กด "ไม่ตอนนี้" จะไม่ถามซ้ำ SNOOZE_H ชั่วโมง
+*/
+const MEM_LIMIT=0.30, LOW_RAM_GB=4, SLOW_FRAME_MS=50, SNOOZE_H=8, CHECK_MS=30000;
+let LITE=false, liteTimer=null, slowCount=0;
+
+function applyLite(on){
+  LITE=!!on;
+  document.body.classList.toggle('lite',LITE);
+  const b=document.getElementById('btnLite');
+  if(b){
+    b.textContent=LITE?'🍃':'✨';
+    b.title=LITE?'โหมดประหยัด RAM: เปิดอยู่ (กดเพื่อกลับเป็นแบบเต็ม)':'โหมดเต็ม (กดเพื่อสลับเป็นโหมดประหยัด RAM)';
+    b.classList.toggle('on',LITE);
+  }
+  if(DATA) render();
+}
+function toggleLite(){
+  const on=!LITE;
+  localStorage.setItem('lite',on?'1':'0');
+  if(!on) localStorage.setItem('liteSnooze',String(Date.now()+SNOOZE_H*3600000));
+  hideLiteAsk(); applyLite(on);
+  toast(on?'🍃 เปิดโหมดประหยัด RAM แล้ว':'✨ กลับเป็นโหมดเต็มแล้ว');
+}
+function askLite(msg){
+  if(LITE) return;
+  if(Date.now()<Number(localStorage.getItem('liteSnooze')||0)) return;
+  document.getElementById('liteAskMsg').textContent=msg;
+  document.getElementById('liteAsk').classList.add('on');
+}
+function hideLiteAsk(){ document.getElementById('liteAsk').classList.remove('on'); }
+function answerLite(yes){
+  hideLiteAsk();
+  if(yes){ localStorage.setItem('lite','1'); applyLite(true); toast('🍃 เปิดโหมดประหยัด RAM แล้ว'); }
+  else localStorage.setItem('liteSnooze',String(Date.now()+SNOOZE_H*3600000));
+}
+function memRatio(){
+  const pm=performance.memory, gb=navigator.deviceMemory;
+  if(!pm||!pm.usedJSHeapSize) return 0;
+  const total=gb?gb*1073741824:pm.jsHeapSizeLimit;
+  return total?pm.usedJSHeapSize/total:0;
+}
+function frameMs(ms){
+  return new Promise(res=>{
+    let n=0,t0=0;
+    function f(t){ if(!t0) t0=t; n++;
+      if(t-t0<ms) requestAnimationFrame(f); else res((t-t0)/Math.max(1,n-1)); }
+    requestAnimationFrame(f);
+  });
+}
+async function checkPressure(){
+  if(LITE||document.hidden) return;
+  const r=memRatio();
+  if(r>MEM_LIMIT){
+    askLite('⚠ หน้านี้ใช้หน่วยความจำประมาณ '+Math.round(r*100)+'% ของเครื่อง — สลับเป็นโหมดประหยัด RAM ไหม?');
+    return;
+  }
+  const fm=await frameMs(2000);
+  if(document.hidden) return;
+  slowCount=(fm>SLOW_FRAME_MS)?slowCount+1:0;
+  if(slowCount>=2){
+    slowCount=0;
+    askLite('⚠ เครื่องแสดงผลช้า (~'+Math.max(1,Math.round(1000/fm))+' fps) อาจกำลังหนัก — สลับเป็นโหมดประหยัด RAM ไหม?');
+  }
+}
+function initLite(){
+  const saved=localStorage.getItem('lite');
+  applyLite(saved==='1');
+  const gb=navigator.deviceMemory;
+  if(saved===null && gb && gb<=LOW_RAM_GB)
+    askLite('💻 เครื่องนี้มี RAM ประมาณ '+gb+' GB แนะนำโหมดประหยัด เพื่อไม่ให้เครื่องค้างขณะเปิดคู่ HOSxP — สลับไหม?');
+  clearInterval(liteTimer); liteTimer=setInterval(checkPressure,CHECK_MS);
+  setTimeout(checkPressure,8000);
+}
+initLite();
 
 function toggleAvail(){
   FILTER_MODE = (FILTER_MODE + 1) % 3; 
@@ -765,7 +885,10 @@ function startApp(){
   
   loadData(1);
   clearInterval(timer); timer=setInterval(()=>loadData(0),REFRESH);
-  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) loadData(0); });
+  if(!visBound){
+    visBound=true;
+    document.addEventListener('visibilitychange',()=>{ if(!document.hidden) loadData(0); });
+  }
 }
 
 /*========== JSONP แทน Fetch ป้องกันปัญหา CORS/Auth บนมือถือ ==========*/
@@ -806,8 +929,13 @@ function skeleton(){
   document.getElementById('out').innerHTML=h+'</div>';
 }
 
+/* ดึงข้อมูลแบบประหยัด:
+   - หน้าต่างถูกซ่อน/ย่อ → ไม่ดึง (ดึงทันทีเมื่อกลับมาเปิด)
+   - ถามเวอร์ชันก่อน (ข้อมูลไม่กี่ไบต์) ถ้าไม่เปลี่ยน ไม่โหลดทั้งก้อนและไม่วาดตารางใหม่
+   - ถ้า Apps Script ยังเป็นเวอร์ชันเก่า (ไม่มี action=ver) จะกลับไปโหลดทั้งก้อนเหมือนเดิม */
 async function loadData(forceReload){
   if(loading) return;
+  if(!forceReload && document.hidden) return;
   loading=true;
   if(forceReload) {
     DATA = null; 
@@ -815,9 +943,19 @@ async function loadData(forceReload){
     skeleton(); 
   }
   try{
+    if(!forceReload && DATA && VER){
+      const v=await call({action:'ver',token:TOKEN},1);
+      if(v && v.ok && v.ver){
+        if(v.updated) DATA.updated=v.updated;
+        if(v.ver===VER){
+          if(iso(new Date())!==lastDay) render(); else updStatus();
+          return;
+        }
+      } else if(v && v.err==='unauthorized'){ logout(); return; }
+    }
     const j=await call({action:'data',token:TOKEN});
     if(!j.ok){ if(j.err==='unauthorized'){ logout(); return; } throw new Error(j.err||'ไม่ทราบสาเหตุ'); }
-    DATA=j; updPickLabel(); render();
+    DATA=j; VER=j.ver||''; updPickLabel(); render();
   }catch(x){
     if(!DATA) document.getElementById('out').innerHTML=
       '<div style="padding:36px;text-align:center;color:#e11d48">เชื่อมต่อไม่ได้<br>'+
@@ -838,7 +976,7 @@ function setView(v){
   if(selREl) selREl.style.display=(v==='t')?'inline-block':'none';
   drawLegend(); render();
 }
-function render(){ if(!DATA) return; (VIEW==='t')?renderTable():renderCal(); updStatus(); }
+function render(){ if(!DATA) return; lastDay=iso(new Date()); (VIEW==='t')?renderTable():renderCal(); updStatus(); }
 
 function drawLegend(){
   const chips=[1,2,3,4,5,6,0].map(d=>
@@ -1033,6 +1171,13 @@ function cellHtml(bk,max,peak){
     '<span class="sep">/</span><span class="bk">'+bk+'</span></div>';
 }
 function heat(p){
+  if(LITE){   // โหมดประหยัด: สีทึบ ไม่ใช้ gradient
+    if(p>=1)  return 'rgba(220,38,38,.9)';
+    if(p>=.8) return 'rgba(234,88,12,.82)';
+    if(p>=.5) return 'rgba(202,138,4,.7)';
+    if(p>0)   return 'rgba(16,160,110,.68)';
+    return 'rgba(16,185,129,.22)';
+  }
   if(p>=1)  return 'linear-gradient(180deg,rgba(239,68,68,.92),rgba(176,26,36,.92))';
   if(p>=.8) return 'linear-gradient(180deg,rgba(249,115,22,.84),rgba(199,79,10,.84))';
   if(p>=.5) return 'linear-gradient(180deg,rgba(234,179,8,.72),rgba(179,132,6,.72))';
