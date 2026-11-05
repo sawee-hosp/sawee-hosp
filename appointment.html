@@ -592,7 +592,7 @@ body.lite .wkw.on, body.lite .slot-chip.on{box-shadow:none}
 <!-- ================= PICK ================= -->
 <div class="mask" id="mPick"><div class="modal">
   <h2>🏥 เลือกคลินิกที่ต้องการแสดง</h2>
-  <p>เลือกได้หลายคลินิก · เมื่อเลือกเฉพาะคลินิก ระบบจะซ่อนวันที่ไม่มีนัด เสาร์–อาทิตย์ และวันหยุดราชการ</p>
+  <p>เลือกได้หลายคลินิก · เมื่อเลือกเฉพาะคลินิก ระบบจะซ่อนวันที่ไม่มีนัด (ยกเว้นวันที่ตั้งเปิดคลินิกไว้ใน ⚙ Slot จะแสดงเสมอแม้ยังเป็น 0) เสาร์–อาทิตย์ และวันหยุดราชการ</p>
   <div style="display:flex;gap:6px;margin-bottom:9px">
     <button style="flex:1" onclick="pickMode('sum')">📊 รวมทุกคลินิก</button>
     <button style="flex:1" onclick="pickMode('all')">🗂 แสดงทั้งหมด</button>
@@ -1092,15 +1092,16 @@ function renderTable(){
 
     if(!DOW.has(dw)) continue;                       
     if(hol&&!SHOWHOL) continue;                      
-    if(MODE!=='sum'&&(sum===0||diff<0)) continue;    
+    if(MODE!=='sum'&&diff<0) continue;
 
     let isAvailable = false;
-    let isScheduled = false; 
-    
+    let isScheduled = false;
+    const openSet = new Set();   // คลินิกที่ "ตั้งวันเปิดไว้" ใน Slot และตรงกับวันนี้
+
     const weekOfMonth = Math.ceil(d.getDate() / 7);
     const dayOfWeek = d.getDay();
     const clinicsToCheck = codes ? DATA.clinics.filter(c=>codes.includes(c.code)) : DATA.clinics;
-    
+
     for(let c of clinicsToCheck) {
       let dowMatch = true;
       let womMatch = true;
@@ -1112,9 +1113,10 @@ function renderTable(){
         const woms = c.wom.split(',').map(Number);
         if(!woms.includes(weekOfMonth)) womMatch = false;
       }
-      
+
       if(dowMatch && womMatch) {
         isScheduled = true;
+        if(c.dow || c.wom) openSet.add(c.code);
         const bk = row[c.code] || 0;
         const mx = maxMap[c.code];
         if (mx == null || bk < mx) {
@@ -1126,8 +1128,11 @@ function renderTable(){
     if (FILTER_MODE >= 1) {
       if (diff < 0) continue; 
       if (!isScheduled) continue; 
-      if (FILTER_MODE === 2 && !isAvailable) continue; 
+      if (FILTER_MODE === 2 && !isAvailable) continue;
     }
+
+    // เลือกเฉพาะคลินิก: ซ่อนวันที่ไม่มีนัด ยกเว้นวันที่ตั้งเปิดคลินิกไว้ (แสดงแม้นัดยังเป็น 0)
+    if(MODE!=='sum' && sum===0 && openSet.size===0) continue;
 
     shown++;
 
@@ -1139,8 +1144,9 @@ function renderTable(){
             :(diff===0?'<div class="plus t0">วันนี้</div>'
                       :'<div class="plus pv num">'+diff+' วัน</div>'))+
       '</div></td><td class="c-day">'+TH_DAY[dw]+'</td>'+
-      '<td class="c-sum">'+sumCell(sum,peakSum)+'</td>';
-    cols.forEach(c=>{ h+='<td>'+cellHtml(row[c.code]||0,maxMap[c.code],peak[c.code]||0)+'</td>'; });
+      '<td class="c-sum">'+sumCell(sum,peakSum,openSet.size>0)+'</td>';
+    cols.forEach(c=>{ h+='<td>'+cellHtml(row[c.code]||0,maxMap[c.code],peak[c.code]||0,
+      (c.dow||c.wom)?openSet.has(c.code):null)+'</td>'; });
     h+='</tr>';
   }
   h+='</tbody></table>';
@@ -1149,14 +1155,21 @@ function renderTable(){
   document.getElementById('out').innerHTML=h;
 }
 
-function sumCell(v,peak){
-  if(v===0) return '<div class="cell"><span class="empty">–</span></div>';
+function sumCell(v,peak,open){
+  if(v===0) return open
+    ? '<div class="cell" style="background:rgba(99,140,225,.10)"><span class="bk">0</span></div>'
+    : '<div class="cell"><span class="empty">–</span></div>';
   const r=peak>0?(v/peak):0;
   const a=(0.14+0.42*r).toFixed(3);
   return '<div class="cell" style="background:rgba(99,140,225,'+a+')"><span class="bk">'+v+'</span></div>';
 }
 
-function cellHtml(bk,max,peak){
+/* open: true = วันเปิดคลินิกตามที่ตั้งไว้, false = ตั้งวันไว้แต่ไม่ใช่วันนี้, null = ไม่ได้ตั้งวัน */
+function cellHtml(bk,max,peak,open){
+  if(bk===0&&open===false) return '<div class="cell"><span class="empty">–</span></div>';
+  if(bk===0&&max==null&&open)   // วันเปิดคลินิก ยังไม่มีนัด ไม่จำกัด slot
+    return '<div class="cell" style="background:rgba(94,166,225,.14)">'+
+      '<span class="rem" style="color:var(--dim)">∞</span><span class="sep">/</span><span class="bk">0</span></div>';
   if(bk===0&&(max==null||max===0)) return '<div class="cell"><span class="empty">–</span></div>';
   if(max==null){
     const r=peak>0?(bk/peak):0;
