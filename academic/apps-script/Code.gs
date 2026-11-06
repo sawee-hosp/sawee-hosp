@@ -39,7 +39,7 @@ const SCHEMA = {
   Sources: ['sourceId', 'folderUrl', 'folderId', 'folderName', 'year', 'category', 'enabled', 'lastSync', 'note'],
   Works: ['id', 'sourceId', 'year', 'category', 'title', 'authors', 'department', 'keywords', 'summary', 'access', 'published', 'featured',
     'showThumb', 'locked', 'fileId', 'fileName', 'fileUrl', 'mimeType', 'sizeMB', 'modified', 'ocrStatus', 'ocrNote', 'thumbId', 'viewId',
-    'createdAt', 'updatedAt', 'code', 'award', 'awardRank', 'score', 'submissionId', 'abstract', 'reviewed', 'reviewedAt', 'dupOf'],
+    'createdAt', 'updatedAt', 'code', 'award', 'awardRank', 'score', 'submissionId', 'abstract', 'reviewed', 'reviewedAt', 'dupOf', 'fileRole', 'folderId', 'folderPath', 'viewSrc'],
   Texts: ['id', 'chars', 'updatedAt', 'text'],
   Visitors: ['email', 'name', 'org', 'firstSeen', 'lastSeen', 'logins'],
   Sessions: ['token', 'email', 'expires', 'createdAt'],
@@ -139,6 +139,10 @@ const ADMIN = {
   setAwards: function (r) { return setAwards_(r.items || []); },
   suggestMeta: function (r) { return suggestMeta_(r.id, !!r.ai); },
   mergeDup: function (r) { return mergeDup_(r.id, r.into, !!r.undo); },
+  setGroup: function (r) { return setGroup_(r.primary, r.members || []); },
+  setRole: function (r) { return setRole_(r.id, r.role); },
+  extractText: function (r) { return extractFileText_(r.id); },
+  autoGroup: function (r) { return autoGroup_(!!r.apply); },
   auditSources: function () { return auditSources_(); },
   getText: function (r) { return getText_(r.id); },
   saveText: function (r) { saveText_(r.id, r.text); clearCatalog_(); return true; },
@@ -420,7 +424,7 @@ function isListed_(w) { return bool_(w.published) && ['ignored', 'missing'].inde
 function buildCatalog_() {
   const st = settings_(), works = table_('Works').rows, calls = callsRows_(), stats = eventStats_(), chars = textChars_();
   const visible = resultsVisibleFn_(calls);
-  const list = works.filter(isListed_).map(function (w) { return pubWork_(w, stats, chars, visible); });
+  const list = works.filter(isListed_).map(function (w) { return pubWork_(w, stats, chars, visible, displayFor_(w, works)); });
   return {
     settings: publicSettings_(st),
     works: list,
@@ -435,12 +439,12 @@ function buildCatalog_() {
     version: VERSION
   };
 }
-function pubWork_(w, stats, chars, visible) {
+function pubWork_(w, stats, chars, visible, disp) {
   const id = str_(w.id), acc = ACCESS.indexOf(str_(w.access)) >= 0 ? str_(w.access) : 'verified', fo = acc === 'filename_only';
   const o = {
     id: id, code: str_(w.code), year: str_(w.year), category: str_(w.category) || UNCAT,
     title: fo ? cleanTitle_(w.fileName) : (str_(w.title) || cleanTitle_(w.fileName)),
-    access: acc, featured: bool_(w.featured), views: stats.views[id] || 0, kind: kind_(w.mimeType), updatedAt: iso_(w.updatedAt)
+    access: acc, featured: bool_(w.featured), views: stats.views[id] || 0, kind: kind_(disp ? disp.mimeType : w.mimeType), updatedAt: iso_(w.updatedAt)
   };
   if (!fo) {
     o.authors = str_(w.authors); o.department = str_(w.department); o.keywords = str_(w.keywords); o.summary = str_(w.summary);
@@ -466,7 +470,7 @@ function workDetail_(r) {
   const st = settings_(), works = table_('Works').rows, w = findWork_(works, r.id);
   if (!w || !isListed_(w)) throw new Error('ไม่พบผลงานนี้ หรือผลงานยังไม่เผยแพร่');
   const email = sessionEmail_(r.session), stats = eventStats_(), chars = textChars_();
-  const o = pubWork_(w, stats, chars, resultsVisibleFn_(callsRows_()));
+  const o = pubWork_(w, stats, chars, resultsVisibleFn_(callsRows_()), displayFor_(w, works));
   const ok = canRead_(w, st, email);
   o.canRead = ok;
   o.needVerify = str_(w.access) === 'verified' && !ok;
@@ -905,7 +909,8 @@ function walk_(folder, fixedCat, depth, out, levelCat, skipped, path) {
   while (fi.hasNext()) {
     const f = fi.next(), mime = f.getMimeType();
     if (SUPPORTED.indexOf(mime) < 0) { if (skipped) skipped.push({ id: f.getId(), name: f.getName(), mime: mime, url: f.getUrl(), path: path, sizeMB: Math.round(f.getSize() / 1048576 * 10) / 10 }); continue; }
-    out.push({ id: f.getId(), name: f.getName(), mime: mime, size: f.getSize(), modified: f.getLastUpdated().getTime(), url: f.getUrl(), category: fixedCat || levelCat || UNCAT });
+    out.push({ id: f.getId(), name: f.getName(), mime: mime, size: f.getSize(), modified: f.getLastUpdated().getTime(), url: f.getUrl(), category: fixedCat || levelCat || UNCAT,
+      folderId: folder.getId(), folderPath: path, depth: depth });
   }
   if (depth >= 4) return;
   const fo = folder.getFolders();
@@ -989,10 +994,12 @@ function syncAll_(t0) {
           const nw = { id: uuid_(), sourceId: sid, year: str_(src.year), category: f.category, title: cleanTitle_(f.name), authors: '', department: '',
             keywords: '', summary: '', access: 'verified', published: false, featured: false, showThumb: true, locked: false, fileId: f.id, fileName: f.name,
             fileUrl: f.url, mimeType: f.mime, sizeMB: sizeMB, modified: f.modified, ocrStatus: 'pending', ocrNote: '', thumbId: '', viewId: '',
-            createdAt: nowIso_(), updatedAt: nowIso_(), code: '', award: '', awardRank: '', score: '', submissionId: '', abstract: '' };
+            createdAt: nowIso_(), updatedAt: nowIso_(), code: '', award: '', awardRank: '', score: '', submissionId: '', abstract: '',
+            fileRole: roleGuess_(f.name, f.mime), folderId: f.folderId, folderPath: f.folderPath };
           t.rows.push(nw); byFile[f.id] = nw; res.added++;
           return;
         }
+        if (!str_(w.folderId) || str_(w.folderId) !== f.folderId) { w.folderId = f.folderId; w.folderPath = f.folderPath; }
         if (str_(w.ocrStatus) === 'ignored') return;
         if (str_(w.ocrStatus) === 'missing') { w.ocrStatus = 'pending'; w.ocrNote = 'พบไฟล์อีกครั้ง'; res.changed++; }
         if (String(w.modified) !== String(f.modified)) {
@@ -1017,11 +1024,136 @@ function syncAll_(t0) {
 }
 /** เตรียมภาพปก/ไฟล์เปิดดูที่ยังขาด ของผลงานที่เผยแพร่อยู่ (เช่น เผยแพร่ทีละมาก ๆ แล้วหมดเวลา หรือไฟล์ต้นฉบับถูกแก้) */
 function prepMissingMedia_(t0) {
-  const need = table_('Works').rows.filter(function (w) { return isListed_(w) && mediaMissing_(w); }).map(function (w) { return str_(w.id); });
+  const all = table_('Works').rows;
+  const need = all.filter(function (w) { return isListed_(w) && mediaMissing_(w, all); }).map(function (w) { return str_(w.id); });
   let n = 0;
   need.forEach(function (id) { if (Date.now() - t0 < RUN_BUDGET_MS * 0.6) { try { prepareMediaById_(id); n++; } catch (e) { } } });
   return n;
 }
+/* ============================================================
+ *  กลุ่มไฟล์ของผลงานเดียวกัน (docx ต้นฉบับ / PDF เอกสาร / โปสเตอร์)
+ *  แถวหลัก = ผลงาน (เก็บชื่อเรื่อง ข้อมูล ข้อความเต็ม) · แถวลูก dupOf = id แถวหลัก
+ *  หน้าเว็บแสดง: โปสเตอร์ PDF > โปสเตอร์ภาพ > PDF เอกสาร > ไฟล์ของแถวหลัก
+ * ============================================================ */
+const ROLES = ['poster', 'document', 'source', 'other'];
+function roleGuess_(name, mime) {
+  name = String(name || ''); mime = String(mime || '');
+  if (mime.indexOf('image/') === 0) return 'poster';
+  if (mime === GDOC || mime === DOCX) return 'source';
+  if (mime === GSLIDE || mime === PPTX) return 'other';
+  if (/poster|โปสเตอร์|โปสเตอ|e-?poster/i.test(name)) return 'poster';
+  return 'document';
+}
+function roleOf_(w) { const r = str_(w.fileRole); return ROLES.indexOf(r) >= 0 ? r : roleGuess_(w.fileName, w.mimeType); }
+function membersOf_(w, rows) { return rows.filter(function (x) { return str_(x.dupOf) === str_(w.id) && str_(x.ocrStatus) !== 'missing'; }); }
+function displayFor_(w, rows) {
+  const all = [w].concat(rows ? membersOf_(w, rows) : []);
+  function pick(fn) { return all.filter(fn)[0]; }
+  const isPdf = function (x) { return str_(x.mimeType) === 'application/pdf'; }, isImg = function (x) { return str_(x.mimeType).indexOf('image/') === 0; };
+  const best = pick(function (x) { return roleOf_(x) === 'poster' && isPdf(x); }) || pick(function (x) { return roleOf_(x) === 'poster' && isImg(x); }) ||
+    pick(function (x) { return roleOf_(x) === 'document' && isPdf(x); }) || pick(function (x) { return isPdf(x) || isImg(x); }) || w;
+  return { fileId: str_(best.fileId), mimeType: str_(best.mimeType), sizeMB: best.sizeMB, fileName: str_(best.fileName), id: str_(best.id) };
+}
+/** จัดกลุ่ม: primary = แถวหลัก, members = ไฟล์อื่นของผลงานเดียวกัน */
+function setGroup_(primaryId, memberIds) {
+  memberIds = memberIds.map(String).filter(function (x) { return x && x !== String(primaryId); });
+  mutate_('Works', function (rows) {
+    const p = findWork_(rows, primaryId); if (!p) throw new Error('ไม่พบผลงานหลัก');
+    // ถ้าแถวหลักเดิมเคยเป็นลูกของกลุ่มอื่น ให้ย้ายทั้งกลุ่มเดิมมารวมด้วย
+    const oldParent = str_(p.dupOf);
+    if (oldParent) { memberIds.push(oldParent); rows.forEach(function (x) { if (str_(x.dupOf) === oldParent && str_(x.id) !== str_(p.id)) memberIds.push(str_(x.id)); }); }
+    const set = {}; memberIds.forEach(function (id) { set[id] = 1; });
+    rows.forEach(function (x) { if (set[str_(x.dupOf)] && str_(x.id) !== str_(p.id)) set[str_(x.id)] = 1; }); // ลูกของสมาชิก ย้ายมาด้วย
+    delete set[str_(p.id)];
+    p.dupOf = ''; if (str_(p.ocrStatus) === 'ignored') p.ocrStatus = 'done';
+    // ถ้าแถวหลักใหม่ยังไม่ได้ตรวจ แต่มีสมาชิกที่ตรวจแล้ว ให้ยึดข้อมูลของแถวที่ตรวจแล้ว
+    const rev = !bool_(p.reviewed) && Object.keys(set).map(function (id) { return findWork_(rows, id); }).filter(function (m) { return m && bool_(m.reviewed) && !str_(m.dupOf); })[0];
+    if (rev) {
+      ['title', 'authors', 'department', 'keywords', 'summary', 'abstract', 'award', 'awardRank', 'score', 'code', 'access', 'featured', 'category', 'year'].forEach(function (k) { if (str_(rev[k])) p[k] = rev[k]; });
+      p.reviewed = true; p.reviewedAt = rev.reviewedAt; p.locked = true;
+      const t = getText_(rev.id); if (t) saveText_(p.id, t);
+    }
+    Object.keys(set).forEach(function (id) {
+      const m = findWork_(rows, id); if (!m) return;
+      ['title', 'authors', 'department', 'keywords', 'summary', 'abstract', 'award', 'awardRank', 'score', 'code'].forEach(function (k) {
+        if (!str_(p[k]) && str_(m[k]) && !(k === 'title' && str_(m.title) === cleanTitle_(m.fileName))) p[k] = m[k];
+      });
+      if (bool_(m.published) && !bool_(p.published)) p.published = true;
+      if (bool_(m.reviewed)) p.reviewed = true;
+      m.dupOf = str_(p.id); m.ocrStatus = 'ignored'; m.published = false; m.code = '';
+      m.ocrNote = 'ไฟล์ของผลงาน ' + clip_(str_(p.title) || cleanTitle_(p.fileName), 60);
+      if (str_(m.viewId)) trash_(m.viewId); if (str_(m.thumbId)) trash_(m.thumbId); m.viewId = ''; m.thumbId = ''; m.viewSrc = '';
+      m.updatedAt = nowIso_();
+    });
+    if (!getText_(p.id)) {
+      const withText = Object.keys(set).map(function (id) { return getText_(id); }).filter(String).sort(function (a, b) { return b.length - a.length; })[0];
+      if (withText) saveText_(p.id, withText);
+    }
+    p.updatedAt = nowIso_();
+  });
+  if (bool_(findWork_(table_('Works').rows, primaryId).published)) prepareMediaById_(primaryId);
+  clearCatalog_();
+  return listWorksAdmin_();
+}
+function setRole_(id, role) {
+  if (ROLES.indexOf(role) < 0) throw new Error('บทบาทไฟล์ไม่ถูกต้อง');
+  let parent = '';
+  mutate_('Works', function (rows) { const w = findWork_(rows, id); if (!w) throw new Error('ไม่พบไฟล์'); w.fileRole = role; parent = str_(w.dupOf) || str_(w.id); });
+  const p = findWork_(table_('Works').rows, parent);
+  if (p && isListed_(p)) prepareMediaById_(parent);
+  clearCatalog_();
+  return listWorksAdmin_();
+}
+/** ดึงข้อความจากไฟล์โดยตรง: docx/pptx อ่านจากไฟล์ (ไม่ใช้ OCR), Google Docs/Slides อ่านตรง, PDF/ภาพ ใช้ OCR ของ Drive */
+function extractFileText_(id) {
+  const w = findWork_(table_('Works').rows, id); if (!w) throw new Error('ไม่พบไฟล์');
+  const mime = str_(w.mimeType), fid = str_(w.fileId);
+  if (mime === GDOC) return { text: DocumentApp.openById(fid).getBody().getText(), how: 'Google Docs' };
+  if (mime === GSLIDE) return { text: slidesText_(fid), how: 'Google Slides' };
+  if (mime === DOCX || mime === PPTX) return { text: officeText_(DriveApp.getFileById(fid).getBlob(), mime), how: mime === DOCX ? 'Word' : 'PowerPoint' };
+  const r = extractText_(fid, mime, num_(w.sizeMB), str_(w.fileName));
+  return { text: r.text, how: 'OCR ของ Google Drive' + (r.note ? ' · ' + r.note : '') };
+}
+function xmlText_(xml, tag, para) {
+  return xml.split('</' + para + '>').map(function (p) {
+    const re = new RegExp('<' + tag + '(?:\\s[^>]*)?>([^<]*)</' + tag + '>|<w:tab/>|<w:br/>', 'g');
+    let out = '', m;
+    while ((m = re.exec(p))) out += m[1] !== undefined ? m[1] : (m[0] === '<w:tab/>' ? '\t' : '\n');
+    return out;
+  }).join('\n').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&amp;/g, '&');
+}
+function officeText_(blob, mime) {
+  const files = Utilities.unzip(blob.setContentType('application/zip'));
+  if (mime === DOCX) {
+    const doc = files.filter(function (f) { return f.getName() === 'word/document.xml'; })[0];
+    if (!doc) throw new Error('อ่านไฟล์ Word ไม่ได้');
+    return xmlText_(doc.getDataAsString('UTF-8'), 'w:t', 'w:p').replace(/\n{3,}/g, '\n\n').trim();
+  }
+  const slides = files.filter(function (f) { return /^ppt\/slides\/slide\d+\.xml$/.test(f.getName()); })
+    .sort(function (a, b) { return Number(a.getName().match(/\d+/)[0]) - Number(b.getName().match(/\d+/)[0]); });
+  return slides.map(function (f) { return xmlText_(f.getDataAsString('UTF-8'), 'a:t', 'a:p').trim(); }).join('\n\n').trim();
+}
+/** จัดกลุ่มอัตโนมัติ: ไฟล์ที่อยู่ในโฟลเดอร์ย่อยเดียวกัน (ลึกกว่าโฟลเดอร์ประเภท และมี 2–8 ไฟล์) = ผลงานเดียวกัน */
+function autoGroup_(apply) {
+  const rows = table_('Works').rows.filter(function (w) { return str_(w.folderId) && str_(w.ocrStatus) !== 'missing' && !(str_(w.ocrStatus) === 'ignored' && !str_(w.dupOf)); });
+  const by = {};
+  rows.forEach(function (w) { (by[str_(w.folderId)] = by[str_(w.folderId)] || []).push(w); });
+  const groups = [];
+  Object.keys(by).forEach(function (fid) {
+    const l = by[fid], path = str_(l[0].folderPath), last = path.split(' / ').pop();
+    const depth = path.split(' / ').length - 1;
+    if (l.length < 2 || l.length > 8 || depth < 2 || last === 'ส่งผลงาน' || guessCat_(last)) return;
+    const already = l.filter(function (x) { return !str_(x.dupOf); });
+    if (already.length <= 1) return; // จัดกลุ่มแล้ว
+    const prim = l.filter(function (x) { return bool_(x.reviewed) && !str_(x.dupOf); })[0] || l.filter(function (x) { return roleOf_(x) === 'source'; })[0] ||
+      l.filter(function (x) { return roleOf_(x) === 'poster'; })[0] || l[0];
+    groups.push({ folder: path, primary: str_(prim.id), title: str_(prim.title) || cleanTitle_(prim.fileName), files: l.map(function (x) { return str_(x.fileName); }),
+      members: l.filter(function (x) { return x !== prim; }).map(function (x) { return str_(x.id); }) });
+  });
+  if (apply) groups.forEach(function (g) { setGroup_(g.primary, g.members); });
+  return { groups: groups, applied: apply };
+}
+
 /** รวมไฟล์ซ้ำ: ซ่อนไฟล์ id และผูกไว้กับผลงานหลัก into (undo = แยกกลับ) */
 function mergeDup_(id, into, undo) {
   mutate_('Works', function (rows) {
@@ -1216,44 +1348,50 @@ function listWorksAdmin_() {
     const o = clean_(w); o.id = str_(w.id); o.year = str_(w.year);
     o.textChars = chars[o.id] || 0; o.views = stats.views[o.id] || 0; o.opens = stats.opens[o.id] || 0;
     ['published', 'featured', 'showThumb', 'locked', 'reviewed'].forEach(function (k) { o[k] = bool_(w[k]); });
+    o.fileRole = str_(w.fileRole) || roleGuess_(w.fileName, w.mimeType);
     return o;
   });
 }
-function mediaMissing_(w) {
+function mediaMissing_(w, rows) {
   const a = str_(w.access);
   if (a === 'filename_only') return false;
+  if (rows) { const src = mediaSrc_(w); if (src && src !== displayFor_(w, rows).fileId) return true; }
   if (bool_(w.showThumb) && !str_(w.thumbId)) return true;
   return (a === 'public' || a === 'verified') && !str_(w.viewId);
 }
 /** สร้างภาพปกและสำเนาสำหรับเปิดดู (แชร์แบบผู้มีลิงก์ดูได้) — คืนข้อความเตือนถ้ามี */
-function prepareMedia_(w) {
-  const warns = [], a = str_(w.access), name = clip_(cleanTitle_(w.fileName) || w.title, 120);
+function mediaSrc_(w) { return str_(w.viewSrc) || (str_(w.viewId) || str_(w.thumbId) ? str_(w.fileId) : ''); }
+function prepareMedia_(w, disp) {
+  disp = disp || { fileId: str_(w.fileId), mimeType: str_(w.mimeType), sizeMB: w.sizeMB, fileName: str_(w.fileName) };
+  const warns = [], a = str_(w.access), name = clip_(str_(w.title) || cleanTitle_(disp.fileName), 120);
+  const src = mediaSrc_(w);
+  if (src && src !== disp.fileId) { trash_(w.viewId); trash_(w.thumbId); w.viewId = ''; w.thumbId = ''; w.viewSrc = ''; }
   if (a === 'filename_only' || a === 'metadata') { if (str_(w.viewId)) { trash_(w.viewId); w.viewId = ''; } }
   if (a === 'filename_only' || !bool_(w.showThumb)) { if (str_(w.thumbId)) { trash_(w.thumbId); w.thumbId = ''; } }
   if (a !== 'filename_only' && bool_(w.showThumb) && !str_(w.thumbId)) {
     try {
       let b = null;
-      if (str_(w.mimeType).indexOf('image/') === 0 && num_(w.sizeMB) <= 2) b = DriveApp.getFileById(str_(w.fileId)).getBlob();
-      if (!b) b = thumbBlob_(str_(w.fileId), 1000);
+      if (str_(disp.mimeType).indexOf('image/') === 0 && num_(disp.sizeMB) <= 2) b = DriveApp.getFileById(disp.fileId).getBlob();
+      if (!b) b = thumbBlob_(disp.fileId, 1000);
       if (!b) throw new Error('สร้างภาพปกไม่ได้');
       const f = DriveApp.getFolderById(folderId_('thumbs')).createFile(b.setName('thumb_' + name));
       f.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-      w.thumbId = f.getId();
+      w.thumbId = f.getId(); w.viewSrc = disp.fileId;
     } catch (e) { warns.push('ภาพปก: ' + e.message); }
   }
   if ((a === 'public' || a === 'verified') && !str_(w.viewId)) {
     try {
-      const c = DriveApp.getFileById(str_(w.fileId)).makeCopy(name, DriveApp.getFolderById(folderId_('view')));
+      const c = DriveApp.getFileById(disp.fileId).makeCopy(name, DriveApp.getFolderById(folderId_('view')));
       c.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-      w.viewId = c.getId();
+      w.viewId = c.getId(); w.viewSrc = disp.fileId;
     } catch (e) { warns.push('ไฟล์เปิดดู: ' + e.message); }
   }
   return warns;
 }
 function prepareMediaById_(id) {
-  const w = findWork_(table_('Works').rows, id); if (!w) return [];
-  const copy = clean_(w), warns = prepareMedia_(copy);
-  mutate_('Works', function (rows) { const x = findWork_(rows, id); if (x) { x.thumbId = copy.thumbId; x.viewId = copy.viewId; } });
+  const all = table_('Works').rows, w = findWork_(all, id); if (!w) return [];
+  const copy = clean_(w), warns = prepareMedia_(copy, displayFor_(w, all));
+  mutate_('Works', function (rows) { const x = findWork_(rows, id); if (x) { x.thumbId = copy.thumbId; x.viewId = copy.viewId; x.viewSrc = copy.viewSrc || ''; } });
   return warns;
 }
 function ensureCode_(w, rows, prefix) {
@@ -1328,9 +1466,9 @@ function bulk_(r) {
     t.save();
   });
   const warns = [];
-  const rows = table_('Works').rows.filter(function (w) { return ids.indexOf(str_(w.id)) >= 0; });
+  const allRows = table_('Works').rows, rows = allRows.filter(function (w) { return ids.indexOf(str_(w.id)) >= 0; });
   rows.forEach(function (w) {
-    const needs = (isListed_(w) && mediaMissing_(w)) || (!bool_(w.published) && str_(w.viewId)) || (str_(w.access) === 'filename_only' && str_(w.thumbId));
+    const needs = (isListed_(w) && mediaMissing_(w, allRows)) || (!bool_(w.published) && str_(w.viewId)) || (str_(w.access) === 'filename_only' && str_(w.thumbId));
     if (!needs) return;
     if (Date.now() - t0 > RUN_BUDGET_MS) { warns.push((w.title || w.fileName) + ': หมดเวลา จะเตรียมไฟล์ในรอบซิงก์ถัดไป'); return; }
     if (!bool_(w.published) && str_(w.viewId)) { trash_(w.viewId); mutate_('Works', function (rs) { const x = findWork_(rs, w.id); if (x) x.viewId = ''; }); return; }
