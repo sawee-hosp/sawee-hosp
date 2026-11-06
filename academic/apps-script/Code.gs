@@ -44,7 +44,7 @@ const SCHEMA = {
   Visitors: ['email', 'name', 'org', 'firstSeen', 'lastSeen', 'logins'],
   Sessions: ['token', 'email', 'expires', 'createdAt'],
   Events: ['time', 'date', 'workId', 'year', 'category', 'event', 'visitor'],
-  Calls: ['callId', 'year', 'title', 'opens', 'closes', 'categories', 'maxMB', 'guideUrl', 'eventDate', 'venue', 'resultsPublic', 'enabled', 'note', 'updatedAt'],
+  Calls: ['callId', 'year', 'title', 'opens', 'closes', 'categories', 'maxMB', 'guideUrl', 'eventDate', 'venue', 'resultsPublic', 'enabled', 'note', 'updatedAt', 'folderUrl'],
   Submissions: ['subId', 'code', 'callId', 'year', 'category', 'title', 'authors', 'department', 'email', 'phone', 'keywords', 'background',
     'objective', 'method', 'result', 'conclusion', 'extraUrl', 'fileId', 'fileName', 'fileUrl', 'mimeType', 'sizeMB', 'status', 'reviewNote',
     'score', 'workId', 'createdAt', 'updatedAt', 'log'],
@@ -163,9 +163,26 @@ function setup() {
   Object.keys(SCHEMA).forEach(sheet_);
   ['root', 'view', 'thumbs', 'temp', 'submissions'].forEach(folderId_);
   if (!prop_('ADMIN_PASSWORD')) console.warn('ยังไม่ได้ตั้ง ADMIN_PASSWORD ใน Script Properties');
+  seedCall2570_();
   const d = diagnose_();
   d.checks.forEach(function (c) { console.log((c.ok ? '✅ ' : '⚠️ ') + c.name + ' — ' + c.detail); });
   return d;
+}
+
+/** สร้างรอบรับผลงานปีงบประมาณ 2570 ตามโปสเตอร์ประชาสัมพันธ์ (ถ้ายังไม่มีรอบของปี 2570) */
+function seedCall2570_() {
+  if (callsRows_().some(function (c) { return c.year === '2570'; })) return;
+  saveCall_({
+    year: '2570', title: 'มหกรรมวิชาการเครือข่ายโรงพยาบาลสวี ประจำปีงบประมาณ 2570',
+    opens: today_(), closes: '2026-12-18', eventDate: '2026-12-24', venue: 'โรงพยาบาลสวี', maxMB: 30, categories: CATS,
+    guideUrl: 'https://drive.google.com/drive/folders/1DMINZ2mm-CWRwnHShrd4QnBWB5w9H3LK',
+    folderUrl: 'https://drive.google.com/drive/folders/1DMINZ2mm-CWRwnHShrd4QnBWB5w9H3LK',
+    note: 'พิเศษ! เชิญชวนนำเสนอผลงานเด่นด้าน Healthcare Logistic ของเครือข่ายโรงพยาบาลสวี ในรอบ 5 ทศวรรษ\n' +
+      'กิจกรรมในงาน: Oral Presentation · E-Poster Presentation · แลกเปลี่ยนเรียนรู้/ถอดบทเรียน · นิทรรศการผลงานเด่น นวัตกรรม และ CQI · ประกาศเกียรติคุณและมอบรางวัล\n' +
+      'สอบถาม: คณะกรรมการพัฒนาคุณภาพ โรงพยาบาลสวี โทร 077 531 206 ต่อ 106',
+    resultsPublic: false, enabled: true
+  });
+  console.log('สร้างรอบรับผลงานปี 2570 แล้ว (ปิดรับ 18 ธ.ค. 2569 · นำเสนอ 24 ธ.ค. 2569)');
 }
 
 /** ตัวตั้งเวลาซิงก์อัตโนมัติ (ทุก 1 ชั่วโมง) */
@@ -376,15 +393,17 @@ function callsRows_() {
       categories: str_(c.categories) ? str_(c.categories).split(/\s*[,|]\s*/).filter(String) : CATS.slice(),
       maxMB: num_(c.maxMB) || 20, guideUrl: str_(c.guideUrl), eventDate: dateStr_(c.eventDate), venue: str_(c.venue),
       resultsPublic: bool_(c.resultsPublic), enabled: c.enabled === '' || c.enabled === undefined ? true : bool_(c.enabled), note: str_(c.note),
-      updatedAt: iso_(c.updatedAt)
+      updatedAt: iso_(c.updatedAt), folderUrl: str_(c.folderUrl)
     };
   });
 }
+/** เปิดรับตั้งแต่ 00:00 น. ของวันเปิด ถึง 23:59 น. ของวันปิด (เวลาประเทศไทย) */
+function bkkTime_(d, hms) { const m = str_(d).match(/^\d{4}-\d{2}-\d{2}/); return m ? Date.parse(m[0] + 'T' + hms + '+07:00') : NaN; }
 function callStatus_(c) {
-  const t = today_();
+  const now = Date.now();
   if (!c.enabled) return 'disabled';
-  if (c.opens && t < c.opens) return 'upcoming';
-  if (c.closes && t > c.closes) return 'closed';
+  if (c.opens && now < bkkTime_(c.opens, '00:00:00')) return 'upcoming';
+  if (c.closes && now > bkkTime_(c.closes, '23:59:59')) return 'closed';
   return 'open';
 }
 function resultsVisibleFn_(calls) {
@@ -649,8 +668,8 @@ function submit_(r) {
     Object.assign(s, f, { callId: call.callId, year: call.year, updatedAt: nowIso_() });
     if (!isNew) s.status = 'submitted';
     if (file && file.data) {
-      const blob = Utilities.newBlob(Utilities.base64Decode(file.data), file.mime, clip_(s.code + ' - ' + cleanTitle_(file.name), 180) + extOf_(file.name, file.mime));
-      const dir = subFolder_(subFolder_(folderId_('submissions'), call.year).getId(), s.category || UNCAT);
+      const blob = Utilities.newBlob(Utilities.base64Decode(file.data), file.mime, clip_((s.code + ' - ' + s.department + ' - ' + s.title).replace(/[\\/:*?"<>|\n\r]+/g, ' '), 150) + extOf_(file.name, file.mime));
+      const dir = uploadDir_(call, s.category);
       const nf = dir.createFile(blob);
       if (s.fileId) trash_(s.fileId);
       s.fileId = nf.getId(); s.fileName = nf.getName(); s.fileUrl = nf.getUrl(); s.mimeType = file.mime;
@@ -668,6 +687,26 @@ function submit_(r) {
   if (set.notifyEmail) sendMail_(set.notifyEmail, '[ผลงานใหม่] ' + result.code + ' ' + clip_(result.title, 60), 'มีผลงาน' + (isNew ? 'ใหม่' : 'ฉบับแก้ไข') + 'ส่งเข้ามา',
     '<p>' + esc_(result.code) + ' · ' + esc_(result.title) + '<br>' + esc_(result.department) + ' · ' + esc_(result.category) + '<br>ผู้ส่ง: ' + esc_(email) + '</p>');
   return result;
+}
+/** โฟลเดอร์เก็บไฟล์ที่ส่ง: ถ้ารอบมี folderUrl จะใส่ในโฟลเดอร์ย่อยตามประเภท (และโฟลเดอร์ "ส่งผลงาน" ข้างใน ถ้ามี) */
+function uploadDir_(call, cat) { return resolveUpload_(call, cat).folder; }
+/** คืน { folder, path, ok } — ok=false เมื่อต้องใช้โฟลเดอร์สำรองของระบบ */
+function resolveUpload_(call, cat) {
+  if (call.folderUrl) {
+    try {
+      const root = DriveApp.getFolderById(folderIdFromUrl_(call.folderUrl)), it = root.getFolders();
+      while (it.hasNext()) {
+        const f = it.next();
+        if (guessCat_(f.getName()) === cat) {
+          const s = f.getFoldersByName('ส่งผลงาน');
+          return s.hasNext() ? { folder: s.next(), path: root.getName() + ' / ' + f.getName() + ' / ส่งผลงาน', ok: true } : { folder: f, path: root.getName() + ' / ' + f.getName(), ok: true };
+        }
+      }
+      return { folder: root, path: root.getName() + ' (ไม่พบโฟลเดอร์ย่อยของประเภทนี้)', ok: false };
+    } catch (e) { console.warn('uploadDir: ' + e.message); }
+  }
+  const f = subFolder_(subFolder_(folderId_('submissions'), call.year).getId(), cat || UNCAT);
+  return { folder: f, path: 'โฟลเดอร์สำรองของระบบ / ' + call.year + ' / ' + (cat || UNCAT), ok: false };
 }
 function extOf_(name, mime) {
   const m = String(name || '').match(/\.[a-z0-9]{2,5}$/i);
@@ -827,6 +866,11 @@ function diagnose_() {
     return s.map(function (x) { return DriveApp.getFolderById(str_(x.folderId)).getName(); }).join(', ');
   });
   add('โควตาอีเมลวันนี้', function () { const q = MailApp.getRemainingDailyQuota(); return q > 0 ? 'เหลือ ' + q + ' ฉบับ' : false; });
+  callsRows_().filter(function (c) { return ['open', 'upcoming'].indexOf(callStatus_(c)) >= 0; }).forEach(function (c) {
+    c.categories.forEach(function (cat) {
+      add('ปลายทางไฟล์ ' + c.year + ' · ' + cat, function () { const r = resolveUpload_(c, cat); if (!r.ok) throw new Error(r.path); return r.path; });
+    });
+  });
   add('ซิงก์อัตโนมัติ', function () { return hasTrigger_() ? 'เปิด (ทุก 1 ชั่วโมง)' : 'ปิดอยู่'; });
   add('URL ของ Web app', function () { const u = ScriptApp.getService().getUrl(); return u || 'ยังไม่ได้ Deploy เป็น Web app'; });
   add('AI (Gemini)', function () { return prop_('GEMINI_KEY') ? 'มี API key · ' + (prop_('GEMINI_MODEL') || 'gemini-2.5-flash') : 'ไม่ได้ใช้'; });
@@ -1328,7 +1372,8 @@ function saveCall_(c) {
     Object.assign(r, {
       year: str_(c.year), title: clip_(c.title, 200), opens: str_(c.opens), closes: str_(c.closes), categories: (cats.length ? cats : CATS).join(', '),
       maxMB: Math.min(40, num_(c.maxMB) || 20), guideUrl: clip_(c.guideUrl, 500), eventDate: str_(c.eventDate), venue: clip_(c.venue, 200),
-      resultsPublic: !!c.resultsPublic, enabled: c.enabled !== false, note: clip_(c.note, 2000), updatedAt: nowIso_()
+      resultsPublic: !!c.resultsPublic, enabled: c.enabled !== false, note: clip_(c.note, 2000), updatedAt: nowIso_(),
+      folderUrl: str_(c.folderUrl) ? 'https://drive.google.com/drive/folders/' + folderIdFromUrl_(c.folderUrl) : ''
     });
   });
   clearCatalog_();
@@ -1368,8 +1413,16 @@ function saveSubAdmin_(r) {
   clearCatalog_();
   return { sub: out, mailed: mailed };
 }
+const ABS_LABELS = {
+  'ระดับทีม/หน่วยงาน': ['ที่มาและปัญหา', 'เป้าหมาย/วัตถุประสงค์', 'กิจกรรมการพัฒนา', 'ผลลัพธ์', 'บทเรียนและแผนพัฒนาต่อ'],
+  'วิจัยและ R2R': ['บทนำ', 'วัตถุประสงค์การวิจัย', 'ระเบียบวิธีวิจัย', 'ผลการวิจัย', 'อภิปรายผลและการนำไปใช้'],
+  'CQI': ['สถานการณ์และปัญหา', 'วัตถุประสงค์และตัวชี้วัด', 'กิจกรรมการพัฒนาคุณภาพ', 'ผลลัพธ์การพัฒนา', 'ข้อเสนอแนะและโอกาสพัฒนา'],
+  'นวัตกรรม': ['หลักการและเหตุผล', 'วัตถุประสงค์และขอบเขต', 'ขั้นตอนการพัฒนา', 'ผลของนวัตกรรม', 'การนำไปใช้ประโยชน์และข้อจำกัด'],
+  'Photo voice': ['ที่มาของภาพ', 'สิ่งที่ต้องการสื่อสาร', 'คำบรรยายภาพ', 'สิ่งที่ได้เรียนรู้', 'ข้อเสนอแนะ']
+};
 function absText_(s) {
-  const parts = [['หลักการและเหตุผล', s.background], ['วัตถุประสงค์', s.objective], ['วิธีดำเนินการ', s.method], ['ผลการดำเนินงาน', s.result], ['สรุปและบทเรียนที่ได้', s.conclusion]];
+  const L = ABS_LABELS[str_(s.category)] || ['หลักการและเหตุผล', 'วัตถุประสงค์', 'วิธีดำเนินการ', 'ผลการดำเนินงาน', 'สรุปและบทเรียนที่ได้'];
+  const parts = [[L[0], s.background], [L[1], s.objective], [L[2], s.method], [L[3], s.result], [L[4], s.conclusion]];
   return parts.filter(function (p) { return str_(p[1]); }).map(function (p) { return '## ' + p[0] + '\n' + str_(p[1]); }).join('\n\n');
 }
 function importSub_(subId) {
