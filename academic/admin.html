@@ -93,6 +93,10 @@ code{background:#eef3f7;border-radius:6px;padding:1px 6px;font-size:12.5px}
 .paste{border:2px dashed #c6d6e2;border-radius:14px;padding:10px;background:#f9fbfd;margin-bottom:12px}
 .paste textarea{min-height:70px;border:0;background:transparent;padding:4px}.paste textarea:focus{outline:none}
 .paste.on{border-color:var(--teal);background:#eefaf9}
+.fgrp{background:#f2f9fa;border:1px solid #cfe9ec;border-radius:12px;padding:10px 12px;font-size:13.5px;margin-bottom:12px}
+.fgrp .it{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;padding:5px 0;border-top:1px dashed #cfe9ec}.fgrp .it:first-of-type{border-top:0}
+.fgrp .it.cur b{color:var(--teal)}.fgrp select{padding:2px 6px;border-radius:7px;border:1px solid var(--line);font-size:12.5px}
+.web{font-size:11.5px;background:#e6f4e8;color:var(--green);border-radius:99px;padding:0 8px;white-space:nowrap}
 .dupbox{background:#fff7e6;border:1px solid #f3dfae;border-radius:12px;padding:10px 12px;font-size:13.5px;margin-bottom:12px}
 .dupbox .it{display:flex;gap:8px;align-items:center;justify-content:space-between;border-top:1px dashed #ecd9a8;padding:6px 0;flex-wrap:wrap}.dupbox .it:first-of-type{border-top:0}
 .kbd{font-family:ui-monospace,monospace;font-size:11px;background:#eef3f7;border-radius:5px;padding:0 5px;color:var(--muted)}
@@ -224,12 +228,13 @@ code{background:#eef3f7;border-radius:6px;padding:1px 6px;font-size:12.5px}
         <select id="rvCat" class="in" style="width:auto"><option value="">ทุกประเภท</option></select>
         <select id="rvStatus" class="in" style="width:auto"><option value="todo">ยังไม่ตรวจ</option><option value="">ทั้งหมด (ไม่รวมที่ซ่อน)</option><option value="done">ตรวจแล้ว</option><option value="dup">อาจซ้ำ</option><option value="hidden">ซ่อน/ไฟล์ซ้ำ</option></select>
         <select id="rvJump" class="in" style="width:220px"></select>
+        <button class="btn sm" id="rvAuto" title="ไฟล์ที่อยู่ในโฟลเดอร์ย่อยเดียวกัน = ผลงานเดียวกัน">🗂 จัดกลุ่มตามโฟลเดอร์</button>
         <div class="rvprog"><div class="track"><div class="fill" id="rvBar" style="width:0"></div></div><small id="rvProg"></small></div>
       </div>
       <div class="rv-wrap" id="rvWrap">
         <div class="rv-left">
           <div class="tb"><button class="btn sm" id="rvPrev" title="Alt+←">← ก่อนหน้า</button><span id="rvPos" class="muted"></span><button class="btn sm" id="rvNext" title="Alt+→">ถัดไป →</button>
-            <b id="rvFile"></b><a class="btn sm" id="rvOpen" target="_blank" rel="noopener">เปิดใน Drive ↗</a><button class="btn sm" id="rvWide" title="ซ่อน/แสดงฟอร์ม">⤢</button></div>
+            <b id="rvFile"></b><button class="btn sm teal" id="rvExtract" title="อ่านข้อความจากไฟล์ที่กำลังแสดง (docx / Google Docs อ่านตรง แม่นยำ)">📄 ดึงข้อความ</button><a class="btn sm" id="rvOpen" target="_blank" rel="noopener">เปิดใน Drive ↗</a><button class="btn sm" id="rvWide" title="ซ่อน/แสดงฟอร์ม">⤢</button></div>
           <iframe id="rvFrame" title="ตัวอย่างไฟล์" allow="fullscreen"></iframe>
         </div>
         <div class="rv-right">
@@ -972,6 +977,8 @@ function bindReview(){
       catch(x){toast('เบราว์เซอร์ไม่อนุญาตให้อ่านคลิปบอร์ด ให้คลิกที่ช่องแล้วกด Ctrl+V แทน',true);}}
     const g=e.target.closest('[data-rvgo]');if(g){const k=RV.list.findIndex(function(w){return String(w.id)===g.dataset.rvgo;});if(k>=0)rvShow(k);else{Q('#rvStatus').value='';rvFilter();rvShow(Math.max(0,RV.list.findIndex(function(w){return String(w.id)===g.dataset.rvgo;})));}}
     const m=e.target.closest('[data-merge]');if(m)rvMerge(m.dataset.merge,m.dataset.into);
+    const vw=e.target.closest('[data-view]');if(vw){e.preventDefault();const f=W.find(function(x){return String(x.id)===vw.dataset.view;});if(f)rvView(f);}
+    const jn=e.target.closest('[data-join]');if(jn&&RV.cur)rvGroup(RV.cur.id,[jn.dataset.join]);
     const u=e.target.closest('[data-unmerge]');if(u)rvMerge(u.dataset.unmerge,'',true);
   });
   document.addEventListener('keydown',function(e){
@@ -981,6 +988,9 @@ function bindReview(){
     if(e.altKey&&e.key==='ArrowLeft'){e.preventDefault();rvShow(RV.i-1);}
   });
   Q('#btnAudit').addEventListener('click',runAudit);
+  Q('#rvExtract').addEventListener('click',rvExtract);
+  Q('#rvAuto').addEventListener('click',rvAutoGroup);
+  Q('#v-review').addEventListener('change',function(e){const r=e.target.closest('[data-role]');if(r)rvRole(r.dataset.role,r.value);});
 }
 async function loadReview(){
   if(!W.length)await loadWorks();
@@ -1034,36 +1044,94 @@ function rvDupMap(){
   }
   return m;
 }
+const ROLE_TH={poster:'โปสเตอร์ (แสดงบนเว็บ)',document:'PDF เอกสาร (สำรอง)',source:'ต้นฉบับ docx/Docs (ไม่แสดง)',other:'อื่น ๆ (ไม่แสดง)'};
+function previewUrl(fileId,mime){
+  const id=encodeURIComponent(fileId);
+  if(mime==='application/vnd.google-apps.document')return 'https://docs.google.com/document/d/'+id+'/preview';
+  if(mime==='application/vnd.google-apps.presentation')return 'https://docs.google.com/presentation/d/'+id+'/preview';
+  if(mime==='application/vnd.google-apps.spreadsheet')return 'https://docs.google.com/spreadsheets/d/'+id+'/preview';
+  return 'https://drive.google.com/file/d/'+id+'/preview';
+}
+function rvMembers(w){return W.filter(function(x){return String(x.dupOf)===String(w.id)&&x.ocrStatus!=='missing';});}
+function rvDisplay(w){
+  const all=[w].concat(rvMembers(w)),pdf=function(x){return x.mimeType==='application/pdf';},img=function(x){return String(x.mimeType).indexOf('image/')===0;};
+  function pick(f){return all.filter(f)[0];}
+  return pick(function(x){return x.fileRole==='poster'&&pdf(x);})||pick(function(x){return x.fileRole==='poster'&&img(x);})||pick(function(x){return x.fileRole==='document'&&pdf(x);})||pick(function(x){return pdf(x)||img(x);})||w;
+}
+function rvView(f){
+  RV.viewing=f;
+  Q('#rvFrame').src=previewUrl(f.fileId,f.mimeType);
+  Q('#rvFile').textContent=f.fileName+' · '+f.sizeMB+' MB';Q('#rvFile').title=(f.folderPath?f.folderPath+' / ':'')+f.fileName;
+  Q('#rvOpen').href=/google-apps\.document/.test(f.mimeType)?'https://docs.google.com/document/d/'+f.fileId+'/edit':(f.fileUrl||('https://drive.google.com/file/d/'+f.fileId+'/view'));
+  document.querySelectorAll('#rvDup .it').forEach(function(el){el.classList.toggle('cur',el.dataset.f===String(f.id));});
+}
+async function rvExtract(){
+  const f=RV.viewing||RV.cur;if(!f)return;
+  busy(true,'กำลังอ่านข้อความจาก '+f.fileName+'…');
+  try{
+    const r=await call('extractText',{id:f.id});busy(false);
+    const t=String(r.text||'').trim();
+    if(!t)return toast('ไฟล์นี้ไม่มีข้อความที่อ่านได้ ('+r.how+') ลองคลุมดำคัดลอก หรือแคปภาพมาวางแทน',true);
+    Q('#rvPaste').value=t;rvApplyPaste(t,false);toast('ดึงข้อความแล้ว '+th(t.length)+' ตัวอักษร ('+r.how+')');
+  }catch(e){busy(false);toast(msg(e),true);}
+}
+async function rvGroup(primary,members){
+  busy(true,'กำลังรวมไฟล์เป็นผลงานเดียวกัน…');
+  try{W=await call('setGroup',{primary:primary,members:members});busy(false);toast('รวมแล้ว · หน้าเว็บจะแสดงไฟล์โปสเตอร์ของผลงานนี้');
+    rvFilter();const n=RV.list.findIndex(function(x){return String(x.id)===String(primary);});rvShow(n>=0?n:RV.i);}
+  catch(e){busy(false);toast(msg(e),true);}
+}
+async function rvRole(id,role){
+  busy(true,'กำลังบันทึก…');
+  try{W=await call('setRole',{id:id,role:role});busy(false);const cur=RV.cur&&RV.cur.id;rvFilter();const n=RV.list.findIndex(function(x){return x.id===cur;});rvShow(n>=0?n:RV.i);toast('บันทึกบทบาทไฟล์แล้ว');}
+  catch(e){busy(false);toast(msg(e),true);}
+}
+async function rvAutoGroup(){
+  busy(true,'กำลังตรวจโฟลเดอร์…');
+  let r;try{r=await call('autoGroup',{apply:false});}catch(e){busy(false);return toast(msg(e),true);}
+  busy(false);
+  if(!r.groups.length)return alert('ไม่พบโฟลเดอร์ย่อยที่มีหลายไฟล์ของผลงานเดียวกัน\n(ระบบจะจัดกลุ่มเฉพาะโฟลเดอร์ที่อยู่ลึกกว่าโฟลเดอร์ประเภท และมี 2–8 ไฟล์)\n\nรวมไฟล์เองได้จากกล่อง "ไฟล์ที่น่าจะเป็นผลงานเดียวกัน"');
+  if(!confirm('พบ '+r.groups.length+' ผลงานที่มีหลายไฟล์ในโฟลเดอร์เดียวกัน เช่น\n\n'+r.groups.slice(0,6).map(function(g){return '• '+g.folder.split(' / ').pop()+' ('+g.files.length+' ไฟล์)';}).join('\n')+(r.groups.length>6?'\n…':'')+'\n\nรวมเป็น 1 ผลงานต่อโฟลเดอร์เลยหรือไม่?'))return;
+  busy(true,'กำลังจัดกลุ่ม '+r.groups.length+' ผลงาน…');
+  try{await call('autoGroup',{apply:true});W=await call('listWorks');busy(false);toast('จัดกลุ่มแล้ว '+r.groups.length+' ผลงาน');rvFilter();rvShow(0);}
+  catch(e){busy(false);toast(msg(e),true);}
+}
 function rvShow(i){
   if(!RV.list.length){RV.cur=null;Q('#rvFrame').src='about:blank';Q('#rvFile').textContent='ไม่มีไฟล์ตามเงื่อนไข';Q('#rvPos').textContent='';Q('#rvDup').innerHTML=Q('#rvStatus').value==='todo'?'<div class="infobox">🎉 ตรวจครบทุกไฟล์แล้ว (เปลี่ยนตัวกรองเป็น "ทั้งหมด" เพื่อดูย้อนหลัง)</div>':'';return;}
   i=Math.max(0,Math.min(RV.list.length-1,i));RV.i=i;const w=RV.cur=RV.list[i];
   Q('#rvJump').value=i;Q('#rvPos').textContent=(i+1)+' / '+RV.list.length;
-  Q('#rvFile').textContent=w.fileName+' · '+w.sizeMB+' MB';Q('#rvFile').title=w.fileName;
-  Q('#rvOpen').href=w.fileUrl||('https://drive.google.com/file/d/'+w.fileId+'/view');
-  Q('#rvFrame').src='https://drive.google.com/file/d/'+encodeURIComponent(w.fileId)+'/preview';
   Q('#rvTitle').value=w.title||'';Q('#rvAuthors').value=w.authors||'';Q('#rvDept').value=w.department||'';Q('#rvKw').value=w.keywords||'';
   Q('#rvSum').value=w.summary||'';Q('#rvYearIn').value=w.year||'';Q('#rvCatSel').value=CATS.indexOf(w.category)>=0?w.category:'ยังไม่จัดประเภท';
   Q('#rvAcc').value=w.access||'verified';Q('#rvPub').checked=bool(w.published);Q('#rvPaste').value='';Q('#rvOcrMsg').textContent='';
   Q('#rvText').value='';Q('#rvText').placeholder='กำลังโหลดข้อความ…';rvLen();
   Q('#rvInfo').innerHTML=(w.code?'รหัส <code>'+esc(w.code)+'</code> · ':'')+'สถานะ: '+(w.reviewed?tag('ตรวจแล้ว '+when(w.reviewedAt),'ok'):tag('ยังไม่ตรวจ','wait'))+' '+tag((OCR[w.ocrStatus]||[w.ocrStatus])[0],'')+' '+esc(w.ocrNote||'');
-  rvRenderDup();
+  rvRenderDup();rvView(w);
   const id=w.id;
   call('getText',{id:id}).then(function(t){if(RV.cur&&RV.cur.id===id){Q('#rvText').value=t||'';Q('#rvText').placeholder='วางข้อความเต็มของผลงาน';rvLen();}}).catch(function(){Q('#rvText').placeholder='';});
 }
 function rvRenderDup(){
   const w=RV.cur;if(!w){Q('#rvDup').innerHTML='';return;}
-  if(w.dupOf){const m=W.find(function(x){return String(x.id)===String(w.dupOf);});
-    Q('#rvDup').innerHTML='<div class="dupbox">ไฟล์นี้ถูกรวมเป็นไฟล์ซ้ำ/ไฟล์ประกอบของ <b>'+esc(m?(m.title||m.fileName):w.dupOf)+'</b> <button class="btn sm" data-unmerge="'+esc(w.id)+'">แยกออก</button></div>';return;}
-  const l=(rvDupMap()[w.id]||[]).slice(0,4);
-  Q('#rvDup').innerHTML=l.length?'<div class="dupbox"><b>⚠ อาจเป็นไฟล์ซ้ำ</b> (เช่น PDF กับ PNG ของผลงานเดียวกัน)'+l.map(function(d){
-    return '<div class="it"><span><a href="#" data-rvgo="'+esc(d.w.id)+'">'+esc(d.w.title||d.w.fileName)+'</a><br><span class="muted">'+esc(d.w.fileName)+' · '+esc(d.w.sizeMB)+' MB · '+esc(d.why)+(d.w.reviewed?' · ตรวจแล้ว':'')+'</span></span>'+
-      '<span class="row"><button class="btn sm" data-merge="'+esc(w.id)+'" data-into="'+esc(d.w.id)+'" title="ซ่อนไฟล์ที่กำลังดู ใช้อีกไฟล์เป็นหลัก">ไฟล์นี้ซ้ำ</button><button class="btn sm" data-merge="'+esc(d.w.id)+'" data-into="'+esc(w.id)+'" title="ซ่อนไฟล์นั้น ใช้ไฟล์ที่กำลังดูเป็นหลัก">ไฟล์นั้นซ้ำ</button></span></div>';
-  }).join('')+'</div>':'';
+  const mem=rvMembers(w),disp=rvDisplay(w),all=[w].concat(mem);
+  const row=function(f,isPrim){return '<div class="it" data-f="'+esc(f.id)+'"><span><a href="#" data-view="'+esc(f.id)+'">👁 '+esc(f.fileName)+'</a> '+(f.id===disp.id?'<span class="web">🌐 แสดงบนเว็บ</span>':'')+
+    (isPrim?' <span class="muted">(ไฟล์หลัก)</span>':'')+'<br><span class="muted">'+esc(f.sizeMB)+' MB'+(f.folderPath?' · '+esc(f.folderPath):'')+'</span></span>'+
+    '<select data-role="'+esc(f.id)+'">'+Object.keys(ROLE_TH).map(function(k){return '<option value="'+k+'"'+(k===f.fileRole?' selected':'')+'>'+ROLE_TH[k]+'</option>';}).join('')+'</select>'+
+    (isPrim?'<span></span>':'<button class="btn sm" data-unmerge="'+esc(f.id)+'" title="แยกไฟล์นี้ออกเป็นผลงานต่างหาก">แยกออก</button>')+'</div>';};
+  // ไฟล์ที่น่าจะเป็นผลงานเดียวกัน: โฟลเดอร์ย่อยเดียวกัน (โฟลเดอร์เล็ก) หรือชื่อคล้ายกัน
+  const fcount={};W.forEach(function(x){if(x.folderId)fcount[x.folderId]=(fcount[x.folderId]||0)+1;});
+  const cands=[],seen={};all.forEach(function(f){seen[f.id]=1;});
+  W.forEach(function(x){if(seen[x.id]||x.dupOf||x.ocrStatus==='missing'||String(x.year)!==String(w.year))return;
+    if(w.folderId&&x.folderId===w.folderId&&fcount[w.folderId]<=8){cands.push({w:x,why:'อยู่โฟลเดอร์เดียวกัน'});seen[x.id]=1;}});
+  (rvDupMap()[w.id]||[]).forEach(function(d){if(!seen[d.w.id]){cands.push(d);seen[d.w.id]=1;}});
+  Q('#rvDup').innerHTML='<div class="fgrp"><b>ไฟล์ในผลงานนี้ ('+all.length+')</b> <span class="muted">— เว็บแสดงโปสเตอร์ก่อน ถ้าไม่มีจะแสดง PDF เอกสาร</span>'+row(w,true)+mem.map(function(f){return row(f,false);}).join('')+'</div>'+
+    (cands.length?'<div class="dupbox"><b>ไฟล์ที่น่าจะเป็นผลงานเดียวกัน</b>'+cands.slice(0,6).map(function(d){
+      return '<div class="it"><span><a href="#" data-view="'+esc(d.w.id)+'">👁 '+esc(d.w.fileName)+'</a><br><span class="muted">'+esc(d.w.sizeMB)+' MB · '+esc(d.why)+(d.w.reviewed?' · ตรวจแล้ว':'')+'</span></span>'+
+        '<span class="row"><button class="btn sm teal" data-join="'+esc(d.w.id)+'">＋ รวมเข้าผลงานนี้</button><button class="btn sm" data-rvgo="'+esc(d.w.id)+'">ไปที่ไฟล์</button></span></div>';
+    }).join('')+'</div>':'');
 }
 async function rvMerge(id,into,undo){
   if(!undo&&!confirm('ซ่อนไฟล์ซ้ำ และผูกไว้กับผลงานหลัก?\n(แยกกลับได้จากตัวกรอง "ซ่อน/ไฟล์ซ้ำ")'))return;
   busy(true,'กำลังบันทึก…');
-  try{const r=await call('mergeDup',{id:id,into:into,undo:!!undo});const k=W.findIndex(function(x){return String(x.id)===String(id);});if(k>=0&&r)W[k]=r;busy(false);toast(undo?'แยกออกแล้ว':'รวมไฟล์ซ้ำแล้ว');
+  try{const r=await call('mergeDup',{id:id,into:into,undo:!!undo});const k=W.findIndex(function(x){return String(x.id)===String(id);});if(k>=0&&r)W[k]=r;busy(false);toast(undo?'แยกออกเป็นผลงานต่างหากแล้ว':'รวมไฟล์ซ้ำแล้ว');
     const curId=RV.cur&&RV.cur.id;rvFilter();const n=RV.list.findIndex(function(x){return x.id===curId;});rvShow(n>=0?n:RV.i);}
   catch(e){busy(false);toast(msg(e),true);}
 }
