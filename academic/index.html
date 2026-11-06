@@ -3,131 +3,214 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>คลังผลงานวิชาการ | โรงพยาบาลสวี</title>
-<meta name="description" content="ผลงานวิชาการ การพัฒนาคุณภาพ งานวิจัย และนวัตกรรม โรงพยาบาลสวี">
-<link rel="icon" href="https://sawee-hosp.github.io/sawee-mr/hosp_logo.png">
+<title>คลังผลงานวิชาการ · มหกรรมวิชาการ โรงพยาบาลสวี</title>
+<meta name="description" content="คลังสืบค้นผลงานวิชาการ การพัฒนาคุณภาพ (CQI) งานวิจัย R2R นวัตกรรม และ Photo voice ของโรงพยาบาลสวี จังหวัดชุมพร พร้อมรูปแบบการอ้างอิง ประกาศผลรางวัล และระบบส่งผลงาน">
+<meta property="og:title" content="คลังผลงานวิชาการ · มหกรรมวิชาการ โรงพยาบาลสวี">
+<meta property="og:description" content="สืบค้น อ่าน และอ้างอิงผลงานวิชาการของโรงพยาบาลสวี">
+<meta property="og:image" content="../hosp_logo.png">
+<meta name="theme-color" content="#0b2540">
+<link rel="icon" href="../hosp_logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--navy:#0b2540;--teal:#0a8f9c;--aqua:#7fe0dc;--gold:#e5c46b;--ink:#0f2a43;--muted:#5d7083;--line:#dfe8ef;--bg:#f3f7fb}
+:root{--navy:#0b2540;--navy2:#0d4b5f;--teal:#0a8f9c;--aqua:#7fe0dc;--gold:#e5c46b;--ink:#0f2a43;--muted:#5d7083;--line:#dfe8ef;--bg:#f3f7fb;--card:#fff;
+--c0:#2f6fb8;--c1:#c98420;--c2:#13998f;--c3:#8a5bd0;--c4:#d0566c;--c5:#8a9aa8;--r:22px}
 *{box-sizing:border-box}
-body{margin:0;font-family:'Sarabun',Tahoma,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
-h1,h2,h3,.brand b,.year-big,.stats b,.cat b{font-family:'Prompt','Sarabun',sans-serif}
-button,input,select{font:inherit}button{cursor:pointer}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;font-family:'Sarabun',Tahoma,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,.brand b,.year-big,.stats b,.cat b,.kpi b{font-family:'Prompt','Sarabun',sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
+a{color:var(--teal)}
 .hidden{display:none!important}
-.wrap{max-width:1240px;margin:auto;padding:72px 24px 0}
-.topbar{position:sticky;top:0;z-index:30;backdrop-filter:blur(14px);background:#f3f7fbd9;border-bottom:1px solid #dfe8ef99}
-.topbar .in{max-width:1240px;margin:auto;padding:10px 24px;display:flex;align-items:center;gap:12px}
-.brand{display:flex;align-items:center;gap:12px;margin-right:auto;cursor:pointer;background:none;border:0;padding:0;text-align:left;color:inherit}
-.brand img{width:46px;height:46px;object-fit:contain}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.wrap{max-width:1240px;margin:auto;padding:76px 24px 0}
+/* ---------- topbar ---------- */
+.topbar{position:sticky;top:0;z-index:30;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:#f3f7fbe0;border-bottom:1px solid #dfe8efaa}
+.topbar .in{max-width:1240px;margin:auto;padding:9px 24px;display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:12px;margin-right:auto;cursor:pointer;background:none;border:0;padding:0;text-align:left}
+.brand img{width:44px;height:44px;object-fit:contain}
 .brand b{display:block;font-size:16px;line-height:1.3}.brand small{color:var(--muted);font-size:12px}
-.nav{display:flex;gap:4px}.nav button{background:none;border:0;padding:8px 14px;border-radius:10px;color:var(--ink)}
-.nav button:hover{background:#e3edf5}
-.auth{border:1px solid var(--line)!important;background:#fff!important;font-size:14px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav{display:flex;gap:2px;align-items:center}.nav>button,.nav>a{background:none;border:0;padding:8px 13px;border-radius:10px;color:var(--ink);text-decoration:none;font-size:15px;white-space:nowrap}
+.nav>button:hover,.nav>a:hover{background:#e3edf5}
+.nav .cta{background:var(--navy);color:#fff}.nav .cta:hover{background:#12355a}
+.auth{border:1px solid var(--line)!important;background:#fff!important;font-size:14px!important;max-width:240px;overflow:hidden;text-overflow:ellipsis}
+.menu{position:absolute;right:24px;top:62px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 24px 50px -20px #0b254055;padding:8px;min-width:220px;z-index:40}
+.menu button{display:block;width:100%;text-align:left;background:none;border:0;padding:10px 12px;border-radius:10px}.menu button:hover{background:#f1f6fa}
+.menu small{display:block;padding:6px 12px 8px;color:var(--muted);border-bottom:1px solid var(--line);margin-bottom:4px;word-break:break-all}
+/* ---------- hero ---------- */
 .hero{position:relative;overflow:hidden;isolation:isolate;max-width:1240px;margin:16px auto 0;border-radius:32px;color:#fff;
 background:radial-gradient(900px 420px at 85% -10%,#10707d 0,transparent 60%),linear-gradient(125deg,#06172a,#0b2540 45%,#0d4b5f);box-shadow:0 40px 80px -30px #0b254080}
 #net{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
 .gridbg{position:absolute;inset:0;z-index:-2;background-image:linear-gradient(#ffffff0b 1px,transparent 1px),linear-gradient(90deg,#ffffff0b 1px,transparent 1px);background-size:48px 48px;-webkit-mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%);mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%)}
 .ring{position:absolute;border:1px solid #7fe0dc33;border-radius:50%;z-index:-1;animation:spin 40s linear infinite}
 .r1{width:520px;height:520px;right:-140px;top:-170px;border-style:dashed}.r2{width:340px;height:340px;right:-50px;top:-80px;animation-direction:reverse;animation-duration:26s}
-.r3{width:760px;height:760px;left:-320px;bottom:-520px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.hero-in{display:grid;grid-template-columns:1.45fr 1fr;gap:40px;align-items:center;padding:76px 56px 44px}
+.hero-in{display:grid;grid-template-columns:1.5fr 1fr;gap:40px;align-items:center;padding:64px 56px 40px}.hero-in>*{min-width:0}
 .eyebrow{letter-spacing:3px;font-size:12px;font-weight:700;color:var(--aqua);text-transform:uppercase;display:flex;align-items:center;gap:10px;margin:0}
 .eyebrow:before{content:"";width:28px;height:2px;background:var(--gold)}
-h1{font-size:clamp(34px,5vw,60px);line-height:1.3;margin:16px 0}
+h1{font-size:clamp(32px,4.6vw,56px);line-height:1.28;margin:14px 0}
 .shine{background:linear-gradient(90deg,#7fe0dc,#fff,#e5c46b,#7fe0dc);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s linear infinite}
 @keyframes shine{to{background-position:300% 0}}
-.intro{color:#d5e4ee;font-size:18px;max-width:560px}
-.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
-.btn{border:0;border-radius:14px;padding:12px 22px;font-weight:700;transition:.2s;text-decoration:none;display:inline-block}
-.btn:hover{transform:translateY(-2px)}
+.intro{color:#d5e4ee;font-size:17px;max-width:600px;margin:0}
+.hsearch{display:flex;gap:8px;background:#fff;border-radius:18px;padding:6px;margin-top:26px;max-width:620px;box-shadow:0 20px 40px -20px #000a}
+.hsearch svg{flex:none;margin:0 4px 0 12px;align-self:center;color:var(--muted)}
+.hsearch input{flex:1;border:0;outline:0;min-width:0;font-size:16px;color:var(--ink);background:none}
+.hsearch button{border:0;border-radius:13px;background:var(--navy);color:#fff;padding:10px 20px;font-weight:600}
+.sugg{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;font-size:13px;color:#bcd3e0;align-items:center}
+.sugg button{border:1px solid #ffffff38;background:#ffffff10;color:#e8f3f8;border-radius:999px;padding:2px 12px;font-size:13px}
+.sugg button:hover{background:#ffffff26}
+.btn{border:0;border-radius:14px;padding:11px 20px;font-weight:600;transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
 .btn.primary{background:linear-gradient(135deg,#e9fbf8,#bdeee9);color:#0b3a4a;box-shadow:0 10px 30px -10px #7fe0dc}
+.btn.gold{background:var(--gold);color:#2a2100}
 .btn.ghost{background:#ffffff14;color:#fff;border:1px solid #ffffff45}
 .btn.dark{background:var(--navy);color:#fff}
 .btn.line{background:#fff;color:var(--navy);border:1px solid var(--line)}
-.btn.small{padding:7px 14px;font-size:13px;border-radius:10px;background:var(--navy);color:#fff}
-.panel{background:#ffffff10;border:1px solid #ffffff2b;border-radius:24px;padding:28px;backdrop-filter:blur(14px);animation:rise .9s .15s both}
+.btn.small{padding:7px 14px;font-size:13px;border-radius:10px}
+.btn.danger{background:#fde8e8;color:#b42323}
+.panel{background:#ffffff10;border:1px solid #ffffff2b;border-radius:24px;padding:26px;backdrop-filter:blur(14px);animation:rise .9s .15s both}
 .hero-text{animation:rise .9s both}
 @keyframes rise{from{opacity:0;transform:translateY(20px)}}
 .panel .lbl{font-size:12px;color:#bcd3e0;letter-spacing:2px}
-.year-big{font-size:76px;font-weight:700;line-height:1.1;background:linear-gradient(180deg,#fff,#9fd9e0);-webkit-background-clip:text;background-clip:text;color:transparent}
-.pills{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 20px}
+.year-big{font-size:72px;font-weight:700;line-height:1.1;background:linear-gradient(180deg,#fff,#9fd9e0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 18px}
 .pills button{border:1px solid #ffffff45;background:transparent;color:#fff;border-radius:999px;padding:3px 14px;font-size:13px}
 .pills button.on{background:var(--gold);border-color:var(--gold);color:#1d2a35;font-weight:700}
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;border-top:1px solid #ffffff26;padding-top:18px}
-.stats b{display:block;font-size:30px}.stats span{font-size:12px;color:#bcd3e0}
-.ticker{border-top:1px solid #ffffff1f;overflow:hidden;white-space:nowrap;padding:14px 0;color:#bcd3e0;font-size:14px}
-.ticker div{display:inline-block;animation:marq 45s linear infinite}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;border-top:1px solid #ffffff26;padding-top:16px}
+.stats b{display:block;font-size:28px;line-height:1.3}.stats span{font-size:12px;color:#bcd3e0}
+.ticker{border-top:1px solid #ffffff1f;overflow:hidden;white-space:nowrap;padding:13px 0;color:#bcd3e0;font-size:14px}
+.ticker div{display:inline-block;animation:marq 50s linear infinite}
 .ticker span{margin:0 26px}.ticker span:before{content:"✦";color:var(--gold);margin-right:10px}
 @keyframes marq{to{transform:translateX(-50%)}}
-.sh{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+/* ---------- call banner ---------- */
+.callbar{max-width:1240px;margin:18px auto 0;padding:0 24px}
+.call{display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:linear-gradient(110deg,#fff8e6,#fff 60%);border:1px solid #f0dfae;border-radius:22px;padding:18px 22px}
+.call .badge{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:var(--gold);color:#2a2100;flex:none}
+.call h3{margin:0;font-size:18px}.call p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.call .cd{margin-left:auto;text-align:center;padding:0 10px}.call .cd b{font-family:Prompt;font-size:30px;display:block;line-height:1.1;color:#8a5a00}.call .cd small{color:var(--muted);font-size:12px}
+.call .acts{display:flex;gap:8px;flex-wrap:wrap}
+/* ---------- section head ---------- */
+.sh{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
 .sh .eyebrow{color:var(--teal)}h2{font-size:30px;margin:6px 0 0;line-height:1.4}
+.sh p.sub{margin:4px 0 0;color:var(--muted);font-size:15px;max-width:640px}
+/* ---------- categories ---------- */
 .cats{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
-.cat{position:relative;overflow:hidden;text-align:left;border:1px solid var(--line);background:#fff;border-radius:22px;padding:22px;transition:.25s;color:var(--ink)}
+.cat{position:relative;overflow:hidden;text-align:left;border:1px solid var(--line);background:#fff;border-radius:var(--r);padding:20px;transition:.25s;color:var(--ink)}
 .cat:hover,.cat.on{transform:translateY(-4px);box-shadow:0 20px 40px -20px #0b254055;border-color:var(--teal)}
-.cat .ico{width:50px;height:50px;border-radius:15px;display:grid;place-items:center;color:#fff;margin-bottom:14px}
+.cat .ico{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;color:#fff;margin-bottom:12px}
 .cat b{display:block;font-size:16px;line-height:1.45}.cat small{color:var(--muted);font-size:11px;letter-spacing:1.5px}
 .cat .n{position:absolute;right:18px;top:12px;font-family:Prompt;font-size:34px;color:#0b25401c;font-weight:700}
-.t0{background:linear-gradient(135deg,#2a7bc0,#0b3d6b)}.t1{background:linear-gradient(135deg,#14a3a0,#0a5f6b)}
-.t2{background:linear-gradient(135deg,#e0a540,#a8641a)}.t3{background:linear-gradient(135deg,#6f6fd6,#3a3a8f)}
-.t4{background:linear-gradient(135deg,#2fb47c,#126b47)}.t5{background:linear-gradient(135deg,#8aa0b3,#4d6273)}
-.cv0{background:linear-gradient(135deg,#dcecf7,#a9c9e4)}.cv1{background:linear-gradient(135deg,#d8f1ee,#9fd6d1)}
-.cv2{background:linear-gradient(135deg,#f6ecd9,#e3c99a)}.cv3{background:linear-gradient(135deg,#e6e6f7,#c0c2ea)}
-.cv4{background:linear-gradient(135deg,#dcf2e7,#a5dcc0)}.cv5{background:linear-gradient(135deg,#e9eef2,#c9d3db)}
-.bar{display:grid;grid-template-columns:1fr 230px 170px;gap:12px}
+.t0{background:var(--c0)}.t1{background:var(--c1)}.t2{background:var(--c2)}.t3{background:var(--c3)}.t4{background:var(--c4)}.t5{background:var(--c5)}
+.cv0{background:linear-gradient(135deg,#e3edf8,#b8cfea)}.cv1{background:linear-gradient(135deg,#f8eedb,#ead09f)}
+.cv2{background:linear-gradient(135deg,#dcf2ef,#a4dad3)}.cv3{background:linear-gradient(135deg,#ece5f8,#cfbdec)}
+.cv4{background:linear-gradient(135deg,#f9e3e7,#ebb7c1)}.cv5{background:linear-gradient(135deg,#e9eef2,#c9d3db)}
+/* ---------- awards ---------- */
+.aw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:18px}
+.aw-cat{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:20px 20px 10px}
+.aw-cat h3{font-size:16px;margin:0 0 10px;display:flex;align-items:center;gap:10px}
+.aw-cat h3 i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.aw{display:grid;grid-template-columns:44px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line);cursor:pointer}
+.aw:first-of-type{border-top:0}.aw:hover b{color:var(--teal)}
+.medal{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:Prompt;font-weight:700;font-size:15px;color:#3a2a00;background:#eef3f7;border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}
+.medal.m1{background:linear-gradient(135deg,#ffe9a3,#e5b84b)}.medal.m2{background:linear-gradient(135deg,#f1f4f7,#bcc7d1)}.medal.m3{background:linear-gradient(135deg,#f7dcc2,#cf9562)}
+.aw b{display:block;line-height:1.5;font-size:15px}.aw small{color:var(--muted);font-size:13px;display:block}
+.aw .lab{display:inline-block;font-size:12px;font-weight:700;color:#7a5600;background:#fff4d6;border-radius:999px;padding:0 10px;margin-bottom:2px}
+.aw-empty{background:#fff;border:1px dashed var(--line);border-radius:20px;padding:30px;text-align:center;color:var(--muted)}
+/* ---------- gallery ---------- */
+.bar{display:grid;grid-template-columns:1fr 220px 180px;gap:12px}
 .search{position:relative}.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted)}
-.bar input,.bar select{width:100%;height:52px;border:1px solid var(--line);border-radius:14px;padding:0 16px;background:#fff;color:var(--ink)}
+.bar input,.bar select{width:100%;height:50px;border:1px solid var(--line);border-radius:14px;padding:0 16px;background:#fff}
 .search input{padding-left:46px}
-.deep{display:inline-flex;align-items:center;gap:8px;margin-top:12px;font-size:14px;color:var(--muted);cursor:pointer}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 6px}
-.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 16px;font-size:14px;color:var(--ink)}
+.opts{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;margin-top:12px;font-size:14px;color:var(--muted)}
+.opts label{display:inline-flex;gap:8px;align-items:center;cursor:pointer}
+.vt{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.vt button{border:0;background:none;padding:6px 12px;color:var(--muted)}.vt button.on{background:var(--navy);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 6px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 15px;font-size:14px}
 .chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}.chip i{font-style:normal;opacity:.6;margin-left:6px}
 .count{color:var(--muted);font-size:14px;margin:10px 0}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-.card{background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .25s,opacity .6s;display:flex;flex-direction:column}
-.card:hover,.card:focus{transform:translateY(-5px);box-shadow:0 24px 50px -24px #0b254066;outline:none}
-.thumb{position:relative;height:230px;overflow:hidden}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .25s,opacity .6s;display:flex;flex-direction:column}
+.card:hover,.card:focus-visible{transform:translateY(-5px);box-shadow:0 24px 50px -24px #0b254066;outline:none}
+.thumb{position:relative;height:220px;overflow:hidden}
 .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;transition:transform .6s}
 .card:hover .thumb img{transform:scale(1.05)}
 .deco{position:absolute;width:190px;height:190px;right:-30px;bottom:-50px;border:30px solid #ffffff60;border-radius:48px;transform:rotate(28deg)}
-.big{position:absolute;left:20px;bottom:18px;color:#0b2540b0}
+.big{position:absolute;left:20px;bottom:18px;color:#0b2540a0}
 .ty{position:absolute;left:14px;top:14px;background:#0b2540d0;color:#fff;font-size:12px;padding:2px 10px;border-radius:999px;z-index:1}
 .feat{position:absolute;right:14px;top:14px;background:var(--gold);color:#2a2100;font-size:12px;padding:2px 10px;border-radius:999px;font-weight:700;z-index:1}
-.body{padding:18px 20px 18px;display:flex;flex-direction:column;flex:1}
-.body .c{font-size:12px;color:var(--teal);font-weight:700}
+.awr{position:absolute;left:14px;bottom:14px;background:#fff;color:#7a5600;font-size:12px;padding:3px 10px 3px 6px;border-radius:999px;font-weight:700;z-index:1;display:flex;gap:6px;align-items:center;box-shadow:0 6px 16px -6px #0006}
+.awr:before{content:"";width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,#ffe9a3,#e5b84b)}
+.body{padding:16px 20px 16px;display:flex;flex-direction:column;flex:1}
+.body .c{font-size:12px;color:var(--muted);font-weight:700;display:flex;gap:8px;align-items:center}
+.body .c i{width:8px;height:8px;border-radius:2px}
 .body h3{font-size:17px;line-height:1.55;margin:6px 0 8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.meta{font-size:13px;color:var(--muted);margin:2px 0}
+.meta{font-size:13px;color:var(--muted);margin:1px 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .snip{font-size:13px;background:#fff8e1;border-radius:10px;padding:8px 10px;margin:8px 0 0}
 mark{background:#ffe08a;padding:0 2px;border-radius:3px;color:inherit}
-.foot{margin-top:auto;padding-top:12px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
-.acc{padding:2px 10px;border-radius:999px;background:#eef4f8;font-size:12px}
+.foot{margin-top:auto;padding-top:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
+.code{font-family:ui-monospace,Consolas,monospace;font-size:11.5px;color:var(--muted)}
+.acc{padding:2px 10px;border-radius:999px;background:#eef4f8;font-size:12px;white-space:nowrap}
 .acc.verified{background:#e2f5f3;color:#0a6f78}.acc.public{background:#e6f4e8;color:#2e7d32}.acc.filename_only{background:#fbefe0;color:#9a5b12}
-.skel{height:380px;border-radius:22px;background:linear-gradient(90deg,#e9eff4,#f7fafc,#e9eff4);background-size:200% 100%;animation:sk 1.3s linear infinite}
+.list{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.li{display:grid;grid-template-columns:70px 1fr 200px 90px;gap:16px;padding:14px 20px;border-top:1px solid var(--line);cursor:pointer;align-items:start}
+.li:first-child{border-top:0}.li:hover{background:#f7fbfd}
+.li .y{font-family:Prompt;font-weight:600}.li b{display:block;line-height:1.5}.li small{color:var(--muted);font-size:13px}
+.li .r{text-align:right;font-size:13px;color:var(--muted)}
+.skel{height:360px;border-radius:var(--r);background:linear-gradient(90deg,#e9eff4,#f7fafc,#e9eff4);background-size:200% 100%;animation:sk 1.3s linear infinite}
 @keyframes sk{to{background-position:-200% 0}}
 .empty{background:#fff;border:1px dashed var(--line);border-radius:20px;padding:40px;text-align:center;color:var(--muted);grid-column:1/-1}
+.more{display:flex;justify-content:center;margin-top:22px}
 .fstrip{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
 .rv{opacity:0;transform:translateY(24px)}.rv.in{opacity:1;transform:none}
+/* ---------- participation ---------- */
+.pk{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 18px}
+.kpi b{display:block;font-size:30px;line-height:1.25}.kpi span{font-size:13px;color:var(--muted)}
+.kpi .meter{height:8px;border-radius:99px;background:#e8eef3;margin-top:8px;overflow:hidden}.kpi .meter i{display:block;height:100%;border-radius:99px;background:var(--teal)}
+.pgrid{display:grid;grid-template-columns:1.25fr 1fr;gap:18px}
+.box{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.box h3{font-size:16px;margin:0 0 4px}.box .hint{font-size:13px;color:var(--muted);margin:0 0 14px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted);margin-bottom:12px}
+.legend span{display:inline-flex;gap:6px;align-items:center}.legend i{width:10px;height:10px;border-radius:3px}
+.dbar{display:grid;grid-template-columns:minmax(120px,210px) 1fr 44px;gap:10px;align-items:center;font-size:14px;margin:7px 0}
+.dbar .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stack{display:flex;gap:2px;height:14px}
+.stack i{display:block;height:100%;min-width:4px}.stack i:first-child{border-radius:4px 0 0 4px}.stack i:last-child{border-radius:0 4px 4px 0}.stack i:only-child{border-radius:4px}
+.dbar .v{text-align:right;font-family:Prompt;font-weight:600}
+.dbar .aw2{font-size:11px;color:#7a5600}
+.zero{display:flex;flex-wrap:wrap;gap:6px}.zero span{background:#fdf1f1;color:#963232;border-radius:999px;padding:2px 12px;font-size:13px}
+.mx{overflow:auto;max-height:520px}
+.mx table{border-collapse:separate;border-spacing:3px;font-size:13px;width:100%}
+.mx th{position:sticky;top:0;background:#fff;color:var(--muted);font-weight:600;padding:6px;z-index:1}
+.mx th:first-child,.mx td:first-child{text-align:left;position:sticky;left:0;background:#fff;min-width:150px;max-width:220px}
+.mx td{text-align:center;padding:6px 4px;border-radius:6px;min-width:46px}
+.hm0{background:#f2f5f8;color:#9aa8b5}.hm1{background:#d4efec}.hm2{background:#a6ddd7}.hm3{background:#64c0b6;color:#fff}.hm4{background:#13998f;color:#fff}
+/* ---------- modal ---------- */
 .modal{position:fixed;inset:0;z-index:50;background:#061423a6;backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:28px 14px;overflow:auto}
 .dlg{background:#fff;border-radius:26px;width:min(1000px,100%);overflow:hidden;animation:pop .25s ease-out}
-.dlg.small{width:min(520px,100%)}
+.dlg.small{width:min(520px,100%)}.dlg.mid{width:min(820px,100%)}
 @keyframes pop{from{opacity:0;transform:translateY(20px) scale(.98)}}
-.dlg-head{position:relative;padding:28px 120px 22px 30px;color:#fff;background:linear-gradient(125deg,#0b2540,#0d4b5f)}
-.dlg-head h2{font-size:24px;margin:8px 0 6px}
-.hmeta{display:flex;flex-wrap:wrap;gap:6px 18px;color:#cfe2ec;font-size:14px}
+.dlg-head{position:relative;padding:26px 130px 22px 30px;color:#fff;background:linear-gradient(125deg,#0b2540,#0d4b5f)}
+.dlg-head h2{font-size:23px;margin:8px 0 6px}
+.hmeta{display:flex;flex-wrap:wrap;gap:4px 18px;color:#cfe2ec;font-size:14px}
 .x{position:absolute;right:16px;top:16px;width:40px;height:40px;border-radius:12px;border:0;background:#ffffff22;color:#fff;font-size:22px}
 .share{position:absolute;right:64px;top:16px;height:40px;border-radius:12px;border:0;background:#ffffff22;color:#fff;font-size:13px;padding:0 12px}
+.hawd{display:inline-flex;gap:8px;align-items:center;background:#fff3cf;color:#6b4a00;border-radius:999px;padding:3px 14px 3px 6px;font-weight:700;font-size:14px;margin-top:10px}
+.hawd:before{content:"";width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#ffe9a3,#e5b84b)}
 .tabs{display:flex;gap:4px;padding:0 20px;border-bottom:1px solid var(--line);background:#f7fafc;overflow:auto}
 .tabs button{border:0;background:none;padding:14px 16px;border-bottom:3px solid transparent;color:var(--muted);font-weight:600;white-space:nowrap}
 .tabs button.on{color:var(--navy);border-color:var(--teal)}
 .pane{padding:26px 30px}
-.lead{font-size:16px;background:#f6fafc;border-left:4px solid var(--teal);padding:14px 18px;border-radius:0 14px 14px 0}
-.h3{font-size:16px;margin:22px 0 10px}
-.info{display:grid;grid-template-columns:130px 1fr;gap:8px 16px;margin:18px 0}.info dt{color:var(--muted)}.info dd{margin:0}
-.kw{display:flex;flex-wrap:wrap;gap:6px}.kw span{background:#eef5f9;border-radius:999px;padding:3px 12px;font-size:13px}
-.ov-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
-.lock{text-align:center;padding:44px 20px;background:linear-gradient(180deg,#f1f8fa,#fff);border-radius:20px;border:1px solid var(--line)}
-.lock .ico{width:66px;height:66px;margin:0 auto 12px;border-radius:20px;display:grid;place-items:center;background:#e2f5f3;color:var(--teal)}
+.lead{font-size:16px;background:#f6fafc;border-left:4px solid var(--teal);padding:14px 18px;border-radius:0 14px 14px 0;margin:0}
+.h3{font-size:16px;margin:22px 0 8px}
+.absx h4{font-size:15px;margin:16px 0 4px;color:var(--navy)}.absx p{margin:0;white-space:pre-wrap}
+.info{display:grid;grid-template-columns:140px 1fr;gap:8px 16px;margin:18px 0}.info dt{color:var(--muted)}.info dd{margin:0;word-break:break-word}
+.kw{display:flex;flex-wrap:wrap;gap:6px}.kw button{background:#eef5f9;border:0;border-radius:999px;padding:3px 12px;font-size:13px}.kw button:hover{background:#dcebf3}
+.ov-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.lock{text-align:center;padding:40px 20px;background:linear-gradient(180deg,#f1f8fa,#fff);border-radius:20px;border:1px solid var(--line)}
+.lock .ico{width:64px;height:64px;margin:0 auto 12px;border-radius:20px;display:grid;place-items:center;background:#e2f5f3;color:var(--teal)}
 .lock p{color:var(--muted);max-width:460px;margin:6px auto 18px}
 .note{font-size:13px;color:var(--muted);background:#f4f8fb;border-radius:12px;padding:10px 14px;margin:0 0 14px}
 .find{display:flex;gap:12px;align-items:center;margin-bottom:12px}
@@ -136,46 +219,85 @@ mark{background:#ffe08a;padding:0 2px;border-radius:3px;color:inherit}
 .textbox{white-space:pre-wrap;font-size:15px;line-height:1.95;background:#fbfdfe;border:1px solid var(--line);border-radius:16px;padding:22px;max-height:62vh;overflow:auto}
 .doc-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;font-size:14px;color:var(--muted)}
 .viewer{width:100%;height:72vh;border:0;border-radius:14px;background:#eef3f7}
-.field{display:block;margin-bottom:14px}.field span{display:block;font-size:14px;margin-bottom:6px;color:var(--muted)}
-.field input{width:100%;height:48px;border:1px solid var(--line);border-radius:12px;padding:0 14px}
+.cite{border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden}
+.cite .ch{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#f7fafc;font-weight:600;font-size:14px}
+.cite .cb{padding:12px 14px;font-size:14.5px;word-break:break-word}
+.cite pre{margin:0;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;white-space:pre-wrap}
+/* ---------- forms ---------- */
+.field{display:block;margin-bottom:14px}.field>span{display:block;font-size:14px;margin-bottom:6px;color:var(--muted)}
+.field>span b{color:#b42323;font-weight:500}
+.field input,.field select,.field textarea{width:100%;min-height:46px;border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:#fff}
+.field textarea{min-height:92px;resize:vertical;line-height:1.6}
+.field small{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
 .otp{letter-spacing:12px;text-align:center;font-size:26px!important;font-family:Prompt}
-.consent{display:flex;gap:10px;font-size:13px;color:var(--muted);margin:6px 0 16px;align-items:flex-start}
-.err{color:#b42323;font-size:14px;min-height:20px}
+.consent{display:flex;gap:10px;font-size:13.5px;color:var(--muted);margin:6px 0 16px;align-items:flex-start}
+.consent input{margin-top:5px}
+.err{color:#b42323;font-size:14px;min-height:20px;margin:6px 0}
 .linkbtn{background:none;border:0;color:var(--teal);text-decoration:underline;padding:0;margin-top:12px}
+.drop{border:2px dashed #c6d6e2;border-radius:16px;padding:22px;text-align:center;color:var(--muted);background:#f9fbfd;cursor:pointer;transition:.2s}
+.drop.on{border-color:var(--teal);background:#eefaf9}.drop b{color:var(--ink)}
+.steps{display:flex;gap:6px;margin:0 0 18px;flex-wrap:wrap}.steps span{font-size:12.5px;padding:3px 12px;border-radius:999px;background:#eef3f7;color:var(--muted)}
+.steps span.on{background:var(--navy);color:#fff}
+.prog{height:8px;border-radius:99px;background:#e8eef3;overflow:hidden;margin:10px 0}.prog i{display:block;height:100%;width:0;background:var(--teal);transition:width .3s}
+.subc{border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin-bottom:12px}
+.subc b{display:block;line-height:1.5}.subc .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.st{font-size:12px;font-weight:700;border-radius:999px;padding:2px 12px;background:#eef3f7}
+.st.submitted,.st.reviewing{background:#fff4e0;color:#8a5200}.st.revise{background:#fde8e8;color:#a02020}.st.accepted{background:#e6f4e8;color:#2e7d32}
+.st.rejected,.st.withdrawn{background:#eef1f4;color:#6b7a88}
+.rnote{background:#fff7f0;border-radius:12px;padding:10px 14px;font-size:14px;margin-top:10px;white-space:pre-wrap}
+.okbox{text-align:center;padding:20px}.okbox .big2{font-family:Prompt;font-size:34px;color:var(--navy);margin:6px 0}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0b2540;color:#fff;padding:12px 20px;border-radius:14px;z-index:99;opacity:0;transition:.3s;pointer-events:none;max-width:90vw}
 #toast.show{opacity:1}
-.site-foot{margin-top:90px;background:#0b2540;color:#bcd3e0;padding:44px 24px;text-align:center;font-size:14px}
-.site-foot b{color:#fff;font-family:Prompt}
-@media(max-width:1000px){.cats{grid-template-columns:repeat(3,1fr)}.grid,.fstrip{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:860px){.hero-in{grid-template-columns:1fr;padding:48px 26px 30px}.hero{margin:12px 12px 0;border-radius:24px}.bar{grid-template-columns:1fr}.nav .hide-m{display:none}}
-@media(max-width:560px){.cats{grid-template-columns:repeat(2,1fr)}.grid,.fstrip{grid-template-columns:1fr}.year-big{font-size:56px}.pane{padding:20px}.info{grid-template-columns:1fr}.wrap{padding:56px 16px 0}.dlg-head{padding:70px 20px 20px}.auth{max-width:150px}}
+.site-foot{margin-top:90px;background:#0b2540;color:#bcd3e0;padding:44px 24px;font-size:14px}
+.site-foot .in{max-width:1240px;margin:auto;display:grid;grid-template-columns:1.2fr 1fr;gap:30px}
+.site-foot b{color:#fff;font-family:Prompt}.site-foot a{color:#9fe3df}
+.site-foot .cref{background:#ffffff0d;border:1px solid #ffffff1c;border-radius:14px;padding:12px 14px;font-size:13px;color:#d5e4ee;margin-top:8px}
+@media(max-width:1060px){.cats{grid-template-columns:repeat(3,1fr)}.grid,.fstrip{grid-template-columns:repeat(2,1fr)}.pgrid{grid-template-columns:1fr}.nav .hide-t{display:none}}
+@media(max-width:860px){.hero-in{grid-template-columns:1fr;padding:44px 24px 28px}.hero{margin:12px 12px 0;border-radius:24px}.bar{grid-template-columns:1fr}.nav .hide-m{display:none}
+.pk{grid-template-columns:repeat(2,1fr)}.li{grid-template-columns:56px 1fr}.li .d,.li .r{display:none}.site-foot .in{grid-template-columns:1fr}.call .cd{margin-left:0}}
+@media(max-width:560px){.hero-in{padding:36px 20px 24px;gap:26px}.panel{padding:20px}.hsearch button{padding:10px 14px}.eyebrow{letter-spacing:2px}.cats{grid-template-columns:repeat(2,1fr)}.grid,.fstrip{grid-template-columns:1fr}.year-big{font-size:54px}.pane{padding:20px}.info{grid-template-columns:1fr;gap:2px}.info dd{margin-bottom:8px}
+.wrap{padding:56px 16px 0}.dlg-head{padding:66px 20px 20px}.auth{max-width:130px}.g2{grid-template-columns:1fr}.brand small{display:none}.dbar{grid-template-columns:110px 1fr 36px}.aw-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+@media print{.topbar,.hero,.callbar,.site-foot,#toast{display:none}}
 </style>
 </head>
 <body>
 <header class="topbar"><div class="in">
-  <button class="brand" data-go="#top"><img id="logo" src="https://sawee-hosp.github.io/sawee-mr/hosp_logo.png" alt="" onerror="this.style.display='none'"><span><b id="hName">โรงพยาบาลสวี</b><small>คลังผลงานวิชาการ</small></span></button>
-  <nav class="nav"><button class="hide-m" data-go="#cats">ประเภทผลงาน</button><button class="hide-m" data-go="#gallery">สำรวจผลงาน</button><button class="auth" id="authBtn">ยืนยันอีเมล</button></nav>
-</div></header>
+  <button class="brand" data-go="#top"><img id="logo" src="../hosp_logo.png" alt="" onerror="this.style.visibility='hidden'"><span><b id="hName">โรงพยาบาลสวี</b><small>คลังผลงานวิชาการ · Academic Repository</small></span></button>
+  <nav class="nav">
+    <button class="hide-m" data-go="#gallery">คลังผลงาน</button>
+    <button class="hide-m" data-go="#awards">ประกาศผล</button>
+    <button class="hide-m hide-t" data-go="#part">การมีส่วนร่วม</button>
+    <button class="cta" id="submitBtn">ส่งผลงาน</button>
+    <button class="auth" id="authBtn">ยืนยันอีเมล</button>
+  </nav>
+</div>
+<div class="menu hidden" id="userMenu"><small id="umEmail"></small><button id="umMine">ผลงานของฉัน / ติดตามสถานะ</button><button id="umSubmit">ส่งผลงานใหม่</button><button id="umOut">ออกจากระบบ</button></div>
+</header>
 
 <section class="hero" id="top">
-  <canvas id="net"></canvas><div class="gridbg"></div>
-  <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+  <canvas id="net" aria-hidden="true"></canvas><div class="gridbg"></div><div class="ring r1"></div><div class="ring r2"></div>
   <div class="hero-in">
     <div class="hero-text">
-      <p class="eyebrow">Academic Showcase</p>
+      <p class="eyebrow">Sawee Hospital Academic Repository</p>
       <h1><span id="evTitle">มหกรรมวิชาการ</span><br><span class="shine" id="evSub">องค์ความรู้สู่คุณภาพการดูแล</span></h1>
-      <p class="intro" id="intro">พื้นที่รวบรวมผลงานวิชาการ การพัฒนาคุณภาพ งานวิจัย และนวัตกรรมของบุคลากรโรงพยาบาลสวี</p>
-      <div class="actions"><button class="btn primary" data-go="#gallery">สำรวจผลงานวิชาการ →</button><button class="btn ghost" data-go="#cats">ดูตามประเภท</button></div>
+      <p class="intro" id="intro">คลังผลงานวิชาการ การพัฒนาคุณภาพ งานวิจัย และนวัตกรรมของบุคลากรโรงพยาบาลสวี สืบค้นและอ้างอิงได้</p>
+      <form class="hsearch" id="hForm" role="search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <label class="sr" for="hq">ค้นหาผลงาน</label><input id="hq" type="search" placeholder="ค้นหาชื่อผลงาน ผู้จัดทำ หน่วยงาน คำสำคัญ หรือรหัสผลงาน" autocomplete="off">
+        <button>ค้นหา</button>
+      </form>
+      <div class="sugg" id="sugg"></div>
     </div>
     <aside class="panel">
       <div class="lbl">ACADEMIC YEAR · ปีการประกวด</div>
       <div class="year-big" id="yearBig">—</div>
       <div class="pills" id="pills"></div>
       <div class="stats">
-        <div><b id="stWorks">0</b><span>ผลงานที่เผยแพร่</span></div>
-        <div><b id="stDepts">0</b><span>หน่วยงานที่ร่วมส่ง</span></div>
-        <div><b id="stCats">0</b><span>ประเภทผลงาน</span></div>
+        <div><b id="stWorks">0</b><span>ผลงานในคลัง</span></div>
+        <div><b id="stDepts">0</b><span>หน่วยงานที่มีส่วนร่วม</span></div>
+        <div><b id="stAwards">0</b><span>ผลงานที่ได้รับรางวัล</span></div>
         <div><b id="stViews">0</b><span>ยอดเข้าชม</span></div>
       </div>
     </aside>
@@ -183,9 +305,16 @@ mark{background:#ffe08a;padding:0 2px;border-radius:3px;color:inherit}
   <div class="ticker"><div id="ticker"></div></div>
 </section>
 
+<div class="callbar hidden" id="callBar"></div>
+
 <section class="wrap" id="cats">
   <div class="sh"><div><p class="eyebrow">Categories</p><h2>ประเภทผลงาน</h2></div></div>
   <div class="cats" id="catGrid"></div>
+</section>
+
+<section class="wrap" id="awards">
+  <div class="sh"><div><p class="eyebrow">Results &amp; Awards</p><h2>ประกาศผลรางวัล <span id="awYear"></span></h2><p class="sub" id="awSub">ผลการตัดสินผลงานวิชาการ จำแนกตามประเภทผลงาน</p></div></div>
+  <div id="awBox"></div>
 </section>
 
 <section class="wrap hidden" id="featSec">
@@ -194,69 +323,109 @@ mark{background:#ffe08a;padding:0 2px;border-radius:3px;color:inherit}
 </section>
 
 <section class="wrap" id="gallery">
-  <div class="sh"><div><p class="eyebrow">Explore the collection</p><h2>ผลงานวิชาการ</h2></div></div>
+  <div class="sh"><div><p class="eyebrow">Explore the collection</p><h2>คลังผลงานวิชาการ</h2><p class="sub">ทุกผลงานมีรหัสอ้างอิงถาวรและลิงก์เฉพาะ กดที่ผลงานแล้วเลือกแท็บ "อ้างอิง" เพื่อคัดลอกรูปแบบ APA, Vancouver, BibTeX หรือ RIS</p></div></div>
   <div class="bar">
     <label class="search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder="ค้นหาชื่อผลงาน ผู้จัดทำ หน่วยงาน หรือคำสำคัญ"></label>
-    <select id="dept"><option value="">ทุกหน่วยงาน</option></select>
-    <select id="sort"><option value="rec">เรียง: แนะนำ</option><option value="title">เรียง: ชื่อ ก-ฮ</option><option value="views">เรียง: ยอดเข้าชม</option></select>
+      <span class="sr">ค้นหา</span><input id="q" type="search" placeholder="ค้นหา (เว้นวรรคเพื่อค้นหลายคำพร้อมกัน)"></label>
+    <select id="dept" aria-label="หน่วยงาน"><option value="">ทุกหน่วยงาน</option></select>
+    <select id="sort" aria-label="เรียงลำดับ"><option value="rec">เรียง: แนะนำ</option><option value="award">เรียง: รางวัล</option><option value="new">เรียง: ปีล่าสุด</option><option value="title">เรียง: ชื่อ ก-ฮ</option><option value="views">เรียง: ยอดเข้าชม</option></select>
   </div>
-  <label class="deep"><input type="checkbox" id="deep"> ค้นในเนื้อหาเอกสารด้วย (ข้อความจาก OCR)</label>
+  <div class="opts">
+    <label><input type="checkbox" id="deep"> ค้นในเนื้อหาเอกสารด้วย (ข้อความจาก OCR)</label>
+    <label><input type="checkbox" id="awOnly"> เฉพาะผลงานที่ได้รับรางวัล</label>
+    <div class="vt" role="group" aria-label="มุมมอง"><button data-view="grid" class="on">การ์ด</button><button data-view="list">รายการ</button></div>
+  </div>
   <div class="chips" id="chips"></div>
-  <p class="count" id="count">กำลังโหลด…</p>
-  <div class="grid" id="grid"></div>
+  <p class="count" id="count" aria-live="polite">กำลังโหลด…</p>
+  <div id="grid" class="grid"></div>
+  <div class="more hidden" id="moreBox"><button class="btn line" id="moreBtn">แสดงเพิ่ม</button></div>
 </section>
 
-<footer class="site-foot"><b id="fName">โรงพยาบาลสวี</b><br>คลังผลงานวิชาการ การพัฒนาคุณภาพ งานวิจัย และนวัตกรรม<br><small id="fContact"></small></footer>
+<section class="wrap" id="part">
+  <div class="sh"><div><p class="eyebrow">Participation</p><h2>การมีส่วนร่วมของหน่วยงาน <span id="pYear"></span></h2><p class="sub">นับจากผลงานที่เผยแพร่ในคลังและผลงานที่ส่งเข้าประกวดในปีนั้น ใช้ติดตามความครอบคลุมของทุกฝ่าย/กลุ่มงาน</p></div></div>
+  <div class="pk" id="pKpi"></div>
+  <div class="pgrid">
+    <div class="box"><h3>จำนวนผลงานรายหน่วยงาน</h3><p class="hint">แยกสีตามประเภทผลงาน · ชี้ที่แท่งเพื่อดูรายละเอียด</p><div class="legend" id="pLegend"></div><div id="pBars"></div></div>
+    <div>
+      <div class="box" style="margin-bottom:18px"><h3>หน่วยงานที่ยังไม่มีผลงานในปีนี้</h3><p class="hint" id="pZeroHint"></p><div class="zero" id="pZero"></div></div>
+      <div class="box"><h3>ภาพรวมย้อนหลังรายปี</h3><p class="hint">ตัวเลข = จำนวนผลงานของหน่วยงานในปีนั้น</p><div class="mx" id="pMatrix"></div></div>
+    </div>
+  </div>
+</section>
 
-<div class="modal hidden" id="workModal"><div class="dlg">
+<footer class="site-foot"><div class="in">
+  <div><b id="fName">โรงพยาบาลสวี</b><br>คลังผลงานวิชาการ การพัฒนาคุณภาพ งานวิจัย และนวัตกรรม<br><span id="fContact"></span>
+    <div class="cref"><b style="font-size:13px">การอ้างอิงผลงานจากคลังนี้</b><br>ระบุชื่อผู้จัดทำ ชื่อผลงาน ปี ชื่องาน และรหัสผลงาน (เช่น SWH-2569-CQI-001) พร้อมลิงก์ถาวรของผลงาน กดปุ่ม "อ้างอิง" ในหน้าผลงานเพื่อคัดลอกรูปแบบสำเร็จรูป</div></div>
+  <div><b>เมนู</b><br><a href="#gallery">สืบค้นผลงาน</a> · <a href="#awards">ประกาศผลรางวัล</a> · <a href="#part">การมีส่วนร่วม</a><br><a href="#" id="fSubmit">ส่งผลงานเข้าประกวด</a> · <a href="#" id="fMine">ติดตามสถานะผลงาน</a><br><br>
+    <small>ข้อมูลส่วนบุคคลที่เก็บ (อีเมล ชื่อ หน่วยงาน) ใช้เพื่อยืนยันตัวตน ติดต่อกลับ และจัดทำสถิติเท่านั้น</small><br><small><a href="admin.html" rel="nofollow">ผู้ดูแลระบบ</a></small></div>
+</div></footer>
+
+<div class="modal hidden" id="workModal" role="dialog" aria-modal="true" aria-labelledby="wTitle"><div class="dlg">
   <div class="dlg-head"><button class="share" id="shareBtn">คัดลอกลิงก์</button><button class="x" data-close aria-label="ปิด">×</button><div id="wHead"></div></div>
-  <div class="tabs" id="wTabs"></div>
+  <div class="tabs" id="wTabs" role="tablist"></div>
   <div class="pane" id="wPane"></div>
 </div></div>
 
-<div class="modal hidden" id="verifyModal"><div class="dlg small">
-  <div class="dlg-head"><button class="x" data-close aria-label="ปิด">×</button><p class="eyebrow">Verify email</p><h2>ยืนยันอีเมลเพื่ออ่านผลงานฉบับเต็ม</h2></div>
+<div class="modal hidden" id="verifyModal" role="dialog" aria-modal="true"><div class="dlg small">
+  <div class="dlg-head"><button class="x" data-close aria-label="ปิด">×</button><p class="eyebrow">Verify email</p><h2 id="vTitle">ยืนยันอีเมล</h2><div class="hmeta" id="vWhy">เพื่ออ่านผลงานฉบับเต็ม ส่งผลงาน และติดตามสถานะ</div></div>
   <div class="pane">
     <form id="vStep1">
-      <label class="field"><span>อีเมล *</span><input id="vEmail" type="email" required autocomplete="email"></label>
-      <label class="field"><span>ชื่อ-สกุล (ไม่บังคับ)</span><input id="vName" maxlength="80"></label>
-      <label class="field"><span>หน่วยงาน/สถานที่ทำงาน (ไม่บังคับ)</span><input id="vOrg" maxlength="120"></label>
-      <label class="consent"><input type="checkbox" id="vConsent" required> ข้าพเจ้ายินยอมให้โรงพยาบาลเก็บอีเมลและข้อมูลข้างต้น เพื่อยืนยันการเข้าถึงผลงานและจัดทำสถิติการใช้งาน</label>
+      <label class="field"><span>อีเมล <b>*</b></span><input id="vEmail" type="email" required autocomplete="email"></label>
+      <label class="field"><span>ชื่อ-สกุล (ไม่บังคับ)</span><input id="vName" maxlength="80" autocomplete="name"></label>
+      <label class="field"><span>หน่วยงาน/สถานที่ทำงาน (ไม่บังคับ)</span><input id="vOrg" maxlength="120" autocomplete="organization"></label>
+      <label class="consent"><input type="checkbox" id="vConsent" required> ข้าพเจ้ายินยอมให้โรงพยาบาลเก็บอีเมลและข้อมูลข้างต้น เพื่อยืนยันการเข้าถึงผลงาน การติดต่อเรื่องผลงานที่ส่ง และจัดทำสถิติการใช้งาน</label>
       <p class="err" id="vErr1"></p>
       <button class="btn dark" id="vSend" style="width:100%">ส่งรหัสยืนยันไปที่อีเมล</button>
     </form>
     <form id="vStep2" class="hidden">
-      <p>ส่งรหัส 6 หลักไปที่ <b id="vTo"></b> แล้ว (หากไม่พบ ให้ดูในโฟลเดอร์สแปม)</p>
-      <label class="field"><input id="vCode" class="otp" inputmode="numeric" maxlength="6" autocomplete="one-time-code" required></label>
+      <p>ส่งรหัส 6 หลักไปที่ <b id="vTo"></b> แล้ว (หากไม่พบ ให้ดูในโฟลเดอร์สแปม/โปรโมชัน)</p>
+      <label class="field"><span class="sr">รหัสยืนยัน</span><input id="vCode" class="otp" inputmode="numeric" maxlength="6" autocomplete="one-time-code" required></label>
       <p class="err" id="vErr2"></p>
       <button class="btn dark" id="vOk" style="width:100%">ยืนยัน</button>
       <button type="button" class="linkbtn" id="vBack">เปลี่ยนอีเมล / ขอรหัสใหม่</button>
     </form>
   </div>
 </div></div>
-<div id="toast"></div>
+
+<div class="modal hidden" id="subModal" role="dialog" aria-modal="true"><div class="dlg mid">
+  <div class="dlg-head"><button class="x" data-close aria-label="ปิด">×</button><p class="eyebrow">Call for submissions</p><h2 id="sTitle">ส่งผลงานเข้าประกวด</h2><div class="hmeta" id="sMeta"></div></div>
+  <div class="pane" id="sPane"></div>
+</div></div>
+
+<div class="modal hidden" id="mineModal" role="dialog" aria-modal="true"><div class="dlg mid">
+  <div class="dlg-head"><button class="x" data-close aria-label="ปิด">×</button><p class="eyebrow">My submissions</p><h2>ผลงานของฉัน</h2><div class="hmeta" id="mMeta"></div></div>
+  <div class="pane" id="mPane"></div>
+</div></div>
+<div id="toast" role="status"></div>
 
 <script>
 /* ================= ตั้งค่า =================
- * URL ของ Apps Script Web app (ต้องลงท้ายด้วย /exec)
- * ถ้าสร้าง Deployment ใหม่ URL จะเปลี่ยน ต้องแก้บรรทัดนี้ด้วย
+ * URL ของ Apps Script Web app (ลงท้ายด้วย /exec)
+ * ถ้าสร้าง Deployment ใหม่ URL จะเปลี่ยน ต้องแก้บรรทัดนี้ (และใน admin.html) ด้วย
  * ========================================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycbyoNAS-hUagvEiykv75HiZQavQ-8QoLWfnbmYph1yBaZj364mGXy8VuhMssaZGusQAUaA/exec';
 
 const CATS=['ระดับทีม/หน่วยงาน','CQI','Photo voice','วิจัยและ R2R','นวัตกรรม'];
 const CAT_EN={'ระดับทีม/หน่วยงาน':'TEAM / UNIT','CQI':'CONTINUOUS QI','Photo voice':'PHOTO VOICE','วิจัยและ R2R':'RESEARCH & R2R','นวัตกรรม':'INNOVATION'};
-const ACC={filename_only:'เผยแพร่เฉพาะชื่อไฟล์',metadata:'ข้อมูลเบื้องต้น',verified:'ยืนยันอีเมลเพื่ออ่าน',public:'อ่านได้ทันที'};
+const CAT_TYPE={'ระดับทีม/หน่วยงาน':['ผลงานพัฒนาคุณภาพระดับทีม/หน่วยงาน','Team quality improvement poster'],'CQI':['ผลงานพัฒนาคุณภาพต่อเนื่อง (CQI)','CQI poster presentation'],
+  'Photo voice':['ผลงาน Photo voice','Photovoice presentation'],'วิจัยและ R2R':['ผลงานวิจัย/R2R','Research/R2R poster presentation'],'นวัตกรรม':['ผลงานนวัตกรรม','Innovation poster presentation']};
+const ACC={filename_only:'เฉพาะชื่อผลงาน',metadata:'ข้อมูลเบื้องต้น',verified:'ยืนยันอีเมลเพื่ออ่าน',public:'อ่านได้ทันที'};
 const ICONS={
  'ระดับทีม/หน่วยงาน':'<path d="M16 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1"/><circle cx="9" cy="7" r="4"/><path d="M22 19v-1a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
  'CQI':'<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/><path d="m9 12 2 2 4-4"/>',
  'Photo voice':'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
  'วิจัยและ R2R':'<path d="M9 3h6M10 3v6L4.5 19.5A1 1 0 0 0 5.4 21h13.2a1 1 0 0 0 .9-1.5L14 9V3"/><path d="M7 15h10"/>',
- 'นวัตกรรม':'<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2V18h6v-1.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/>'
+ 'นวัตกรรม':'<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2V18h6v-1.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/>',
+ 'อื่นๆ':'<path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/>'
 };
 const EYE='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 const LOCK='<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
-const S={works:[],settings:{},year:'',cat:'',dept:'',q:'',sort:'rec',deep:false,hits:null,session:'',email:'',visitor:'',current:null,detail:null,opened:{}};
+const TROPHY='<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>';
+const MONTH=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const MONTH_EN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const PAGE=24;
+const S={works:[],settings:{},calls:[],depts:[],part:null,year:'',cat:'',dept:'',q:'',sort:'rec',deep:false,hits:null,awOnly:false,view:'grid',limit:PAGE,
+  session:'',email:'',visitor:'',current:null,detail:null,opened:{},after:null,mine:[],editing:null,file:null};
 const mem={};
 const store={
   get:function(k){try{return localStorage.getItem(k);}catch(e){return mem[k]||null;}},
@@ -264,143 +433,219 @@ const store={
   del:function(k){try{localStorage.removeItem(k);}catch(e){delete mem[k];}}
 };
 
+/* ---------- ตัวช่วย ---------- */
 function Q(s){return document.querySelector(s);}
 function api(action,data){
   const body=JSON.stringify(Object.assign({action:action},data||{}));
-  return fetch(API_URL,{method:'POST',body:body,redirect:'follow'})
+  return fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:body,redirect:'follow'})
     .catch(function(){throw new Error('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาตรวจอินเทอร์เน็ต หรือแจ้งผู้ดูแลระบบ');})
-    .then(function(r){if(!r.ok)throw new Error('เซิร์ฟเวอร์ตอบกลับผิดพลาด (HTTP '+r.status+')');return r.json();})
-    .then(function(j){if(!j||!j.ok)throw new Error((j&&j.error)||'เกิดข้อผิดพลาด');return j.data;});
+    .then(function(r){if(!r.ok)throw new Error('เซิร์ฟเวอร์ตอบกลับผิดพลาด (HTTP '+r.status+')');return r.text();})
+    .then(function(t){let j;try{j=JSON.parse(t);}catch(e){throw new Error('เซิร์ฟเวอร์ตอบกลับไม่ใช่ข้อมูล (ตรวจการ Deploy ของ Apps Script ว่าเปิดให้ Anyone เข้าถึง)');}
+      if(!j||!j.ok)throw new Error((j&&j.error)||'เกิดข้อผิดพลาด');return j.data;});
 }
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function norm(s){return String(s||'').normalize('NFC').toLowerCase();}
 function terms(){return norm(S.q).trim().split(/\s+/).filter(Boolean);}
 function reEsc(s){return s.replace(/[.*+?^{}()|[\]\\\x24]/g,function(c){return '\\'+c;});}
 function hl(t,list){
-  list=list||terms();
-  const s=esc(t);
-  if(!list.length)return s;
+  list=list||terms();const s=esc(t);if(!list.length)return s;
   const re=new RegExp('('+list.map(function(x){return reEsc(esc(x));}).join('|')+')','gi');
   return s.replace(re,function(m){return '<mark>'+m+'</mark>';});
 }
-function icon(c,n){return '<svg width="'+(n||24)+'" height="'+(n||24)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+(ICONS[c]||ICONS['นวัตกรรม'])+'</svg>';}
 function catIdx(c){const i=CATS.indexOf(c);return i<0?5:i;}
-function toast(m){const t=Q('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},3500);}
+function icon(c,n){return '<svg width="'+(n||24)+'" height="'+(n||24)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+(ICONS[c]||ICONS['อื่นๆ'])+'</svg>';}
+function toast(m){const t=Q('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},3800);}
 function errMsg(e){return String((e&&e.message)||e||'เกิดข้อผิดพลาด');}
 function th(n){return Number(n||0).toLocaleString('th-TH');}
-function imgFallback(img){
-  if(!img.dataset.f){img.dataset.f='1';img.src='https://lh3.googleusercontent.com/d/'+img.dataset.fid+'=w800';}
-  else{img.remove();}
+function thDate(s,full){
+  if(!s)return '';const m=String(s).match(/^(\d{4})-(\d{2})-(\d{2})/);let d;
+  if(m)d=new Date(+m[1],+m[2]-1,+m[3]);else{d=new Date(s);if(isNaN(d))return esc(s);}
+  return d.getDate()+' '+(full?['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'][d.getMonth()]:MONTH[d.getMonth()])+' '+(d.getFullYear()+543);
+}
+function daysLeft(s){const m=String(s||'').match(/^(\d{4})-(\d{2})-(\d{2})/);if(!m)return null;const end=new Date(+m[1],+m[2]-1,+m[3],23,59,59);return Math.ceil((end-Date.now())/864e5);}
+function imgFallback(img){if(!img.dataset.f){img.dataset.f='1';img.src='https://lh3.googleusercontent.com/d/'+img.dataset.fid+'=w800';}else img.remove();}
+function kwList(s){return String(s||'').split(/[,，;]/).map(function(x){return x.trim();}).filter(Boolean);}
+function authorList(s){return String(s||'').split(/\s*(?:,|，|;|\n|\s และ\s)\s*/).map(function(x){return x.trim();}).filter(Boolean);}
+function siteBase(){const u=S.settings.siteUrl;if(u&&/^https?:/.test(u))return u.split('?')[0].split('#')[0];return location.origin+location.pathname;}
+function permalink(w){return siteBase()+'?work='+encodeURIComponent(w.code||w.id);}
+function copyText(t,okMsg){
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(function(){toast(okMsg||'คัดลอกแล้ว');}).catch(function(){prompt('คัดลอกข้อความนี้',t);});
+  else prompt('คัดลอกข้อความนี้',t);
+}
+function download(name,text,type){
+  const b=new Blob([text],{type:type||'text/plain;charset=utf-8'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);
 }
 
+/* ---------- เริ่มต้น ---------- */
 window.addEventListener('load',init);
 async function init(){
   S.visitor=store.get('sv_vid');
   if(!S.visitor){S.visitor='v'+Math.random().toString(36).slice(2)+Date.now().toString(36);store.set('sv_vid',S.visitor);}
-  S.session=store.get('sv_ses')||'';
+  S.session=store.get('sv_ses')||'';S.email=store.get('sv_email')||'';
+  S.view=store.get('sv_view')==='list'?'list':'grid';
   startNet();bindUI();renderSkeleton();renderAuth();
   try{
-    const data=await api('catalog');
-    S.works=data.works||[];S.settings=data.settings||{};
+    const d=await api('catalog');
+    S.works=d.works||[];S.settings=d.settings||{};S.calls=d.calls||[];S.depts=d.departments||[];S.part=d.participation||null;
     applySettings();
     const ys=years();
     S.year=ys.indexOf(String(S.settings.defaultYear))>=0?String(S.settings.defaultYear):(ys[0]||'');
     renderAll();
-    const wid=new URLSearchParams(location.search).get('work');
-    if(wid)openWork(wid);
+    const p=new URLSearchParams(location.search);
+    if(p.get('work'))openWork(p.get('work'));
+    else if(p.get('submit')!==null)openSubmit();
+    else if(p.get('mine')!==null)openMine();
+    else if(p.get('q')){S.q=p.get('q');Q('#q').value=S.q;S.year='';renderAll();Q('#gallery').scrollIntoView();}
   }catch(e){
-    Q('#grid').innerHTML='<div class="empty">โหลดข้อมูลไม่สำเร็จ: '+esc(errMsg(e))+'</div>';
-    Q('#count').textContent='';
+    Q('#grid').innerHTML='<div class="empty"><b>โหลดข้อมูลไม่สำเร็จ</b><br>'+esc(errMsg(e))+'<br><button class="btn line small" style="margin-top:12px" onclick="location.reload()">ลองใหม่</button></div>';
+    Q('#count').textContent='';Q('#awBox').innerHTML='';
   }
   if(S.session){
     api('session',{session:S.session}).then(function(r){
-      if(r.valid){S.email=r.email;}else{S.session='';store.del('sv_ses');}
+      if(r.valid){S.email=r.email;store.set('sv_email',r.email);}else{S.session='';S.email='';store.del('sv_ses');store.del('sv_email');}
       renderAuth();
     }).catch(function(){});
   }
 }
 function applySettings(){
   const s=S.settings;
-  if(s.logoUrl){Q('#logo').src=s.logoUrl;}
-  if(s.hospitalName){Q('#hName').textContent=s.hospitalName;Q('#fName').textContent=s.hospitalName;document.title='คลังผลงานวิชาการ | '+s.hospitalName;}
+  if(s.logoUrl)Q('#logo').src=s.logoUrl;
+  if(s.hospitalName){Q('#hName').textContent=s.hospitalName;Q('#fName').textContent=s.hospitalName;document.title='คลังผลงานวิชาการ · '+(s.eventTitle||'มหกรรมวิชาการ')+' '+s.hospitalName;}
   if(s.eventTitle)Q('#evTitle').textContent=s.eventTitle;
   if(s.eventSubtitle)Q('#evSub').textContent=s.eventSubtitle;
   if(s.intro)Q('#intro').textContent=s.intro;
-  Q('#fContact').textContent=s.contactEmail?('ติดต่อ: '+s.contactEmail):'';
+  Q('#fContact').innerHTML=s.contactEmail?('ติดต่อ: <a href="mailto:'+esc(s.contactEmail)+'">'+esc(s.contactEmail)+'</a>'):'';
 }
 function bindUI(){
   document.addEventListener('click',function(e){
     const go=e.target.closest('[data-go]');
-    if(go){const el=document.querySelector(go.dataset.go);if(el)el.scrollIntoView({behavior:'smooth'});}
-    const cl=e.target.closest('[data-close]');
-    if(cl)closeModal(cl.closest('.modal'));
+    if(go){e.preventDefault();const el=document.querySelector(go.dataset.go);if(el)el.scrollIntoView({behavior:'smooth'});}
+    const cl=e.target.closest('[data-close]');if(cl)closeModal(cl.closest('.modal'));
     if(e.target.classList.contains('modal'))closeModal(e.target);
-    const v=e.target.closest('[data-verify]');
-    if(v)openVerify();
-    const tg=e.target.closest('[data-tab-go]');
-    if(tg)renderWork(tg.dataset.tabGo);
+    if(e.target.closest('[data-verify]'))openVerify();
+    const tg=e.target.closest('[data-tab-go]');if(tg)renderWork(tg.dataset.tabGo);
+    const kw=e.target.closest('[data-kw]');if(kw){closeModal(Q('#workModal'));searchFor(kw.dataset.kw);}
+    const op=e.target.closest('[data-open]');if(op)openWork(op.dataset.open);
+    if(!e.target.closest('#userMenu')&&!e.target.closest('#authBtn'))Q('#userMenu').classList.add('hidden');
   });
   document.addEventListener('keydown',function(e){
-    if(e.key==='Escape')document.querySelectorAll('.modal:not(.hidden)').forEach(closeModal);
+    if(e.key==='Escape'){Q('#userMenu').classList.add('hidden');const ms=document.querySelectorAll('.modal:not(.hidden)');if(ms.length)closeModal(ms[ms.length-1]);}
     if(e.key==='Enter'&&e.target.dataset&&e.target.dataset.id)openWork(e.target.dataset.id);
   });
-  Q('#q').addEventListener('input',function(e){S.q=e.target.value;if(S.deep)deepSearch();renderGrid();});
-  Q('#dept').addEventListener('change',function(e){S.dept=e.target.value;renderGrid();});
+  Q('#hForm').addEventListener('submit',function(e){e.preventDefault();if(S.year&&Q('#hq').value.trim()){S.year='';S.dept='';renderAll();}searchFor(Q('#hq').value);});
+  Q('#q').addEventListener('input',function(e){S.q=e.target.value;S.limit=PAGE;if(S.deep)deepSearch();renderGrid();});
+  Q('#dept').addEventListener('change',function(e){S.dept=e.target.value;S.limit=PAGE;renderGrid();});
   Q('#sort').addEventListener('change',function(e){S.sort=e.target.value;renderGrid();});
   Q('#deep').addEventListener('change',function(e){S.deep=e.target.checked;S.hits=null;if(S.deep)deepSearch();renderGrid();});
-  ['#grid','#featured'].forEach(function(sel){
-    Q(sel).addEventListener('click',function(e){const c=e.target.closest('[data-id]');if(c)openWork(c.dataset.id);});
-  });
+  Q('#awOnly').addEventListener('change',function(e){S.awOnly=e.target.checked;S.limit=PAGE;renderGrid();});
+  document.querySelectorAll('.vt [data-view]').forEach(function(b){b.addEventListener('click',function(){S.view=b.dataset.view;store.set('sv_view',S.view);renderGrid();});});
+  Q('#moreBtn').addEventListener('click',function(){S.limit+=PAGE;renderGrid();});
+  ['#grid','#featured'].forEach(function(sel){Q(sel).addEventListener('click',function(e){const c=e.target.closest('[data-id]');if(c)openWork(c.dataset.id);});});
   Q('#wTabs').addEventListener('click',function(e){const b=e.target.closest('[data-tab]');if(b)renderWork(b.dataset.tab);});
-  Q('#shareBtn').addEventListener('click',copyLink);
-  Q('#authBtn').addEventListener('click',function(){
-    if(S.session){
-      api('logout',{session:S.session}).catch(function(){});
-      S.session='';S.email='';store.del('sv_ses');renderAuth();toast('ออกจากระบบแล้ว');
-    }else openVerify();
+  Q('#shareBtn').addEventListener('click',function(){if(S.detail)copyText(permalink(S.detail),'คัดลอกลิงก์ถาวรของผลงานแล้ว');});
+  Q('#authBtn').addEventListener('click',function(){if(S.session){Q('#umEmail').textContent=S.email;Q('#userMenu').classList.toggle('hidden');}else openVerify();});
+  Q('#umOut').addEventListener('click',function(){
+    api('logout',{session:S.session}).catch(function(){});
+    S.session='';S.email='';store.del('sv_ses');store.del('sv_email');renderAuth();Q('#userMenu').classList.add('hidden');toast('ออกจากระบบแล้ว');
   });
+  Q('#umMine').addEventListener('click',function(){Q('#userMenu').classList.add('hidden');openMine();});
+  Q('#umSubmit').addEventListener('click',function(){Q('#userMenu').classList.add('hidden');openSubmit();});
+  Q('#submitBtn').addEventListener('click',function(){openSubmit();});
+  Q('#fSubmit').addEventListener('click',function(e){e.preventDefault();openSubmit();});
+  Q('#fMine').addEventListener('click',function(e){e.preventDefault();openMine();});
   Q('#vStep1').addEventListener('submit',sendOtp);
   Q('#vStep2').addEventListener('submit',checkOtp);
   Q('#vBack').addEventListener('click',function(){Q('#vStep2').classList.add('hidden');Q('#vStep1').classList.remove('hidden');});
 }
-function renderAuth(){Q('#authBtn').textContent=S.session?('✓ '+(S.email||'ยืนยันแล้ว')+' · ออก'):'ยืนยันอีเมล';}
-function years(){return Array.from(new Set(S.works.map(function(w){return w.year;}).filter(Boolean))).sort(function(a,b){return Number(b)-Number(a);});}
+function searchFor(q){
+  S.q=String(q||'').trim();Q('#q').value=S.q;Q('#hq').value=S.q;S.limit=PAGE;
+  if(S.q&&S.year&&!filtered().length&&S.works.some(function(w){return match(w,terms());})){S.year='';renderAll();toast('ค้นจากทุกปี');}
+  if(S.deep)deepSearch();
+  renderGrid();Q('#gallery').scrollIntoView({behavior:'smooth'});
+}
+function renderAuth(){Q('#authBtn').textContent=S.session?('✓ '+(S.email||'ยืนยันแล้ว')):'ยืนยันอีเมล';}
+function years(){
+  const set={};S.works.forEach(function(w){if(w.year)set[w.year]=1;});
+  if(S.part)(S.part.years||[]).forEach(function(y){set[y]=1;});
+  S.calls.forEach(function(c){if(c.resultsPublic&&c.year)set[c.year]=1;});
+  return Object.keys(set).sort(function(a,b){return Number(b)-Number(a);});
+}
 function yearWorks(){return S.works.filter(function(w){return !S.year||w.year===S.year;});}
 
-function renderAll(){renderYears();renderStats();renderCats();renderFeatured();renderDepts();renderGrid();renderTicker();}
+function renderAll(){renderYears();renderStats();renderCall();renderCats();renderAwards();renderFeatured();renderDepts();renderGrid();renderTicker();renderSugg();renderPart();}
 function renderYears(){
   const ys=years();
   Q('#yearBig').textContent=S.year||'ทุกปี';
   Q('#pills').innerHTML=ys.map(function(y){return '<button data-y="'+esc(y)+'" class="'+(y===S.year?'on':'')+'">'+esc(y)+'</button>';}).join('')+
     '<button data-y="" class="'+(!S.year?'on':'')+'">ทุกปี</button>';
-  Q('#pills').onclick=function(e){
-    const b=e.target.closest('[data-y]');if(!b)return;
-    S.year=b.dataset.y;S.dept='';S.hits=null;renderAll();if(S.deep)deepSearch();
-  };
+  Q('#pills').onclick=function(e){const b=e.target.closest('[data-y]');if(!b)return;S.year=b.dataset.y;S.dept='';S.hits=null;S.limit=PAGE;renderAll();if(S.deep)deepSearch();};
 }
 function countTo(el,n){
   const s=Number(el.dataset.v||0);el.dataset.v=n;const t0=performance.now();
   function step(t){const k=Math.min(1,(t-t0)/900);el.textContent=th(Math.round(s+(n-s)*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(step);}
   requestAnimationFrame(step);
 }
+function partYear(y){
+  if(!S.part||!S.part.data)return {};
+  if(y)return S.part.data[y]||{};
+  const out={};Object.keys(S.part.data).forEach(function(k){const d=S.part.data[k];Object.keys(d).forEach(function(n){if(!out[n])out[n]={works:0,published:0,submitted:0,awards:0,cats:{}};
+    const a=out[n],b=d[n];a.works+=b.works;a.published+=b.published;a.submitted+=b.submitted;a.awards+=b.awards;Object.keys(b.cats||{}).forEach(function(c){a.cats[c]=(a.cats[c]||0)+b.cats[c];});});});
+  return out;
+}
 function renderStats(){
-  const ws=yearWorks();
+  const ws=yearWorks(),py=partYear(S.year);
   countTo(Q('#stWorks'),ws.length);
-  countTo(Q('#stDepts'),new Set(ws.map(function(w){return w.department;}).filter(Boolean)).size);
-  countTo(Q('#stCats'),new Set(ws.map(function(w){return w.category;})).size);
+  countTo(Q('#stDepts'),Object.keys(py).filter(function(d){return d!=='ไม่ระบุหน่วยงาน';}).length);
+  countTo(Q('#stAwards'),ws.filter(function(w){return w.award;}).length);
   countTo(Q('#stViews'),ws.reduce(function(a,w){return a+(w.views||0);},0));
+}
+function renderCall(){
+  const open=S.calls.filter(function(c){return c.status==='open';}).sort(function(a,b){return String(a.closes).localeCompare(String(b.closes));});
+  const up=S.calls.filter(function(c){return c.status==='upcoming';}).sort(function(a,b){return String(a.opens).localeCompare(String(b.opens));});
+  const c=open[0]||up[0];
+  Q('#callBar').classList.toggle('hidden',!c);
+  if(!c)return;
+  const isOpen=c.status==='open',dl=daysLeft(isOpen?c.closes:c.opens);
+  Q('#callBar').innerHTML='<div class="call"><div class="badge">'+TROPHY+'</div><div><h3>'+(isOpen?'เปิดรับผลงานแล้ว: ':'เร็ว ๆ นี้: ')+esc(c.title)+'</h3>'+
+    '<p>'+(isOpen?'ส่งได้ถึง '+thDate(c.closes,true):'เปิดรับ '+thDate(c.opens,true)+(c.closes?' – '+thDate(c.closes,true):''))+' · ประเภท: '+esc(c.categories.join(', '))+
+    (c.eventDate?' · วันงาน '+thDate(c.eventDate,true):'')+(c.venue?' · '+esc(c.venue):'')+'</p></div>'+
+    (dl!==null&&dl>=0?'<div class="cd"><b>'+th(dl)+'</b><small>'+(isOpen?'วันก่อนปิดรับ':'วันก่อนเปิดรับ')+'</small></div>':'')+
+    '<div class="acts">'+(isOpen?'<button class="btn dark" id="cbSubmit">ส่งผลงาน</button>':'')+(c.guideUrl?'<a class="btn line" href="'+esc(c.guideUrl)+'" target="_blank" rel="noopener">แนวทาง/เกณฑ์ ↗</a>':'')+
+    (S.session?'<button class="btn line" id="cbMine">ผลงานของฉัน</button>':'')+'</div></div>';
+  if(Q('#cbSubmit'))Q('#cbSubmit').onclick=function(){openSubmit();};
+  if(Q('#cbMine'))Q('#cbMine').onclick=openMine;
 }
 function renderCats(){
   const ws=yearWorks();
   Q('#catGrid').innerHTML=CATS.map(function(c,i){
     return '<button class="cat'+(S.cat===c?' on':'')+'" data-cat="'+esc(c)+'"><span class="n">'+ws.filter(function(w){return w.category===c;}).length+
-      '</span><span class="ico t'+i+'">'+icon(c,26)+'</span><small>'+CAT_EN[c]+'</small><b>'+esc(c)+'</b></button>';
+      '</span><span class="ico t'+i+'">'+icon(c,24)+'</span><small>'+CAT_EN[c]+'</small><b>'+esc(c)+'</b></button>';
   }).join('');
   Q('#catGrid').onclick=function(e){
     const b=e.target.closest('[data-cat]');if(!b)return;
-    S.cat=S.cat===b.dataset.cat?'':b.dataset.cat;renderCats();renderGrid();
-    Q('#gallery').scrollIntoView({behavior:'smooth'});
+    S.cat=S.cat===b.dataset.cat?'':b.dataset.cat;S.limit=PAGE;renderCats();renderGrid();Q('#gallery').scrollIntoView({behavior:'smooth'});
   };
+}
+function awardSort(a,b){return (a.awardRank||99)-(b.awardRank||99)||String(a.title).localeCompare(String(b.title),'th');}
+function renderAwards(){
+  Q('#awYear').textContent=S.year?'ปี '+S.year:'';
+  const ws=yearWorks().filter(function(w){return w.award;});
+  if(!ws.length){
+    const c=S.calls.filter(function(c){return (!S.year||c.year===S.year);})[0];
+    Q('#awBox').innerHTML='<div class="aw-empty">'+(c&&!c.resultsPublic?'ผลการตัดสิน'+esc(c.title)+'จะประกาศเร็ว ๆ นี้':'ยังไม่มีการประกาศผลรางวัล'+(S.year?'ในปี '+esc(S.year):''))+'</div>';
+    return;
+  }
+  const groups={};ws.forEach(function(w){(groups[w.category]=groups[w.category]||[]).push(w);});
+  const order=CATS.filter(function(c){return groups[c];}).concat(Object.keys(groups).filter(function(c){return CATS.indexOf(c)<0;}));
+  Q('#awBox').innerHTML='<div class="aw-grid">'+order.map(function(c){
+    const i=catIdx(c);
+    return '<div class="aw-cat"><h3><i class="t'+i+'"></i>'+esc(c)+'</h3>'+groups[c].sort(awardSort).map(function(w){
+      const r=w.awardRank||99;
+      return '<div class="aw" data-open="'+esc(w.id)+'" tabindex="0"><span class="medal'+(r<=3?' m'+r:'')+'">'+(r<=9?r:'★')+'</span><div><span class="lab">'+esc(w.award)+'</span><b>'+esc(w.title)+'</b>'+
+        '<small>'+esc(w.department||'')+(w.department&&w.authors?' · ':'')+esc(w.authors||'')+'</small></div></div>';
+    }).join('')+'</div>';
+  }).join('')+'</div>';
 }
 function renderFeatured(){
   const f=yearWorks().filter(function(w){return w.featured;}).slice(0,6);
@@ -410,25 +655,32 @@ function renderFeatured(){
 function renderDepts(){
   const ds=Array.from(new Set(yearWorks().map(function(w){return w.department;}).filter(Boolean))).sort(function(a,b){return a.localeCompare(b,'th');});
   if(ds.indexOf(S.dept)<0)S.dept='';
-  Q('#dept').innerHTML='<option value="">ทุกหน่วยงาน</option>'+ds.map(function(d){return '<option'+(d===S.dept?' selected':'')+'>'+esc(d)+'</option>';}).join('');
+  Q('#dept').innerHTML='<option value="">ทุกหน่วยงาน ('+ds.length+')</option>'+ds.map(function(d){return '<option'+(d===S.dept?' selected':'')+'>'+esc(d)+'</option>';}).join('');
 }
 function renderTicker(){
-  const items=['ผลงานวิชาการ '+(S.year||'')].concat(CATS,[S.settings.hospitalName||'']);
+  const items=['คลังผลงานวิชาการ '+(S.year?'ปี '+S.year:'ทุกปี')].concat(CATS,[S.settings.hospitalName||'โรงพยาบาลสวี','สืบค้น · อ่าน · อ้างอิง']);
   const html=items.map(function(x){return '<span>'+esc(x)+'</span>';}).join('');
   Q('#ticker').innerHTML=html+html+html+html;
 }
+function renderSugg(){
+  const cnt={};S.works.forEach(function(w){kwList(w.keywords).forEach(function(k){const n=k.toLowerCase();if(n.length<2||n.length>30)return;cnt[k]=(cnt[k]||0)+1;});});
+  let top=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a];}).slice(0,6);
+  if(top.length<3)top=['CQI','ยา','การติดเชื้อ','ผู้สูงอายุ','NCD'].slice(0,5);
+  Q('#sugg').innerHTML='ลองค้น:'+top.map(function(k){return '<button type="button" data-kw="'+esc(k)+'">'+esc(k)+'</button>';}).join('');
+}
+function match(w,ts){
+  const hay=norm([w.title,w.authors,w.department,w.keywords,w.summary,w.category,w.code,w.award].join(' '));
+  return ts.every(function(t){return hay.indexOf(t)>=0;});
+}
 function filtered(){
   const ts=terms();
-  let list=yearWorks().filter(function(w){return (!S.cat||w.category===S.cat)&&(!S.dept||w.department===S.dept);});
-  if(ts.length){
-    list=list.filter(function(w){
-      const hay=norm([w.title,w.authors,w.department,w.keywords,w.summary,w.category].join(' '));
-      return ts.every(function(t){return hay.indexOf(t)>=0;})||(S.deep&&S.hits&&S.hits.has(w.id));
-    });
-  }
+  let list=yearWorks().filter(function(w){return (!S.cat||w.category===S.cat)&&(!S.dept||w.department===S.dept)&&(!S.awOnly||w.award);});
+  if(ts.length)list=list.filter(function(w){return match(w,ts)||(S.deep&&S.hits&&S.hits.has(w.id));});
   const by={
-    rec:function(a,b){return (b.featured-a.featured)||a.title.localeCompare(b.title,'th');},
-    title:function(a,b){return a.title.localeCompare(b.title,'th');},
+    rec:function(a,b){return ((b.featured?1:0)-(a.featured?1:0))||((a.award?a.awardRank:999)-(b.award?b.awardRank:999))||(Number(b.year)-Number(a.year))||String(a.title).localeCompare(String(b.title),'th');},
+    award:function(a,b){return ((a.award?a.awardRank:999)-(b.award?b.awardRank:999))||String(a.title).localeCompare(String(b.title),'th');},
+    new:function(a,b){return (Number(b.year)-Number(a.year))||String(b.updatedAt).localeCompare(String(a.updatedAt));},
+    title:function(a,b){return String(a.title).localeCompare(String(b.title),'th');},
     views:function(a,b){return (b.views||0)-(a.views||0);}
   };
   return list.sort(by[S.sort]||by.rec);
@@ -438,34 +690,45 @@ function renderChips(){
   Q('#chips').innerHTML=[''].concat(CATS).map(function(c){
     return '<button class="chip'+(S.cat===c?' on':'')+'" data-c="'+esc(c)+'">'+(c?esc(c):'ทั้งหมด')+'<i>'+ws.filter(function(w){return !c||w.category===c;}).length+'</i></button>';
   }).join('');
-  Q('#chips').onclick=function(e){const b=e.target.closest('[data-c]');if(!b)return;S.cat=b.dataset.c;renderCats();renderGrid();};
+  Q('#chips').onclick=function(e){const b=e.target.closest('[data-c]');if(!b)return;S.cat=b.dataset.c;S.limit=PAGE;renderCats();renderGrid();};
 }
 function card(w){
-  const i=catIdx(w.category);
-  const snip=S.deep&&S.hits&&S.hits.get(w.id);
-  const fid=encodeURIComponent(w.thumb||'');
+  const i=catIdx(w.category),snip=S.deep&&S.hits&&S.hits.get(w.id),fid=encodeURIComponent(w.thumb||'');
   const img=w.thumb?'<img loading="lazy" alt="" data-fid="'+fid+'" src="https://drive.google.com/thumbnail?id='+fid+'&sz=w800" onerror="imgFallback(this)">':'';
-  return '<article class="card rv" tabindex="0" data-id="'+esc(w.id)+'"><div class="thumb cv'+i+'"><span class="deco"></span><span class="big">'+icon(w.category,46)+'</span>'+img+
-    '<span class="ty">'+esc(w.year)+'</span>'+(w.featured?'<span class="feat">ผลงานเด่น</span>':'')+'</div><div class="body"><span class="c">'+esc(w.category)+'</span><h3>'+hl(w.title)+'</h3>'+
+  return '<article class="card rv" tabindex="0" data-id="'+esc(w.id)+'" aria-label="'+esc(w.title)+'"><div class="thumb cv'+i+'"><span class="deco"></span><span class="big">'+icon(w.category,46)+'</span>'+img+
+    '<span class="ty">'+esc(w.year)+'</span>'+(w.featured?'<span class="feat">ผลงานเด่น</span>':'')+(w.award?'<span class="awr">'+esc(w.award)+'</span>':'')+'</div>'+
+    '<div class="body"><span class="c"><i class="t'+i+'"></i>'+esc(w.category)+'</span><h3>'+hl(w.title)+'</h3>'+
     (w.department?'<p class="meta">'+hl(w.department)+'</p>':'')+(w.authors?'<p class="meta">'+hl(w.authors)+'</p>':'')+
     (snip?'<p class="snip">…'+hl(snip)+'…</p>':'')+
-    '<div class="foot"><span class="acc '+esc(w.access)+'">'+(ACC[w.access]||'')+'</span><span>'+EYE+' '+th(w.views)+'</span></div></div></article>';
+    '<div class="foot"><span class="code">'+esc(w.code||'')+'</span><span class="acc '+esc(w.access)+'">'+(ACC[w.access]||'')+'</span><span>'+EYE+' '+th(w.views)+'</span></div></div></article>';
+}
+function row(w){
+  const i=catIdx(w.category),snip=S.deep&&S.hits&&S.hits.get(w.id);
+  return '<div class="li" tabindex="0" data-id="'+esc(w.id)+'"><span class="y">'+esc(w.year)+'</span><div><b>'+hl(w.title)+'</b><small>'+
+    [w.authors?hl(w.authors):'',w.department?hl(w.department):''].filter(Boolean).join(' · ')+'</small>'+(snip?'<p class="snip">…'+hl(snip)+'…</p>':'')+
+    (w.award?'<div><span class="aw" style="display:inline;border:0;padding:0"><span class="lab">'+esc(w.award)+'</span></span></div>':'')+'</div>'+
+    '<div class="d"><span class="c" style="font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center"><i class="t'+i+'" style="width:8px;height:8px;border-radius:2px;display:inline-block"></i>'+esc(w.category)+'</span><span class="code">'+esc(w.code||'')+'</span></div>'+
+    '<div class="r">'+EYE+' '+th(w.views)+'<br><span class="acc '+esc(w.access)+'">'+(ACC[w.access]||'')+'</span></div></div>';
 }
 function renderSkeleton(){Q('#grid').innerHTML='<div class="skel"></div><div class="skel"></div><div class="skel"></div>';}
 function renderGrid(){
   renderChips();
-  const list=filtered();
-  Q('#count').textContent='พบ '+th(list.length)+' รายการ'+(S.year?' ในปี '+S.year:'');
-  Q('#grid').innerHTML=list.length?list.map(card).join(''):
-    '<div class="empty">'+(S.works.length?'ไม่พบผลงานตามเงื่อนไข ลองเปลี่ยนคำค้นหรือตัวกรอง':'ยังไม่มีผลงานที่เผยแพร่')+'</div>';
+  document.querySelectorAll('.vt [data-view]').forEach(function(b){b.classList.toggle('on',b.dataset.view===S.view);});
+  const list=filtered(),shown=list.slice(0,S.limit);
+  Q('#count').textContent='พบ '+th(list.length)+' ผลงาน'+(S.year?' ในปี '+S.year:' จากทุกปี')+(S.q?' สำหรับ "'+S.q+'"':'');
+  const g=Q('#grid');g.className=S.view==='list'&&list.length?'list':'grid';
+  g.innerHTML=list.length?shown.map(S.view==='list'?row:card).join(''):
+    '<div class="empty">'+(S.works.length?'ไม่พบผลงานตามเงื่อนไข ลองเปลี่ยนคำค้น เลือก "ทุกปี" หรือเปิด "ค้นในเนื้อหาเอกสาร"':'ยังไม่มีผลงานที่เผยแพร่ในคลัง')+'</div>';
+  Q('#moreBox').classList.toggle('hidden',list.length<=S.limit);
+  Q('#moreBtn').textContent='แสดงเพิ่ม ('+th(list.length-shown.length)+' รายการ)';
   observe();
 }
 let io;
 function observe(){
   const els=document.querySelectorAll('.rv:not(.in)');
   if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});return;}
-  if(!io)io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}});},{threshold:.08});
-  els.forEach(function(e,i){e.style.transitionDelay=Math.min(i%6,5)*60+'ms';io.observe(e);});
+  if(!io)io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}});},{threshold:.06});
+  els.forEach(function(e,i){e.style.transitionDelay=Math.min(i%6,5)*50+'ms';io.observe(e);});
 }
 let deepT;
 function deepSearch(){
@@ -474,106 +737,185 @@ function deepSearch(){
   if(q.length<2){S.hits=null;return;}
   deepT=setTimeout(async function(){
     Q('#count').textContent='กำลังค้นในเนื้อหาเอกสาร…';
-    try{
-      const r=await api('search',{q:q,session:S.session});
-      if(q!==S.q.trim())return;
-      S.hits=new Map(r.map(function(x){return [x.id,x.snippet];}));
-    }catch(e){S.hits=new Map();}
+    try{const r=await api('search',{q:q,session:S.session});if(q!==S.q.trim())return;S.hits=new Map(r.map(function(x){return [x.id,x.snippet];}));}
+    catch(e){S.hits=new Map();}
     renderGrid();
   },500);
 }
 
+/* ---------- การมีส่วนร่วม ---------- */
+function renderPart(){
+  Q('#pYear').textContent=S.year?'ปี '+S.year:'(รวมทุกปี)';
+  const p=S.part;
+  if(!p){Q('#part').classList.add('hidden');return;}
+  const py=partYear(S.year),listed=(p.departments||[]).filter(function(d){return !d.unlisted;});
+  const names=Object.keys(py).filter(function(n){return n!=='ไม่ระบุหน่วยงาน';});
+  const active=listed.filter(function(d){return py[d.name];}).length;
+  const totalWorks=Object.keys(py).reduce(function(a,n){return a+py[n].works+py[n].submitted;},0);
+  const awards=Object.keys(py).reduce(function(a,n){return a+py[n].awards;},0);
+  const cov=listed.length?Math.round(active/listed.length*100):0;
+  Q('#pKpi').innerHTML=
+    '<div class="kpi"><b>'+th(names.length)+'</b><span>หน่วยงานที่มีผลงาน</span></div>'+
+    '<div class="kpi"><b>'+(listed.length?cov+'%':'–')+'</b><span>ความครอบคลุม '+(listed.length?'('+active+'/'+listed.length+' หน่วยงาน)':'(ยังไม่ได้ตั้งรายชื่อหน่วยงาน)')+'</span><div class="meter"><i style="width:'+cov+'%"></i></div></div>'+
+    '<div class="kpi"><b>'+th(totalWorks)+'</b><span>ผลงานทั้งหมด (รวมที่ส่งเข้าประกวด)</span></div>'+
+    '<div class="kpi"><b>'+th(awards)+'</b><span>ผลงานที่ได้รับรางวัล</span></div>';
+  const cats=CATS.concat(['ยังไม่จัดประเภท']);
+  Q('#pLegend').innerHTML=cats.map(function(c,i){return '<span><i class="t'+Math.min(i,5)+'"></i>'+esc(c)+'</span>';}).join('');
+  const rows=Object.keys(py).map(function(n){const o=py[n];return {n:n,t:o.works+o.submitted,o:o};}).sort(function(a,b){return b.t-a.t||a.n.localeCompare(b.n,'th');});
+  const max=Math.max.apply(null,[1].concat(rows.map(function(r){return r.t;})));
+  Q('#pBars').innerHTML=rows.length?rows.slice(0,30).map(function(r){
+    const segs=cats.map(function(c,i){const v=r.o.cats[c]||0;return v?'<i class="t'+Math.min(i,5)+'" style="width:'+(v/max*100)+'%" title="'+esc(c)+': '+v+' ผลงาน"></i>':'';}).join('');
+    return '<div class="dbar" title="'+esc(r.n)+' — '+r.t+' ผลงาน'+(r.o.submitted?' (ส่งเข้าประกวด '+r.o.submitted+')':'')+(r.o.awards?' · รางวัล '+r.o.awards:'')+'"><span class="nm">'+esc(r.n)+
+      (r.o.awards?' <span class="aw2">★'+r.o.awards+'</span>':'')+'</span><div class="stack">'+segs+'</div><span class="v">'+r.t+'</span></div>';
+  }).join('')+(rows.length>30?'<p class="hint">และอีก '+(rows.length-30)+' หน่วยงาน</p>':''):'<p class="hint">ยังไม่มีข้อมูลหน่วยงาน (ผู้ดูแลระบบสามารถระบุหน่วยงานให้แต่ละผลงานได้)</p>';
+  const zero=listed.filter(function(d){return !py[d.name];});
+  Q('#pZeroHint').textContent=listed.length?(zero.length?'ชวนกันส่งผลงาน '+zero.length+' หน่วยงาน':'ทุกหน่วยงานมีผลงานแล้ว 🎉'):'ผู้ดูแลระบบยังไม่ได้ตั้งรายชื่อหน่วยงานทั้งหมด';
+  Q('#pZero').innerHTML=zero.map(function(d){return '<span>'+esc(d.name)+'</span>';}).join('');
+  const ys=(p.years||[]).slice(0,6).reverse(),all=(listed.length?listed.map(function(d){return d.name;}):[]).concat((p.departments||[]).filter(function(d){return d.unlisted;}).map(function(d){return d.name;}));
+  if(!ys.length||!all.length){Q('#pMatrix').innerHTML='<p class="hint">ยังไม่มีข้อมูล</p>';return;}
+  Q('#pMatrix').innerHTML='<table><thead><tr><th>หน่วยงาน</th>'+ys.map(function(y){return '<th>'+esc(y)+'</th>';}).join('')+'</tr></thead><tbody>'+
+    all.map(function(n){return '<tr><td title="'+esc(n)+'">'+esc(n)+'</td>'+ys.map(function(y){const c=(p.data[y]||{})[n],v=c?c.works+c.submitted:0;
+      const h=v===0?0:v<2?1:v<4?2:v<7?3:4;return '<td class="hm'+h+'" title="'+esc(n)+' ปี '+y+': '+v+' ผลงาน">'+(v||'–')+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table>';
+}
+
 /* ---------- รายละเอียดผลงาน ---------- */
-function showModal(m){m.classList.remove('hidden');document.body.style.overflow='hidden';}
+let ZM=50;
+function showModal(m){m.style.zIndex=++ZM;m.classList.remove('hidden');document.body.style.overflow='hidden';}
 function closeModal(m){
   if(!m)return;
   m.classList.add('hidden');
-  if(m.id==='workModal'){
-    Q('#wPane').innerHTML='';S.current=null;
-    try{history.replaceState(null,'',location.pathname);}catch(e){}
-  }
+  if(m.id==='workModal'){Q('#wPane').innerHTML='';S.current=null;S.detail=null;setUrl('');const ld=Q('#ldjson');if(ld)ld.remove();}
+  if(m.id==='subModal'||m.id==='mineModal')setUrl('');
   if(!document.querySelector('.modal:not(.hidden)'))document.body.style.overflow='';
 }
+function setUrl(q){try{history.replaceState(null,'',location.pathname+(q?'?'+q:''));}catch(e){}}
 async function openWork(id,tab){
-  S.current=id;showModal(Q('#workModal'));
-  try{history.replaceState(null,'',location.pathname+'?work='+encodeURIComponent(id));}catch(e){}
-  Q('#wHead').innerHTML='<p class="eyebrow">กำลังโหลด…</p>';Q('#wTabs').innerHTML='';
+  S.current=id;showModal(Q('#workModal'));setUrl('work='+encodeURIComponent(id));
+  Q('#wHead').innerHTML='<p class="eyebrow">กำลังโหลด…</p><h2 id="wTitle">&nbsp;</h2>';Q('#wTabs').innerHTML='';
   Q('#wPane').innerHTML='<p class="note">กำลังโหลดข้อมูลผลงาน…</p>';
-  try{S.detail=await api('work',{id:id,session:S.session,visitor:S.visitor});renderWork(tab||'overview');}
-  catch(e){Q('#wPane').innerHTML='<div class="lock"><h3>เปิดผลงานไม่ได้</h3><p>'+esc(errMsg(e))+'</p></div>';}
-}
-function copyLink(){
-  const url=location.href;
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(url).then(function(){toast('คัดลอกลิงก์ผลงานแล้ว');}).catch(function(){prompt('คัดลอกลิงก์นี้',url);});
-  }else prompt('คัดลอกลิงก์นี้',url);
+  try{
+    S.detail=await api('work',{id:id,session:S.session,visitor:S.visitor});
+    if(S.current!==id)return;
+    setUrl('work='+encodeURIComponent(S.detail.code||S.detail.id));
+    injectLd(S.detail);renderWork(tab||'overview');
+  }catch(e){Q('#wHead').innerHTML='<p class="eyebrow">ไม่พบผลงาน</p><h2 id="wTitle">เปิดผลงานไม่ได้</h2>';Q('#wPane').innerHTML='<div class="lock"><p>'+esc(errMsg(e))+'</p></div>';}
 }
 function renderWork(tab){
   const w=S.detail;if(!w)return;
-  Q('#wHead').innerHTML='<p class="eyebrow">'+esc(CAT_EN[w.category]||w.category)+' · '+esc(w.year)+'</p><h2>'+esc(w.title)+'</h2><div class="hmeta">'+
-    (w.department?'<span>หน่วยงาน: '+esc(w.department)+'</span>':'')+(w.authors?'<span>ผู้จัดทำ: '+esc(w.authors)+'</span>':'')+'</div>';
-  Q('#wTabs').innerHTML=[['overview','ภาพรวม'],['text','อ่านเนื้อหา'],['doc','ดูเอกสาร / โปสเตอร์']].map(function(t){
-    return '<button data-tab="'+t[0]+'" class="'+(t[0]===tab?'on':'')+'">'+t[1]+'</button>';
+  Q('#wHead').innerHTML='<p class="eyebrow">'+esc(CAT_EN[w.category]||w.category)+' · '+esc(w.year)+(w.code?' · '+esc(w.code):'')+'</p><h2 id="wTitle">'+esc(w.title)+'</h2><div class="hmeta">'+
+    (w.department?'<span>หน่วยงาน: '+esc(w.department)+'</span>':'')+(w.authors?'<span>ผู้จัดทำ: '+esc(w.authors)+'</span>':'')+'<span>'+EYE+' '+th(w.views)+' ครั้ง</span></div>'+
+    (w.award?'<span class="hawd">'+esc(w.award)+'</span>':'');
+  Q('#wTabs').innerHTML=[['overview','ภาพรวม'],['text','อ่านเนื้อหา'],['doc','ดูเอกสาร / โปสเตอร์'],['cite','อ้างอิง']].map(function(t){
+    return '<button role="tab" data-tab="'+t[0]+'" class="'+(t[0]===tab?'on':'')+'" aria-selected="'+(t[0]===tab)+'">'+t[1]+'</button>';
   }).join('');
   const p=Q('#wPane');
   if(tab==='overview'){p.innerHTML=overviewHtml(w);return;}
+  if(tab==='cite'){p.innerHTML=citeHtml(w);bindCite(w);return;}
   const gate=gateHtml(w);
   if(gate){p.innerHTML=gate;return;}
   if(tab==='text')renderText(w);else renderDoc(w);
 }
-function lockBox(t,d,btn){
-  return '<div class="lock"><div class="ico">'+LOCK+'</div><h3>'+esc(t)+'</h3><p>'+esc(d)+'</p>'+(btn?'<button class="btn dark" data-verify>ยืนยันอีเมล</button>':'')+'</div>';
-}
+function lockBox(t,d,btn){return '<div class="lock"><div class="ico">'+LOCK+'</div><h3>'+esc(t)+'</h3><p>'+esc(d)+'</p>'+(btn?'<button class="btn dark" data-verify>ยืนยันอีเมล</button>':'')+'</div>';}
 function gateHtml(w){
-  if(w.access==='filename_only')return lockBox('ผลงานนี้เผยแพร่เฉพาะชื่อไฟล์','เพื่อคุ้มครองข้อมูลส่วนบุคคลตาม PDPA เนื้อหาและภาพในเอกสารจึงไม่เปิดเผยต่อสาธารณะ');
+  if(w.access==='filename_only')return lockBox('ผลงานนี้เผยแพร่เฉพาะชื่อผลงาน','เพื่อคุ้มครองข้อมูลส่วนบุคคลตาม PDPA เนื้อหาและภาพในเอกสารจึงไม่เปิดเผยต่อสาธารณะ');
   if(w.access==='metadata')return lockBox('ผลงานนี้เผยแพร่เฉพาะข้อมูลเบื้องต้น','หากต้องการรายละเอียดเพิ่มเติม กรุณาติดต่อเจ้าของผลงานหรือโรงพยาบาล'+(S.settings.contactEmail?' ('+S.settings.contactEmail+')':''));
   if(w.needVerify)return lockBox('ยืนยันอีเมลเพื่ออ่านฉบับเต็ม','ใช้เวลาไม่ถึง 1 นาที ระบบจะส่งรหัส 6 หลักไปที่อีเมลของคุณ ยืนยันครั้งเดียวใช้ได้ 30 วัน',true);
   return '';
 }
+function absHtml(t){
+  t=String(t||'').trim();if(!t)return '';
+  if(t.indexOf('## ')<0)return '<p>'+esc(t)+'</p>';
+  return t.split(/\n?##\s+/).filter(Boolean).map(function(sec){const i=sec.indexOf('\n');const h=i<0?sec:sec.slice(0,i),b=i<0?'':sec.slice(i+1);return '<h4>'+esc(h.trim())+'</h4><p>'+esc(b.trim())+'</p>';}).join('');
+}
 function overviewHtml(w){
-  const kw=(w.keywords||'').split(/[,，]/).map(function(x){return x.trim();}).filter(Boolean);
-  return (w.summary?'<h3 class="h3">บทสรุป</h3><p class="lead">'+esc(w.summary)+'</p>':'')+
-    '<dl class="info"><dt>ประเภทผลงาน</dt><dd>'+esc(w.category)+'</dd><dt>ปีการประกวด</dt><dd>'+esc(w.year)+'</dd>'+
+  const kw=kwList(w.keywords);
+  return (w.summary?'<h3 class="h3" style="margin-top:0">บทสรุป</h3><p class="lead">'+esc(w.summary)+'</p>':'')+
+    (w.abstract?'<h3 class="h3">บทคัดย่อ</h3><div class="absx">'+absHtml(w.abstract)+'</div>':'')+
+    '<dl class="info">'+(w.code?'<dt>รหัสผลงาน</dt><dd><span class="code" style="font-size:14px;color:var(--ink)">'+esc(w.code)+'</span></dd>':'')+
+    '<dt>ประเภทผลงาน</dt><dd>'+esc(w.category)+'</dd><dt>ปีการประกวด</dt><dd>'+esc(w.year)+' ('+(Number(w.year)-543)+')</dd>'+
     (w.department?'<dt>หน่วยงาน</dt><dd>'+esc(w.department)+'</dd>':'')+(w.authors?'<dt>ผู้จัดทำ</dt><dd>'+esc(w.authors)+'</dd>':'')+
-    '<dt>การเข้าถึง</dt><dd><span class="acc '+esc(w.access)+'">'+(ACC[w.access]||'')+'</span></dd></dl>'+
-    (kw.length?'<h3 class="h3">คำสำคัญ</h3><div class="kw">'+kw.map(function(k){return '<span>'+esc(k)+'</span>';}).join('')+'</div>':'')+
-    '<div class="ov-actions">'+(w.canRead?'<button class="btn dark" data-tab-go="text">อ่านเนื้อหา</button><button class="btn line" data-tab-go="doc">ดูเอกสาร</button>':
-    (w.needVerify?'<button class="btn dark" data-verify>ยืนยันอีเมลเพื่ออ่านฉบับเต็ม</button>':''))+'</div>';
+    (w.award?'<dt>รางวัล</dt><dd>'+esc(w.award)+'</dd>':'')+
+    '<dt>การเข้าถึง</dt><dd><span class="acc '+esc(w.access)+'">'+(ACC[w.access]||'')+'</span></dd>'+
+    '<dt>ลิงก์ถาวร</dt><dd><a href="'+esc(permalink(w))+'">'+esc(permalink(w))+'</a></dd></dl>'+
+    (kw.length?'<h3 class="h3">คำสำคัญ</h3><div class="kw">'+kw.map(function(k){return '<button data-kw="'+esc(k)+'">'+esc(k)+'</button>';}).join('')+'</div>':'')+
+    '<div class="ov-actions">'+(w.canRead?'<button class="btn dark" data-tab-go="doc">ดูเอกสาร / โปสเตอร์</button><button class="btn line" data-tab-go="text">อ่านเนื้อหา</button>':
+    (w.needVerify?'<button class="btn dark" data-verify>ยืนยันอีเมลเพื่ออ่านฉบับเต็ม</button>':''))+'<button class="btn line" data-tab-go="cite">อ้างอิงผลงานนี้</button></div>';
 }
 function renderText(w){
   const p=Q('#wPane');
-  if(!w.text){
-    p.innerHTML='<div class="lock"><h3>ยังไม่มีข้อความจากเอกสาร</h3><p>ระบบอาจยังประมวลผลไม่เสร็จ หรืออ่านข้อความจากไฟล์นี้ไม่ได้ กรุณาดูที่แท็บเอกสาร</p></div>';
-    return;
-  }
+  if(!w.text){p.innerHTML='<div class="lock"><h3>ยังไม่มีข้อความจากเอกสาร</h3><p>ระบบอาจยังประมวลผลไม่เสร็จ หรืออ่านข้อความจากไฟล์นี้ไม่ได้ กรุณาดูที่แท็บเอกสาร</p><button class="btn line" data-tab-go="doc">ดูเอกสาร</button></div>';return;}
   p.innerHTML='<p class="note">ข้อความนี้แปลงจากไฟล์ด้วยระบบ OCR อัตโนมัติ อาจมีคำผิดหรือลำดับคลาดเคลื่อน โปรดอ้างอิงตัวเลขและตารางจากเอกสารต้นฉบับ</p>'+
     '<div class="find"><input id="tFind" type="search" placeholder="ค้นหาคำในเนื้อหานี้" value="'+esc(S.q)+'"><span id="tCount"></span></div><div class="textbox" id="tBox"></div>';
   function draw(jump){
-    const q=norm(Q('#tFind').value).trim();
-    const list=q?q.split(/\s+/):[];
+    const q=norm(Q('#tFind').value).trim(),list=q?q.split(/\s+/):[];
     Q('#tBox').innerHTML=hl(w.text,list);
     const marks=Q('#tBox').querySelectorAll('mark');
     Q('#tCount').textContent=list.length?('พบ '+marks.length+' ตำแหน่ง'):'';
     if(jump&&marks[0])marks[0].scrollIntoView({block:'center'});
   }
-  Q('#tFind').addEventListener('input',function(){draw(true);});
-  draw(false);
+  Q('#tFind').addEventListener('input',function(){draw(true);});draw(false);
 }
 function renderDoc(w){
   const p=Q('#wPane');
-  if(!w.viewerUrl){
-    p.innerHTML='<div class="lock"><h3>ยังไม่มีเอกสารสำหรับเปิดดู</h3><p>ผู้ดูแลระบบยังไม่ได้เตรียมไฟล์สำหรับแสดงผล</p></div>';
-    return;
-  }
-  const kind=w.kind==='image'?'ภาพ':(w.kind==='doc'?'เอกสาร':'PDF');
-  p.innerHTML='<div class="doc-bar"><span>'+kind+' · เปิดดูผ่าน Google Drive</span><span><a class="btn small" href="'+esc(w.openUrl)+'" target="_blank" rel="noopener">เปิดเต็มจอ ↗</a> '+
-    (w.downloadUrl?'<a class="btn small" href="'+esc(w.downloadUrl)+'" target="_blank" rel="noopener">ดาวน์โหลด</a>':'')+'</span></div>'+
-    '<iframe class="viewer" src="'+esc(w.viewerUrl)+'" allow="autoplay; fullscreen"></iframe><p class="note" style="margin-top:12px">ไฟล์ขนาดใหญ่อาจใช้เวลาโหลดสักครู่</p>';
+  if(!w.viewerUrl){p.innerHTML='<div class="lock"><h3>ยังไม่มีเอกสารสำหรับเปิดดู</h3><p>ผู้ดูแลระบบกำลังเตรียมไฟล์สำหรับแสดงผล กรุณาลองใหม่ภายหลัง</p></div>';return;}
+  const kind=w.kind==='image'?'ภาพโปสเตอร์':(w.kind==='doc'?'เอกสาร':'PDF');
+  p.innerHTML='<div class="doc-bar"><span>'+kind+' · เปิดดูผ่าน Google Drive</span><span><a class="btn small dark" href="'+esc(w.openUrl)+'" target="_blank" rel="noopener">เปิดเต็มจอ ↗</a> '+
+    (w.downloadUrl?'<a class="btn small line" href="'+esc(w.downloadUrl)+'" target="_blank" rel="noopener">ดาวน์โหลด</a>':'')+'</span></div>'+
+    '<iframe class="viewer" title="'+esc(w.title)+'" src="'+esc(w.viewerUrl)+'" allow="autoplay; fullscreen" loading="lazy"></iframe><p class="note" style="margin-top:12px">ไฟล์ขนาดใหญ่อาจใช้เวลาโหลดสักครู่ หากไม่แสดงให้กด "เปิดเต็มจอ"</p>';
   if(!S.opened[w.id]){S.opened[w.id]=1;api('open',{id:w.id,session:S.session,visitor:S.visitor}).catch(function(){});}
 }
 
+/* ---------- การอ้างอิง ---------- */
+function citeData(w){
+  const s=S.settings,hosp=s.hospitalName||'โรงพยาบาลสวี',hospEn=s.hospitalNameEn||'Sawee Hospital',prov=s.province||'ชุมพร';
+  let au=authorList(w.authors);const corp=!au.length;if(corp)au=[w.department?(w.department+' '+hosp):hosp];
+  const ty=CAT_TYPE[w.category]||['ผลงานวิชาการ','Poster presentation'],ev=(s.eventTitle||'มหกรรมวิชาการ')+' '+hosp+' ประจำปี '+w.year;
+  const d=new Date();
+  return {au:au,corp:corp,hosp:hosp,hospEn:hospEn,prov:prov,ty:ty,ev:ev,url:permalink(w),be:w.year,ce:Number(w.year)-543,
+    th:d.getDate()+' '+MONTH[d.getMonth()]+' '+(d.getFullYear()+543),en:d.getFullYear()+' '+MONTH_EN[d.getMonth()]+' '+d.getDate(),title:w.title,code:w.code||w.id};
+}
+function joinAnd(a,amp){if(a.length<2)return a.join('');return a.slice(0,-1).join(', ')+(amp?', & ':' และ ')+a[a.length-1];}
+function citations(w){
+  const c=citeData(w),kw=kwList(w.keywords);
+  const vanAu=c.au.length>6?c.au.slice(0,6).join(', ')+', et al':c.au.join(', ');
+  return [
+    ['APA 7th','apa',joinAnd(c.au,true)+'. ('+c.ce+'). <i>'+esc(c.title)+'</i> ['+esc(c.ty[1])+']. '+esc(c.ev)+', '+esc(c.hospEn)+', '+esc(c.prov)+', Thailand. '+esc(c.url),
+      joinAnd(c.au,true)+'. ('+c.ce+'). '+c.title+' ['+c.ty[1]+']. '+c.ev+', '+c.hospEn+', '+c.prov+', Thailand. '+c.url],
+    ['Vancouver','van',null,vanAu+'. '+c.title+' ['+c.ty[0]+']. นำเสนอใน: '+c.ev+'; '+c.be+'; '+c.hosp+' จังหวัด'+c.prov+'. [เข้าถึงเมื่อ '+c.th+']. เข้าถึงได้จาก: '+c.url],
+    ['แบบไทย (นาม-ปี)','thai',null,joinAnd(c.au,false)+'. ('+c.be+'). '+c.title+'. '+c.ty[0]+' นำเสนอในงาน'+c.ev+'. '+c.hosp+' จังหวัด'+c.prov+'. สืบค้นเมื่อ '+c.th+', จาก '+c.url],
+    ['BibTeX','bib',null,'@misc{'+String(c.code).replace(/[^\w-]/g,'')+',\n  author       = {'+c.au.map(function(a){return c.corp?'{'+a+'}':a;}).join(' and ')+'},\n  title        = {'+c.title+'},\n  year         = {'+c.ce+'},\n  howpublished = {'+c.ty[1]+', '+c.ev+'},\n  organization = {'+c.hosp+' ('+c.hospEn+')},\n  address      = {'+c.prov+', Thailand},\n  note         = {รหัสผลงาน '+c.code+'; ปี พ.ศ. '+c.be+'},\n  url          = {'+c.url+'}\n}'],
+    ['RIS (EndNote / Zotero / Mendeley)','ris',null,['TY  - CONF'].concat(c.au.map(function(a){return 'AU  - '+a;}),['TI  - '+c.title,'PY  - '+c.ce,'T2  - '+c.ev,'PB  - '+c.hosp,'CY  - '+c.prov+', Thailand','M3  - '+c.ty[1],'N1  - รหัสผลงาน '+c.code],
+      kw.map(function(k){return 'KW  - '+k;}),[w.summary?'AB  - '+String(w.summary).replace(/\s+/g,' '):'','UR  - '+c.url,'ER  - ']).filter(Boolean).join('\r\n')]
+  ];
+}
+function citeHtml(w){
+  return '<p class="note">เลือกรูปแบบที่ต้องการแล้วกดคัดลอก ตรวจทานตัวสะกดชื่อผู้จัดทำก่อนนำไปใช้ · รหัสผลงานและลิงก์ถาวรนี้จะไม่เปลี่ยน</p>'+
+    citations(w).map(function(c,i){
+      const pre=c[1]==='bib'||c[1]==='ris';
+      return '<div class="cite"><div class="ch"><span>'+esc(c[0])+'</span><span>'+(pre?'<button class="btn small line" data-dl="'+i+'">ดาวน์โหลด .'+c[1]+'</button> ':'')+'<button class="btn small dark" data-cp="'+i+'">คัดลอก</button></span></div>'+
+        '<div class="cb">'+(pre?'<pre>'+esc(c[3])+'</pre>':(c[2]||esc(c[3])))+'</div></div>';
+    }).join('');
+}
+function bindCite(w){
+  const cs=citations(w);
+  Q('#wPane').onclick=function(e){
+    const cp=e.target.closest('[data-cp]'),dl=e.target.closest('[data-dl]');
+    if(cp)copyText(cs[+cp.dataset.cp][3],'คัดลอกการอ้างอิงแบบ '+cs[+cp.dataset.cp][0]+' แล้ว');
+    if(dl){const c=cs[+dl.dataset.dl];download((w.code||w.id)+'.'+c[1],c[3],c[1]==='ris'?'application/x-research-info-systems':'application/x-bibtex');}
+  };
+}
+function injectLd(w){
+  let el=Q('#ldjson');if(!el){el=document.createElement('script');el.type='application/ld+json';el.id='ldjson';document.head.appendChild(el);}
+  const c=citeData(w);
+  el.textContent=JSON.stringify({'@context':'https://schema.org','@type':'ScholarlyArticle',name:w.title,headline:w.title,identifier:c.code,url:c.url,
+    author:c.au.map(function(a){return {'@type':c.corp?'Organization':'Person',name:a};}),datePublished:String(c.ce),keywords:w.keywords||undefined,abstract:w.summary||undefined,
+    publisher:{'@type':'Organization',name:c.hosp},isPartOf:{'@type':'Event',name:c.ev},inLanguage:'th'});
+}
+
 /* ---------- ยืนยันอีเมล ---------- */
-function openVerify(){
+function openVerify(after,why){
+  S.after=after||null;
+  Q('#vWhy').textContent=why||'เพื่ออ่านผลงานฉบับเต็ม ส่งผลงาน และติดตามสถานะ';
   Q('#vStep1').classList.remove('hidden');Q('#vStep2').classList.add('hidden');
   Q('#vErr1').textContent='';Q('#vErr2').textContent='';
   showModal(Q('#verifyModal'));setTimeout(function(){Q('#vEmail').focus();},100);
@@ -582,10 +924,9 @@ async function sendOtp(e){
   e.preventDefault();
   const b=Q('#vSend');b.disabled=true;b.textContent='กำลังส่ง…';Q('#vErr1').textContent='';
   try{
-    await api('requestOtp',{email:Q('#vEmail').value,name:Q('#vName').value,org:Q('#vOrg').value});
-    Q('#vTo').textContent=Q('#vEmail').value;
-    Q('#vStep1').classList.add('hidden');Q('#vStep2').classList.remove('hidden');
-    Q('#vCode').value='';Q('#vCode').focus();
+    await api('requestOtp',{email:Q('#vEmail').value.trim(),name:Q('#vName').value,org:Q('#vOrg').value});
+    Q('#vTo').textContent=Q('#vEmail').value.trim();
+    Q('#vStep1').classList.add('hidden');Q('#vStep2').classList.remove('hidden');Q('#vCode').value='';Q('#vCode').focus();
   }catch(err){Q('#vErr1').textContent=errMsg(err);}
   finally{b.disabled=false;b.textContent='ส่งรหัสยืนยันไปที่อีเมล';}
 }
@@ -593,42 +934,204 @@ async function checkOtp(e){
   e.preventDefault();
   const b=Q('#vOk');b.disabled=true;Q('#vErr2').textContent='';
   try{
-    const r=await api('verifyOtp',{email:Q('#vEmail').value,code:Q('#vCode').value});
-    S.session=r.token;S.email=r.email;store.set('sv_ses',r.token);renderAuth();
-    closeModal(Q('#verifyModal'));toast('ยืนยันอีเมลสำเร็จ อ่านผลงานฉบับเต็มได้แล้ว');
-    if(S.current)openWork(S.current,'text');
+    const r=await api('verifyOtp',{email:Q('#vEmail').value.trim(),code:Q('#vCode').value.trim()});
+    S.session=r.token;S.email=r.email;store.set('sv_ses',r.token);store.set('sv_email',r.email);renderAuth();renderCall();
+    closeModal(Q('#verifyModal'));toast('ยืนยันอีเมลสำเร็จ');
+    const a=S.after;S.after=null;
+    if(a)a();else if(S.current)openWork(S.current,'doc');
   }catch(err){Q('#vErr2').textContent=errMsg(err);}
   finally{b.disabled=false;}
 }
 
+/* ---------- ส่งผลงาน ---------- */
+function openCalls(){return S.calls.filter(function(c){return c.status==='open';});}
+function openSubmit(edit){
+  setUrl('submit');
+  const pane=Q('#sPane');showModal(Q('#subModal'));
+  const calls=openCalls();
+  Q('#sTitle').textContent=edit?'แก้ไขผลงาน '+edit.code:'ส่งผลงานเข้าประกวด';
+  Q('#sMeta').textContent=S.email?'ส่งในนาม '+S.email:'';
+  if(!edit&&!calls.length){
+    const up=S.calls.filter(function(c){return c.status==='upcoming';});
+    pane.innerHTML='<div class="lock"><div class="ico">'+TROPHY+'</div><h3>ขณะนี้ยังไม่เปิดรับผลงาน</h3><p>'+(up.length?'รอบถัดไป: '+esc(up[0].title)+' เปิดรับ '+thDate(up[0].opens,true):'ติดตามประกาศรอบรับผลงานถัดไปได้ที่หน้านี้')+'</p>'+
+      (S.session?'<button class="btn line" id="goMine">ดูผลงานของฉัน</button>':'')+'</div>';
+    if(Q('#goMine'))Q('#goMine').onclick=function(){closeModal(Q('#subModal'));openMine();};
+    return;
+  }
+  if(!S.session){
+    pane.innerHTML='<div class="lock"><div class="ico">'+LOCK+'</div><h3>ยืนยันอีเมลก่อนส่งผลงาน</h3><p>ระบบใช้อีเมลเพื่อส่งใบรับผลงาน แจ้งผลการพิจารณา และให้คุณแก้ไข/ติดตามสถานะผลงานได้ภายหลัง</p><button class="btn dark" id="sVerify">ยืนยันอีเมล</button></div>';
+    Q('#sVerify').onclick=function(){openVerify(function(){openSubmit(edit);},'เพื่อส่งผลงานและติดตามสถานะ');};
+    return;
+  }
+  S.editing=edit||null;S.file=null;
+  const draft=edit?edit:(function(){try{return JSON.parse(store.get('sv_draft')||'null')||{};}catch(e){return {};}})();
+  const callList=edit?S.calls.filter(function(c){return c.callId===edit.callId;}):calls;
+  const call=callList.filter(function(c){return c.callId===draft.callId;})[0]||callList[0];
+  if(!call){pane.innerHTML='<div class="lock"><p>ไม่พบรอบรับผลงานของผลงานนี้</p></div>';return;}
+  const depts=S.depts.map(function(d){return d.name;});
+  const deptOther=draft.department&&depts.indexOf(draft.department)<0;
+  function v(k){return esc(draft[k]||'');}
+  pane.innerHTML='<div class="steps"><span class="on">1 ข้อมูลผลงาน</span><span class="on">2 บทคัดย่อ</span><span class="on">3 แนบไฟล์และยืนยัน</span></div>'+
+    (edit&&edit.status==='revise'&&edit.reviewNote?'<div class="rnote" style="margin:0 0 14px"><b>ความเห็นกรรมการ:</b>\n'+esc(edit.reviewNote)+'</div>':'')+
+    '<form id="sForm" novalidate>'+
+    '<div class="g2"><label class="field"><span>รอบการประกวด <b>*</b></span><select id="fCall"'+(edit?' disabled':'')+'>'+callList.map(function(c){return '<option value="'+esc(c.callId)+'"'+(c.callId===call.callId?' selected':'')+'>'+esc(c.title)+' (ปิด '+thDate(c.closes)+')</option>';}).join('')+'</select></label>'+
+    '<label class="field"><span>ประเภทผลงาน <b>*</b></span><select id="fCat"></select></label></div>'+
+    '<label class="field"><span>ชื่อผลงาน <b>*</b></span><textarea id="fTitle" maxlength="400" style="min-height:60px" required>'+v('title')+'</textarea></label>'+
+    '<label class="field"><span>ผู้จัดทำ <b>*</b></span><textarea id="fAuthors" maxlength="600" style="min-height:60px" placeholder="เช่น ภญ.สมใจ ใจดี, พว.สมหญิง รักงาน" required>'+v('authors')+'</textarea><small>คั่นแต่ละชื่อด้วยจุลภาค ( , ) ใส่คำนำหน้า/ตำแหน่งตามที่ต้องการให้แสดงในการอ้างอิง</small></label>'+
+    '<div class="g2"><label class="field"><span>หน่วยงาน <b>*</b></span><select id="fDept"><option value="">— เลือกหน่วยงาน —</option>'+depts.map(function(d){return '<option'+(d===draft.department?' selected':'')+'>'+esc(d)+'</option>';}).join('')+
+    '<option value="__other"'+(deptOther||(!depts.length&&draft.department)?' selected':'')+'>อื่น ๆ (พิมพ์เอง)</option></select>'+
+    '<input id="fDeptO" maxlength="200" placeholder="ชื่อหน่วยงาน" style="margin-top:8px" class="'+(deptOther||!depts.length?'':'hidden')+'" value="'+(deptOther?v('department'):'')+'"></label>'+
+    '<label class="field"><span>เบอร์โทรติดต่อ</span><input id="fPhone" maxlength="30" inputmode="tel" value="'+v('phone')+'"><small>ใช้ติดต่อเรื่องผลงานเท่านั้น ไม่แสดงบนเว็บ</small></label></div>'+
+    '<label class="field"><span>คำสำคัญ</span><input id="fKw" maxlength="300" placeholder="คั่นด้วยจุลภาค เช่น ความปลอดภัยด้านยา, ผู้สูงอายุ" value="'+v('keywords')+'"></label>'+
+    '<h3 class="h3">บทคัดย่อ <small style="font-weight:400;color:var(--muted);font-size:13px">(แนะนำให้กรอก ช่วยให้ค้นหาและอ้างอิงได้ดีขึ้น)</small></h3>'+
+    [['fBg','background','หลักการและเหตุผล / ปัญหา'],['fObj','objective','วัตถุประสงค์'],['fMet','method','วิธีดำเนินการ / กิจกรรมการพัฒนา'],['fRes','result','ผลการดำเนินงาน / ตัวชี้วัด'],['fCon','conclusion','สรุปและบทเรียนที่ได้']]
+      .map(function(f){return '<label class="field"><span>'+f[2]+'</span><textarea id="'+f[0]+'" maxlength="4000">'+v(f[1])+'</textarea></label>';}).join('')+
+    '<h3 class="h3">ไฟล์ผลงาน</h3>'+
+    '<div class="drop" id="fDrop" tabindex="0"><b>แตะเพื่อเลือกไฟล์</b> หรือลากไฟล์มาวาง<br><small>PDF, JPG, PNG, DOCX, PPTX ไม่เกิน <span id="fMax">'+call.maxMB+'</span> MB'+(edit?' · ไม่ต้องแนบใหม่หากไม่เปลี่ยนไฟล์ (ไฟล์เดิม: '+esc(edit.fileName)+')':'')+'</small><div id="fName" style="margin-top:6px;color:var(--ink)"></div></div>'+
+    '<input type="file" id="fFile" accept=".pdf,.jpg,.jpeg,.png,.docx,.pptx,application/pdf,image/jpeg,image/png" class="hidden">'+
+    '<label class="field" style="margin-top:14px"><span>ลิงก์เพิ่มเติม (ไม่บังคับ) เช่น วิดีโอนำเสนอ Canva หรือเว็บไซต์ผลงาน</span><input id="fUrl" type="url" maxlength="500" placeholder="https://" value="'+v('extraUrl')+'"></label>'+
+    '<label class="consent"><input type="checkbox" id="fConsent"> ข้าพเจ้ายืนยันว่าผลงานนี้ <b>ไม่มีข้อมูลที่ระบุตัวผู้ป่วยได้</b> (ชื่อ HN เลขบัตร ภาพใบหน้าที่ไม่ได้รับอนุญาต) ผู้จัดทำทุกคนรับทราบการส่ง และยินยอมให้โรงพยาบาลเผยแพร่ผลงานในคลังผลงานวิชาการตามระดับการเข้าถึงที่คณะกรรมการกำหนด</label>'+
+    '<div class="prog hidden" id="fProg"><i></i></div><p class="err" id="fErr"></p>'+
+    '<div class="row" style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn dark" id="fSend">'+(edit?'บันทึกและส่งใหม่':'ส่งผลงาน')+'</button>'+
+    (call.guideUrl?'<a class="btn line" href="'+esc(call.guideUrl)+'" target="_blank" rel="noopener">อ่านแนวทาง/เกณฑ์ ↗</a>':'')+'<span class="muted" id="fSaved" style="align-self:center;font-size:13px;color:var(--muted)"></span></div>'+
+    '</form>';
+  function fillCats(){
+    const c=S.calls.filter(function(x){return x.callId===Q('#fCall').value;})[0]||call;
+    Q('#fCat').innerHTML=c.categories.map(function(x){return '<option'+(x===draft.category?' selected':'')+'>'+esc(x)+'</option>';}).join('');
+    Q('#fMax').textContent=c.maxMB;
+  }
+  fillCats();Q('#fCall').onchange=fillCats;
+  Q('#fDept').onchange=function(){Q('#fDeptO').classList.toggle('hidden',Q('#fDept').value!=='__other');if(Q('#fDept').value==='__other')Q('#fDeptO').focus();};
+  const drop=Q('#fDrop'),inp=Q('#fFile');
+  drop.onclick=function(){inp.click();};drop.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();inp.click();}};
+  inp.onchange=function(){pickFile(inp.files[0]);};
+  ['dragenter','dragover'].forEach(function(t){drop.addEventListener(t,function(e){e.preventDefault();drop.classList.add('on');});});
+  ['dragleave','drop'].forEach(function(t){drop.addEventListener(t,function(e){e.preventDefault();drop.classList.remove('on');});});
+  drop.addEventListener('drop',function(e){if(e.dataTransfer.files[0])pickFile(e.dataTransfer.files[0]);});
+  if(!edit){let t;Q('#sForm').addEventListener('input',function(){clearTimeout(t);t=setTimeout(function(){if(!Q('#sForm'))return;store.set('sv_draft',JSON.stringify(formData()));Q('#fSaved').textContent='บันทึกร่างอัตโนมัติแล้ว';},600);});}
+  Q('#sForm').addEventListener('submit',sendSubmission);
+}
+function pickFile(f){
+  if(!f)return;
+  const c=S.calls.filter(function(x){return x.callId===Q('#fCall').value;})[0]||{maxMB:20};
+  if(!/\.(pdf|jpe?g|png|docx|pptx)$/i.test(f.name)){Q('#fErr').textContent='รองรับเฉพาะ PDF, JPG, PNG, DOCX, PPTX';return;}
+  if(f.size>c.maxMB*1048576){Q('#fErr').textContent='ไฟล์ใหญ่ '+(f.size/1048576).toFixed(1)+' MB เกินกำหนด '+c.maxMB+' MB (ลองบีบอัด PDF หรือลดขนาดภาพ)';return;}
+  Q('#fErr').textContent='';S.file=f;Q('#fName').textContent='✓ '+f.name+' · '+(f.size/1048576).toFixed(1)+' MB';
+}
+function mimeOf(f){
+  if(f.type)return f.type;const e=(f.name.match(/\.(\w+)$/)||[])[1]||'';
+  return {pdf:'application/pdf',jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',pptx:'application/vnd.openxmlformats-officedocument.presentationml.presentation'}[e.toLowerCase()]||'';
+}
+function formData(){
+  const dv=Q('#fDept').value;
+  return {callId:Q('#fCall').value,category:Q('#fCat').value,title:Q('#fTitle').value.trim(),authors:Q('#fAuthors').value.trim(),
+    department:dv==='__other'?Q('#fDeptO').value.trim():dv,phone:Q('#fPhone').value.trim(),keywords:Q('#fKw').value.trim(),
+    background:Q('#fBg').value.trim(),objective:Q('#fObj').value.trim(),method:Q('#fMet').value.trim(),result:Q('#fRes').value.trim(),conclusion:Q('#fCon').value.trim(),
+    extraUrl:Q('#fUrl').value.trim()};
+}
+function readB64(f,onp){
+  return new Promise(function(ok,no){
+    const r=new FileReader();
+    r.onprogress=function(e){if(e.lengthComputable&&onp)onp(e.loaded/e.total);};
+    r.onload=function(){ok(String(r.result).split(',')[1]||'');};r.onerror=function(){no(new Error('อ่านไฟล์ไม่สำเร็จ'));};
+    r.readAsDataURL(f);
+  });
+}
+async function sendSubmission(e){
+  e.preventDefault();
+  const d=formData(),err=Q('#fErr'),edit=S.editing;err.textContent='';
+  if(!d.title)return (err.textContent='กรุณากรอกชื่อผลงาน',Q('#fTitle').focus());
+  if(!d.authors)return (err.textContent='กรุณากรอกชื่อผู้จัดทำ',Q('#fAuthors').focus());
+  if(!d.department)return (err.textContent='กรุณาเลือกหรือพิมพ์ชื่อหน่วยงาน',Q('#fDept').focus());
+  if(!edit&&!S.file)return (err.textContent='กรุณาแนบไฟล์ผลงาน');
+  if(d.extraUrl&&!/^https?:\/\//i.test(d.extraUrl))return (err.textContent='ลิงก์เพิ่มเติมต้องขึ้นต้นด้วย https://');
+  if(!Q('#fConsent').checked)return (err.textContent='กรุณาติ๊กยืนยันเรื่องข้อมูลผู้ป่วยและการเผยแพร่');
+  d.consent=true;if(edit)d.subId=edit.subId;
+  const b=Q('#fSend'),pg=Q('#fProg'),bar=pg.querySelector('i');b.disabled=true;pg.classList.remove('hidden');bar.style.width='5%';
+  try{
+    let file=null;
+    if(S.file){b.textContent='กำลังเตรียมไฟล์…';const data=await readB64(S.file,function(p){bar.style.width=(5+p*35)+'%';});file={name:S.file.name,mime:mimeOf(S.file),data:data};}
+    b.textContent='กำลังอัปโหลด… ห้ามปิดหน้านี้';bar.style.width='55%';
+    const slow=setInterval(function(){const w=parseFloat(bar.style.width);if(w<92)bar.style.width=(w+2)+'%';},700);
+    let r;try{r=await api('submit',{session:S.session,sub:d,file:file});}finally{clearInterval(slow);}
+    bar.style.width='100%';
+    if(!edit)store.del('sv_draft');
+    Q('#sPane').innerHTML='<div class="okbox"><div class="ico" style="width:70px;height:70px;margin:auto;border-radius:22px;display:grid;place-items:center;background:#e6f4e8;color:#2e7d32">'+
+      '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 5 5 9-10"/></svg></div>'+
+      '<h3 style="margin:14px 0 0">'+(edit?'ส่งฉบับแก้ไขเรียบร้อย':'ส่งผลงานเรียบร้อย')+'</h3><p class="muted" style="color:var(--muted)">รหัสติดตามผลงาน</p><div class="big2">'+esc(r.code)+'</div>'+
+      '<p style="color:var(--muted)">ระบบส่งใบรับไปที่ '+esc(S.email)+' แล้ว · ติดตามสถานะและแก้ไขได้ที่ "ผลงานของฉัน"</p>'+
+      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px"><button class="btn dark" id="okMine">ผลงานของฉัน</button>'+(openCalls().length?'<button class="btn line" id="okMore">ส่งผลงานอีกชิ้น</button>':'')+'</div></div>';
+    Q('#okMine').onclick=function(){closeModal(Q('#subModal'));openMine();};
+    if(Q('#okMore'))Q('#okMore').onclick=function(){openSubmit();};
+  }catch(x){
+    err.textContent=errMsg(x);bar.style.width='0';pg.classList.add('hidden');
+    if(/ยืนยันอีเมลก่อน/.test(errMsg(x))){S.session='';store.del('sv_ses');renderAuth();}
+  }finally{if(document.body.contains(b)){b.disabled=false;b.textContent=edit?'บันทึกและส่งใหม่':'ส่งผลงาน';}}
+}
+
+/* ---------- ผลงานของฉัน ---------- */
+async function openMine(){
+  setUrl('mine');showModal(Q('#mineModal'));
+  const pane=Q('#mPane');
+  if(!S.session){
+    pane.innerHTML='<div class="lock"><div class="ico">'+LOCK+'</div><h3>ยืนยันอีเมลเพื่อดูผลงานของคุณ</h3><p>ใช้อีเมลเดียวกับที่ใช้ส่งผลงาน</p><button class="btn dark" id="mVerify">ยืนยันอีเมล</button></div>';
+    Q('#mVerify').onclick=function(){openVerify(openMine,'เพื่อดูและติดตามผลงานที่ส่ง');};return;
+  }
+  Q('#mMeta').textContent=S.email;
+  pane.innerHTML='<p class="note">กำลังโหลด…</p>';
+  try{S.mine=await api('mySubmissions',{session:S.session});}
+  catch(e){pane.innerHTML='<div class="lock"><p>'+esc(errMsg(e))+'</p></div>';if(/ยืนยันอีเมลก่อน/.test(errMsg(e))){S.session='';store.del('sv_ses');renderAuth();}return;}
+  const open={};openCalls().forEach(function(c){open[c.callId]=1;});
+  pane.innerHTML=(S.mine.length?S.mine.map(function(s){
+    const canEdit=s.status==='revise'||(s.status==='submitted'&&open[s.callId]);
+    const canWd=['submitted','reviewing','revise'].indexOf(s.status)>=0;
+    return '<div class="subc"><span class="code">'+esc(s.code)+' · ส่งเมื่อ '+thDate(s.createdAt)+(s.updatedAt&&s.updatedAt!==s.createdAt?' · แก้ไขล่าสุด '+thDate(s.updatedAt):'')+'</span><b>'+esc(s.title)+'</b>'+
+      '<small style="color:var(--muted)">'+esc(s.category)+' · ปี '+esc(s.year)+' · '+esc(s.department)+' · ไฟล์: '+esc(s.fileName)+'</small>'+
+      (s.reviewNote?'<div class="rnote"><b>ความเห็นกรรมการ:</b>\n'+esc(s.reviewNote)+'</div>':'')+
+      '<div class="row"><span class="st '+esc(s.status)+'">'+esc(s.statusText)+'</span>'+(s.workId?'<button class="btn small line" data-open="'+esc(s.workId)+'">ดูในคลังผลงาน</button>':'')+
+      (canEdit?'<button class="btn small dark" data-edit="'+esc(s.subId)+'">แก้ไข / ส่งใหม่</button>':'')+(canWd?'<button class="btn small danger" data-wd="'+esc(s.subId)+'">ถอนผลงาน</button>':'')+'</div></div>';
+  }).join(''):'<div class="lock"><h3>ยังไม่มีผลงานที่ส่งด้วยอีเมลนี้</h3><p>เมื่อส่งผลงานแล้ว จะติดตามสถานะได้ที่นี่</p></div>')+
+    (openCalls().length?'<div style="margin-top:16px"><button class="btn dark" id="mNew">ส่งผลงานใหม่</button></div>':'');
+  if(Q('#mNew'))Q('#mNew').onclick=function(){closeModal(Q('#mineModal'));openSubmit();};
+  pane.onclick=async function(e){
+    const ed=e.target.closest('[data-edit]'),wd=e.target.closest('[data-wd]'),op=e.target.closest('[data-open]');
+    if(op){closeModal(Q('#mineModal'));return;}
+    if(ed){const s=S.mine.filter(function(x){return x.subId===ed.dataset.edit;})[0];closeModal(Q('#mineModal'));openSubmit(s);}
+    if(wd){
+      if(!confirm('ยืนยันถอนผลงานนี้? ถอนแล้วจะแก้ไขหรือส่งใหม่ด้วยรหัสนี้ไม่ได้'))return;
+      wd.disabled=true;
+      try{await api('withdraw',{session:S.session,subId:wd.dataset.wd});toast('ถอนผลงานแล้ว');openMine();}catch(x){toast(errMsg(x));wd.disabled=false;}
+    }
+  };
+}
+
 /* ---------- Animation เครือข่ายองค์ความรู้ ---------- */
 function startNet(){
-  const cv=Q('#net'),ctx=cv.getContext('2d');if(!ctx)return;
+  const cv=Q('#net'),ctx=cv.getContext&&cv.getContext('2d');if(!ctx)return;
   const rm=window.matchMedia('(prefers-reduced-motion: reduce)').matches,dpr=Math.min(window.devicePixelRatio||1,2);
-  let W=0,H=0,P=[];const mouse={x:-999,y:-999};
+  let W=0,H=0,P=[],vis=true;const mouse={x:-999,y:-999};
   function size(){
     const r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
-    const n=Math.min(90,Math.max(28,Math.floor(W*H/12000)));
+    const n=Math.min(80,Math.max(24,Math.floor(W*H/13000)));
     P=Array.from({length:n},function(){return {x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*1.8+.8};});
   }
   function draw(){
+    if(!vis){if(!rm)requestAnimationFrame(draw);return;}
     ctx.clearRect(0,0,W,H);
     if(!rm)P.forEach(function(p){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;});
     for(let i=0;i<P.length;i++){
-      for(let j=i+1;j<P.length;j++){
-        const a=P[i],b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y);
-        if(d<140){ctx.strokeStyle='rgba(127,224,220,'+(.24*(1-d/140)).toFixed(3)+')';ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
-      }
+      for(let j=i+1;j<P.length;j++){const a=P[i],b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+        if(d<140){ctx.strokeStyle='rgba(127,224,220,'+(.24*(1-d/140)).toFixed(3)+')';ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}}
       const dm=Math.hypot(P[i].x-mouse.x,P[i].y-mouse.y);
       if(dm<180){ctx.strokeStyle='rgba(229,196,107,'+(.55*(1-dm/180)).toFixed(3)+')';ctx.beginPath();ctx.moveTo(P[i].x,P[i].y);ctx.lineTo(mouse.x,mouse.y);ctx.stroke();}
     }
-    ctx.fillStyle='rgba(220,248,245,.85)';
-    P.forEach(function(p){ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();});
+    ctx.fillStyle='rgba(220,248,245,.85)';P.forEach(function(p){ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();});
     if(!rm)requestAnimationFrame(draw);
   }
   const hero=cv.parentElement;
   hero.addEventListener('mousemove',function(e){const r=cv.getBoundingClientRect();mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top;});
   hero.addEventListener('mouseleave',function(){mouse.x=-999;mouse.y=-999;});
+  if('IntersectionObserver' in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting;}).observe(hero);
   size();draw();
   window.addEventListener('resize',function(){size();if(rm)draw();});
 }
