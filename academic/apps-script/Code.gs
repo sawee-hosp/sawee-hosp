@@ -159,6 +159,9 @@ const ADMIN = {
 };
 
 /** รันครั้งแรกจากหน้า Editor เพื่ออนุญาตสิทธิ์ สร้างชีต/โฟลเดอร์ และตรวจระบบ */
+/** ล้างการล็อกหลังใส่รหัสผิดหลายครั้ง — Run ฟังก์ชันนี้จาก Editor ได้เลย */
+function unlockAdmin() { cache_().remove('admfail'); console.log('ปลดล็อกแล้ว · ADMIN_PASSWORD ยาว ' + str_(prop_('ADMIN_PASSWORD')).length + ' ตัวอักษร'); }
+
 function setup() {
   Object.keys(SCHEMA).forEach(sheet_);
   ['root', 'view', 'thumbs', 'temp', 'submissions'].forEach(folderId_);
@@ -250,7 +253,7 @@ function ss_() {
   if (SS_) return SS_;
   let s = null;
   try { s = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) { s = null; }
-  if (!s) s = SpreadsheetApp.openById(prop_('SHEET_ID') || DEFAULT_SHEET_ID);
+  if (!s) s = SpreadsheetApp.openById(str_(prop_('SPREADSHEET_ID') || prop_('SHEET_ID')) || DEFAULT_SHEET_ID);
   SS_ = s;
   return s;
 }
@@ -793,11 +796,11 @@ function participation_(admin, works, calls) {
  *  ADMIN: LOGIN
  * ============================================================ */
 function adminLogin_(r) {
-  const pw = prop_('ADMIN_PASSWORD');
+  const pw = str_(prop_('ADMIN_PASSWORD')); // ตัดช่องว่าง/ขึ้นบรรทัดที่ติดมาตอนวางค่า
   if (!pw) throw new Error('ยังไม่ได้ตั้งรหัสผ่าน: Apps Script → Project Settings → Script Properties → เพิ่ม ADMIN_PASSWORD');
   const c = cache_(), fails = Number(c.get('admfail') || 0);
   if (fails >= 10) throw new Error('ใส่รหัสผิดหลายครั้ง กรุณารอ 10 นาที');
-  if (str_(r.password) !== pw) { c.put('admfail', String(fails + 1), 600); throw new Error('รหัสผ่านไม่ถูกต้อง'); }
+  if (str_(r.password) !== pw) { c.put('admfail', String(fails + 1), 600); throw new Error('รหัสผ่านไม่ถูกต้อง (ผิดได้อีก ' + (9 - fails) + ' ครั้ง ก่อนถูกล็อก 10 นาที)'); }
   c.remove('admfail');
   const t = 'a' + uuid_().replace(/-/g, '');
   c.put('adm:' + t, '1', 21600);
