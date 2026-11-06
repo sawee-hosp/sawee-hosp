@@ -88,6 +88,12 @@ h1{font-size:clamp(32px,4.6vw,56px);line-height:1.28;margin:14px 0}
 .call{display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:linear-gradient(110deg,#fff8e6,#fff 60%);border:1px solid #f0dfae;border-radius:22px;padding:18px 22px}
 .call .badge{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:var(--gold);color:#2a2100;flex:none}
 .call h3{margin:0;font-size:18px}.call p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.cdw{margin-left:auto;text-align:center}.cdw>small{font-size:12px;color:var(--muted)}
+.cdx{display:flex;gap:6px;margin-top:2px}.cdx div{background:#fff;border:1px solid #f0dfae;border-radius:12px;min-width:58px;text-align:center;padding:5px 4px 3px}
+.cdx b{font-family:Prompt;font-size:24px;color:#8a5a00;display:block;line-height:1.15;font-variant-numeric:tabular-nums}.cdx small{font-size:11px;color:var(--muted)}
+.cdx.urgent div{border-color:#f1b7b7;background:#fff5f5}.cdx.urgent b{color:#b42323}
+.cdend{font-family:Prompt;font-weight:600;color:#8a5a00}
+.cdmini{background:#e5c46b;color:#2a2100;border-radius:999px;padding:0 10px;font-weight:700;font-variant-numeric:tabular-nums}.cdmini.urgent{background:#ffb4b4}
 .call .cd{margin-left:auto;text-align:center;padding:0 10px}.call .cd b{font-family:Prompt;font-size:30px;display:block;line-height:1.1;color:#8a5a00}.call .cd small{color:var(--muted);font-size:12px}
 .call .acts{display:flex;gap:8px;flex-wrap:wrap}
 /* ---------- section head ---------- */
@@ -260,7 +266,7 @@ mark{background:#ffe08a;padding:0 2px;border-radius:3px;color:inherit}
 @media(max-width:1060px){.cats{grid-template-columns:repeat(3,1fr)}.grid,.fstrip{grid-template-columns:repeat(2,1fr)}.pgrid{grid-template-columns:1fr}.nav .hide-t{display:none}}
 @media(max-width:860px){.hero-in{grid-template-columns:1fr;padding:44px 24px 28px}.hero{margin:12px 12px 0;border-radius:24px}.bar{grid-template-columns:1fr}.nav .hide-m{display:none}
 .pk{grid-template-columns:repeat(2,1fr)}.li{grid-template-columns:56px 1fr}.li .d,.li .r{display:none}.site-foot .in{grid-template-columns:1fr}.call .cd{margin-left:0}}
-@media(max-width:560px){.hero-in{padding:36px 20px 24px;gap:26px}.panel{padding:20px}.hsearch button{padding:10px 14px}.eyebrow{letter-spacing:2px}.cats{grid-template-columns:repeat(2,1fr)}.grid,.fstrip{grid-template-columns:1fr}.year-big{font-size:54px}.pane{padding:20px}.info{grid-template-columns:1fr;gap:2px}.info dd{margin-bottom:8px}
+@media(max-width:560px){.cdw{margin-left:0;width:100%}.cdx div{flex:1;min-width:0}.hero-in{padding:36px 20px 24px;gap:26px}.panel{padding:20px}.hsearch button{padding:10px 14px}.eyebrow{letter-spacing:2px}.cats{grid-template-columns:repeat(2,1fr)}.grid,.fstrip{grid-template-columns:1fr}.year-big{font-size:54px}.pane{padding:20px}.info{grid-template-columns:1fr;gap:2px}.info dd{margin-bottom:8px}
 .wrap{padding:56px 16px 0}.dlg-head{padding:66px 20px 20px}.auth{max-width:130px}.g2{grid-template-columns:1fr}.brand small{display:none}.dbar{grid-template-columns:110px 1fr 36px}.aw-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
 @media print{.topbar,.hero,.callbar,.site-foot,#toast{display:none}}
@@ -493,6 +499,29 @@ function thDate(s,full){
   if(m)d=new Date(+m[1],+m[2]-1,+m[3]);else{d=new Date(s);if(isNaN(d))return esc(s);}
   return d.getDate()+' '+(full?['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'][d.getMonth()]:MONTH[d.getMonth()])+' '+(d.getFullYear()+543);
 }
+/* เวลาตามประเทศไทย: ปิดรับสิ้นวันที่กำหนด เวลา 23:59 น. */
+function bkk(d,hm){const m=String(d||'').match(/^\d{4}-\d{2}-\d{2}/);return m?Date.parse(m[0]+'T'+hm+':00+07:00'):NaN;}
+function cdUnits(ms){const t=Math.max(0,Math.floor(ms/1000));return [Math.floor(t/86400),Math.floor(t%86400/3600),Math.floor(t%3600/60),t%60];}
+function pad2(n){return (n<10?'0':'')+n;}
+let cdTimer=null;
+function tickCountdowns(){
+  const now=Date.now();
+  document.querySelectorAll('[data-cd]').forEach(function(el){
+    const end=+el.dataset.cd,left=end-now,u=cdUnits(left);
+    if(left<=0){
+      el.innerHTML=el.dataset.kind==='open'?'<span class="cdend">เปิดรับแล้ว · รีเฟรชหน้าเว็บ</span>':'<span class="cdend">ปิดรับผลงานแล้ว</span>';
+      el.removeAttribute('data-cd');
+      if(el.dataset.kind!=='open'){['#cbSubmit','#fSend'].forEach(function(s){const b=Q(s);if(b){b.disabled=true;b.textContent='ปิดรับแล้ว';}});}
+      return;
+    }
+    el.classList.toggle('urgent',left<3*864e5&&el.dataset.kind!=='open');
+    if(el.dataset.compact){el.textContent='เหลือเวลา '+u[0]+' วัน '+pad2(u[1])+':'+pad2(u[2])+':'+pad2(u[3]);return;}
+    const b=el.querySelectorAll('b');
+    if(b.length===4){b[0].textContent=u[0];b[1].textContent=pad2(u[1]);b[2].textContent=pad2(u[2]);b[3].textContent=pad2(u[3]);}
+  });
+  if(!document.querySelector('[data-cd]')&&cdTimer){clearInterval(cdTimer);cdTimer=null;}
+}
+function startCountdowns(){tickCountdowns();if(!cdTimer&&document.querySelector('[data-cd]'))cdTimer=setInterval(tickCountdowns,1000);}
 function daysLeft(s){const m=String(s||'').match(/^(\d{4})-(\d{2})-(\d{2})/);if(!m)return null;const end=new Date(+m[1],+m[2]-1,+m[3],23,59,59);return Math.ceil((end-Date.now())/864e5);}
 function imgFallback(img){if(!img.dataset.f){img.dataset.f='1';img.src='https://lh3.googleusercontent.com/d/'+img.dataset.fid+'=w800';}else img.remove();}
 function kwList(s){return String(s||'').split(/[,，;]/).map(function(x){return x.trim();}).filter(Boolean);}
@@ -638,15 +667,17 @@ function renderCall(){
   const c=open[0]||up[0];
   Q('#callBar').classList.toggle('hidden',!c);
   if(!c)return;
-  const isOpen=c.status==='open',dl=daysLeft(isOpen?c.closes:c.opens);
+  const isOpen=c.status==='open',end=isOpen?bkk(c.closes,'23:59'):bkk(c.opens,'00:00');
   Q('#callBar').innerHTML='<div class="call"><div class="badge">'+TROPHY+'</div><div><h3>'+(isOpen?'เปิดรับผลงานแล้ว: ':'เร็ว ๆ นี้: ')+esc(c.title)+'</h3>'+
-    '<p>'+(isOpen?'ส่งได้ถึง '+thDate(c.closes,true):'เปิดรับ '+thDate(c.opens,true)+(c.closes?' – '+thDate(c.closes,true):''))+' · ประเภท: '+esc(c.categories.join(', '))+
+    '<p>'+(isOpen?'ส่งผลงานได้ถึง <b>'+thDate(c.closes,true)+' เวลา 23:59 น.</b>':'เปิดรับ '+thDate(c.opens,true)+(c.closes?' – '+thDate(c.closes,true)+' 23:59 น.':''))+' · ประเภท: '+esc(c.categories.join(', '))+
     (c.eventDate?' · วันงาน '+thDate(c.eventDate,true):'')+(c.venue?' · '+esc(c.venue):'')+'</p>'+(c.note?'<p style="color:#7a5600">'+esc(String(c.note).split('\n')[0])+'</p>':'')+'</div>'+
-    (dl!==null&&dl>=0?'<div class="cd"><b>'+th(dl)+'</b><small>'+(isOpen?'วันก่อนปิดรับ':'วันก่อนเปิดรับ')+'</small></div>':'')+
+    (isFinite(end)&&end>Date.now()?'<div class="cdw"><small>'+(isOpen?'เหลือเวลาส่งผลงาน':'จะเปิดรับใน')+'</small><div class="cdx" data-cd="'+end+'" data-kind="'+(isOpen?'close':'open')+'">'+
+      ['วัน','ชั่วโมง','นาที','วินาที'].map(function(l){return '<div><b>–</b><small>'+l+'</small></div>';}).join('')+'</div></div>':'')+
     '<div class="acts">'+(isOpen?'<button class="btn dark" id="cbSubmit">ส่งผลงาน</button>':'')+(c.guideUrl?'<a class="btn line" href="'+esc(c.guideUrl)+'" target="_blank" rel="noopener">แนวทาง/เกณฑ์ ↗</a>':'')+
     (S.session?'<button class="btn line" id="cbMine">ผลงานของฉัน</button>':'')+'</div></div>';
   if(Q('#cbSubmit'))Q('#cbSubmit').onclick=function(){openSubmit();};
   if(Q('#cbMine'))Q('#cbMine').onclick=openMine;
+  startCountdowns();
 }
 function renderCats(){
   const ws=yearWorks();
@@ -982,7 +1013,10 @@ function openSubmit(edit){
   const pane=Q('#sPane');showModal(Q('#subModal'));
   const calls=openCalls();
   Q('#sTitle').textContent=edit?'แก้ไขผลงาน '+edit.code:'ส่งผลงานเข้าประกวด';
-  Q('#sMeta').textContent=S.email?'ส่งในนาม '+S.email:'';
+  const oc=edit?S.calls.filter(function(x){return x.callId===edit.callId;})[0]:calls[0],ce=oc?bkk(oc.closes,'23:59'):NaN;
+  Q('#sMeta').innerHTML=(S.email?'<span>ส่งในนาม '+esc(S.email)+'</span>':'')+(oc?'<span>ปิดรับ '+thDate(oc.closes,true)+' 23:59 น.</span>':'')+
+    (isFinite(ce)&&ce>Date.now()?'<span class="cdmini" data-cd="'+ce+'" data-kind="close" data-compact="1"></span>':'');
+  startCountdowns();
   if(!edit&&!calls.length){
     const up=S.calls.filter(function(c){return c.status==='upcoming';});
     pane.innerHTML='<div class="lock"><div class="ico">'+TROPHY+'</div><h3>ขณะนี้ยังไม่เปิดรับผลงาน</h3><p>'+(up.length?'รอบถัดไป: '+esc(up[0].title)+' เปิดรับ '+thDate(up[0].opens,true):'ติดตามประกาศรอบรับผลงานถัดไปได้ที่หน้านี้')+'</p>'+

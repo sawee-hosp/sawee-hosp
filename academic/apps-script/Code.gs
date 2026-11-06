@@ -397,11 +397,13 @@ function callsRows_() {
     };
   });
 }
+/** เปิดรับตั้งแต่ 00:00 น. ของวันเปิด ถึง 23:59 น. ของวันปิด (เวลาประเทศไทย) */
+function bkkTime_(d, hms) { const m = str_(d).match(/^\d{4}-\d{2}-\d{2}/); return m ? Date.parse(m[0] + 'T' + hms + '+07:00') : NaN; }
 function callStatus_(c) {
-  const t = today_();
+  const now = Date.now();
   if (!c.enabled) return 'disabled';
-  if (c.opens && t < c.opens) return 'upcoming';
-  if (c.closes && t > c.closes) return 'closed';
+  if (c.opens && now < bkkTime_(c.opens, '00:00:00')) return 'upcoming';
+  if (c.closes && now > bkkTime_(c.closes, '23:59:59')) return 'closed';
   return 'open';
 }
 function resultsVisibleFn_(calls) {
@@ -687,18 +689,24 @@ function submit_(r) {
   return result;
 }
 /** โฟลเดอร์เก็บไฟล์ที่ส่ง: ถ้ารอบมี folderUrl จะใส่ในโฟลเดอร์ย่อยตามประเภท (และโฟลเดอร์ "ส่งผลงาน" ข้างใน ถ้ามี) */
-function uploadDir_(call, cat) {
+function uploadDir_(call, cat) { return resolveUpload_(call, cat).folder; }
+/** คืน { folder, path, ok } — ok=false เมื่อต้องใช้โฟลเดอร์สำรองของระบบ */
+function resolveUpload_(call, cat) {
   if (call.folderUrl) {
     try {
       const root = DriveApp.getFolderById(folderIdFromUrl_(call.folderUrl)), it = root.getFolders();
       while (it.hasNext()) {
         const f = it.next();
-        if (guessCat_(f.getName()) === cat) { const s = f.getFoldersByName('ส่งผลงาน'); return s.hasNext() ? s.next() : f; }
+        if (guessCat_(f.getName()) === cat) {
+          const s = f.getFoldersByName('ส่งผลงาน');
+          return s.hasNext() ? { folder: s.next(), path: root.getName() + ' / ' + f.getName() + ' / ส่งผลงาน', ok: true } : { folder: f, path: root.getName() + ' / ' + f.getName(), ok: true };
+        }
       }
-      return root;
+      return { folder: root, path: root.getName() + ' (ไม่พบโฟลเดอร์ย่อยของประเภทนี้)', ok: false };
     } catch (e) { console.warn('uploadDir: ' + e.message); }
   }
-  return subFolder_(subFolder_(folderId_('submissions'), call.year).getId(), cat || UNCAT);
+  const f = subFolder_(subFolder_(folderId_('submissions'), call.year).getId(), cat || UNCAT);
+  return { folder: f, path: 'โฟลเดอร์สำรองของระบบ / ' + call.year + ' / ' + (cat || UNCAT), ok: false };
 }
 function extOf_(name, mime) {
   const m = String(name || '').match(/\.[a-z0-9]{2,5}$/i);
@@ -858,6 +866,11 @@ function diagnose_() {
     return s.map(function (x) { return DriveApp.getFolderById(str_(x.folderId)).getName(); }).join(', ');
   });
   add('โควตาอีเมลวันนี้', function () { const q = MailApp.getRemainingDailyQuota(); return q > 0 ? 'เหลือ ' + q + ' ฉบับ' : false; });
+  callsRows_().filter(function (c) { return ['open', 'upcoming'].indexOf(callStatus_(c)) >= 0; }).forEach(function (c) {
+    c.categories.forEach(function (cat) {
+      add('ปลายทางไฟล์ ' + c.year + ' · ' + cat, function () { const r = resolveUpload_(c, cat); if (!r.ok) throw new Error(r.path); return r.path; });
+    });
+  });
   add('ซิงก์อัตโนมัติ', function () { return hasTrigger_() ? 'เปิด (ทุก 1 ชั่วโมง)' : 'ปิดอยู่'; });
   add('URL ของ Web app', function () { const u = ScriptApp.getService().getUrl(); return u || 'ยังไม่ได้ Deploy เป็น Web app'; });
   add('AI (Gemini)', function () { return prop_('GEMINI_KEY') ? 'มี API key · ' + (prop_('GEMINI_MODEL') || 'gemini-2.5-flash') : 'ไม่ได้ใช้'; });
