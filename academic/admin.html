@@ -78,6 +78,26 @@ label.f{display:block;margin-bottom:12px}label.f span{display:block;font-size:13
 .aw-row td{vertical-align:middle}
 .aw-row input,.aw-row select{padding:6px 8px;border-radius:8px}
 code{background:#eef3f7;border-radius:6px;padding:1px 6px;font-size:12.5px}
+/* ---------- ตรวจทีละไฟล์ ---------- */
+.rvbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.rvprog{flex:1;min-width:200px}.rvprog .track{height:8px}.rvprog small{color:var(--muted);font-size:12.5px}
+.rv-wrap{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(380px,1fr);gap:14px;height:calc(100vh - 150px);min-height:560px}
+.rv-wrap.wide{grid-template-columns:1fr}.rv-wrap.wide .rv-right{display:none}
+.rv-left{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.rv-left .tb{display:flex;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);font-size:13px;flex-wrap:wrap}
+.rv-left .tb b{flex:1;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rv-left iframe{flex:1;border:0;width:100%;background:#eef3f7}
+.rv-right{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.rv-right label.f{margin-bottom:9px}.rv-right label.f span{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.clip{border:0;background:#eef3f7;border-radius:7px;font-size:12px;padding:1px 8px;color:var(--ink)}.clip:hover{background:#dbe8f1}
+.paste{border:2px dashed #c6d6e2;border-radius:14px;padding:10px;background:#f9fbfd;margin-bottom:12px}
+.paste textarea{min-height:70px;border:0;background:transparent;padding:4px}.paste textarea:focus{outline:none}
+.paste.on{border-color:var(--teal);background:#eefaf9}
+.dupbox{background:#fff7e6;border:1px solid #f3dfae;border-radius:12px;padding:10px 12px;font-size:13.5px;margin-bottom:12px}
+.dupbox .it{display:flex;gap:8px;align-items:center;justify-content:space-between;border-top:1px dashed #ecd9a8;padding:6px 0;flex-wrap:wrap}.dupbox .it:first-of-type{border-top:0}
+.kbd{font-family:ui-monospace,monospace;font-size:11px;background:#eef3f7;border-radius:5px;padding:0 5px;color:var(--muted)}
+.audit h4{margin:14px 0 6px;font-family:Prompt}.audit ul{margin:4px 0;padding-left:20px;font-size:14px}
+@media(max-width:1100px){.rv-wrap{grid-template-columns:1fr;height:auto}.rv-left{height:70vh}}
 @media(max-width:900px){.app{grid-template-columns:1fr}.side{position:static;height:auto}.side nav{display:flex;flex-wrap:wrap}.side nav button{width:auto}.side nav .grp{display:none}
 .two,.grid3,.grid2,.grid4{grid-template-columns:1fr}.main{padding:16px}.bars .b{grid-template-columns:100px 1fr 90px}}
 </style>
@@ -103,6 +123,7 @@ code{background:#eef3f7;border-radius:6px;padding:1px 6px;font-size:12.5px}
       <button data-v="subs">ผลงานที่ส่งเข้ามา <i id="nSubs" class="hidden"></i></button>
       <button data-v="awards">ประกาศผลรางวัล</button>
       <div class="grp">คลังผลงาน</div>
+      <button data-v="review">ตรวจ/กรอกทีละไฟล์ <i id="nTodo" class="hidden"></i></button>
       <button data-v="works">ผลงานในคลัง <i id="nReview" class="hidden"></i></button>
       <button data-v="sources">แหล่งไฟล์ Drive</button>
       <div class="grp">หน่วยงาน</div>
@@ -195,6 +216,43 @@ code{background:#eef3f7;border-radius:6px;padding:1px 6px;font-size:12.5px}
       </div>
     </section>
 
+    <!-- ตรวจทีละไฟล์ -->
+    <section id="v-review" class="view hidden">
+      <div class="rvbar">
+        <h2 style="font-size:20px;margin-right:6px">ตรวจ/กรอกข้อมูลทีละไฟล์</h2>
+        <select id="rvYear" class="in" style="width:auto"><option value="">ทุกปี</option></select>
+        <select id="rvCat" class="in" style="width:auto"><option value="">ทุกประเภท</option></select>
+        <select id="rvStatus" class="in" style="width:auto"><option value="todo">ยังไม่ตรวจ</option><option value="">ทั้งหมด (ไม่รวมที่ซ่อน)</option><option value="done">ตรวจแล้ว</option><option value="dup">อาจซ้ำ</option><option value="hidden">ซ่อน/ไฟล์ซ้ำ</option></select>
+        <select id="rvJump" class="in" style="width:220px"></select>
+        <div class="rvprog"><div class="track"><div class="fill" id="rvBar" style="width:0"></div></div><small id="rvProg"></small></div>
+      </div>
+      <div class="rv-wrap" id="rvWrap">
+        <div class="rv-left">
+          <div class="tb"><button class="btn sm" id="rvPrev" title="Alt+←">← ก่อนหน้า</button><span id="rvPos" class="muted"></span><button class="btn sm" id="rvNext" title="Alt+→">ถัดไป →</button>
+            <b id="rvFile"></b><a class="btn sm" id="rvOpen" target="_blank" rel="noopener">เปิดใน Drive ↗</a><button class="btn sm" id="rvWide" title="ซ่อน/แสดงฟอร์ม">⤢</button></div>
+          <iframe id="rvFrame" title="ตัวอย่างไฟล์" allow="fullscreen"></iframe>
+        </div>
+        <div class="rv-right">
+          <div id="rvDup"></div>
+          <div class="paste" id="rvPasteBox">
+            <textarea id="rvPaste" class="in" placeholder="วางตรงนี้ (Ctrl+V): ข้อความที่คลุมดำ/คัดลอกจากไฟล์ หรือภาพที่แคปหน้าจอ (Win+Shift+S) ระบบจะ OCR ภาพและแยกข้อมูลลงช่องที่ยังว่างให้"></textarea>
+            <div class="row"><button class="btn sm teal" id="rvParse">แยกลงช่อง</button><button class="btn sm" id="rvClipPaste">📋 วางจากคลิปบอร์ด</button><label class="btn sm" style="cursor:pointer">🖼 OCR จากรูป<input type="file" id="rvImg" accept="image/*" hidden></label><span class="muted" id="rvOcrMsg"></span></div>
+          </div>
+          <label class="f"><span>ชื่อผลงาน <span><button class="clip" data-clip="rvTitle">📋 วาง</button> <button class="clip" id="rvUseName">ใช้ชื่อไฟล์</button></span></span><textarea class="in" id="rvTitle" style="min-height:54px"></textarea></label>
+          <label class="f"><span>ผู้จัดทำ (คั่นด้วย ,) <button class="clip" data-clip="rvAuthors">📋 วาง</button></span><input class="in" id="rvAuthors"></label>
+          <div class="grid2"><label class="f"><span>หน่วยงาน <button class="clip" data-clip="rvDept">📋</button></span><input class="in" id="rvDept" list="deptList"></label>
+            <label class="f"><span>คำสำคัญ <button class="clip" data-clip="rvKw">📋</button></span><input class="in" id="rvKw"></label></div>
+          <div class="grid2"><label class="f"><span>ประเภท</span><select class="in" id="rvCatSel"></select></label><label class="f"><span>ปี</span><input class="in" id="rvYearIn" maxlength="4"></label></div>
+          <label class="f"><span>บทสรุป (แสดงสาธารณะ) <button class="clip" data-clip="rvSum">📋 วาง</button></span><textarea class="in" id="rvSum" style="min-height:70px"></textarea></label>
+          <label class="f"><span>ข้อความเต็ม (ใช้ค้นหา/อ่านเนื้อหา) <span><span class="muted" id="rvLen"></span> <button class="clip" data-clip="rvText" data-append="1">📋 ต่อท้าย</button></span></span><textarea class="in" id="rvText" style="min-height:120px;font-size:13.5px"></textarea></label>
+          <div class="grid2"><label class="f"><span>สิทธิ์การเข้าถึง</span><select class="in" id="rvAcc"></select></label><div class="checks" style="align-self:end"><label><input type="checkbox" id="rvPub"> เผยแพร่</label></div></div>
+          <div class="row"><button class="btn primary" id="rvSaveNext">✓ ตรวจแล้ว & ถัดไป</button><button class="btn" id="rvSave">บันทึก</button><button class="btn" id="rvSkip">ข้าม</button><button class="btn danger" id="rvHide">ซ่อน (ไม่ใช่ผลงาน)</button></div>
+          <p class="muted" style="margin-top:8px"><span class="kbd">Ctrl+Enter</span> ตรวจแล้ว&amp;ถัดไป · <span class="kbd">Alt+→</span>/<span class="kbd">Alt+←</span> เลื่อนไฟล์ · ไฟล์ที่ "ตรวจแล้ว" จะถูกล็อก OCR ไม่เขียนทับ</p>
+          <p class="muted" id="rvInfo"></p>
+        </div>
+      </div>
+    </section>
+
     <!-- แหล่งไฟล์ -->
     <section id="v-sources" class="view hidden">
       <div class="top"><h2>แหล่งไฟล์ Google Drive</h2></div>
@@ -211,6 +269,7 @@ code{background:#eef3f7;border-radius:6px;padding:1px 6px;font-size:12.5px}
         <div id="sPreview" style="margin-top:14px"></div>
       </div>
       <div class="card"><h3>แหล่งไฟล์ทั้งหมด</h3><div id="sList" class="scroll"></div></div>
+      <div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">ตรวจไฟล์ตกหล่น</h3><button class="btn" id="btnAudit">ตรวจตอนนี้</button></div><p class="muted">เทียบไฟล์ทุกไฟล์ในโฟลเดอร์ (รวมโฟลเดอร์ย่อย) กับรายการในระบบ: ไฟล์ที่ยังไม่ถูกนำเข้า ไฟล์ชนิดที่ระบบไม่รองรับ (เช่น HEIC, MP4, ZIP) และรายการที่ไฟล์ต้นฉบับหาย</p><div id="auditBox" class="audit"></div></div>
     </section>
 
     <!-- หน่วยงาน -->
@@ -411,6 +470,7 @@ function bind(){
   Q('#drawer').addEventListener('click',function(e){if(e.target.id==='drawer'||e.target.closest('[data-close]'))closeDrawer();});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDrawer();});
   Q('#setSave').addEventListener('click',saveSettings);
+  bindReview();
   Q('#aiSave').addEventListener('click',saveAiKey);
 }
 function enter(){Q('#login').classList.add('hidden');Q('#app').classList.remove('hidden');show('dash');}
@@ -429,6 +489,7 @@ function show(v){
   if(v==='awards')loadAwards();
   if(v==='depts')loadDepts();
   if(v==='part')loadPart();
+  if(v==='review')loadReview();
 }
 
 /* ---------- ภาพรวม ---------- */
@@ -875,6 +936,223 @@ async function hideWork(){
   try{await call('hideWork',{id:CUR.id,hide:hide});busy(false);closeDrawer();toast(hide?'ซ่อนแล้ว (ดูได้ที่ตัวกรองสถานะ "ซ่อนไว้")':'กู้คืนแล้ว');}
   catch(e){busy(false);toast(msg(e),true);}
   if(T)loadWorks();
+}
+
+/* ---------- ตรวจ/กรอกทีละไฟล์ ---------- */
+let RV={list:[],i:0,cur:null,loaded:false,tess:null};
+function bindReview(){
+  ['#rvYear','#rvCat','#rvStatus'].forEach(function(s){Q(s).addEventListener('change',function(){rvFilter();rvShow(0);});});
+  Q('#rvJump').addEventListener('change',function(e){rvShow(+e.target.value);});
+  Q('#rvPrev').addEventListener('click',function(){rvShow(RV.i-1);});
+  Q('#rvNext').addEventListener('click',function(){rvShow(RV.i+1);});
+  Q('#rvSkip').addEventListener('click',function(){rvShow(RV.i+1);});
+  Q('#rvWide').addEventListener('click',function(){Q('#rvWrap').classList.toggle('wide');});
+  Q('#rvSave').addEventListener('click',function(){rvSave(false);});
+  Q('#rvSaveNext').addEventListener('click',function(){rvSave(true);});
+  Q('#rvHide').addEventListener('click',rvHide);
+  Q('#rvUseName').addEventListener('click',function(e){e.preventDefault();if(RV.cur)Q('#rvTitle').value=cleanTitle(RV.cur.fileName);});
+  Q('#rvParse').addEventListener('click',function(){rvApplyPaste(Q('#rvPaste').value,true);});
+  Q('#rvClipPaste').addEventListener('click',rvClipboardAll);
+  Q('#rvImg').addEventListener('change',function(e){if(e.target.files[0])rvOcr(e.target.files[0]);e.target.value='';});
+  Q('#rvText').addEventListener('input',rvLen);
+  Q('#rvPaste').addEventListener('paste',function(e){
+    const items=(e.clipboardData&&e.clipboardData.items)||[];
+    for(let k=0;k<items.length;k++){if(items[k].type.indexOf('image/')===0){e.preventDefault();rvOcr(items[k].getAsFile());return;}}
+    setTimeout(function(){rvApplyPaste(Q('#rvPaste').value,false);},0);
+  });
+  const box=Q('#rvPasteBox');
+  ['dragenter','dragover'].forEach(function(t){box.addEventListener(t,function(e){e.preventDefault();box.classList.add('on');});});
+  ['dragleave','drop'].forEach(function(t){box.addEventListener(t,function(e){e.preventDefault();box.classList.remove('on');});});
+  box.addEventListener('drop',function(e){const f=e.dataTransfer.files[0];if(f&&f.type.indexOf('image/')===0)rvOcr(f);});
+  Q('#v-review').addEventListener('click',async function(e){
+    const c=e.target.closest('[data-clip]');
+    if(c){e.preventDefault();
+      try{const t=await navigator.clipboard.readText();const el=Q('#'+c.dataset.clip);
+        if(c.dataset.append&&el.value.trim())el.value+='\n\n'+t;else el.value=t.trim();rvLen();toast('วางแล้ว');}
+      catch(x){toast('เบราว์เซอร์ไม่อนุญาตให้อ่านคลิปบอร์ด ให้คลิกที่ช่องแล้วกด Ctrl+V แทน',true);}}
+    const g=e.target.closest('[data-rvgo]');if(g){const k=RV.list.findIndex(function(w){return String(w.id)===g.dataset.rvgo;});if(k>=0)rvShow(k);else{Q('#rvStatus').value='';rvFilter();rvShow(Math.max(0,RV.list.findIndex(function(w){return String(w.id)===g.dataset.rvgo;})));}}
+    const m=e.target.closest('[data-merge]');if(m)rvMerge(m.dataset.merge,m.dataset.into);
+    const u=e.target.closest('[data-unmerge]');if(u)rvMerge(u.dataset.unmerge,'',true);
+  });
+  document.addEventListener('keydown',function(e){
+    if(Q('#v-review').classList.contains('hidden'))return;
+    if(e.ctrlKey&&e.key==='Enter'){e.preventDefault();rvSave(true);}
+    if(e.altKey&&e.key==='ArrowRight'){e.preventDefault();rvShow(RV.i+1);}
+    if(e.altKey&&e.key==='ArrowLeft'){e.preventDefault();rvShow(RV.i-1);}
+  });
+  Q('#btnAudit').addEventListener('click',runAudit);
+}
+async function loadReview(){
+  if(!W.length)await loadWorks();
+  if(!RV.loaded){
+    const ys=Array.from(new Set(W.map(function(w){return String(w.year);}).filter(Boolean))).sort().reverse();
+    Q('#rvYear').innerHTML='<option value="">ทุกปี</option>'+ys.map(function(y){return '<option>'+esc(y)+'</option>';}).join('');
+    Q('#rvCat').innerHTML='<option value="">ทุกประเภท</option>'+CATS.map(function(c){return '<option>'+esc(c)+'</option>';}).join('');
+    Q('#rvCatSel').innerHTML=CATS.concat(['ยังไม่จัดประเภท']).map(function(c){return '<option>'+esc(c)+'</option>';}).join('');
+    Q('#rvAcc').innerHTML=Object.keys(ACCESS).map(function(k){return '<option value="'+k+'">'+esc(ACCESS[k])+'</option>';}).join('');
+    RV.loaded=true;
+  }
+  fillWorkFilters();rvFilter();
+  const keep=RV.cur?RV.list.findIndex(function(w){return w.id===RV.cur.id;}):-1;
+  rvShow(keep>=0?keep:0);
+}
+function rvHidden(w){return w.ocrStatus==='ignored'||!!w.dupOf;}
+function rvFilter(){
+  const y=Q('#rvYear').value,c=Q('#rvCat').value,s=Q('#rvStatus').value,dups=rvDupMap();
+  RV.list=W.filter(function(w){
+    if(y&&String(w.year)!==y)return false;if(c&&w.category!==c)return false;
+    if(s==='hidden')return rvHidden(w);
+    if(rvHidden(w))return false;
+    if(s==='todo')return !w.reviewed;if(s==='done')return !!w.reviewed;if(s==='dup')return !!(dups[w.id]&&dups[w.id].length);
+    return true;
+  }).sort(function(a,b){return String(b.year).localeCompare(String(a.year))||String(a.category).localeCompare(String(b.category),'th')||String(a.fileName).localeCompare(String(b.fileName),'th');});
+  Q('#rvJump').innerHTML=RV.list.map(function(w,i){return '<option value="'+i+'">'+(i+1)+'. '+(w.reviewed?'✓ ':'')+esc(String(w.title||w.fileName).slice(0,60))+'</option>';}).join('');
+  const all=W.filter(function(w){return !rvHidden(w);}),done=all.filter(function(w){return w.reviewed;}).length;
+  Q('#rvBar').style.width=(all.length?done/all.length*100:0)+'%';
+  const nd=Object.keys(dups).length;
+  Q('#rvProg').textContent='ตรวจแล้ว '+th(done)+' / '+th(all.length)+' ไฟล์ · คงเหลือ '+th(all.length-done)+(nd?' · อาจซ้ำ '+th(nd)+' ไฟล์':'')+' · ซ่อน/ซ้ำ '+th(W.length-all.length);
+  Q('#nTodo').textContent=all.length-done;Q('#nTodo').classList.toggle('hidden',!(all.length-done));
+}
+/* ---- ตรวจไฟล์ซ้ำ: ชื่อคล้ายกัน (bigram) หรือขนาด+ชนิดไฟล์เท่ากัน ---- */
+function rvKey(w){
+  return String(cleanTitle(w.title||w.fileName)+' '+cleanTitle(w.fileName)).toLowerCase()
+    .replace(/e-?poster|poster|present(ation)?|ผลงาน|ชื่อเรื่อง|cqi|r2r|นวัตกรรม|photo\s*voice|\b(19|20|25)\d\d\b/g,' ')
+    .replace(/[^a-z0-9฀-๿]+/g,'');
+}
+function bigrams(s){const o={};for(let i=0;i<s.length-1;i++){const g=s.substr(i,2);o[g]=(o[g]||0)+1;}return o;}
+function dice(a,b){const A=bigrams(a),B=bigrams(b);let n=0,ta=0,tb=0;Object.keys(A).forEach(function(k){ta+=A[k];if(B[k])n+=Math.min(A[k],B[k]);});Object.keys(B).forEach(function(k){tb+=B[k];});return ta+tb?2*n/(ta+tb):0;}
+function rvDupMap(){
+  const ws=W.filter(function(w){return !rvHidden(w);}),keys=ws.map(rvKey),m={};
+  for(let i=0;i<ws.length;i++)for(let j=i+1;j<ws.length;j++){
+    if(String(ws[i].year)!==String(ws[j].year))continue;
+    const sameFile=ws[i].sizeMB&&String(ws[i].sizeMB)===String(ws[j].sizeMB)&&ws[i].mimeType===ws[j].mimeType&&Number(ws[i].sizeMB)>=0.3;
+    const sim=keys[i].length>3&&keys[j].length>3?dice(keys[i],keys[j]):0;
+    if(sim>=0.72||sameFile){
+      const why=sameFile&&sim>=0.72?'ชื่อคล้ายและขนาดเท่ากัน':sameFile?'ขนาดและชนิดไฟล์เท่ากัน':'ชื่อคล้ายกัน '+Math.round(sim*100)+'%';
+      (m[ws[i].id]=m[ws[i].id]||[]).push({w:ws[j],why:why});(m[ws[j].id]=m[ws[j].id]||[]).push({w:ws[i],why:why});
+    }
+  }
+  return m;
+}
+function rvShow(i){
+  if(!RV.list.length){RV.cur=null;Q('#rvFrame').src='about:blank';Q('#rvFile').textContent='ไม่มีไฟล์ตามเงื่อนไข';Q('#rvPos').textContent='';Q('#rvDup').innerHTML=Q('#rvStatus').value==='todo'?'<div class="infobox">🎉 ตรวจครบทุกไฟล์แล้ว (เปลี่ยนตัวกรองเป็น "ทั้งหมด" เพื่อดูย้อนหลัง)</div>':'';return;}
+  i=Math.max(0,Math.min(RV.list.length-1,i));RV.i=i;const w=RV.cur=RV.list[i];
+  Q('#rvJump').value=i;Q('#rvPos').textContent=(i+1)+' / '+RV.list.length;
+  Q('#rvFile').textContent=w.fileName+' · '+w.sizeMB+' MB';Q('#rvFile').title=w.fileName;
+  Q('#rvOpen').href=w.fileUrl||('https://drive.google.com/file/d/'+w.fileId+'/view');
+  Q('#rvFrame').src='https://drive.google.com/file/d/'+encodeURIComponent(w.fileId)+'/preview';
+  Q('#rvTitle').value=w.title||'';Q('#rvAuthors').value=w.authors||'';Q('#rvDept').value=w.department||'';Q('#rvKw').value=w.keywords||'';
+  Q('#rvSum').value=w.summary||'';Q('#rvYearIn').value=w.year||'';Q('#rvCatSel').value=CATS.indexOf(w.category)>=0?w.category:'ยังไม่จัดประเภท';
+  Q('#rvAcc').value=w.access||'verified';Q('#rvPub').checked=bool(w.published);Q('#rvPaste').value='';Q('#rvOcrMsg').textContent='';
+  Q('#rvText').value='';Q('#rvText').placeholder='กำลังโหลดข้อความ…';rvLen();
+  Q('#rvInfo').innerHTML=(w.code?'รหัส <code>'+esc(w.code)+'</code> · ':'')+'สถานะ: '+(w.reviewed?tag('ตรวจแล้ว '+when(w.reviewedAt),'ok'):tag('ยังไม่ตรวจ','wait'))+' '+tag((OCR[w.ocrStatus]||[w.ocrStatus])[0],'')+' '+esc(w.ocrNote||'');
+  rvRenderDup();
+  const id=w.id;
+  call('getText',{id:id}).then(function(t){if(RV.cur&&RV.cur.id===id){Q('#rvText').value=t||'';Q('#rvText').placeholder='วางข้อความเต็มของผลงาน';rvLen();}}).catch(function(){Q('#rvText').placeholder='';});
+}
+function rvRenderDup(){
+  const w=RV.cur;if(!w){Q('#rvDup').innerHTML='';return;}
+  if(w.dupOf){const m=W.find(function(x){return String(x.id)===String(w.dupOf);});
+    Q('#rvDup').innerHTML='<div class="dupbox">ไฟล์นี้ถูกรวมเป็นไฟล์ซ้ำ/ไฟล์ประกอบของ <b>'+esc(m?(m.title||m.fileName):w.dupOf)+'</b> <button class="btn sm" data-unmerge="'+esc(w.id)+'">แยกออก</button></div>';return;}
+  const l=(rvDupMap()[w.id]||[]).slice(0,4);
+  Q('#rvDup').innerHTML=l.length?'<div class="dupbox"><b>⚠ อาจเป็นไฟล์ซ้ำ</b> (เช่น PDF กับ PNG ของผลงานเดียวกัน)'+l.map(function(d){
+    return '<div class="it"><span><a href="#" data-rvgo="'+esc(d.w.id)+'">'+esc(d.w.title||d.w.fileName)+'</a><br><span class="muted">'+esc(d.w.fileName)+' · '+esc(d.w.sizeMB)+' MB · '+esc(d.why)+(d.w.reviewed?' · ตรวจแล้ว':'')+'</span></span>'+
+      '<span class="row"><button class="btn sm" data-merge="'+esc(w.id)+'" data-into="'+esc(d.w.id)+'" title="ซ่อนไฟล์ที่กำลังดู ใช้อีกไฟล์เป็นหลัก">ไฟล์นี้ซ้ำ</button><button class="btn sm" data-merge="'+esc(d.w.id)+'" data-into="'+esc(w.id)+'" title="ซ่อนไฟล์นั้น ใช้ไฟล์ที่กำลังดูเป็นหลัก">ไฟล์นั้นซ้ำ</button></span></div>';
+  }).join('')+'</div>':'';
+}
+async function rvMerge(id,into,undo){
+  if(!undo&&!confirm('ซ่อนไฟล์ซ้ำ และผูกไว้กับผลงานหลัก?\n(แยกกลับได้จากตัวกรอง "ซ่อน/ไฟล์ซ้ำ")'))return;
+  busy(true,'กำลังบันทึก…');
+  try{const r=await call('mergeDup',{id:id,into:into,undo:!!undo});const k=W.findIndex(function(x){return String(x.id)===String(id);});if(k>=0&&r)W[k]=r;busy(false);toast(undo?'แยกออกแล้ว':'รวมไฟล์ซ้ำแล้ว');
+    const curId=RV.cur&&RV.cur.id;rvFilter();const n=RV.list.findIndex(function(x){return x.id===curId;});rvShow(n>=0?n:RV.i);}
+  catch(e){busy(false);toast(msg(e),true);}
+}
+function rvLen(){const n=Q('#rvText').value.length;Q('#rvLen').textContent=n?th(n)+' ตัวอักษร':'';}
+/* ---- แยกข้อความที่วางลงช่อง ---- */
+function parseMeta(text){
+  const lines=String(text||'').replace(/\r/g,'').split(/\n+/).map(function(s){return s.replace(/[ \t]+/g,' ').trim();}).filter(Boolean);
+  const flat=lines.join('\n'),stop='(?=\\s(?:โดย|ผู้จัดทำ|ผู้วิจัย|ผู้นำเสนอ|คณะผู้จัดทำ|หน่วยงาน|ชื่อหน่วยงาน|กลุ่มงาน|สังกัด|คำสำคัญ|บทคัดย่อ)|$)';
+  function pick(labels){const re=new RegExp('(?:'+labels+')\\s*[:：]?\\s*(.+?)'+stop,'i');for(let i=0;i<lines.length;i++){const m=lines[i].match(re);if(m&&m[1].trim().length>2)return m[1].trim().replace(/[.,;:]+$/,'');}return '';}
+  const o={title:pick('ชื่อเรื่อง|ชื่อผลงาน|ชื่อโครงการ|ชื่องานวิจัย|ชื่อนวัตกรรม|ชื่อบทความ|ชื่อภาพ'),authors:pick('คณะผู้จัดทำ|ผู้จัดทำ|ผู้วิจัย|ผู้นำเสนอผลงาน|ผู้นำเสนอ|ผู้รับผิดชอบ|ชื่อเจ้าของผลงาน|ชื่อและสมาชิกทีม|ผู้เขียน'),
+    department:pick('ชื่อหน่วยงาน|หน่วยงาน|กลุ่มงาน|สังกัด'),keywords:pick('คำสำคัญ|keywords?')};
+  if(!o.authors){const m=flat.match(/โดย\s*((?:ภก\.|ภญ\.|นพ\.|พญ\.|พว\.|ทพ\.|ทพญ\.|นาย|นางสาว|นาง|น\.ส\.|ดร\.|คุณ)\s*\S+\s+\S+(?:\s*(?:,|และ)\s*(?:ภก\.|ภญ\.|นพ\.|พญ\.|พว\.|ทพ\.|ทพญ\.|นาย|นางสาว|นาง|น\.ส\.|ดร\.|คุณ)\s*\S+\s+\S+)*)/);if(m)o.authors=m[1];}
+  for(let i=0;i<lines.length;i++){
+    if(/^(บทคัดย่อ|บทสรุป|abstract|สรุปผล|สรุป)\s*[:：]?/i.test(lines[i])){
+      let s=lines[i].replace(/^(บทคัดย่อ|บทสรุป|abstract|สรุปผล(การดำเนินงาน)?|สรุป)\s*[:：]?\s*/i,'');
+      for(let j=i+1;j<lines.length&&s.length<600;j++){if(/^(คำสำคัญ|keywords?|บทนำ|วัตถุประสงค์)/i.test(lines[j]))break;s+=' '+lines[j];}
+      o.summary=s.trim().slice(0,800);break;
+    }
+  }
+  if(!o.title&&lines[0]&&lines[0].length>=6&&lines[0].length<=220&&!/^(บทคัดย่อ|abstract)/i.test(lines[0]))o.titleGuess=lines[0];
+  return o;
+}
+function rvApplyPaste(text,force){
+  text=String(text||'').trim();if(!text)return toast('ยังไม่มีข้อความในช่องวาง',true);
+  const m=parseMeta(text),filled=[],w=RV.cur||{};
+  function put(id,v,label){if(!v)return;const el=Q('#'+id),cur=el.value.trim();
+    if(force||!cur||(id==='rvTitle'&&cur===cleanTitle(w.fileName))){el.value=v;filled.push(label);}}
+  put('rvTitle',m.title||m.titleGuess,'ชื่อผลงาน');put('rvAuthors',m.authors,'ผู้จัดทำ');put('rvDept',m.department,'หน่วยงาน');put('rvKw',m.keywords,'คำสำคัญ');put('rvSum',m.summary,'บทสรุป');
+  const t=Q('#rvText');if(t.value.indexOf(text)<0){t.value=t.value.trim()?t.value.trim()+'\n\n'+text:text;filled.push('ข้อความเต็ม');}
+  rvLen();toast(filled.length?'เติมแล้ว: '+filled.join(', ')+'\nกรุณาตรวจทานก่อนบันทึก':'ไม่พบข้อมูลใหม่ที่จะเติม (ช่องมีข้อมูลอยู่แล้ว กด "แยกลงช่อง" เพื่อแทนที่)');
+}
+async function rvClipboardAll(){
+  try{
+    if(navigator.clipboard.read){const items=await navigator.clipboard.read();for(const it of items){const im=it.types.find(function(t){return t.indexOf('image/')===0;});if(im){rvOcr(await it.getType(im));return;}}}
+    const t=await navigator.clipboard.readText();Q('#rvPaste').value=t;rvApplyPaste(t,false);
+  }catch(e){toast('เบราว์เซอร์ไม่อนุญาตให้อ่านคลิปบอร์ด ให้คลิกที่ช่องวางแล้วกด Ctrl+V แทน',true);}
+}
+/* ---- OCR ภาพในเบราว์เซอร์ (Tesseract.js ภาษาไทย+อังกฤษ) ---- */
+function loadTess(){
+  if(window.Tesseract)return Promise.resolve();
+  if(RV.tess)return RV.tess;
+  RV.tess=new Promise(function(ok,no){const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=ok;s.onerror=function(){RV.tess=null;no(new Error('โหลดตัว OCR ไม่ได้ ตรวจอินเทอร์เน็ต'));};document.head.appendChild(s);});
+  return RV.tess;
+}
+async function rvOcr(blob){
+  const msgEl=Q('#rvOcrMsg');msgEl.textContent='กำลังโหลดตัว OCR…';
+  try{
+    await loadTess();
+    const r=await Tesseract.recognize(blob,'tha+eng',{logger:function(m){if(m.status==='recognizing text')msgEl.textContent='กำลังอ่านภาพ '+Math.round(m.progress*100)+'%';else if(m.status)msgEl.textContent=m.status==='loading language traineddata'?'กำลังโหลดภาษาไทย (ครั้งแรกช้าหน่อย)…':'กำลังเตรียม…';}});
+    let t=String(r.data.text||'').replace(/([฀-๿])[ \t]+(?=[฀-๿])/g,'$1').replace(/[ \t]{2,}/g,' ').trim();
+    if(!t){msgEl.textContent='อ่านข้อความจากภาพไม่ได้ ลองแคปให้ใหญ่และชัดขึ้น';return;}
+    Q('#rvPaste').value=(Q('#rvPaste').value.trim()?Q('#rvPaste').value.trim()+'\n':'')+t;
+    msgEl.textContent='OCR เสร็จ '+th(t.length)+' ตัวอักษร (ความแม่น ~'+Math.round(r.data.confidence)+'%) ตรวจคำผิดก่อนบันทึก';
+    rvApplyPaste(t,false);
+  }catch(e){msgEl.textContent=msg(e);}
+}
+async function rvSave(next){
+  const w=RV.cur;if(!w)return;
+  const d={id:w.id,title:Q('#rvTitle').value.trim(),authors:Q('#rvAuthors').value.trim(),department:Q('#rvDept').value.trim(),keywords:Q('#rvKw').value.trim(),
+    summary:Q('#rvSum').value.trim(),year:Q('#rvYearIn').value.trim(),category:Q('#rvCatSel').value,access:Q('#rvAcc').value,published:Q('#rvPub').checked,text:Q('#rvText').value,reviewed:true};
+  if(!isYear(d.year))return toast('ปีต้องเป็นตัวเลข 4 หลัก',true);
+  if(!d.title)return toast('กรุณาใส่ชื่อผลงาน',true);
+  busy(true,d.published?'กำลังบันทึกและเตรียมไฟล์สำหรับเปิดดู…':'กำลังบันทึก…');
+  try{
+    const r=await call('saveWork',{work:d});const k=W.findIndex(function(x){return String(x.id)===String(w.id);});if(k>=0&&r.work)W[k]=r.work;
+    busy(false);if(r.warn)toast(r.warn,true);else toast('บันทึกแล้ว ✓');
+    const keepI=RV.i;rvFilter();
+    if(next){const pos=RV.list.findIndex(function(x){return x.id===w.id;});rvShow(pos>=0?pos+1:keepI);}else{const pos=RV.list.findIndex(function(x){return x.id===w.id;});rvShow(pos>=0?pos:keepI);}
+  }catch(e){busy(false);toast(msg(e),true);}
+}
+async function rvHide(){
+  const w=RV.cur;if(!w||!confirm('ซ่อนไฟล์นี้ (ไม่ใช่ผลงาน เช่น แบบฟอร์ม/ไฟล์ทดสอบ)?\nการซิงก์ครั้งต่อไปจะไม่นำเข้าซ้ำ กู้คืนได้จากตัวกรอง "ซ่อน/ไฟล์ซ้ำ"'))return;
+  busy(true,'กำลังบันทึก…');
+  try{await call('hideWork',{id:w.id,hide:true});w.ocrStatus='ignored';w.published=false;busy(false);toast('ซ่อนแล้ว');const i=RV.i;rvFilter();rvShow(i);}
+  catch(e){busy(false);toast(msg(e),true);}
+}
+/* ---- ตรวจไฟล์ตกหล่น ---- */
+async function runAudit(){
+  Q('#auditBox').innerHTML='<p class="muted">กำลังเทียบไฟล์ในโฟลเดอร์ทั้งหมด… (โฟลเดอร์ใหญ่อาจใช้เวลา 1–2 นาที)</p>';
+  try{
+    const a=await call('auditSources');
+    const html=a.sources.map(function(s){
+      return '<h4>'+esc(s.name)+' · ปี '+esc(s.year)+(s.enabled?'':' '+tag('ปิดอยู่',''))+'</h4>'+(s.error?'<p class="err">'+esc(s.error)+'</p>':
+        '<p>ไฟล์ที่รองรับ '+th(s.total)+' · อยู่ในระบบแล้ว '+th(s.registered)+' '+(s.newFiles.length?tag('ยังไม่นำเข้า '+s.newFiles.length,'wait'):tag('ครบ','ok'))+' '+(s.unsupported.length?tag('ชนิดไม่รองรับ '+s.unsupported.length,'bad'):'')+'</p>'+
+        (s.newFiles.length?'<b>ยังไม่นำเข้า</b> (กด "ซิงก์ + OCR ตอนนี้" ที่หน้าภาพรวม)<ul>'+s.newFiles.map(function(f){return '<li><a href="'+esc(f.url)+'" target="_blank" rel="noopener">'+esc(f.name)+'</a> <span class="muted">'+esc(f.category)+'</span></li>';}).join('')+'</ul>':'')+
+        (s.unsupported.length?'<b>ไฟล์ชนิดที่ระบบไม่นำเข้า</b> — ถ้าเป็นผลงาน ให้แปลงเป็น PDF/JPG/PNG แล้ววางในโฟลเดอร์เดิม<ul>'+s.unsupported.map(function(f){return '<li><a href="'+esc(f.url)+'" target="_blank" rel="noopener">'+esc(f.name)+'</a> <span class="muted">'+esc(f.mime)+' · '+esc(f.sizeMB)+' MB · '+esc(f.path)+'</span></li>';}).join('')+'</ul>':''));
+    }).join('')+(a.missing.length?'<h4>รายการที่ไฟล์ต้นฉบับหาย ('+a.missing.length+')</h4><ul>'+a.missing.map(function(m){return '<li>'+esc(m.title||m.fileName)+' <span class="muted">'+esc(m.fileName)+'</span></li>';}).join('')+'</ul>':'');
+    Q('#auditBox').innerHTML=html||'<p class="muted">ยังไม่มีแหล่งไฟล์</p>';
+  }catch(e){Q('#auditBox').innerHTML='<p class="err">'+esc(msg(e))+'</p>';}
 }
 
 /* ---------- หน่วยงาน ---------- */
