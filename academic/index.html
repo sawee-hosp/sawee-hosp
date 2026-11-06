@@ -235,6 +235,10 @@ mark{background:#ffe08a;padding:0 2px;border-radius:3px;color:inherit}
 .consent input{margin-top:5px}
 .err{color:#b42323;font-size:14px;min-height:20px;margin:6px 0}
 .linkbtn{background:none;border:0;color:var(--teal);text-decoration:underline;padding:0;margin-top:12px}
+.guide{background:#f2f9fa;border:1px solid #cfe9ec;border-radius:16px;padding:12px 16px;margin:0 0 16px;font-size:14px}
+.guide ul{margin:6px 0 8px;padding-left:20px}.guide li{margin:2px 0}
+.gfiles{display:flex;flex-wrap:wrap;gap:6px}.gfiles a{background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;text-decoration:none}
+.cnote{background:#fff8e6;border:1px solid #f0dfae;border-radius:14px;padding:10px 14px;font-size:14px;margin:0 0 14px;white-space:pre-wrap}
 .drop{border:2px dashed #c6d6e2;border-radius:16px;padding:22px;text-align:center;color:var(--muted);background:#f9fbfd;cursor:pointer;transition:.2s}
 .drop.on{border-color:var(--teal);background:#eefaf9}.drop b{color:var(--ink)}
 .steps{display:flex;gap:6px;margin:0 0 18px;flex-wrap:wrap}.steps span{font-size:12.5px;padding:3px 12px;border-radius:999px;background:#eef3f7;color:var(--muted)}
@@ -409,6 +413,33 @@ const CATS=['ระดับทีม/หน่วยงาน','CQI','Photo voi
 const CAT_EN={'ระดับทีม/หน่วยงาน':'TEAM / UNIT','CQI':'CONTINUOUS QI','Photo voice':'PHOTO VOICE','วิจัยและ R2R':'RESEARCH & R2R','นวัตกรรม':'INNOVATION'};
 const CAT_TYPE={'ระดับทีม/หน่วยงาน':['ผลงานพัฒนาคุณภาพระดับทีม/หน่วยงาน','Team quality improvement poster'],'CQI':['ผลงานพัฒนาคุณภาพต่อเนื่อง (CQI)','CQI poster presentation'],
   'Photo voice':['ผลงาน Photo voice','Photovoice presentation'],'วิจัยและ R2R':['ผลงานวิจัย/R2R','Research/R2R poster presentation'],'นวัตกรรม':['ผลงานนวัตกรรม','Innovation poster presentation']};
+/* ---------- แนวทาง/แบบฟอร์มรายประเภท (ปีงบประมาณ 2570) — แก้รูปแบบและลิงก์ได้ที่นี่ทุกปี ---------- */
+const GUIDE_FOLDER='https://drive.google.com/drive/folders/1DMINZ2mm-CWRwnHShrd4QnBWB5w9H3LK';
+const POSTER='e-Poster ขนาดกว้าง 81 × สูง 142 ซม. ส่งเป็นไฟล์ PDF ที่ไม่บีบอัดขนาด';
+const CAT_GUIDE={
+ 'ระดับทีม/หน่วยงาน':{fmt:POSTER+' (ชื่อผลงาน TH Sarabun PSK 48 · ชื่อ-สกุล · หน่วยงาน/ทีม)',time:'นำเสนอแบบ e-Poster ตามกำหนดการของคณะกรรมการ',
+   files:[['Template e-Poster ระดับทีม (PDF)','1Ons1PJpNh-Rae32PLkHn88M6RfEfrxvJ']],
+   labels:['ที่มา บริบท และปัญหาของทีม/หน่วยงาน','เป้าหมาย / วัตถุประสงค์','กิจกรรมการพัฒนา','ผลลัพธ์การพัฒนา','บทเรียนที่ได้ และแผนพัฒนาต่อ']},
+ 'วิจัยและ R2R':{fmt:'Oral Presentation ด้วย PowerPoint / Canva — ส่งเป็นไฟล์ PDF เพื่อป้องกันตัวอักษรเลื่อน',time:'นำเสนอ 10 นาที + ตอบคำถาม 5–10 นาที (ยกป้ายเตือนเมื่อเหลือ 3 นาที)',
+   files:[['แบบฟอร์มบทความวิจัย / R2R (Word)','1eFcHqLZhSCUjhc4zlucWyGP5jehzMO7r']],
+   labels:['บทนำ (ที่มาและความสำคัญของปัญหา)','วัตถุประสงค์การวิจัย','ระเบียบวิธีวิจัย (ประชากร กลุ่มตัวอย่าง เครื่องมือ การวิเคราะห์ข้อมูล จริยธรรม)','ผลการวิจัย','อภิปรายผล การนำไปใช้ และข้อเสนอแนะ']},
+ 'CQI':{fmt:POSTER,time:'นำเสนอ 10 นาที + ตอบคำถาม 5–10 นาที (ยกป้ายเตือนเมื่อเหลือ 3 นาที)',
+   files:[['แบบฟอร์ม CQI (Word)','1KkYr5tUZJbz_RqjQeP1HVSJmlTzjAAPH'],['Template e-Poster นวัตกรรม/CQI (Word)','1qs24ZbxGNp02Byr6HljXLeUx4dk1QKvK'],['Template e-Poster นวัตกรรม/CQI (PDF)','1a54_NbfHObZYzcYHY2F9_64sl6r2WGZJ']],
+   labels:['สถานการณ์ ปัญหา และทางเลือกในการแก้ไข','วัตถุประสงค์ และตัวชี้วัด/เป้าหมาย','กิจกรรมการพัฒนาคุณภาพ','ผลลัพธ์การพัฒนา (เปรียบเทียบก่อน–หลัง)','ปัญหาอุปสรรค ข้อเสนอแนะ และโอกาสพัฒนา']},
+ 'นวัตกรรม':{fmt:POSTER,time:'นำเสนอ 10 นาที + ตอบคำถาม 5–10 นาที (ยกป้ายเตือนเมื่อเหลือ 3 นาที)',
+   files:[['แบบฟอร์มนวัตกรรม (Word)','1TuJhddtEua1hK5fV9XRVeMaKzpAq8wg7'],['Template e-Poster นวัตกรรม/CQI (Word)','1Hrlclzgx3RLQrSQb7AtR1FQT8jmB41m4'],['Template e-Poster นวัตกรรม/CQI (PDF)','1tAUJvSXOMwagUfY7mY-4yXiMcRYSaDUQ']],
+   labels:['หลักการและเหตุผล (ที่มาของนวัตกรรม)','วัตถุประสงค์ และขอบเขตนวัตกรรม','ขั้นตอนการพัฒนา/คิดค้น','ผลของนวัตกรรม (ผลผลิต / ผลลัพธ์)','การนำไปใช้ประโยชน์ และข้อจำกัด']},
+ 'Photo voice':{fmt:POSTER+' (ชื่อภาพ TH Sarabun PSK 120 · ภาพถ่าย · คำบรรยายขนาด 60 ไม่เกิน 4 บรรทัด)',time:'นำเสนอ 3 นาที + ตอบคำถาม 5 นาที (ยกป้ายเตือนเมื่อเหลือ 1 นาที)',
+   files:[['Template Photo voice (Word)','1uFMXHT3FHrZyOyKMxCWJ7GNHZpqxxEq6'],['Template Photo voice (PDF)','1Pt9Y9nJ29teGHq_9o8ewokp_fIj1_uEo']],
+   labels:['ที่มาของภาพ','สิ่งที่ต้องการสื่อสาร','คำบรรยายภาพ (ไม่เกิน 4 บรรทัด)','ผลที่เกิดขึ้น / สิ่งที่ได้เรียนรู้','ข้อเสนอแนะ']}
+};
+const ABS_DEFAULT=['หลักการและเหตุผล / ปัญหา','วัตถุประสงค์','วิธีดำเนินการ / กิจกรรมการพัฒนา','ผลการดำเนินงาน / ตัวชี้วัด','สรุปและบทเรียนที่ได้'];
+function guideHtml(cat,call){
+  const g=CAT_GUIDE[cat];if(!g)return '';
+  return '<div class="guide"><b>รูปแบบผลงาน '+esc(cat)+'</b><ul><li>'+esc(g.fmt)+'</li><li>'+esc(g.time)+'</li><li>ไฟล์ไม่เกิน '+esc(call.maxMB)+' MB</li></ul>'+
+    '<div class="gfiles">'+g.files.map(function(f){return '<a href="https://drive.google.com/file/d/'+f[1]+'/view" target="_blank" rel="noopener">⬇ '+esc(f[0])+'</a>';}).join('')+
+    '<a href="'+esc(call.guideUrl||GUIDE_FOLDER)+'" target="_blank" rel="noopener">📁 แบบฟอร์มทั้งหมด</a></div></div>';
+}
 const ACC={filename_only:'เฉพาะชื่อผลงาน',metadata:'ข้อมูลเบื้องต้น',verified:'ยืนยันอีเมลเพื่ออ่าน',public:'อ่านได้ทันที'};
 const ICONS={
  'ระดับทีม/หน่วยงาน':'<path d="M16 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1"/><circle cx="9" cy="7" r="4"/><path d="M22 19v-1a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
@@ -490,7 +521,8 @@ async function init(){
     S.works=d.works||[];S.settings=d.settings||{};S.calls=d.calls||[];S.depts=d.departments||[];S.part=d.participation||null;
     applySettings();
     const ys=years();
-    S.year=ys.indexOf(String(S.settings.defaultYear))>=0?String(S.settings.defaultYear):(ys[0]||'');
+    const wy=Array.from(new Set(S.works.map(function(w){return w.year;}).filter(Boolean))).sort().reverse();
+    S.year=ys.indexOf(String(S.settings.defaultYear))>=0?String(S.settings.defaultYear):(wy[0]||ys[0]||'');
     renderAll();
     const p=new URLSearchParams(location.search);
     if(p.get('work'))openWork(p.get('work'));
@@ -609,7 +641,7 @@ function renderCall(){
   const isOpen=c.status==='open',dl=daysLeft(isOpen?c.closes:c.opens);
   Q('#callBar').innerHTML='<div class="call"><div class="badge">'+TROPHY+'</div><div><h3>'+(isOpen?'เปิดรับผลงานแล้ว: ':'เร็ว ๆ นี้: ')+esc(c.title)+'</h3>'+
     '<p>'+(isOpen?'ส่งได้ถึง '+thDate(c.closes,true):'เปิดรับ '+thDate(c.opens,true)+(c.closes?' – '+thDate(c.closes,true):''))+' · ประเภท: '+esc(c.categories.join(', '))+
-    (c.eventDate?' · วันงาน '+thDate(c.eventDate,true):'')+(c.venue?' · '+esc(c.venue):'')+'</p></div>'+
+    (c.eventDate?' · วันงาน '+thDate(c.eventDate,true):'')+(c.venue?' · '+esc(c.venue):'')+'</p>'+(c.note?'<p style="color:#7a5600">'+esc(String(c.note).split('\n')[0])+'</p>':'')+'</div>'+
     (dl!==null&&dl>=0?'<div class="cd"><b>'+th(dl)+'</b><small>'+(isOpen?'วันก่อนปิดรับ':'วันก่อนเปิดรับ')+'</small></div>':'')+
     '<div class="acts">'+(isOpen?'<button class="btn dark" id="cbSubmit">ส่งผลงาน</button>':'')+(c.guideUrl?'<a class="btn line" href="'+esc(c.guideUrl)+'" target="_blank" rel="noopener">แนวทาง/เกณฑ์ ↗</a>':'')+
     (S.session?'<button class="btn line" id="cbMine">ผลงานของฉัน</button>':'')+'</div></div>';
@@ -973,9 +1005,11 @@ function openSubmit(edit){
   function v(k){return esc(draft[k]||'');}
   pane.innerHTML='<div class="steps"><span class="on">1 ข้อมูลผลงาน</span><span class="on">2 บทคัดย่อ</span><span class="on">3 แนบไฟล์และยืนยัน</span></div>'+
     (edit&&edit.status==='revise'&&edit.reviewNote?'<div class="rnote" style="margin:0 0 14px"><b>ความเห็นกรรมการ:</b>\n'+esc(edit.reviewNote)+'</div>':'')+
+    (call.note?'<div class="cnote">'+esc(call.note)+'</div>':'')+
     '<form id="sForm" novalidate>'+
     '<div class="g2"><label class="field"><span>รอบการประกวด <b>*</b></span><select id="fCall"'+(edit?' disabled':'')+'>'+callList.map(function(c){return '<option value="'+esc(c.callId)+'"'+(c.callId===call.callId?' selected':'')+'>'+esc(c.title)+' (ปิด '+thDate(c.closes)+')</option>';}).join('')+'</select></label>'+
     '<label class="field"><span>ประเภทผลงาน <b>*</b></span><select id="fCat"></select></label></div>'+
+    '<div id="fGuide"></div>'+
     '<label class="field"><span>ชื่อผลงาน <b>*</b></span><textarea id="fTitle" maxlength="400" style="min-height:60px" required>'+v('title')+'</textarea></label>'+
     '<label class="field"><span>ผู้จัดทำ <b>*</b></span><textarea id="fAuthors" maxlength="600" style="min-height:60px" placeholder="เช่น ภญ.สมใจ ใจดี, พว.สมหญิง รักงาน" required>'+v('authors')+'</textarea><small>คั่นแต่ละชื่อด้วยจุลภาค ( , ) ใส่คำนำหน้า/ตำแหน่งตามที่ต้องการให้แสดงในการอ้างอิง</small></label>'+
     '<div class="g2"><label class="field"><span>หน่วยงาน <b>*</b></span><select id="fDept"><option value="">— เลือกหน่วยงาน —</option>'+depts.map(function(d){return '<option'+(d===draft.department?' selected':'')+'>'+esc(d)+'</option>';}).join('')+
@@ -985,7 +1019,7 @@ function openSubmit(edit){
     '<label class="field"><span>คำสำคัญ</span><input id="fKw" maxlength="300" placeholder="คั่นด้วยจุลภาค เช่น ความปลอดภัยด้านยา, ผู้สูงอายุ" value="'+v('keywords')+'"></label>'+
     '<h3 class="h3">บทคัดย่อ <small style="font-weight:400;color:var(--muted);font-size:13px">(แนะนำให้กรอก ช่วยให้ค้นหาและอ้างอิงได้ดีขึ้น)</small></h3>'+
     [['fBg','background','หลักการและเหตุผล / ปัญหา'],['fObj','objective','วัตถุประสงค์'],['fMet','method','วิธีดำเนินการ / กิจกรรมการพัฒนา'],['fRes','result','ผลการดำเนินงาน / ตัวชี้วัด'],['fCon','conclusion','สรุปและบทเรียนที่ได้']]
-      .map(function(f){return '<label class="field"><span>'+f[2]+'</span><textarea id="'+f[0]+'" maxlength="4000">'+v(f[1])+'</textarea></label>';}).join('')+
+      .map(function(f){return '<label class="field"><span id="L'+f[0]+'">'+f[2]+'</span><textarea id="'+f[0]+'" maxlength="4000">'+v(f[1])+'</textarea></label>';}).join('')+
     '<h3 class="h3">ไฟล์ผลงาน</h3>'+
     '<div class="drop" id="fDrop" tabindex="0"><b>แตะเพื่อเลือกไฟล์</b> หรือลากไฟล์มาวาง<br><small>PDF, JPG, PNG, DOCX, PPTX ไม่เกิน <span id="fMax">'+call.maxMB+'</span> MB'+(edit?' · ไม่ต้องแนบใหม่หากไม่เปลี่ยนไฟล์ (ไฟล์เดิม: '+esc(edit.fileName)+')':'')+'</small><div id="fName" style="margin-top:6px;color:var(--ink)"></div></div>'+
     '<input type="file" id="fFile" accept=".pdf,.jpg,.jpeg,.png,.docx,.pptx,application/pdf,image/jpeg,image/png" class="hidden">'+
@@ -999,8 +1033,14 @@ function openSubmit(edit){
     const c=S.calls.filter(function(x){return x.callId===Q('#fCall').value;})[0]||call;
     Q('#fCat').innerHTML=c.categories.map(function(x){return '<option'+(x===draft.category?' selected':'')+'>'+esc(x)+'</option>';}).join('');
     Q('#fMax').textContent=c.maxMB;
+    catChanged();
   }
-  fillCats();Q('#fCall').onchange=fillCats;
+  function catChanged(){
+    const c=S.calls.filter(function(x){return x.callId===Q('#fCall').value;})[0]||call,cat=Q('#fCat').value,g=CAT_GUIDE[cat],lb=(g&&g.labels)||ABS_DEFAULT;
+    Q('#fGuide').innerHTML=guideHtml(cat,c);
+    ['fBg','fObj','fMet','fRes','fCon'].forEach(function(id,i){Q('#L'+id).textContent=lb[i];});
+  }
+  fillCats();Q('#fCall').onchange=fillCats;Q('#fCat').onchange=catChanged;
   Q('#fDept').onchange=function(){Q('#fDeptO').classList.toggle('hidden',Q('#fDept').value!=='__other');if(Q('#fDept').value==='__other')Q('#fDeptO').focus();};
   const drop=Q('#fDrop'),inp=Q('#fFile');
   drop.onclick=function(){inp.click();};drop.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();inp.click();}};

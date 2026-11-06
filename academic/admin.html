@@ -532,7 +532,7 @@ function renderCalls(){
 function editCall(id){
   const c=id?CALLS.filter(function(x){return x.callId===id;})[0]:null;
   const y=new Date().getFullYear()+543+(new Date().getMonth()>=9?1:0);
-  const v=c||{year:String(y),title:'มหกรรมวิชาการโรงพยาบาลสวี ประจำปี '+y,opens:'',closes:'',categories:CATS.slice(),maxMB:20,guideUrl:'',eventDate:'',venue:'',resultsPublic:false,enabled:true,note:''};
+  const v=c||{year:String(y),title:'มหกรรมวิชาการเครือข่ายโรงพยาบาลสวี ประจำปีงบประมาณ '+y,folderUrl:'',opens:'',closes:'',categories:CATS.slice(),maxMB:20,guideUrl:'',eventDate:'',venue:'',resultsPublic:false,enabled:true,note:''};
   openDrawer('<div class="top"><h2>'+(c?'แก้ไขรอบรับผลงาน':'สร้างรอบรับผลงาน')+'</h2><button class="btn sm" data-close>ปิด ✕</button></div>'+
     '<div class="grid3"><label class="f"><span>ชื่อรอบ</span><input class="in" id="cTitle" value="'+esc(v.title)+'"></label><label class="f"><span>ปีการประกวด (พ.ศ.)</span><input class="in" id="cYear" maxlength="4" value="'+esc(v.year)+'"></label>'+
     '<label class="f"><span>ขนาดไฟล์สูงสุด (MB)</span><input class="in" id="cMax" type="number" min="1" max="40" value="'+esc(v.maxMB)+'"></label></div>'+
@@ -540,12 +540,13 @@ function editCall(id){
     '<label class="f"><span>วันจัดงาน/นำเสนอ</span><input class="in" id="cEvent" type="date" value="'+esc(v.eventDate)+'"></label></div>'+
     '<label class="f"><span>ประเภทผลงานที่รับ</span></label><div class="checks" id="cCats">'+CATS.map(function(x){return '<label><input type="checkbox" value="'+esc(x)+'"'+(v.categories.indexOf(x)>=0?' checked':'')+'> '+esc(x)+'</label>';}).join('')+'</div>'+
     '<div class="grid2"><label class="f"><span>ลิงก์แนวทาง/เกณฑ์การตัดสิน (PDF หรือ Google Docs)</span><input class="in" id="cGuide" value="'+esc(v.guideUrl)+'"></label><label class="f"><span>สถานที่จัดงาน</span><input class="in" id="cVenue" value="'+esc(v.venue)+'"></label></div>'+
-    '<label class="f"><span>หมายเหตุ (แสดงในหน้าส่งผลงาน)</span><textarea class="in" id="cNote">'+esc(v.note)+'</textarea></label>'+
+    '<label class="f"><span>โฟลเดอร์ Drive เก็บไฟล์ที่ส่ง (ไม่บังคับ) — ระบบจะใส่ไฟล์ในโฟลเดอร์ย่อยตามประเภท และโฟลเดอร์ "ส่งผลงาน" ข้างใน ถ้ามี</span><input class="in" id="cFolder" placeholder="https://drive.google.com/drive/folders/..." value="'+esc(v.folderUrl||'')+'"></label>'+
+    '<label class="f"><span>หมายเหตุ (แสดงในหน้าส่งผลงาน บรรทัดแรกแสดงบนแบนเนอร์)</span><textarea class="in" id="cNote">'+esc(v.note)+'</textarea></label>'+
     '<div class="checks"><label><input type="checkbox" id="cOn"'+(v.enabled?' checked':'')+'> เปิดใช้งานรอบนี้</label><label><input type="checkbox" id="cRes"'+(v.resultsPublic?' checked':'')+'> ประกาศผลรางวัลต่อสาธารณะ</label></div>'+
     '<div class="row"><button class="btn primary" id="cSave">บันทึก</button>'+(c?'<button class="btn danger" id="cDel">ลบรอบนี้</button>':'')+'</div>');
   Q('#cSave').onclick=async function(){
     const o={callId:c?c.callId:'',title:Q('#cTitle').value.trim(),year:Q('#cYear').value.trim(),maxMB:Q('#cMax').value,opens:Q('#cOpen').value,closes:Q('#cClose').value,eventDate:Q('#cEvent').value,
-      categories:Array.from(document.querySelectorAll('#cCats input:checked')).map(function(i){return i.value;}),guideUrl:Q('#cGuide').value.trim(),venue:Q('#cVenue').value.trim(),note:Q('#cNote').value,
+      categories:Array.from(document.querySelectorAll('#cCats input:checked')).map(function(i){return i.value;}),guideUrl:Q('#cGuide').value.trim(),folderUrl:Q('#cFolder').value.trim(),venue:Q('#cVenue').value.trim(),note:Q('#cNote').value,
       enabled:Q('#cOn').checked,resultsPublic:Q('#cRes').checked};
     if(!isYear(o.year))return toast('ปีต้องเป็นตัวเลข 4 หลัก',true);
     if(!o.opens||!o.closes)return toast('กรุณาระบุวันเปิดและปิดรับ',true);
